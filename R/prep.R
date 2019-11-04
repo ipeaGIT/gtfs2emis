@@ -4,12 +4,29 @@
 library(data.table)
 library(dplyr)
 library(sf)
-gps <- read.table("data/gps_for_etufor_2019/shape004-I.txt",header = T); gps <- head(gps,-1)
+Rcpp::sourceCpp('R/distance_calcs.cpp')
+
+gps <- read.table("data/gps_spo_sptrans_2019/70909.txt",header = T)
 # useful data
 gps <- gps[,c("trip_id","shape_pt_lon","shape_pt_lat","departure_time","speed","dist")]
+# new distance
+gps$dist1 <- rcpp_distance_haversine(gps$shape_pt_lat, gps$shape_pt_lon, data.table::shift(gps$shape_pt_lat, type="lead"), 
+                                     data.table::shift(gps$shape_pt_lon, type="lead"), tolerance = 10000000000.0)
+# break on distance - bod
+bod <- which(gps$dist1>20)
+myfun <- function(i,bod){
+  sf::st_linestring(x = matrix(c(gps$shape_pt_lon[(bod[i]+1):(bod[i+1])], 
+                                 gps$shape_pt_lat[(bod[i]+1):(bod[i+1])]), ncol = 2)) %>% st_sfc() %>% st_sf()
+}
+sep <- lapply(1:(length(bod)-1),myfun,bod) %>% rbindlist()
+plot(sep[1,])
 # time
 gps$departure_time <- gps$departure_time %>% as.character() %>% as.ITime() %>% hour()
 # bind
+#
+#
+myfun <- function(x){sqrt(x+v)};v = 1:5
+lapply(1:5,myfun,v)
 a <- sf::st_linestring(x = matrix(c(gps$shape_pt_lon[1:10000], gps$shape_pt_lat[1:10000]), ncol = 2)) %>% st_sfc() %>% st_sf()
 plot(a) 
 sf::st_linestring(x = matrix(c(c(0,1,1,0), c(0,0,1,1)), ncol = 2)) %>% st_sfc() %>% st_sf() %>% plot()
