@@ -11,11 +11,11 @@ library(mapview)
 # setwd
 setwd("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gps2emission/")
 # data import
-
 dt <- fread(input = "data/gps_spo_sptrans_2019/70912_first1000.txt")
+# range of stop_id's
 last_stopid <- last(which(is.na(dt$stop_id)%in%FALSE))
 dt <- dt[1:last_stopid,]; dt[last_stopid,"dist"] <- 0
-# only stop_id's
+# only stop_id's lines
 dtnew <- dt[-which(is.na(dt$stop_id)),] 
 dtnew$dist <- 0
 dtnew$dist[1] <- dtnew$cumdist[2]-dtnew$cumdist[1]
