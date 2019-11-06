@@ -23,14 +23,14 @@ its <- sf::st_crosses(dt$geometry,hex_grid$geometry) %>% as.data.table()
 colnames(its) <- c("emi_id","hex_id")
 # rebuild vector based on its df
 unico <-  unique(its$emi_id) 
-its <- lapply(1:length(unico),function(i){
+its1 <- lapply(1:length(unico),function(i){ #length(unico)
   aux <- unico[i]
-  its[emi_id == its$emi_id[i],"total_dist"] <- dt$dist[aux]
-  its[emi_id == its$emi_id[i],"total_emi"] <-  dt$emissns[aux]
-  return(its[emi_id == its$emi_id[i],])
+  its[emi_id == aux,"total_dist"] <- dt$dist[aux]
+  its[emi_id == aux,"total_emi"] <-  dt$emissns[aux]
+  return(its[emi_id == aux,])
 }) %>% data.table::rbindlist()
-#
-a <- sf::st_crop(net$geometry[2],g$geometry[884]) %>% sf::st_length()
+# portion of dist n emissions
+a <- sf::st_crop(dt$geometry[2],hex_grid$geometry[884]) %>% sf::st_length()
 
 sf::st_length(a)
 sf::st_length(net$geometry[2])
