@@ -2,7 +2,8 @@
 # data analysis sptrans
 #
 # data import
-#filepath <- "L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gtfs2gps/tests_joao/data/output/gtfs_spo_sptrans_2019-10/"
+# 
+# filepath <- "L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gtfs2gps/tests_joao/data/output/gtfs_spo_sptrans_2019-10/"
 read_gps <- function(filepath){
   dt <- data.table::fread(filepath)
   # stop id
