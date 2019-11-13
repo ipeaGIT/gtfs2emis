@@ -16,17 +16,18 @@ library(future.apply)
 # setwd
 setwd("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gps2emission/")
 # data import
-filepath <- "data/emi_grid//"
+filepath <- "data/emi_speed_grid/"
 ids <- list.files(path=filepath,pattern = ".shp");ids_saida <- str_remove(ids,".shp")
 break()
 # plotting
 system.time({
 dd <- future.apply::future_lapply(1:length(ids),function(i){
-  sf::read_sf(paste0("data/emi_grid/",ids[i]))%>% st_transform(31983)
+  sf::read_sf(paste0("data/emi_speed_grid/",ids[i]))%>% st_transform(31983)
 }) %>% data.table::rbindlist() 
 })
 #dd %>% data.table::as.data.table() #%>% st_as_sf()
 dd <- dd[,emi:=sum(emi),by=h3_ddrs][,.SD[1],by=h3_ddrs] %>% st_as_sf()
+sum(dd$emi)
 sync(mapview(dd["emi"]),mapview(dd$geometry,alpha.regions = 0))
 #d1 <- dd[dd$h3_ddrs %in% unique(dd$h3_ddrs),]
 dd$emi1 %>% sum()

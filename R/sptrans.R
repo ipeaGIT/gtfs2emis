@@ -38,6 +38,8 @@ ef_ub_co <- ef_hdv_scaled(dfcol = ub_co_2019,
 hex_grid <- readRDS("data/hex/3550308_09.rds") %>% st_transform(31983) %>% st_sf()
 #
 # loop
+i=2
+break()
 system.time({
 future.apply::future_lapply(seq_along(ids),function(i){ # length(ids)
   # --
