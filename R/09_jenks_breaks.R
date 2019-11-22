@@ -1,9 +1,8 @@
-jenks_natural <- function(data, var, breaks){
+jenks_natural <- function(data, var, breaks,round_test){
   
   # data <- copy(iris)
   # var <- "Petal.Length"
   # breaks <- 5
-  options(scipen = 999)
   
   # conver df to data.table  
   setDT(data)
@@ -17,6 +16,14 @@ jenks_natural <- function(data, var, breaks){
   # Edit factor text
   data[, paste0(newvar) := str_replace_all(get(newvar), "\\[|\\(|\\]", "") ]
   data[, paste0(newvar) := stri_replace_all_regex(get(newvar), "[,]", " - ") ]
+  
+  # round
+  if(round_test == TRUE){
+    
+    data[, paste0(newvar) := paste(head(str_split(get(newvar)," - ") %>% unlist() %>% as.numeric() %>% round(2))[1],
+                                   "-",
+                                   head(str_split(get(newvar)," - ") %>% unlist() %>% as.numeric() %>% round(2))[2]),by=id_hex]
+    }
   
   # get factor labels
   jenks_labels  <- data[, get(newvar)]  %>% table %>% names() %>% sort(decreasing = F) 

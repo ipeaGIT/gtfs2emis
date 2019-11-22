@@ -34,31 +34,14 @@ options(scipen = 999)
 # gtfs <- "gtfs_for_etufor_2019-10/"
 filepath <- paste0("data/emi_speed_line/",gtfs)
 ids <- list.files(path=filepath,pattern = ".shp");ids_saida <- str_remove(ids,".shp")
-map_tiles <- readr::read_rds("data-raw/map_tiles/map_tile_crop_spo.rds")
-#map_tiles <- readr::read_rds("data-raw/map_tiles/map_tile_crop_for.rds")
 #output_map <- "maps/etufor/"
 output_map <- "maps/sptrans/"
 breaksj <- 7
-#cidade <- "S?o Paulo"
-cidade <- "São Paulo"
+cidade <- "Curitiba"
+#cidade <- "São Paulo"
 #cidade <- "Fortaleza"
-
-# --
-# rbinding
-# --
-dt <- lapply(seq_along(ids),function(i){ # seq_along(ids)
-  sf::read_sf(paste0("data/emi_speed_line/",gtfs,ids[i]))%>% st_transform(31983)
-}) %>% data.table::rbindlist() 
-if("h3_ddrs" %in% colnames(dt)){dt$id_hex <- dt$h3_ddrs; dt <- dt[,-1]}
-
-dt$time <- str_sub(dt$dprtr_t,1,2) %>% as.numeric() %>% +1
-dt <- dt[,emi_co:=sum(emi_co)/1000,by=time]
-dt <- dt[,emi_nox:=sum(emi_nox)/1000,by=time]
-dt <- dt[,emi_pm:=sum(emi_pm)/1000,by=time]
-dt <- dt[,em_nmhc:=sum(em_nmhc)/1000,by=time]
-dt <- dt[,emi_co2:=sum(emi_co2)/1000000000,by=time]
-dt <- dt[,.SD[1],by=time]
-dt <- dt[order(time)]
+dt <- sf::read_sf(paste0("data/emi_speed_line/",gtfs,"all.shp"))
+street <- sf::read_sf(paste0("data/emi_speed_line/",gtfs,"streets.shp"))
 # --
 # define pollutant
 # --
@@ -70,7 +53,6 @@ exp_pol <- c(expression(CO~(kg/dia)),
              expression(MP~(kg/dia)),
              expression(NO[x]~(kg/dia)))[2]
 dt$emi <- dt$emi_co2
-
 # --
 ggplot(dt,aes(x = time, y = emi))+
   geom_bar(aes(fill=as.numeric(emi)),stat="identity",colour="black", size=.3, alpha=.8)+
