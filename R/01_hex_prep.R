@@ -3,6 +3,19 @@
 #
 rm(list=ls())
 setwd("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gps2emission/")
+rm(list=ls())
+library(vein)
+library(stringr)
+library(data.table)
+library(cptcity)
+library(sf)
+library(units)
+library(mapview)
+library(h3jsr)
+library(plyr)
+library(geobr)
+library(tibble)
+
 make_hex <- function(resolution, muni){
   # data prep
   #muni <- read_sf(paste0("data-raw/shp/",as.character(cod_muni),".shp"))
@@ -37,9 +50,8 @@ muni <- geobr::read_municipality(2304400) %>%
   sf::st_transform(32725) %>% 
   sf::st_buffer(0.003) %>% 
   sf::st_transform(4326)
-muni
 resolution <- 9
 break()
-hex_grid <- make_hex(resolution,muni) #%>% readr::write_rds("data/hex/2304400_09.rds")
+hex_grid <- make_hex(resolution,muni) %>% readr::write_rds("data/hex/2304400_09.rds")
 mapview(muni)+mapview(hex_grid)
 

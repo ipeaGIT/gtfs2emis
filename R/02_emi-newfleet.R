@@ -1,4 +1,7 @@
 #
+#
+#
+#
 # SPTRANS
 #
 rm(list=ls())
@@ -16,21 +19,21 @@ library(tibble)
 # setwd
 setwd("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gps2emission/")
 # data import
-gtfs <- "gtfs_spo_sptrans_2019-10/"
+gtfs <- "gtfs_cur_urbs_2019-10/"
 filepath <- paste0("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gtfs2gps/tests_joao/data/output/",gtfs)
 ids <- list.files(path=filepath);ids_saida <- str_remove(ids,".txt")
 # hex reading
-hex_grid <- readRDS("data/hex/3550308_09.rds") %>% st_transform(31983) %>% st_sf()
+hex_grid <- readRDS("data/hex/4106902_09.rds") %>% st_transform(31983) %>% st_sf()
 # script imports
 source("R/01_read_gps.R")
 
 # emission factor
-ub_co <- ef_cetesb(p = "CO", veh = "UB", year = 2009)[1]
-ub_nox <- ef_cetesb(p = "NOx", veh = "UB", year = 2009)[1]
-ub_pm <- ef_cetesb(p = "PM", veh = "UB", year = 2009)[1]
-ub_nmhc <- ef_cetesb(p = "NMHC", veh = "UB", year = 2009)[1]
-ub_co2 <- ef_cetesb(p = "CO2", veh = "UB", year = 2009)[1]
-ub_ch4 <- ef_cetesb(p = "CH4", veh = "UB", year = 2009)[1]
+ub_co <- ef_cetesb(p = "CO", veh = "UB", year = 2019)[1]
+ub_nox <- ef_cetesb(p = "NOx", veh = "UB", year = 2019)[1]
+ub_pm <- ef_cetesb(p = "PM", veh = "UB", year = 2019)[1]
+ub_nmhc <- ef_cetesb(p = "NMHC", veh = "UB", year = 2019)[1]
+ub_co2 <- ef_cetesb(p = "CO2", veh = "UB", year = 2019)[1]
+ub_ch4 <- ef_cetesb(p = "CH4", veh = "UB", year = 2019)[1]
 
 # scaled emission factor
 ef_ub_co <- ef_hdv_scaled(dfcol = ub_co, 
@@ -68,9 +71,8 @@ ef_ub_ch4 <- vein::ef_hdv_scaled(dfcol = ub_ch4,
 #
 # loop
 break()
-i=1
 system.time({
-  future.apply::future_lapply(4:length(ids),function(i){ # seq_along(ids)
+  future.apply::future_lapply(seq_along(ids),function(i){ # seq_along(ids)
     # --
     # data preparation
     # --
@@ -78,9 +80,6 @@ system.time({
                         ids[i])
     dt <- data.table::fread(filepath1)
     dt <- read_gps(filepath1) %>% st_as_sf() %>% st_transform(31983) 
-    
-    
-    
     # emissions
     dt$veh <- 1
     # emissions speed
@@ -96,8 +95,8 @@ system.time({
     # intersect
     its <- sf::st_intersects(dt$geometry,hex_grid$geometry) %>% as.data.table()
     colnames(its) <- c("emi_id","hex_id")
-    its$hex_id <- hex_grid$h3_address[its$hex_id]
-    hex_city <- hex_grid[hex_grid$h3_address %in% unique(its$hex_id),]
+    its$hex_id <- hex_grid$id_hex[its$hex_id]
+    hex_city <- hex_grid[hex_grid$id_hex %in% unique(its$hex_id),]
     # emis grid
     hex_city$emi_co <- emis_grid(spobj = dt["emi_co"],g = hex_city)$emi_co
     hex_city$emi_nox <- emis_grid(spobj = dt["emi_nox"],g = hex_city)$emi_nox
@@ -106,12 +105,8 @@ system.time({
     hex_city$emi_co2 <- emis_grid(spobj = dt["emi_co2"],g = hex_city)$emi_co2
     hex_city$emi_ch4 <- emis_grid(spobj = dt["emi_ch4"],g = hex_city)$emi_ch4
     # salve
-    sf::write_sf(hex_city,paste0("data/emi_speed_grid/",gtfs,ids_saida[i],".shp"))
-    sf::write_sf(dt,paste0("data/emi_speed_line/",gtfs,ids_saida[i],".shp"))
+    sf::write_sf(hex_city,paste0("data/emi_speed_grid/gtfs_cur_urbs_2019-10_newfleet/",ids_saida[i],".shp"))
+    sf::write_sf(dt,paste0("data/emi_speed_line/gtfs_cur_urbs_2019-10_newfleet/",ids_saida[i],".shp"))
   })
 })
-
-
-mapview(hex_grid$geometry,alpha.regions = 0.0)+mapview(hex_city,zcol="emi_co")+
-  mapview(dt$geometry)
 
