@@ -43,11 +43,7 @@ ef_ub_nox <- ef_hdv_scaled(dfcol = ub_nox,
                            t = "Std",
                            g = ">15 & <=18", eu = "V", 
                            gr = 0, l = 0.5, p = "NOx")
-ef_ub_pm <- ef_hdv_scaled(dfcol = ub_pm, 
-                          v = "Ubus", 
-                          t = "Std",
-                          g = ">15 & <=18", eu = "V", 
-                          gr = 0, l = 0.5, p = "PM")
+
 ef_ub_nmhc <- ef_hdv_scaled(dfcol = ub_nmhc, 
                             v = "Ubus", 
                             t = "Std",

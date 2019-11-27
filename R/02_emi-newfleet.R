@@ -28,12 +28,12 @@ hex_grid <- readRDS("data/hex/4106902_09.rds") %>% st_transform(31983) %>% st_sf
 source("R/01_read_gps.R")
 
 # emission factor
-ub_co <- ef_cetesb(p = "CO", veh = "UB", year = 2019)[1]
-ub_nox <- ef_cetesb(p = "NOx", veh = "UB", year = 2019)[1]
-ub_pm <- ef_cetesb(p = "PM", veh = "UB", year = 2019)[1]
-ub_nmhc <- ef_cetesb(p = "NMHC", veh = "UB", year = 2019)[1]
-ub_co2 <- ef_cetesb(p = "CO2", veh = "UB", year = 2019)[1]
-ub_ch4 <- ef_cetesb(p = "CH4", veh = "UB", year = 2019)[1]
+ub_co <- ef_cetesb(p = "CO", veh = "UB", year = 2017)[1]
+ub_nox <- ef_cetesb(p = "NOx", veh = "UB", year = 2017)[1]
+ub_pm <- ef_cetesb(p = "PM", veh = "UB", year = 2017)[1]
+ub_nmhc <- ef_cetesb(p = "NMHC", veh = "UB", year = 2017)[1]
+ub_co2 <- ef_cetesb(p = "CO2", veh = "UB", year = 2017)[1]
+ub_ch4 <- ef_cetesb(p = "CH4", veh = "UB", year = 2017)[1]
 
 # scaled emission factor
 ef_ub_co <- ef_hdv_scaled(dfcol = ub_co, 
@@ -71,13 +71,16 @@ ef_ub_ch4 <- vein::ef_hdv_scaled(dfcol = ub_ch4,
 #
 # loop
 break()
+idsok <- list.files(path="data/emi_speed_grid/gtfs_cur_urbs_2019-10_newfleet/",pattern = ".shp") %>% 
+  str_remove(".shp")
+ids <- ids_saida[-which(ids_saida %in% idsok)]
 system.time({
   future.apply::future_lapply(seq_along(ids),function(i){ # seq_along(ids)
     # --
     # data preparation
     # --
     filepath1 <- paste0(filepath,
-                        ids[i])
+                        ids[i],".txt")
     dt <- data.table::fread(filepath1)
     dt <- read_gps(filepath1) %>% st_as_sf() %>% st_transform(31983) 
     # emissions
@@ -105,8 +108,8 @@ system.time({
     hex_city$emi_co2 <- emis_grid(spobj = dt["emi_co2"],g = hex_city)$emi_co2
     hex_city$emi_ch4 <- emis_grid(spobj = dt["emi_ch4"],g = hex_city)$emi_ch4
     # salve
-    sf::write_sf(hex_city,paste0("data/emi_speed_grid/gtfs_cur_urbs_2019-10_newfleet/",ids_saida[i],".shp"))
-    sf::write_sf(dt,paste0("data/emi_speed_line/gtfs_cur_urbs_2019-10_newfleet/",ids_saida[i],".shp"))
+    sf::write_sf(hex_city,paste0("data/emi_speed_grid/gtfs_cur_urbs_2019-10_newfleet/",ids[i],".shp"))
+    sf::write_sf(dt,paste0("data/emi_speed_line/gtfs_cur_urbs_2019-10_newfleet/",ids[i],".shp"))
   })
 })
 

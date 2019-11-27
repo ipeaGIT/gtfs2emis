@@ -32,9 +32,8 @@ source("R/09_map_themes.R")
 # --
 # data import
 # --
- gtfs <- "gtfs_spo_sptrans_2019-10/"
-# gtfs <- "gtfs_for_etufor_2019-10/"
-#gtfs <- "gtfs_cur_urbs_2019-10/"
+#corr <- c(1943,2613,3133,3134,3135,2612,3245,3244,3242,3243,3856,3855) # corredores
+gtfs <- "T/gtfs_cur_urbs_2019-10_newfleet/"
 # gtfs <- "gtfs_cur_urbs_2019-10_newfleet/"
 filepath <- paste0("data/emi_speed_grid/",gtfs)
 ids <- list.files(path=filepath,pattern = ".shp");ids_saida <- str_remove(ids,".shp")
@@ -42,28 +41,32 @@ ids <- list.files(path=filepath,pattern = ".shp");ids_saida <- str_remove(ids,".
 #map_tiles <- readr::read_rds("data-raw/map_tiles_ceramic/map_tile_crop_ceramic_for.rds")
 map_tiles <- readr::read_rds("data-raw/map_tiles_ceramic/map_tile_crop_ceramic_cur.rds")
 #output_map <- "maps/etufor/"
-#output_map <- "maps/urbs/"
+output_map <- "maps/urbs_corredor/"
 #output_map <- "maps/urbs_newfleet/"
-#output_map <- "maps/sptrans/"
+#output_map <- "maps/urbs_corredor/"
 breaksj <- 7
 # cidade <- "São Paulo"
 # cidade <- "Fortaleza"
-# cidade <- "Curitiba"
-#cidade <- "Curitiba (Frota 2017)"
+# cidade <- "Curitiba (Onibus elétricos Isolados)"
+#cidade <- "Curitiba (Frota 2009) - \n Emissões apenas das linhas de altas capacidade"
+cidade <- "Curitiba (Frota 2009) - \n Emissões totais"
 dd <- sf::read_sf(paste0("data/emi_speed_grid/",gtfs,"all.shp")) %>% as.data.table()
-dt <- sf::read_sf(paste0("data/emi_speed_line/",gtfs,"all.shp")) %>% as.data.table()
+#dd <- sf::read_sf(paste0("data/emi_speed_grid/",gtfs,"all_corr.shp")) %>% as.data.table()
+#dd <- sf::read_sf(paste0("data/emi_speed_grid/",gtfs,"no_corr.shp")) %>% as.data.table()
+#dd$emi_co2 <- (as.numeric(dd$emi_co2)-as.numeric(dd1$emi_co2))*-1 
+#dt <- sf::read_sf(paste0("data/emi_speed_line/",gtfs,"all.shp")) %>% as.data.table()
 #street <- sf::read_sf(paste0("data/emi_speed_line/",gtfs,"streets.shp"))
 
-dd$emi_co <- dd$emi_co/10^6
-dd$emi_nox <- dd$emi_nox/10^6
-dd$emi_pm <- dd$emi_pm/10^3
-dd$emi_nmhc <- dd$emi_nmhc/10^6
-dd$emi_co2 <- dd$emi_co2/10^9
-dd$emi_ch4 <- dd$emi_ch4/10^3
-soma <- dd[,c("emi_co","emi_nox","emi_pm","em_nmhc","emi_co2","emi_ch4")] %>% 
-  as.data.table() %>% colSums() %>% t() %>% 
-  as.data.table() %>% round(2) %>% View()
-break()
+ dd$emi_co <- dd$emi_co/10^6
+ dd$emi_nox <- dd$emi_nox/10^6
+ dd$emi_pm <- dd$emi_pm/10^3
+ dd$emi_nmhc <- dd$emi_nmhc/10^6
+ dd$emi_co2 <- dd$emi_co2/10^9
+ dd$emi_ch4 <- dd$emi_ch4/10^3
+ soma <- dd[,c("emi_co","emi_nox","emi_pm","em_nmhc","emi_co2","emi_ch4")] %>% 
+   as.data.table() %>% colSums() %>% t() %>% 
+    as.data.table() %>% round(2) %>% View()
+ break()
 # --
 # tipo de poluente
 # --
@@ -81,6 +84,9 @@ dd <- jenks_natural(dd,"emi",breaksj,round_test = TRUE) %>% sf::st_as_sf()
 dd <- sf::st_transform(dd,3857)
 
 dd$emi_jenks <- factor(dd$emi_jenks, levels = unique(dd$emi_jenks))
+
+
+#dd$emi_jenks <- factor(dd$emi_jenks, levels = unique(dd$emi_jenks))
 
 
 # --

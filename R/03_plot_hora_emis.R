@@ -30,12 +30,15 @@ options(scipen = 999)
 # --
 # data import
 # --
- gtfs <- "gtfs_spo_sptrans_2019-10/"
+# gtfs <- "gtfs_spo_sptrans_2019-10/"
 # gtfs <- "gtfs_for_etufor_2019-10/"
+ gtfs <- "gtfs_cur_urbs_2019-10/"
+# gtfs <- "gtfs_cur_urbs_2019-10_newfleet/"
+# output_map <- "maps/etufor/"
+ output_map <- "maps/urbs/"
+ #output_map <- "maps/sptrans/"
 filepath <- paste0("data/emi_speed_line/",gtfs)
 ids <- list.files(path=filepath,pattern = ".shp");ids_saida <- str_remove(ids,".shp")
-#output_map <- "maps/etufor/"
-output_map <- "maps/sptrans/"
 breaksj <- 7
 cidade <- "Curitiba"
 #cidade <- "São Paulo"

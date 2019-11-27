@@ -37,14 +37,15 @@ pre_emi_speed_line <- function(gtfs){
   return(NULL)
 }
 vec <- c("gtfs_spo_sptrans_2019-10/","gtfs_cur_urbs_2019-10_newfleet/",
-         "gtfs_cur_urbs_2019-10/","gtfs_for_etufor_2019-10/")
+         "gtfs_cur_urbs_2019-10/","gtfs_for_etufor_2019-10/"); gtfs <- vec[3]
 lapply(vec[1:3],function(i){pre_emi_speed_line(i)})
 
 
-pre_emi_speed_grid <- function(gtfs){
+pre_emi_speed_grid <- function(gtfs,corr){
   filepath <- paste0("data/emi_speed_grid/",gtfs)
   ids <- list.files(path=filepath,pattern = ".shp")
-  ids <- ids[-which(ids %in% "all.shp")]
+  ids <- ids[-which(ids %in% "all.shp")] 
+  ids <- ids[-which(ids %in% paste0(corr,".shp"))]
   # --
   # rbinding
   # --
@@ -62,13 +63,15 @@ pre_emi_speed_grid <- function(gtfs){
   # mudar para tipo de poluente
   dd <- dd[,.SD[1],by=id_hex] %>% sf::st_as_sf()
   # write
-  sf::write_sf(dd,paste0(filepath,"all.shp"))
+  # sf::write_sf(dd,paste0(filepath,"all.shp"))
+  sf::write_sf(dd,paste0(filepath,"all_corr.shp"))
   #
   # return
   return(NULL)
 }
 
-dd <- lapply(vec,function(i){pre_emi_speed_grid(i)} )%>% 
+
+dd <- lapply(gtfs,function(i){pre_emi_speed_grid(i)} )%>% 
   data.table::rbindlist() %>% sf::st_as_sf()
 mapview(dd,zcol="emi_ch4")
 
