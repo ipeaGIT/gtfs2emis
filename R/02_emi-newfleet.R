@@ -28,35 +28,35 @@ hex_grid <- readRDS("data/hex/4106902_09.rds") %>% st_transform(31983) %>% st_sf
 source("R/01_read_gps.R")
 
 # emission factor
-ub_co <- ef_cetesb(p = "CO", veh = "UB", year = 2017)[1]
-ub_nox <- ef_cetesb(p = "NOx", veh = "UB", year = 2017)[1]
-ub_pm <- ef_cetesb(p = "PM", veh = "UB", year = 2017)[1]
-ub_nmhc <- ef_cetesb(p = "NMHC", veh = "UB", year = 2017)[1]
-ub_co2 <- ef_cetesb(p = "CO2", veh = "UB", year = 2017)[1]
-ub_ch4 <- ef_cetesb(p = "CH4", veh = "UB", year = 2017)[1]
+ub_co <- vein::ef_cetesb(p = "CO", veh = "UB", year = 2017)[1]
+ub_nox <- vein::ef_cetesb(p = "NOx", veh = "UB", year = 2017)[1]
+ub_pm <- vein::ef_cetesb(p = "PM", veh = "UB", year = 2017)[1]
+ub_nmhc <- vein::ef_cetesb(p = "NMHC", veh = "UB", year = 2017)[1]
+ub_co2 <- vein::ef_cetesb(p = "CO2", veh = "UB", year = 2017)[1]
+ub_ch4 <- vein::ef_cetesb(p = "CH4", veh = "UB", year = 2017)[1]
 
 # scaled emission factor
-ef_ub_co <- ef_hdv_scaled(dfcol = ub_co, 
+ef_ub_co <- vein::ef_hdv_scaled(dfcol = ub_co, 
                           v = "Ubus", 
                           t = "Std",
                           g = ">15 & <=18", eu = "V", 
                           gr = 0, l = 0.5, p = "CO")
-ef_ub_nox <- ef_hdv_scaled(dfcol = ub_nox, 
+ef_ub_nox <- vein::ef_hdv_scaled(dfcol = ub_nox, 
                            v = "Ubus", 
                            t = "Std",
                            g = ">15 & <=18", eu = "V", 
                            gr = 0, l = 0.5, p = "NOx")
-ef_ub_pm <- ef_hdv_scaled(dfcol = ub_pm, 
+ef_ub_pm <- vein::ef_hdv_scaled(dfcol = ub_pm, 
                           v = "Ubus", 
                           t = "Std",
                           g = ">15 & <=18", eu = "V", 
                           gr = 0, l = 0.5, p = "PM")
-ef_ub_nmhc <- ef_hdv_scaled(dfcol = ub_nmhc, 
+ef_ub_nmhc <- vein::ef_hdv_scaled(dfcol = ub_nmhc, 
                             v = "Ubus", 
                             t = "Std",
                             g = ">15 & <=18", eu = "V", 
                             gr = 0, l = 0.5, p = "NMHC")
-ef_ub_co2 <- ef_hdv_scaled(dfcol = ub_co2, 
+ef_ub_co2 <- vein::ef_hdv_scaled(dfcol = ub_co2, 
                            v = "Ubus", 
                            t = "Std",
                            g = ">15 & <=18", eu = "V", 
@@ -101,12 +101,12 @@ system.time({
     its$hex_id <- hex_grid$id_hex[its$hex_id]
     hex_city <- hex_grid[hex_grid$id_hex %in% unique(its$hex_id),]
     # emis grid
-    hex_city$emi_co <- emis_grid(spobj = dt["emi_co"],g = hex_city)$emi_co
-    hex_city$emi_nox <- emis_grid(spobj = dt["emi_nox"],g = hex_city)$emi_nox
-    hex_city$emi_pm <- emis_grid(spobj = dt["emi_pm"],g = hex_city)$emi_pm
-    hex_city$emi_nmhc <- emis_grid(spobj = dt["emi_nmhc"],g = hex_city)$emi_nmhc
-    hex_city$emi_co2 <- emis_grid(spobj = dt["emi_co2"],g = hex_city)$emi_co2
-    hex_city$emi_ch4 <- emis_grid(spobj = dt["emi_ch4"],g = hex_city)$emi_ch4
+    hex_city$emi_co <- vein::emis_grid(spobj = dt["emi_co"],g = hex_city)$emi_co
+    hex_city$emi_nox <- vein::emis_grid(spobj = dt["emi_nox"],g = hex_city)$emi_nox
+    hex_city$emi_pm <- vein::emis_grid(spobj = dt["emi_pm"],g = hex_city)$emi_pm
+    hex_city$emi_nmhc <- vein::emis_grid(spobj = dt["emi_nmhc"],g = hex_city)$emi_nmhc
+    hex_city$emi_co2 <- vein::emis_grid(spobj = dt["emi_co2"],g = hex_city)$emi_co2
+    hex_city$emi_ch4 <- vein::emis_grid(spobj = dt["emi_ch4"],g = hex_city)$emi_ch4
     # salve
     sf::write_sf(hex_city,paste0("data/emi_speed_grid/gtfs_cur_urbs_2019-10_newfleet/",ids[i],".shp"))
     sf::write_sf(dt,paste0("data/emi_speed_line/gtfs_cur_urbs_2019-10_newfleet/",ids[i],".shp"))

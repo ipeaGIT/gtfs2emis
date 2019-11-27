@@ -1,14 +1,16 @@
-#
-# preprocessing emissions
-#
-# --
-# setwd
-setwd("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gps2emission/")
-options(scipen = 999)
+# shapes_sf <- gtfs_shapes_as_sf(gtfs_data)
+# 
+# codigo_urbs  <- c(503,202,302,602,"X12","X20","X11",203,303,502,603,200,200,500) %>% as.character()
+# expr <- gtfs_data$routes$route_id[which(unique(gtfs_data$routes$route_short_name) 
+#                                         %in% 
+#                                           codigo_urbs)]
+# trips <- gtfs_data$trips$shape_id[which(gtfs_data$trips$route_id %in% expr)] %>% unique()
 # --
 # data import
 # --
-gtfs <- "gtfs_spo_sptrans_2019-10/"
+#
+# merge all speed_line into hourly emissions
+#
 pre_emi_speed_line <- function(gtfs){
   
   # gtfs <- "gtfs_for_etufor_2019-10/"
@@ -36,11 +38,9 @@ pre_emi_speed_line <- function(gtfs){
   # return
   return(NULL)
 }
-vec <- c("gtfs_spo_sptrans_2019-10/","gtfs_cur_urbs_2019-10_newfleet/",
-         "gtfs_cur_urbs_2019-10/","gtfs_for_etufor_2019-10/"); gtfs <- vec[3]
-lapply(vec[1:3],function(i){pre_emi_speed_line(i)})
-
-
+#
+# merge all speed_grid into grid emissions
+#
 pre_emi_speed_grid <- function(gtfs,corr){
   filepath <- paste0("data/emi_speed_grid/",gtfs)
   ids <- list.files(path=filepath,pattern = ".shp")
@@ -69,13 +69,10 @@ pre_emi_speed_grid <- function(gtfs,corr){
   # return
   return(NULL)
 }
-
-
-dd <- lapply(gtfs,function(i){pre_emi_speed_grid(i)} )%>% 
-  data.table::rbindlist() %>% sf::st_as_sf()
-mapview(dd,zcol="emi_ch4")
-
-pre_emi_speed_streets <- function(gtfs){
+#
+# union
+#
+union_emi_strts <- function(gtfs){
   
   # gtfs <- "gtfs_for_etufor_2019-10/"
   filepath <- paste0("data/emi_speed_line/",gtfs)
@@ -96,5 +93,3 @@ pre_emi_speed_streets <- function(gtfs){
   # return
   return(NULL)
 }
-lapply(vec[1],function(i){pre_emi_speed_streets(i)})
-ã  

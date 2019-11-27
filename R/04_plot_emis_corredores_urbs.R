@@ -33,7 +33,7 @@ source("R/09_map_themes.R")
 # data import
 # --
 #corr <- c(1943,2613,3133,3134,3135,2612,3245,3244,3242,3243,3856,3855) # corredores
-gtfs <- "T/gtfs_cur_urbs_2019-10_newfleet/"
+gtfs <- "/gtfs_cur_urbs_2019-10_newfleet/"
 # gtfs <- "gtfs_cur_urbs_2019-10_newfleet/"
 filepath <- paste0("data/emi_speed_grid/",gtfs)
 ids <- list.files(path=filepath,pattern = ".shp");ids_saida <- str_remove(ids,".shp")

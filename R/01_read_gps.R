@@ -3,12 +3,9 @@
 #
 # data import
 # 
-read_gps <- function(filepath1){
+read_gps <- function(filepath){
   
-  
-  # filepath <-  filepath1
-  
-  dt <- data.table::fread(filepath1)
+  dt <- data.table::fread(filepath)
   # stop id
   id0 <- which(!is.na(dt$stop_sequence)); id0[1] <- 1
   id1 <- data.table::shift(id0,-1,fill=nrow(dt))
