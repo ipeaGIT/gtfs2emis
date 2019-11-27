@@ -1,4 +1,4 @@
-#devtools::install_github("ipeaGIT/gtfs2gps")
+devtools::install_github("ipeaGIT/gtfs2gps")
 rm(list=ls())
 library(gtfs2gps)
 #devtools::load_all('.')
