@@ -14,6 +14,10 @@ library(plyr)
 library(geobr)
 library(tibble)
 # setwd
+
+# Intro -------------------------------------------------------------------
+
+
 setwd("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gps2emission/")
 # data import
 gtfs <- "gtfs_spo_sptrans_2019-10/"
@@ -24,7 +28,9 @@ hex_grid <- readRDS("data/hex/3550308_09.rds") %>% st_transform(31983) %>% st_sf
 # script imports
 source("R/01_read_gps.R")
 
-# emission factor
+
+# Emission factor ---------------------------------------------------------
+
 ub_co <- ef_cetesb(p = "CO", veh = "UB", year = 2009)[1]
 ub_nox <- ef_cetesb(p = "NOx", veh = "UB", year = 2009)[1]
 ub_pm <- ef_cetesb(p = "PM", veh = "UB", year = 2009)[1]
@@ -62,6 +68,9 @@ ef_ub_ch4 <- vein::ef_hdv_scaled(dfcol = ub_ch4,
 
 # break()
 # i=1
+
+# Emis estimation ---------------------------------------------------------
+
 system.time({
   future.apply::future_lapply(seq_along(ids),function(i){ # seq_along(ids)
     # --

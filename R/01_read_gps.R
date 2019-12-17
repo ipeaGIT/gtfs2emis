@@ -39,4 +39,5 @@ read_gps <- function(filepath){
   by = .(range_trip,range_id)][,"geometry"]
   dt2$geometry <- sf::st_sf(geometry = geom,crs=4326)
   return(dt2)
+  
 }
