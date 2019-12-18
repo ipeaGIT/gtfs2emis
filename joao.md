@@ -17,6 +17,8 @@ lala  \[
 Speed_N = Speed_0 = \overline{Speed} = \frac{S_N-S_1}{t_N-t_1}
 \]
 
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
+
 ## Overview
 
 ggplot2 is a system for declaratively creating graphics, based on [The
