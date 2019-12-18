@@ -165,7 +165,7 @@ box()
 ```
 
 ![](poa-1.png)<!-- -->
-![](https://github.com/Joaobazzo/gps2emission/blob/master/poa_gps_sf.jpg)
+\<\#–![](https://github.com/Joaobazzo/gps2emission/blob/master/poa_gps_sf.jpg)
 
 # Methodological note
 

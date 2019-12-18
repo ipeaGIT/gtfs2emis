@@ -119,7 +119,6 @@ plot(sf::st_geometry(poa_gps_sf[1:200,]))
 plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
 ```
-![](https://github.com/Joaobazzo/gps2emission/blob/master/poa_gps_sf.jpg)
 
 # Methodological note
 
