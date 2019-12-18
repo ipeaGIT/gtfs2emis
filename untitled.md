@@ -82,16 +82,13 @@ them.
 sao_small_shapes_sf <- gtfs2gps::gtfs_shapes_as_sf(sao_small)
 #> Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3
 sao_small_stops_sf <- gtfs2gps::gtfs_stops_as_sf(sao_small)
-```
-
-``` r
 plot(sf::st_geometry(sao_small_shapes_sf))
 plot(sf::st_geometry(sao_small_stops_sf), pch = 20, col = "red", add = TRUE)
 box()
 ```
 
-![](unnamed-chunk-6-1.png)<!-- -->
-![](https://github.com/Joaobazzo/gps2emission/blob/master/poa.jpg)
+![](unnamed-chunk-5-1.png)<!-- -->
+![](https://github.com/Joaobazzo/gps2emission/blob/master/sao_small_shapes_sf.jpg)
 
 After subsetting the data, it is also possible to save it as a new GTFS
 file using `write_gtfs()`, as shown below.
@@ -141,13 +138,13 @@ we processed.
   shapes_sf <- gps_as_sf(sao_gps)
   sao_gps60 <- sao_gps[1:100, ]
   sao_gps60_sf <- gps_as_sf(sao_gps60)
-  
   plot(sf::st_geometry(sao_gps60_sf), pch = 20)
   plot(sf::st_geometry(sao_small_shapes_sf), col = "blue", add = TRUE)
   box()
 ```
 
-![](unnamed-chunk-9-1.png)<!-- -->
+![](unnamed-chunk-8-1.png)<!-- -->
+![](https://github.com/Joaobazzo/gps2emission/blob/master/sao_gps60_sf.jpg)
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data
 brings detailed `stop_times.txt` information or whether it is a
@@ -168,6 +165,7 @@ box()
 ```
 
 ![](poa-1.png)<!-- -->
+![](https://github.com/Joaobazzo/gps2emission/blob/master/poa_gps_sf.jpg)
 
 # Methodological note
 

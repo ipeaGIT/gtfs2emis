@@ -10,6 +10,13 @@ vignette: |
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{colrow: Handling SimU, CR, and LU datas}
 ---
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = ""
+)
+```
 
 # Introduction 
 
@@ -64,19 +71,16 @@ object.size(sao) %>% format(units = "Kb")
 sao_small <- gtfs2gps::filter_by_shape_id(sao, c(51338, 51956, 51657))
 object.size(sao_small) %>% format(units = "Kb")
 ```
-
 We can then easily convert the data to simple feature format and plot them.
 
 ```{r}
 sao_small_shapes_sf <- gtfs2gps::gtfs_shapes_as_sf(sao_small)
 sao_small_stops_sf <- gtfs2gps::gtfs_stops_as_sf(sao_small)
-```
-
-```{r, warning=FALSE, echo=FALSE, fig.width=8, fig.height=5}
 plot(sf::st_geometry(sao_small_shapes_sf))
 plot(sf::st_geometry(sao_small_stops_sf), pch = 20, col = "red", add = TRUE)
 box()
 ```
+![](https://github.com/Joaobazzo/gps2emission/blob/master/sao_small_shapes_sf.jpg)
 
 After subsetting the data, it is also possible to save it as a new GTFS file using `write_gtfs()`, as shown below.
 
@@ -92,20 +96,17 @@ To convert GTFS to GPS-like format, use `gtfs2gps()`. This is the core function 
   sao_gps <- gtfs2gps("sao_small.zip", progress = FALSE, cores = 1, spatial_resolution = 15)
   head(sao_gps)
 ```
-
  The following figure maps the first 100 data points of the sample data we processed.
 
 ```{r}
   shapes_sf <- gps_as_sf(sao_gps)
   sao_gps60 <- sao_gps[1:100, ]
   sao_gps60_sf <- gps_as_sf(sao_gps60)
-  
   plot(sf::st_geometry(sao_gps60_sf), pch = 20)
   plot(sf::st_geometry(sao_small_shapes_sf), col = "blue", add = TRUE)
   box()
 ```
-
-
+![](https://github.com/Joaobazzo/gps2emission/blob/master/sao_gps60_sf.jpg)
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data brings detailed `stop_times.txt` information or whether it is a `frequency.txt` GTFS file. A sample data of a GTFS with detailed  `stop_times.txt` cab be found below:
 
@@ -118,7 +119,7 @@ plot(sf::st_geometry(poa_gps_sf[1:200,]))
 plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
 ```
-
+![](https://github.com/Joaobazzo/gps2emission/blob/master/poa_gps_sf.jpg)
 
 # Methodological note
 
