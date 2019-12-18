@@ -123,10 +123,6 @@ box()
 # Methodological note
 
 For a given trip, the function `gtfs2gps` calculates the average speed between each pair of stops --- given by the ratio between cumulative network distance $S$ and departure time $t$ for a consecutive pair of valid stop_ids ($i$), 
-$$
-Speed_i = \frac{S_{i+1}-S_i}{t_{i+1}-t_i}.
-$$
-<img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
 
 <img src="https://latex.codecogs.com/svg.latex?\Large&space;Speed_i=\frac{S_{i+1}-S_i}{t_{i+1}-t_i}" title="\Large Speed_i = \frac{S_{i+1}-S_i}{t_{i+1}-t_i}" />
 
