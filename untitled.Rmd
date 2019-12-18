@@ -70,6 +70,9 @@ We can then easily convert the data to simple feature format and plot them.
 ```{r}
 sao_small_shapes_sf <- gtfs2gps::gtfs_shapes_as_sf(sao_small)
 sao_small_stops_sf <- gtfs2gps::gtfs_stops_as_sf(sao_small)
+```
+
+```{r, warning=FALSE, echo=FALSE, fig.width=8, fig.height=5}
 plot(sf::st_geometry(sao_small_shapes_sf))
 plot(sf::st_geometry(sao_small_stops_sf), pch = 20, col = "red", add = TRUE)
 box()

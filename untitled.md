@@ -96,12 +96,9 @@ sao_small_shapes_sf <- gtfs2gps::gtfs_shapes_as_sf(sao_small)
 
 ``` r
 sao_small_stops_sf <- gtfs2gps::gtfs_stops_as_sf(sao_small)
-plot(sf::st_geometry(sao_small_shapes_sf))
-plot(sf::st_geometry(sao_small_stops_sf), pch = 20, col = "red", add = TRUE)
-box()
 ```
 
-![](untitled_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](untitled_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 After subsetting the data, it is also possible to save it as a new GTFS
 file using `write_gtfs()`, as shown below.
@@ -164,7 +161,7 @@ we processed.
   box()
 ```
 
-![](untitled_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](untitled_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data
 brings detailed `stop_times.txt` information or whether it is a
@@ -190,7 +187,7 @@ plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
 ```
 
-![](untitled_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](untitled_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 # Methodological note
 
