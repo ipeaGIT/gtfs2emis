@@ -13,8 +13,6 @@ Status](https://img.shields.io/codecov/c/github/tidyverse/ggplot2/master.svg)](h
 
 ## Overview 1
 
-\[ x^2== y + \frac{x}{y} \]
-
 ## Overview
 
 ggplot2 is a system for declaratively creating graphics, based on [The
