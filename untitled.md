@@ -196,7 +196,12 @@ between each pair of stops — given by the ratio between cumulative
 network distance \(S\) and departure time \(t\) for a consecutive pair
 of valid stop\_ids (\(i\)), \[
 Speed_i = \frac{S_{i+1}-S_i}{t_{i+1}-t_i}.
-\] Since the beginning of each trip usually starts before the first
+\]
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
+
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;Speed_i = \frac{S_{i+1}-S_i}{t_{i+1}-t_i}" title="\Large Speed_i = \frac{S_{i+1}-S_i}{t_{i+1}-t_i}" />
+
+Since the beginning of each trip usually starts before the first
 stop\_id, the mean speed cannot be calculated as shown in the previous
 equation because information on \(i\) period does not exist. In this
 case, the function consider the mean speed for the whole trip. It also
