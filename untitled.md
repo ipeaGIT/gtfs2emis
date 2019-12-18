@@ -182,12 +182,15 @@ poa_gps <- gtfs2gps(poa, progress = FALSE)
 ``` r
 poa_gps_sf <- gps_as_sf(poa_gps)
 poa_sf <- read_gtfs(poa) %>% gtfs_shapes_as_sf()
+jpeg("poa.jpg")
 plot(sf::st_geometry(poa_gps_sf[1:200,]))
 plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
+dev.off()
 ```
 
-![](untitled_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+    ## png 
+    ##   2
 
 # Methodological note
 
@@ -207,7 +210,7 @@ on \(i+1\) also does not exist.
 
 \[
 Speed_N = Speed_0 = \overline{Speed} = \frac{S_N-S_1}{t_N-t_1}
-\] 
+\]
 
 ![alt
 text](https://github.com/ipeaGIT/gtfs2gps/blob/master/vignettes/speed.png
