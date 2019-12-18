@@ -164,9 +164,7 @@ plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
 ```
 
-![](poa-1.png)<!-- -->
-
-# Methodological note
+![](poa-1.png)<!-- --> \# Methodological note
 
 For a given trip, the function `gtfs2gps` calculates the average speed
 between each pair of stops — given by the ratio between cumulative
@@ -181,10 +179,6 @@ equation because information on \(i\) period does not exist. In this
 case, the function consider the mean speed for the whole trip. It also
 happens after the last valid stop\_id (\(N\)) of the trips, where info
 on \(i+1\) also does not exist.
-
-\[
-Speed_N = Speed_0 = \overline{Speed} = \frac{S_N-S_1}{t_N-t_1}
-\]
 
 ![alt
 text](https://github.com/ipeaGIT/gtfs2gps/blob/master/vignettes/speed.png
