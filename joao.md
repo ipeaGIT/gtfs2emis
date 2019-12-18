@@ -13,7 +13,7 @@ Status](https://img.shields.io/codecov/c/github/tidyverse/ggplot2/master.svg)](h
 
 ## Overview 1
 
-\[
+lala  \[
 Speed_N = Speed_0 = \overline{Speed} = \frac{S_N-S_1}{t_N-t_1}
 \]
 
