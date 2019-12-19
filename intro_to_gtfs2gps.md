@@ -218,10 +218,10 @@ happens after the last valid stop\_id (\(N\)) of the trips, where info
 on \(i+1\) also does not exist.
 
 ``` r
-knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.PNG")
+knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/speed.PNG")
 ```
 
-![](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.PNG)<!-- -->
+![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/speed.PNG)<!-- -->
 
 # Final remarks
 
