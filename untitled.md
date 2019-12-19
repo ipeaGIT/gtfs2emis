@@ -89,7 +89,8 @@ box()
 ```
 
 ![](unnamed-chunk-5-1.png)<!-- -->
-![](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/sao_small_shapes_sf.jpg)
+
+![](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/poa.jpg)
 
 After subsetting the data, it is also possible to save it as a new GTFS
 file using `write_gtfs()`, as shown below.
@@ -185,7 +186,7 @@ happens after the last valid stop\_id (\(N\)) of the trips, where info
 on \(i+1\) also does not exist.
 
 ![alt
-text](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.png
+text](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.PNG
 "Logo Title Text 1")
 
 # Final remarks
