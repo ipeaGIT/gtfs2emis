@@ -25,7 +25,7 @@ GTFS file indexed according to their file names without extension.
 
 ``` r
 library("gtfs2gps")
-sao <- read_gtfs(system.file("extdata/saopaulo.zip", package="gtfs2gps"))
+sao <- read_gtfs(system.file("extdata/saopaulo.zip", package ="gtfs2gps"))
 names(sao)
 #> [1] "agency"      "routes"      "stops"       "stop_times"  "shapes"     
 #> [6] "trips"       "calendar"    "frequencies"
@@ -89,7 +89,7 @@ box()
 ```
 
 ![](unnamed-chunk-5-1.png)<!-- -->
-![](https://github.com/Joaobazzo/gps2emission/blob/master/sao_small_shapes_sf.jpg)
+![](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/sao_small_shapes_sf.jpg)
 
 After subsetting the data, it is also possible to save it as a new GTFS
 file using `write_gtfs()`, as shown below.
@@ -145,7 +145,7 @@ we processed.
 ```
 
 ![](unnamed-chunk-8-1.png)<!-- -->
-![](https://github.com/Joaobazzo/gps2emission/blob/master/sao_gps60_sf.jpg)
+![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg)
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data
 brings detailed `stop_times.txt` information or whether it is a
@@ -153,7 +153,7 @@ brings detailed `stop_times.txt` information or whether it is a
 `stop_times.txt` cab be found below:
 
 ``` r
-poa <- system.file("extdata/poa.zip", package="gtfs2gps")
+poa <- system.file("extdata/poa.zip", package ="gtfs2gps")
 poa_gps <- gtfs2gps(poa, progress = FALSE)
 #> Unzipping and reading GTFS.zip file
 #> converting shapes and stops to sf objects
@@ -165,7 +165,8 @@ plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
 ```
 
-![](poa-1.png)<!-- -->
+![](unnamed-chunk-9-1.png)<!-- -->
+![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/poa.jpg)
 
 # Methodological note
 
@@ -184,7 +185,7 @@ happens after the last valid stop\_id (\(N\)) of the trips, where info
 on \(i+1\) also does not exist.
 
 ![alt
-text](https://github.com/ipeaGIT/gtfs2gps/blob/master/vignettes/speed.png
+text](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.png
 "Logo Title Text 1")
 
 # Final remarks
