@@ -102,7 +102,7 @@ plot(sf::st_geometry(sao_small_stops_sf), pch = 20, col = "red", add = TRUE)
 box()
 ```
 
-![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](intro_to_gtfs2gps_files/figure-gfm/sao_small_shapes_sf-1.png)<!-- -->
 
 ![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_small_shapes_sf.jpg)
 
@@ -166,7 +166,7 @@ we processed.
   box()
 ```
 
-![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg")
@@ -198,7 +198,7 @@ plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
 ```
 
-![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 ![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/poa.jpg)
 
 # Methodological note
@@ -217,7 +217,11 @@ case, the function consider the mean speed for the whole trip. It also
 happens after the last valid stop\_id (\(N\)) of the trips, where info
 on \(i+1\) also does not exist.
 
-![](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.PNG)
+``` r
+knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.PNG")
+```
+
+![](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/speed.PNG)<!-- -->
 
 # Final remarks
 
