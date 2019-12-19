@@ -104,7 +104,7 @@ box()
 
 ![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-![](https://github.com/ipeaGIT/gtfs2gps/tree/master/man/figures/sao_small_shapes_sf.jpg)
+![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_small_shapes_sf.jpg)
 
 After subsetting the data, it is also possible to save it as a new GTFS
 file using `write_gtfs()`, as shown below.
@@ -168,7 +168,11 @@ we processed.
 
 ![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg)
+``` r
+knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg")
+```
+
+![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg)<!-- -->
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data
 brings detailed `stop_times.txt` information or whether it is a
