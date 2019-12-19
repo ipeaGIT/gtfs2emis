@@ -1,6 +1,7 @@
 gtfs2gps: Converting GTFS data to GPS-like format
 ================
 Rafael H. M. Pereira, Pedro R. Andrade, Joao Bazzo
+
 15 December 2019
 
 # Introduction
@@ -164,7 +165,9 @@ plot(sf::st_geometry(poa_sf), col = "blue", add = TRUE)
 box()
 ```
 
-![](poa-1.png)<!-- --> \# Methodological note
+![](poa-1.png)<!-- -->
+
+# Methodological note
 
 For a given trip, the function `gtfs2gps` calculates the average speed
 between each pair of stops — given by the ratio between cumulative
