@@ -67,7 +67,7 @@ object.size(sao_small) %>% format(units = "Kb")
 
 We can then easily convert the data to simple feature format and plot them.
 
-```{r sao_small_shapes_sf,  echo = TRUE}
+```{r sao_small_shapes_sf}
 sao_small_shapes_sf <- gtfs2gps::gtfs_shapes_as_sf(sao_small)
 sao_small_stops_sf <- gtfs2gps::gtfs_stops_as_sf(sao_small)
 plot(sf::st_geometry(sao_small_shapes_sf))
@@ -103,7 +103,7 @@ To convert GTFS to GPS-like format, use `gtfs2gps()`. This is the core function 
   box()
 ```
 
-```{r sao_gps60_sf.jpg, echo FALSE}
+```{r sao_gps60_sf, echo = FALSE}
 knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg")
 ```
 
@@ -128,7 +128,7 @@ For a given trip, the function `gtfs2gps` calculates the average speed between e
 
 Since the beginning of each trip usually starts before the first stop_id, the mean speed cannot be calculated as shown in the previous equation because information on $i$ period does not exist. In this case, the function consider the mean speed for the whole trip. It also happens after the last valid stop_id ($N$) of the trips, where info on $i+1$ also does not exist. 
 
-```{r speed, echo FALSE}
+```{r speed, echo = FALSE}
 knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/speed.PNG")
 ```
 

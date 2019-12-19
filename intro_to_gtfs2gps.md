@@ -168,10 +168,6 @@ we processed.
 
 ![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-``` r
-knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg")
-```
-
 ![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg)<!-- -->
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data
@@ -216,10 +212,6 @@ equation because information on \(i\) period does not exist. In this
 case, the function consider the mean speed for the whole trip. It also
 happens after the last valid stop\_id (\(N\)) of the trips, where info
 on \(i+1\) also does not exist.
-
-``` r
-knitr::include_graphics("https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/speed.PNG")
-```
 
 ![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/speed.PNG)<!-- -->
 
