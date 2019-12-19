@@ -100,6 +100,7 @@ To convert GTFS to GPS-like format, use `gtfs2gps()`. This is the core function 
   plot(sf::st_geometry(sao_small_shapes_sf), col = "blue", add = TRUE)
   box()
 ```
+
 ![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg)
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data brings detailed `stop_times.txt` information or whether it is a `frequency.txt` GTFS file. A sample data of a GTFS with detailed  `stop_times.txt` cab be found below:

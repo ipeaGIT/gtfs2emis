@@ -166,6 +166,7 @@ we processed.
 ```
 
 ![](intro_to_gtfs2gps_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
 ![](https://github.com/ipeaGIT/gtfs2gps/blob/master/man/figures/sao_gps60_sf.jpg)
 
 The function `gtfs2gps()` automatically recognises whether the GTFS data
