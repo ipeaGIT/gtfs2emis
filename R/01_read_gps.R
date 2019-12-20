@@ -13,8 +13,8 @@ read_gps <- function(filepath){
   mdist1 <- which(dt$cumdist == max(dt$cumdist))
   mdist0 <- c(1,head(mdist1,-1)) 
   list_dist <- lapply(seq_along(mdist0), function(i){data.table(range = i,id = mdist0[i]:mdist1[i])}) %>%
-    rbindlist()
-  dt[list_dist,on= "id",range_trip := i.range]  # add range
+    data.table::rbindlist()
+  dt[list_dist, on= "id",range_trip := i.range]  # add range
   # --
   # stop division
   # --
@@ -35,8 +35,7 @@ read_gps <- function(filepath){
   geom <- dt[,{
     geometry <- sf::st_linestring(x=matrix(c(shape_pt_lon,shape_pt_lat),ncol=2)) %>% 
       sf::st_sfc() %>% sf::st_sf()
-  },
-  by = .(range_trip,range_id)][,"geometry"]
+  },by = .(range_trip,range_id)][,"geometry"]
   dt2$geometry <- sf::st_sf(geometry = geom,crs=4326)
   return(dt2)
   
