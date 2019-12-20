@@ -2,7 +2,4 @@
 .Rhistory
 .RData
 .Ruserdata
-data/*
-output/*
-data-raw/*
-traffic_input/*
+joao_test/
