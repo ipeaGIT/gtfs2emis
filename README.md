@@ -1,5 +1,7 @@
-# gps2emission
-Estimation of bus emissions based on GPS data
+# gps2emis
+
+Respository of the R package to estimate public transport emissions based on GTFS files.
+
 
 `R/01*.R` - preparation scripts
 
