@@ -4,8 +4,7 @@
 # data import
 # 
 #
-read_gps <- function(filepath){
-  dt <- data.table::fread(paste0(filepath))
+read_gps <- function(dt){
   dt[,id := 1:nrow(dt)]
   # --
   # trip division

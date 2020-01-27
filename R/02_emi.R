@@ -79,7 +79,7 @@ system.time({
     filepath1 <- paste0(filepath,
                         ids[i])
     dt <- data.table::fread(filepath1)
-    dt <- read_gps(filepath1) %>% st_as_sf() %>% st_transform(31983) 
+    dt <- read_gps(dt) %>% st_as_sf() %>% st_transform(31983) 
     
     
     
