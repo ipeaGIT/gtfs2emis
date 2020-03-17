@@ -40,33 +40,6 @@ library(osmdata) # Download de dados do OpenStreeteMaps (OSM)
 # library(quantreg)
 # library(Hmisc) # calcular quantis ponderados
 
-
-# Create data.frames with cities covered in the project by country
-# Brazil
-cities_bra <- data.table( abrev_city= c('cur'),
-                          name_city =c('Curitiba'),
-                          name_country =c('Brazil'),
-                          abrev_country =c('BRA'))
-
-
-
-# USA
-cities_usa <- data.table( abrev_city= c('det'),
-                          name_city =c('Detroit'),
-                          name_country =c('United States of America'),
-                          abrev_country =c('USA'))
-
-#  http://transportnetworks.cs.aalto.fi/
-
-
-
-# list dfs of all countries
-dfs <- grep("cities_",names(.GlobalEnv),value=TRUE)
-
-# create a single df with all cities
-proj_cities <- do.call("list",mget(dfs)) %>% data.table::rbindlist()
-
-
 options(scipen=10000)
 
 `%nin%` = Negate(`%in%`)
