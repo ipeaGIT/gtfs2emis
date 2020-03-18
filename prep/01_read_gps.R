@@ -1,42 +1,98 @@
 #
-# data analysis sptrans
 #
-# data import
+# function built to export data from point to linestring
 # 
 #
-read_gps <- function(filepath){
-  dt <- data.table::fread(paste0(filepath))
-  dt[,id := 1:nrow(dt)]
-  # --
-  # trip division
-  # --
-  mdist1 <- which(dt$cumdist == max(dt$cumdist))
-  mdist0 <- c(1,head(mdist1,-1)) 
-  list_dist <- lapply(seq_along(mdist0), function(i){data.table(range = i,id = mdist0[i]:mdist1[i])}) %>%
-    data.table::rbindlist()
-  dt[list_dist, on= "id",range_trip := i.range]  # add range
-  # --
-  # stop division
-  # --
-  id0 <- c(1,which(!is.na(dt$stop_sequence))) 
-  id1 <- c(id0[-1],nrow(dt))
-  list_ids <- lapply(seq_along(id0),function(i){data.table(range = i,id = id0[i]:id1[i])}) %>% 
-    rbindlist()
-  dt[list_ids,on= "id",range_id := i.range]  # add range
-  # --
-  # first change
-  # --
-  dt1 <- dt[,.SD[1],by=.(range_trip,range_id)]
-  setcolorder(dt1,names(dt))
-  dt1[,c("range_id","id"):= list(range_id-1,id-0.1)][-c(1,.N),]
-  dt <- rbindlist(list(dt,dt1))[order(id)]
-  # shape
-  dt2 <- dt[,.SD[1],by = .(range_trip,range_id)]
-  geom <- dt[,{
-    geometry <- sf::st_linestring(x=matrix(c(shape_pt_lon,shape_pt_lat),ncol=2)) %>% 
-      sf::st_sfc() %>% sf::st_sf()
-  },by = .(range_trip,range_id)][,"geometry"]
-  dt2$geometry <- sf::st_sf(geometry = geom,crs=4326)
-  return(dt2)
+read_gps <- function(input_folder,fleet_data){
+  #
+  # list gps files in 'input_folder'
+  #
+  input <- list.files(input_folder, recursive = FALSE,
+                      include.dirs = FALSE,full.names = TRUE)
   
+  output_name <- list.files(input_folder, recursive = FALSE,
+                            include.dirs = FALSE,
+                            full.names = FALSE) %>% 
+    stringr::str_remove_all(".txt") %>% paste0(".rds")
+  #
+  # fleet status
+  #
+  fleet_data[,hora_liberacao := data.table::as.ITime("00:00:00")]
+  #
+  # create output folder
+  #
+  output_folder <- paste0("../../data/gps_linestring/",proj_cities$abrev_city)
+  dir.create(output_folder,showWarnings = FALSE)
+  #
+  # interation of all trip_id's
+  #
+  lapply(1:length(input),function(i){
+    #
+    # read
+    #
+    dt <- data.table::fread(paste0(input[i]))
+    dt[,id := 1:nrow(dt)]
+    # 
+    # trip division
+    # 
+    mdist1 <- which(dt$cumdist == max(dt$cumdist))
+    mdist0 <- c(1,head(mdist1,-1)) 
+    list_dist <- lapply(seq_along(mdist0), function(i){data.table(range = i,id = mdist0[i]:mdist1[i])}) %>%
+      data.table::rbindlist()
+    dt[list_dist, on= "id",range_trip := i.range]  # add range
+    # 
+    # stop division
+    # 
+    id0 <- c(1,which(!is.na(dt$stop_sequence))) 
+    id1 <- c(id0[-1],nrow(dt))
+    list_ids <- lapply(seq_along(id0),function(i){data.table(range = i,id = id0[i]:id1[i])}) %>% 
+      rbindlist()
+    dt[list_ids,on= "id",range_id := i.range]  # add range
+    # 
+    # first change
+    # 
+    dt1 <- dt[,.SD[1],by=.(range_trip,range_id)]
+    setcolorder(dt1,names(dt))
+    dt1[,c("range_id","id"):= list(range_id-1,id-0.1)][-c(1,.N),]
+    dt <- rbindlist(list(dt,dt1))[order(id)]
+    #
+    # shape
+    #
+    dt2 <- dt[,.SD[1],by = .(range_trip,range_id)]
+    geom <- dt[,{
+      geometry <- sf::st_linestring(x=matrix(c(shape_pt_lon,shape_pt_lat),ncol=2)) %>% 
+        sf::st_sfc() %>% sf::st_sf()
+    },by = .(range_trip,range_id)][,"geometry"]
+    dt2$geometry <- sf::st_sf(geometry = geom,crs=4326)
+    # as.Itime
+    dt2$departure_time <- data.table::as.ITime(dt2$departure_time)
+    # 
+    # fleet adding
+    #
+    #
+    # check occupancy
+    #
+    real_fleet <- fleet_data[shape_id %in% unique(dt2$shape_id) &
+                               data.table::as.ITime(Departure_DTHR) <  data.table::first(dt2$departure_time) & 
+                               data.table::as.ITime(Arrival_DTHR) >  data.table::last(dt2$departure_time) &
+                               data.table::as.ITime(Departure_DTHR) >  hora_liberacao,]
+    # sample and occupancy time
+    #
+    placa <- real_fleet$Placa[sample(nrow(real_fleet),1)]
+    fleet_data[Placa %in% placa, hora_liberacao := last(dt2$departure_time)]
+    
+    dt2$frota_ano <- fleet_data[Placa %in% placa,"Ano_fabricacao"]
+    dt2$tipo_de_veiculo <- fleet_data[Placa %in% placa, "tipo_de_veiculo"]
+    dt2$categoria <- fleet_data[Placa %in% placa, "categoria"]
+    dt2$modelo_chassi <- fleet_data[Placa %in% placa,"modelo_chassi"]
+    # 
+    # create output dir and save
+    #
+    file_output <- paste0(output_folder,"/",output_name[i])
+    readr::write_rds(x = dt2,path = file_output)
+    return(NULL)
+  })
+  
+  return(message('Files exported'))
 }
+#mapview::mapview(dt2$geometry)
