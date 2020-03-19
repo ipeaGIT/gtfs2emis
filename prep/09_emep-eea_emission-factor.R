@@ -1,4 +1,4 @@
-ef_hdv_speed_2019 <- function(ef,veh,fuel,segment,euro,tech,pol,mode,slope,load){
+ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope,load){
   #
   # veh 
   #
@@ -73,31 +73,37 @@ ef_hdv_speed_2019 <- function(ef,veh,fuel,segment,euro,tech,pol,mode,slope,load)
   #
   # expression
   #
-  eq_num <- function(a,b,g,d,e,z,h,v){
-    eq <- (a * v + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf)
+  eq_num <- function(a,b,g,d,e,z,h,rf,v){
+    eq <- (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf)
     return(eq)
   }
   #
   # ef
   #
-  ef <- ef[Category %in% veh & 
-             Fuel %in% fuel & 
-             Segment %in% segment & 
-             `Euro Standard` %in% euro & 
-             Technology %in% tech &
-             Pollutant %in% pol,]
+  ef1 <- ef[Category %in% veh & 
+              Fuel %in% fuel & 
+              Segment %in% segment & 
+              Euro.Standard %in% euro & 
+              Technology %in% tech &
+              Pollutant %in% pol &
+              #Mode %in% mode &
+              Road.Slope %in% slope &
+              Load %in% load,]
   
+  if(nrow(ef1) == 0){return(message("No Ef"))}
+  if(nrow(ef1) > 1){ef2 <- ef1[1,];message("More than one");message(ef1)}
+  if(nrow(ef1) == 1){message("Fine");ef2 <- ef1}
   #
   # fix speed
   #
-  if(length(which(vel < ef$`Min.Speed.[km/h]`)) > 0) vel[vel < ef$`Min.Speed.[km/h]`] <- ef$`Min.Speed.[km/h]`
-  if(length(which(vel > ef$`Max.Speed.[km/h]`)) > 0) vel[vel > ef$`Max.Speed.[km/h]`] <- ef$`Max.Speed.[km/h]`
+  if(length(which(vel < ef2$`Min.Speed.[km/h]`)) > 0) vel[vel < ef2$`Min.Speed.[km/h]`] <- ef2$`Min.Speed.[km/h]`
+  if(length(which(vel > ef2$`Max.Speed.[km/h]`)) > 0) vel[vel > ef2$`Max.Speed.[km/h]`] <- ef2$`Max.Speed.[km/h]`
   #
   # return
   #
-  eq_output <-   eq_num(a = ef$Alpha,b = ef$Beta,g = ef$Gamma,d = ef$Delta,
-                                    e = ef$Epsilon,z = ef$Zita,h = ef$Hta,
-                                    rf = ef$`Reduction.Factor.[%]`, v = vel)
+  eq_output <- eq_num(a = ef2$Alpha,b = ef2$Beta,g = ef2$Gamma,d = ef2$Delta,
+                      e = ef2$Epsilon,z = ef2$Zita,h = ef2$Hta,
+                      rf = ef2$`Reduction.Factor.[%]`, v = vel)
   
- return(eq_output)
+  return(eq_output)
 }
