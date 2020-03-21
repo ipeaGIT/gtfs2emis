@@ -5,9 +5,11 @@
 # comparison between EMEP/EEA 2019 and EMEP/EEA 2016 (incorpored into VEIN)
 #
 # ---
+rm(list=ls())
 library(vein)
 library(dplyr)
 library(data.table)
+library(openxlsx)
 source("prep/09_emep-eea_emission-factor.R")
 ef <- openxlsx::read.xlsx("../../emission_routes_joao/references/copert/1.A.3.b.i-iv Road transport hot EFs Annex 2018_Dic.xlsx") %>% 
   data.table::as.data.table()

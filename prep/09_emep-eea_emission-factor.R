@@ -91,7 +91,7 @@ ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope,load){
               Load %in% load,]
   
   if(nrow(ef1) == 0){return(message("No Ef"))}
-  if(nrow(ef1) > 1){ef2 <- ef1[1,];message("More than one");message(ef1)}
+  if(nrow(ef1) > 1){ef2 <- ef1[1,];message("More than one")}
   if(nrow(ef1) == 1){message("Fine");ef2 <- ef1}
   #
   # fix speed
