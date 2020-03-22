@@ -14,6 +14,9 @@ proj_cities <- data.table::data.table( abrev_city = c('cur'),
                                        abrev_country = c('BRA'))
 
 # 1) gtfs2gps
+#
+# read GTFS and export to GPS-like format
+#
 
 source('prep/01_prep_gtfs2gps.R')
 
@@ -21,11 +24,13 @@ create_gps_outputs(city_abrev = proj_cities$abrev_city,
                    day_start = "04:00:00", day_end = "12:00:00")
 
 # 2) gps to linestring
-
+#
+# - read GPS and export to 'linestring'
+#
+# - add specific fleet of curitiba into a column for each 'shape_id'
+#
 source('prep/01_read_gps.R')
-
 # fleet data
-
 fleet <- readr::read_rds(paste0("../../data/fleet/",
                                 proj_cities$abrev_city,"/",
                                 proj_cities$abrev_city,".rds"))
@@ -34,9 +39,9 @@ fleet <- readr::read_rds(paste0("../../data/fleet/",
 gps_data <- paste0("../../data/gps/",proj_cities$abrev_city)
 
 read_gps(input_folder = gps_data,fleet_data = fleet)
-
+#
 # 3) emissions
-
+#
 gps_line <- list.files(paste0("../../data/gps_linestring/",proj_cities$abrev_city),
                        recursive = FALSE,
                        full.names = TRUE)

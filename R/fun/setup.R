@@ -8,7 +8,7 @@ library(furrr)
 library(purrr)
 library(forcats)
 library(future.apply) # Aplicar funcoes em paralelo
-library(h3jsr) # H3 grade hexagonal
+#library(h3jsr) # H3 grade hexagonal
 library(dplyr)
 library(beepr)
 library(vein) # vehicle inventory package
@@ -18,7 +18,7 @@ library(plyr)
 library(tibble)
 library(ggplot2)      # visualizacao de dados
 library(ggthemes)     # temas para visualizacao de dados
-library(mapview)      # visualizacao interativa dos dados
+#library(mapview)      # visualizacao interativa dos dados
 library(geobr)        # dados espaciais do brasil
 library(pbapply)      # progress bar
 library(readr)        # rapida leitura de dados 

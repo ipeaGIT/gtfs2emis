@@ -25,18 +25,15 @@ euro_vein <- c("PRE", "I", "II", "III", "IV", "V")
 euro_aut <- c("Euro I","Euro II","Euro III","Euro IV","Euro V")
 tech_aut <- c(rep(NA,3),"SCR","SCR")
 pol_aut <- c("CO","NOx","VOC","PM Exhaust")
-slope_aut <- c(-0.06,0,0.06)
+slope_aut <- c(0.06,0,-0.06)
 speed <- 1:100  
 
 ef[Pollutant %in% "CO",][,unique(Technology),by = .(Segment, Euro.Standard)] #[,.SD[1],by = .(Segment,Euro.Standard)]
 
-lapply(1:length(buses_type_aut),function(b){
-  # b = 1
-  df2 <- lapply(1:length(euro_aut),function(e){
-    # e = 1
-    df1 <- lapply(1:length(pol_aut), function(p){
-      # p = 1
-      df0 <- lapply(1:length(slope_aut), function(s){
+lapply(1:length(buses_type_aut),function(b){ # b = 1
+  df2 <- lapply(1:length(euro_aut),function(e){ # e = 1
+    df1 <- lapply(1:length(pol_aut), function(p){ # p = 1
+      df0 <- lapply(1:length(slope_aut), function(s){ # s = 1
         df <- data.frame("speed" = as.numeric(speed),
                          "ef" = ef_hdv_speed_2019(vel = speed,ef = ef,
                                                   veh = "Buses",fuel = "Diesel",
@@ -56,11 +53,10 @@ lapply(1:length(buses_type_aut),function(b){
     return(df1)
   }) %>% data.table::rbindlist()
   pp <- ggplot(data = df2,aes(x = speed,y = as.numeric(ef), group = slope)) + 
-    geom_line(aes(color = euro,linetype = slope))+
-    scale_linetype_manual(values=c("twodash", "solid","dotted"))+
-    #geom_line(aes(linetype = slope,color = euro)) +
+    geom_line(aes(color = euro,linetype = slope)) +
+    scale_linetype_manual(values = c("twodash", "solid","dotted")) +
     facet_grid(cols = vars(euro),rows = vars(pol), scales = "free_y") +
-    ylab("FE(v) (g/km)") + xlab("Velocidade (km/h)")+ xlim(10,100) +
+    ylab("FE(v) (g/km)") + xlab("Velocidade (km/h)") + xlim(10,100) +
     scale_fill_discrete(guide = FALSE) + labs(color = buses_type_aut[b], linetype = "Slope (%)")
 
   # ----

@@ -1,4 +1,4 @@
-ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope,load){
+ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope = 0.0,load = 0.5,k = 1){
   #
   # veh 
   #
@@ -73,8 +73,8 @@ ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope,load){
   #
   # expression
   #
-  eq_num <- function(a,b,g,d,e,z,h,rf,v){
-    eq <- (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf)
+  eq_num <- function(a,b,g,d,e,z,h,rf,v,k){
+    eq <- (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k
     return(eq)
   }
   #
@@ -92,7 +92,7 @@ ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope,load){
   
   if(nrow(ef1) == 0){return(message("No Ef"))}
   if(nrow(ef1) > 1){ef2 <- ef1[1,];message("More than one")}
-  if(nrow(ef1) == 1){message("Fine");ef2 <- ef1}
+  if(nrow(ef1) == 1){ef2 <- ef1}
   #
   # fix speed
   #
@@ -104,6 +104,7 @@ ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope,load){
   eq_output <- eq_num(a = ef2$Alpha,b = ef2$Beta,g = ef2$Gamma,d = ef2$Delta,
                       e = ef2$Epsilon,z = ef2$Zita,h = ef2$Hta,
                       rf = ef2$`Reduction.Factor.[%]`, v = vel)
+  eq_output <- units::set_units(eq_output,g/km)
   
   return(eq_output)
 }
