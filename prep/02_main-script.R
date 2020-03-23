@@ -57,7 +57,7 @@ ef <- ef[Category %in% "Buses",]
 #
 input_folder = paste0("../../data/gps_linestring/",proj_cities$abrev_city)
 output_folder = paste0("../../data/gps_linestring_emis/",proj_cities$abrev_city)
-emis(pol_list =c("CO","NOx"),input_folder, output_folder = output_folder,emission_factor = ef)
+file <- readr::read_rds(gps_line[1])
 
 
 
