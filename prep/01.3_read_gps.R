@@ -63,8 +63,6 @@ read_gps <- function(input_folder,fleet_data){
     # check occupancy
     #
     real_fleet <- fleet_data[shape_id %in% unique(dt2$shape_id) &
-                               data.table::as.ITime(Departure_DTHR) <  dt2[,.SD[1]]$departure_time & 
-                               data.table::as.ITime(Arrival_DTHR) >  dt2[,.SD[.N]]$departure_time &
                                data.table::as.ITime(Departure_DTHR) >  hora_liberacao,]
     # sample and occupancy time
     #
