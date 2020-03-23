@@ -24,7 +24,7 @@ veh_folders = list.files("../../data-raw/gps/cur/",pattern = "veiculos.json.xz",
 # [1] "../../data-raw/gps/cur//2019_10_09_veiculos.json.xz" "../../data-raw/gps/cur//2019_10_23_veiculos.json.xz"
 # [3] "../../data-raw/gps/cur//2019_11_20_veiculos.json.xz"
 #
-veh_acum <- lapply(1:length(veh_folders),function(i){
+veh_acum <- lapply(1:length(veh_folders),function(i){ # i = 1
   # message
   message(paste0("reading folder ",veh_folders[i]))
   # data intro
