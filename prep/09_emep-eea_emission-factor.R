@@ -1,5 +1,12 @@
 ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope = 0.0,load = 0.5,k = 1,show.equation = TRUE){
   #
+  # pre-conditions
+  #
+  if(euro == "Euro III"){
+    tech = NA
+    message("no technology associated with Euro III")
+  }
+  #
   # veh 
   #
   # [1] "Passenger Cars"            "Light Commercial Vehicles" "Heavy Duty Trucks"        
