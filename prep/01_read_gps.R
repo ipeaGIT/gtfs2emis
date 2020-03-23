@@ -26,7 +26,7 @@ read_gps <- function(input_folder,fleet_data){
   #
   # interation of all trip_id's
   #
-  lapply(1:length(input),function(i){
+  lapply(1:length(input),function(i){ i = 2 
     #
     # read
     #
@@ -73,8 +73,8 @@ read_gps <- function(input_folder,fleet_data){
     # check occupancy
     #
     real_fleet <- fleet_data[shape_id %in% unique(dt2$shape_id) &
-                               data.table::as.ITime(Departure_DTHR) <  data.table::first(dt2$departure_time) & 
-                               data.table::as.ITime(Arrival_DTHR) >  data.table::last(dt2$departure_time) &
+                               data.table::as.ITime(Departure_DTHR) <  dt2[,.SD[1]]$departure_time & 
+                               data.table::as.ITime(Arrival_DTHR) >  dt2[,.SD[.N]]$departure_time &
                                data.table::as.ITime(Departure_DTHR) >  hora_liberacao,]
     # sample and occupancy time
     #
