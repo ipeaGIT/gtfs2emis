@@ -36,9 +36,9 @@ fleet <- readr::read_rds(paste0("../../data/fleet/",
                                 proj_cities$abrev_city,".rds"))
 
 # data output_gps
-gps_data <- paste0("../../data/gps/",proj_cities$abrev_city)
+gps_output_fo <- paste0("../../data/gps/",proj_cities$abrev_city)
 
-read_gps(input_folder = gps_data,fleet_data = fleet)
+read_gps(input_folder = gps_output_fo,fleet_data = fleet)
 #
 # 3) emission factor
 #
@@ -57,7 +57,7 @@ ef <- ef[Category %in% "Buses",]
 #
 input_folder = paste0("../../data/gps_linestring/",proj_cities$abrev_city)
 output_folder = paste0("../../data/gps_linestring_emis/",proj_cities$abrev_city)
-emis(pol_list =c("CO","NOx"),input_folder, output_folder = output_folder,emission_factor = ef)
+emis(pol_list = c("CO","NOx"),input_folder, output_folder = output_folder,emission_factor = ef)
 
 
 

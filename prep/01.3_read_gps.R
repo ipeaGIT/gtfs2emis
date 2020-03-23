@@ -13,7 +13,7 @@ read_gps <- function(input_folder,fleet_data){
   output_name <- list.files(input_folder, recursive = FALSE,
                             include.dirs = FALSE,
                             full.names = FALSE) %>% 
-    stringr::str_remove_all(".txt") %>% paste0(".rds")
+    stringr::str_replace_all(".txt",".rds")
   #
   # fleet status
   #
@@ -26,44 +26,34 @@ read_gps <- function(input_folder,fleet_data){
   #
   # interation of all trip_id's
   #
-  lapply(1:length(input),function(i){ i = 2 
-    #
+  lapply(1:length(input),function(i){ i = 5
     # read
-    #
     dt <- data.table::fread(paste0(input[i]))
     dt[,id := 1:nrow(dt)]
-    # 
     # trip division
-    # 
     mdist1 <- which(dt$cumdist == max(dt$cumdist))
     mdist0 <- c(1,head(mdist1,-1)) 
     list_dist <- lapply(seq_along(mdist0), function(i){data.table(range = i,id = mdist0[i]:mdist1[i])}) %>%
       data.table::rbindlist()
     dt[list_dist, on= "id",range_trip := i.range]  # add range
-    # 
     # stop division
-    # 
     id0 <- c(1,which(!is.na(dt$stop_sequence))) 
     id1 <- c(id0[-1],nrow(dt))
     list_ids <- lapply(seq_along(id0),function(i){data.table(range = i,id = id0[i]:id1[i])}) %>% 
       rbindlist()
     dt[list_ids,on= "id",range_id := i.range]  # add range
-    # 
     # first change
-    # 
     dt1 <- dt[,.SD[1],by=.(range_trip,range_id)]
     setcolorder(dt1,names(dt))
     dt1[,c("range_id","id"):= list(range_id-1,id-0.1)][-c(1,.N),]
     dt <- rbindlist(list(dt,dt1))[order(id)]
-    #
     # shape
-    #
     dt2 <- dt[,.SD[1],by = .(range_trip,range_id)]
     geom <- dt[,{
       geometry <- sf::st_linestring(x=matrix(c(shape_pt_lon,shape_pt_lat),ncol=2)) %>% 
         sf::st_sfc() %>% sf::st_sf()
     },by = .(range_trip,range_id)][,"geometry"]
-    dt2$geometry <- sf::st_sf(geometry = geom,crs=4326)
+    dt2$geometry <- sf::st_sf(geometry = geom,crs = 4326)
     # as.Itime
     dt2$departure_time <- data.table::as.ITime(dt2$departure_time)
     # 
