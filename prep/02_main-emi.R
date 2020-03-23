@@ -43,6 +43,8 @@ read_gps(input_folder = gps_data,fleet_data = fleet)
 # 3) emission factor
 #
 source("prep/09_emep-eea_emission-factor.R")
+source("prep/09_ef_hdv_scaled_2019.R")
+
 ef <- openxlsx::read.xlsx("test_joao/references/copert/1.A.3.b.i-iv Road transport hot EFs Annex 2018_Dic.xlsx") %>% 
   data.table::as.data.table()
 ef <- ef[Category %in% "Buses",]
@@ -53,10 +55,8 @@ ef <- ef[Category %in% "Buses",]
 #
 # 4) emissions
 #
-gps_line <- list.files(paste0("../../data/gps_linestring/",proj_cities$abrev_city),
-                       recursive = FALSE,
-                       full.names = TRUE)
-
+input_folder = paste0("../../data/gps_linestring/",proj_cities$abrev_city)
+output_folder = paste0("../../data/gps_linestring_emis/",proj_cities$abrev_city)
 file <- readr::read_rds(gps_line[1])
 
 

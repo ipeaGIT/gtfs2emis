@@ -1,6 +1,7 @@
-ef_hdv_scaled_2019 <- function(dfcol,vel,ef,veh,fuel,segment,euro,SDC = 34.12,tech = "SCR",pol,slope = 0.0,load = 0.5,show.equation = TRUE){
+ef_hdv_scaled_2019 <- function(dfcol,vel,ef,veh,fuel,segment,euro,SDC = 34.12,
+                               tech = "SCR",pol,slope = 0.0,load = 0.5,show.equation = TRUE){
   #
-  # adjust
+  # adjust based on local emission factor
   #
   if (length(dfcol) != length(euro)) 
     stop("Length of dfcol must be the same as length of eu")
@@ -16,6 +17,6 @@ ef_hdv_scaled_2019 <- function(dfcol,vel,ef,veh,fuel,segment,euro,SDC = 34.12,te
                       euro = euro,
                       tech = tech,pol = pol,k = k,show.equation = FALSE)
     return(ef_scaled)
-  }) 
-  return(la)
+  }) %>% unlist()
+  return(units::set_units(la,g/km))
 }
