@@ -3,11 +3,9 @@
 Respository of the R package to estimate public transport emissions based on GTFS files.
 
 
-`R/01*.R` - preparation scripts
-
-`R/02*.R` - emission estimation
-
-`R/03*.R` - emission visualization
-
-`R/04.*R` - 
+`prep/01_*.R` - prep data
+`prep/02_*.R` - emission
+`prep/03_*.R` - main 
+`prep/08_*.R` - plot and visualization
+`prep/09_*.R` - auxiliar script / internal functions
 
