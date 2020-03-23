@@ -25,9 +25,8 @@
 emis <- function(pol_list = pol, input_folder = input_folder, output_folder = ".",emission_factor = ef){
   #
   # files in input_folder
-  gps_line <- list.files(input_folder,
-                         recursive = FALSE,
-                         full.names = TRUE)
+  gps_line <- list.files(input_folder,recursive = FALSE,full.names = TRUE)
+  gps_line_names <- list.files(input_folder,recursive = FALSE,full.names = FALSE) %>% stringr::str_remove_all(".rds")
   #
   # check existing files in output_folder and output 'gps_line'
   # files
@@ -41,12 +40,18 @@ emis <- function(pol_list = pol, input_folder = input_folder, output_folder = ".
                         "euro" = c(rep("Euro I",4),rep("Euro II",5),rep("Euro III",6),rep("Euro IV",3),rep("Euro V",8)),
                         "ano" = c(1994:2019))
   # loop per line
-  lapply(seq_along(gps_line),function(i){ # i = 4
+  lapply(seq_along(gps_line),function(i){ # i = 5
     # introduction message
-    message(paste0("shape_id #",i," out of ",length(gps_line)))
+    message(paste0("shape_id #",gps_line_names[i]," range ",i,"/",length(gps_line)))
     # read line
     dtline <- readr::read_rds(gps_line[i])
     dtline[,dist := units::set_units(dist / 1000,km)]
+    #
+    # check fleet completness
+    if(length(dim(dtline$frota_ano)) > 0){
+      message(paste0("shape_id #",gps_line_names[i]," with issues"))
+      return(NULL)
+    }
     # fleet
     if(unique(dtline$tipo_de_veiculo) %in% c("SEMI PADRON","PADRON","COMUM","HIBRIDO BIO","HIBRIDO")){
       veh_type = "BUS_URBAN_D" # for CETESB emission factor data base
