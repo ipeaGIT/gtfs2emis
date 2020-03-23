@@ -2,7 +2,7 @@ ef_hdv_speed_2019 <- function(vel,ef,veh,fuel,segment,euro,tech,pol,slope = 0.0,
   #
   # pre-conditions
   #
-  if(euro == "Euro III"){
+  if(euro == "Euro III" | euro == "Euro II"){
     tech = NA
     message("no technology associated with Euro III")
   }

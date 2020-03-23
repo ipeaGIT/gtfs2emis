@@ -4,6 +4,8 @@
 # 
 #
 read_gps <- function(input_folder,fleet_data){
+  # input_folder = paste0("../../data/gps/",proj_cities$abrev_city)
+  # fleet_data = readr::read_rds(paste0("../../data/fleet/",proj_cities$abrev_city,"/",proj_cities$abrev_city,".rds"))
   #
   # list gps files in 'input_folder'
   #
@@ -26,7 +28,9 @@ read_gps <- function(input_folder,fleet_data){
   #
   # interation of all trip_id's
   #
-  lapply(1:length(input),function(i){ i = 5
+  lapply(1:length(input),function(i){ # i = which(output_name %in% "2762.rds")
+    # message
+    message(paste0('shape_id: #', stringr::str_remove(output_name[i],".rds")," , ", i," out of ",length(input)))
     # read
     dt <- data.table::fread(paste0(input[i]))
     dt[,id := 1:nrow(dt)]
@@ -44,8 +48,8 @@ read_gps <- function(input_folder,fleet_data){
     dt[list_ids,on= "id",range_id := i.range]  # add range
     # first change
     dt1 <- dt[,.SD[1],by=.(range_trip,range_id)]
-    setcolorder(dt1,names(dt))
-    dt1[,c("range_id","id"):= list(range_id-1,id-0.1)][-c(1,.N),]
+    dt1 <- setcolorder(dt1,names(dt))
+    dt1 <- dt1[,c("range_id","id"):= list(range_id-1,id-0.1)][-c(1,.N),]
     dt <- rbindlist(list(dt,dt1))[order(id)]
     # shape
     dt2 <- dt[,.SD[1],by = .(range_trip,range_id)]
@@ -67,12 +71,12 @@ read_gps <- function(input_folder,fleet_data){
     # sample and occupancy time
     #
     placa <- real_fleet$Placa[sample(nrow(real_fleet),1)]
-    fleet_data[Placa %in% placa, hora_liberacao := last(dt2$departure_time)]
+    fleet_data[Placa %in% placa, hora_liberacao := dt2[,.SD[.N]][,departure_time]]
     
-    dt2$frota_ano <- fleet_data[Placa %in% placa,"Ano_fabricacao"]
-    dt2$tipo_de_veiculo <- fleet_data[Placa %in% placa, "tipo_de_veiculo"]
-    dt2$categoria <- fleet_data[Placa %in% placa, "categoria"]
-    dt2$modelo_chassi <- fleet_data[Placa %in% placa,"modelo_chassi"]
+    dt2$frota_ano <- fleet_data[Placa %in% placa,Ano_fabricacao][1]
+    dt2$tipo_de_veiculo <- fleet_data[Placa %in% placa, tipo_de_veiculo][1]
+    dt2$categoria <- fleet_data[Placa %in% placa, categoria][1]
+    dt2$modelo_chassi <- fleet_data[Placa %in% placa,modelo_chassi][1]
     # 
     # create output dir and save
     #
@@ -80,7 +84,5 @@ read_gps <- function(input_folder,fleet_data){
     readr::write_rds(x = dt2,path = file_output)
     return(NULL)
   })
-  
   return(message('Files exported'))
 }
-#mapview::mapview(dt2$geometry)
