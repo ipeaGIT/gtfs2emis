@@ -57,7 +57,12 @@ source("prep/02_emi-estimation.R")
 input_folder1 = paste0("../../data/gps_linestring/",proj_cities$abrev_city)
 output_folder1 = paste0("../../data/gps_linestring_emis/",proj_cities$abrev_city)
 emis(pol_list = c("CO","NOx"),
-     input_folder = input_folder1, output_folder = output_folder1,emission_factor = ef)
+     input_folder = input_folder1, output_folder = output_folder1,
+     emission_factor = ef,overwrite = FALSE)
+
+#
+# 5) post processing
+#
 
 
 
@@ -65,7 +70,16 @@ emis(pol_list = c("CO","NOx"),
 
 
 
-# data import
+
+
+
+
+
+# ----
+# old stuff
+# ----
+# ----
+  # data import
 gtfs <- "gtfs_spo_sptrans_2019-10/"
 filepath <- paste0("L:/# DIRUR #/ASMEQ/bosistas/joaobazzo/gtfs2gps/tests_joao/data/output/",gtfs)
 ids <- list.files(path=filepath);ids_saida <- str_remove(ids,".txt")

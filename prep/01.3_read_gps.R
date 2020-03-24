@@ -28,7 +28,7 @@ read_gps <- function(input_folder,fleet_data){
   #
   # interation of all trip_id's
   #
-  lapply(1:length(input),function(i){ # i = which(output_name %in% "2762.rds")
+  lapply(1:length(input),function(i){ # i = 200
     # message
     message(paste0('shape_id: #', stringr::str_remove(output_name[i],".rds")," , ", i," out of ",length(input)))
     # read
@@ -36,7 +36,7 @@ read_gps <- function(input_folder,fleet_data){
     dt[,id := 1:nrow(dt)]
     # trip division
     mdist1 <- which(dt$cumdist == max(dt$cumdist))
-    mdist0 <- c(1,head(mdist1,-1)) 
+    mdist0 <- c(1,head(mdist1,-1) + 1) 
     list_dist <- lapply(seq_along(mdist0), function(i){data.table(range = i,id = mdist0[i]:mdist1[i])}) %>%
       data.table::rbindlist()
     dt[list_dist, on= "id",range_trip := i.range]  # add range
@@ -49,7 +49,7 @@ read_gps <- function(input_folder,fleet_data){
     # first change
     dt1 <- dt[,.SD[1],by=.(range_trip,range_id)]
     dt1 <- setcolorder(dt1,names(dt))
-    dt1 <- dt1[,c("range_id","id"):= list(range_id-1,id-0.1)][-c(1,.N),]
+    dt1 <- dt1[,c("range_id","id") := list(range_id-1,id-0.1)][-c(1,.N),]
     dt <- rbindlist(list(dt,dt1))[order(id)]
     # shape
     dt2 <- dt[,.SD[1],by = .(range_trip,range_id)]
@@ -66,7 +66,7 @@ read_gps <- function(input_folder,fleet_data){
     #
     # check occupancy
     #
-    real_fleet <- fleet_data[shape_id %in% unique(dt2$shape_id) &
+    real_fleet <- fleet_data[SHP %in% unique(dt2$shape_id) &
                                hora_liberacao < dt2[,.SD[1]][,departure_time],]
     # sample and occupancy time
     #

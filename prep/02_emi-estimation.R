@@ -22,7 +22,7 @@
 # hybrid vehicles and biarticulated
 #
 # ----
-emis <- function(pol_list, input_folder, output_folder = ".",emission_factor){
+emis <- function(pol_list, input_folder, output_folder = ".",emission_factor,overwrite = TRUE){
   #
   # input_folder = paste0("../../data/gps_linestring/",proj_cities$abrev_city)
   # output_folder = paste0("../../data/gps_linestring_emis/",proj_cities$abrev_city)
@@ -38,7 +38,7 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor){
   #
   check_files <- paste0(input_folder,"/",list.files(output_folder))
   check_files_names <- stringr::str_remove_all(list.files(output_folder),".rds")
-  if(length(check_files) > 0){
+  if(length(check_files) > 0 & overwrite == TRUE){
     gps_line <- gps_line[gps_line %nin% check_files]
     gps_line_names <- gps_line_names[gps_line_names %nin% check_files_names]
   }
@@ -80,14 +80,11 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor){
       }
       
       lapply(pol_list,function(pol){ # pol = pol_list[1]
-        # message
-        message(pol)
         # emission factor
         FE_local <- vein::ef_cetesb(p = pol,
                                     veh = veh_type,
                                     year = unique(dtline$frota_ano),
                                     agemax = 1)
-        message("cetesb")
         FE_speed <- ef_hdv_scaled_2019(dfcol = FE_local,vel = dtline$speed,ef = emission_factor,veh = "Buses",
                                        segment = veh_segment,fuel = "Diesel",
                                        euro = euro_eq[ano %in% unique(dtline$frota_ano),euro],
