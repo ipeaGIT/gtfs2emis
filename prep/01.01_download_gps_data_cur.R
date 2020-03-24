@@ -1,4 +1,5 @@
 data <- c(paste0("2019_10_0",1:9),paste0("2019_10_",10:30))
+data <- c(paste0("2019_11_0",1:9),paste0("2019_11_",10:30))
 for(i in 1:length(data)){
   cdg_url <- paste0("http://dadosabertos.c3sl.ufpr.br/curitibaurbs/",data[i],"_tabelaVeiculo.json.xz")
   file <- paste0(data[i],"_tabelaVeiculo.json.xz")
