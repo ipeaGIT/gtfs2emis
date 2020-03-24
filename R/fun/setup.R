@@ -24,6 +24,8 @@ library(pbapply)      # progress bar
 library(readr)        # rapida leitura de dados 
 library(tidyr)        # manipulacao de dados
 library(osmdata) # Download de dados do OpenStreeteMaps (OSM)
+library(openxlsx)     # abre planilha de frota
+library(jsonlite)     # download dados de gps
 
 # library(hrbrthemes)
 # library(read.dbc)     # leitura de bases relacionais em Microsoft Access
