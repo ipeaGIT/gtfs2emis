@@ -19,5 +19,7 @@ make_hex <- function(resolution, muni){
   
   return(hex_grid)
 }
-
-
+nc <- sf::st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+nc1 <- nc[1, ]
+nc1$geometry %>% mapview()
+fillers <- polyfill(geometry = nc1$geometry, res = 5)

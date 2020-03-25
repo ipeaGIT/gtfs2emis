@@ -12,7 +12,16 @@ proj_cities <- data.table::data.table( abrev_city = c('cur'),
                                        name_city = c('Curitiba'),
                                        name_country = c('Brazil'),
                                        abrev_country = c('BRA'))
-
+##
+# 0) Prep data Curitiba
+#
+# 0.1) download gps data from Curitiba
+#
+source('prep/01.01_download_gps_data_cur.R')
+#
+# 0.2) allocate vehicles with specific shape_id
+#
+source('prep/01.1_prep_cur_fleet.R')
 # 1) gtfs2gps
 #
 # read GTFS and export to GPS-like format
@@ -58,7 +67,7 @@ input_folder1 = paste0("../../data/gps_linestring/",proj_cities$abrev_city)
 output_folder1 = paste0("../../data/gps_linestring_emis/",proj_cities$abrev_city)
 emis(pol_list = c("CO","NOx"),
      input_folder = input_folder1, output_folder = output_folder1,
-     emission_factor = ef,overwrite = FALSE)
+     emission_factor = ef,overwrite = TRUE)
 
 #
 # 5) post processing

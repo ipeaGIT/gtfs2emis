@@ -38,7 +38,7 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor,ove
   #
   check_files <- paste0(input_folder,"/",list.files(output_folder))
   check_files_names <- stringr::str_remove_all(list.files(output_folder),".rds")
-  if(length(check_files) > 0 & overwrite == TRUE){
+  if(length(check_files) > 0 & overwrite == FALSE){
     gps_line <- gps_line[gps_line %nin% check_files]
     gps_line_names <- gps_line_names[gps_line_names %nin% check_files_names]
   }
@@ -47,12 +47,12 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor,ove
                         "euro" = c(rep("Euro I",4),rep("Euro II",5),rep("Euro III",6),rep("Euro IV",3),rep("Euro V",8)),
                         "ano" = c(1994:2019))
   # loop per line
-  lapply(seq_along(gps_line),function(i){ # i = 3
+  lapply(seq_along(gps_line),function(i){ # i = 1
     # introduction message
     message(paste0("shape_id #",gps_line_names[i]," range ",i,"/",length(gps_line)))
     # read line
     dtline <- readr::read_rds(gps_line[i])
-    dtline[,dist := units::set_units(dist / 1000,km)]
+    dtline[,dist := units::set_units(dist,km)]
     #
     # check fleet completness
     if(is.na(dtline$frota_ano)[1] == TRUE){
