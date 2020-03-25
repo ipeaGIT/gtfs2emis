@@ -12,16 +12,15 @@ proj_cities <- data.table::data.table( abrev_city = c('cur'),
                                        name_city = c('Curitiba'),
                                        name_country = c('Brazil'),
                                        abrev_country = c('BRA'))
-##
+# ---------------------
 # 0) Prep data Curitiba
 #
 # 0.1) download gps data from Curitiba
-#
 source('prep/01.01_download_gps_data_cur.R')
-#
 # 0.2) allocate vehicles with specific shape_id
-#
 source('prep/01.1_prep_cur_fleet.R')
+# ----------------------
+#
 # 1) gtfs2gps
 #
 # read GTFS and export to GPS-like format
@@ -31,7 +30,7 @@ source('prep/01.0_prep_gtfs2gps.R')
 
 create_gps_outputs(city_abrev = proj_cities$abrev_city, 
                    day_start = "04:00:00", day_end = "12:00:00")
-
+# -----------------------
 # 2) gps to linestring
 #
 # - read GPS and export to 'linestring'
@@ -48,7 +47,7 @@ fleet <- readr::read_rds(paste0("../../data/fleet/",
 gps_output_fo <- paste0("../../data/gps/",proj_cities$abrev_city)
 
 read_gps(input_folder = gps_output_fo,fleet_data = fleet)
-#
+# ---------------------
 # 3) emission factor
 #
 source("prep/09_emep-eea_emission-factor.R")
@@ -59,7 +58,7 @@ ef <- openxlsx::read.xlsx("test_joao/references/copert/1.A.3.b.i-iv Road transpo
 ef <- ef[Category %in% "Buses",]
 
 
-#
+# ----------------------
 # 4) emissions
 #
 source("prep/02_emi-estimation.R")
