@@ -4,7 +4,16 @@
 muni <- readr::read_rds(paste0("../../data-raw/muni_border/",proj_cities$abrev_city,".rds")) %>% sf::st_transform(31982)
 hex <- readr::read_rds(paste0("../../data-raw/hex/",proj_cities$abrev_city,"/full09.rds")) %>% 
   data.table::as.data.table() %>% sf::st_as_sf() %>% sf::st_transform(31982)
-
+map_tile <- readr::read_rds(paste)
+#
+# read terminals from GTFS
+#
+stations <- gtfs2gps::read_gtfs("../../data-raw/gtfs/gtfs_BRA_cur_201910.zip")
+term <- stations$stops[stop_name %like% "Terminal" & stop_desc %in% "",][,.SD[1],by = stop_name]
+term <- term[,{
+  geometry <- sf::st_point(x = matrix(c(stop_lon,stop_lat),ncol = 2)) %>% 
+    sf::st_sfc() %>% sf::st_sf()
+},by = .(stop_name)] %>% sf::st_as_sf() %>% sf::st_set_crs(4326)
 #
 # read emi_lines
 #
@@ -29,8 +38,9 @@ emi <- lapply(1:length(emi_line),function(i){ # i = 1
   return(e_grid)
 }) %>% data.table::rbindlist()
 readr::write_rds(x = emi,path = "../../data/hex_emi/cur/cur.rds")
+emi <- readr::read_rds(path = "../../data/hex_emi/cur/cur.rds")
 emi <- emi[,`:=`(EM_CO = sum(EM_CO),EM_NOx = sum(EM_NOx)),by = id][,.SD[1],by = id] %>% sf::st_as_sf()
-emi$EM_CO <- emi$EM_CO * units::set_units(sf::st_area(emi),km^2)
+emi$EM_CO <- emi$EM_CO * units::set_units(sf::st_area(emi),km^2) 
 emi$EM_NOx <- emi$EM_NOx * units::set_units(sf::st_area(emi),km^2)
 #
 # line
@@ -38,31 +48,33 @@ emi$EM_NOx <- emi$EM_NOx * units::set_units(sf::st_area(emi),km^2)
 line <- lapply(1:length(emi_line),function(i){
   temp_emi <- readr::read_rds(emi_line[i])
 }) %>% data.table::rbindlist() %>% sf::st_as_sf() %>% sf::st_transform(31982) 
-
 #
-# plot 
+# plot  (1)
 #
+mapview(emi["EM_CO"],alphaColors = 0.5) + mapview(line$geometry)
 ggplot() +
-  geom_sf(data = muni$geom, colour = "black", fill = NA, size = 0.3) + 
-  geom_sf(data = emi, aes(fill = 1000 * as.numeric(EM_NOx)), color = NA, alpha=.7) + 
-  geom_sf(data = line$geometry, colour = "grey", fill = NA, size = 0.01, alpha=.3)
-
-ggplot() +
-  geom_sf(data = muni$geom, colour = "black", fill = NA, size = 0.3) + 
-  geom_sf(data = emi, aes(fill = as.numeric(EM_NOx)), color = NA, alpha=.7)
-
-ggplot() +
-  geom_sf(data = muni$geom, colour = "black", fill = NA, size = 0.3) + 
+  # cur border
+  geom_sf(data = muni$geom, colour = "black", fill = NA, size = 0.3) +  
+  # emissions
   geom_sf(data = emi, aes(fill = as.numeric(EM_CO)), color = NA, alpha=.7)  +
-  scale_fill_gradientn(colours = RColorBrewer::brewer.pal(9,"OrRd"),
-                       limits = c(1.0*min(as.numeric(emi$EM_CO)),1.0*max(as.numeric(emi$EM_CO))),
-                       breaks = seq(min(as.numeric(emi$EM_CO)),1.0*max(as.numeric(emi$EM_CO)),length.out = 6),
-                       labels = seq(min(as.numeric(emi$EM_CO)),1.0*max(as.numeric(emi$EM_CO)),length.out = 6) %>% round(3),
-                       guide = guide_colourbar(barheight = 10,
-                                               frame.colour = "black")) +
-  scale_x_continuous(limits = sf::st_bbox(muni)[c(1,3)] %>% as.vector())+
-  scale_y_continuous(limits = sf::st_bbox(muni)[c(2,4)] %>% as.vector())
-
+  viridis::scale_fill_viridis(breaks = seq(min(as.numeric(emi$EM_CO),na.rm = T),
+                                            max(as.numeric(emi$EM_CO),na.rm = T),
+                                            length.out = 8),
+                               label = seq(min(as.numeric(emi$EM_CO),na.rm = T),
+                                           max(as.numeric(emi$EM_CO),na.rm = T),
+                                           length.out = 8) %>% round(),
+                               discrete = F,option = "A",
+                               direction = +1) #+
+  # line background
+  #geom_sf(data = line$geometry, colour = "black", fill = NA, size = 0.1, alpha=1) + 
+  # points terminals
+  geom_sf(data = term$geometry, colour = "red",size =5,alpha = 1) 
+#
+# plot (2)
+#
+line$departure_time1 <- stringr::str_sub(line$departure_time,1,2)
+ggplot(data = line,aes(x = departure_time1, y = as.numeric(EM_CO))) + 
+  geom_bar(aes(fill = as.numeric(EM_CO)),stat="identity",colour="black", size=.3, alpha=.8)
 
 labs(fill = "CO") +
   geom_sf(data = muni, colour = "black", fill = NA, size = 0.3) #+
