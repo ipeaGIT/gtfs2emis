@@ -28,8 +28,7 @@ source('prep/01.1_prep_cur_fleet.R')
 
 source('prep/01.0_prep_gtfs2gps.R')
 
-create_gps_outputs(city_abrev = proj_cities$abrev_city, 
-                   day_start = "04:00:00", day_end = "12:00:00")
+create_gps_outputs(city_abrev = proj_cities$abrev_city,period_start = "00:00:01", period_end = "23:59:59")
 # -----------------------
 # 2) gps to linestring
 #
@@ -68,7 +67,7 @@ emis(pol_list = c("CO","NOx"),
      input_folder = input_folder1, output_folder = output_folder1,
      emission_factor = ef,overwrite = TRUE)
 
-#
+# ----------------------
 # 5) post processing
 #
 
