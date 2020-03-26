@@ -17,9 +17,16 @@ Respository of the R package to estimate public transport emissions based on GTF
 
 `prep/02_*.R` - emission
 
+1 - emission estimation
+
 `prep/03_*.R` - main 
+
+1 - main script
 
 `prep/08_*.R` - plot and visualization
 
+used only for check data purposes
+
 `prep/09_*.R` - auxiliar script / internal functions
 
+1 - emission factor from EMEEA
