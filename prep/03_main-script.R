@@ -1,4 +1,4 @@
-#
+# -------------------------------------------------------------------------
 # Emissions
 #
 rm(list = ls())
@@ -7,19 +7,20 @@ source('./R/fun/setup.R')
 
 # setwd
 
-# Intro -------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# Intro 
 proj_cities <- data.table::data.table( abrev_city = c('cur'),
                                        name_city = c('Curitiba'),
                                        name_country = c('Brazil'),
                                        abrev_country = c('BRA'))
-# ---------------------
+# -------------------------------------------------------------------------
 # 0) Prep data Curitiba
 #
 # 0.1) download gps data from Curitiba
 source('prep/01.01_download_gps_data_cur.R')
 # 0.2) allocate vehicles with specific shape_id
 source('prep/01.1_prep_cur_fleet.R')
-# ----------------------
+# -------------------------------------------------------------------------
 #
 # 1) gtfs2gps
 #
@@ -28,7 +29,7 @@ source('prep/01.1_prep_cur_fleet.R')
 
 source('prep/01.0_prep_gtfs2gps.R')
 
-create_gps_outputs(city_abrev = proj_cities$abrev_city,period_start = "00:00:01", period_end = "23:59:59")
+create_gps_outputs(city_abrev = proj_cities$abrev_city)
 # -----------------------
 # 2) gps to linestring
 #
@@ -41,10 +42,12 @@ source('prep/01.3_read_gps.R')
 fleet <- readr::read_rds(paste0("../../data/fleet/",
                                 proj_cities$abrev_city,"/",
                                 proj_cities$abrev_city,".rds"))
-
 # data output_gps
 gps_output_fo <- paste0("../../data/gps/",proj_cities$abrev_city)
 
+input <- list.files(gps_output_fo, recursive = FALSE,
+                    include.dirs = FALSE,full.names = TRUE)
+# function
 read_gps(input_folder = gps_output_fo,fleet_data = fleet)
 # ---------------------
 # 3) emission factor

@@ -4,7 +4,7 @@
 muni <- readr::read_rds(paste0("../../data-raw/muni_border/",proj_cities$abrev_city,".rds")) %>% sf::st_transform(31982)
 hex <- readr::read_rds(paste0("../../data-raw/hex/",proj_cities$abrev_city,"/full09.rds")) %>% 
   data.table::as.data.table() %>% sf::st_as_sf() %>% sf::st_transform(31982)
-map_tile <- readr::read_rds(paste)
+map_tile <- readr::read_rds(paste0("../../data-raw/tiles/map_tiles/map_tile_crop_",proj_cities$abrev_city,".rds"))
 #
 # read terminals from GTFS
 #
@@ -48,6 +48,7 @@ emi$EM_NOx <- emi$EM_NOx * units::set_units(sf::st_area(emi),km^2)
 line <- lapply(1:length(emi_line),function(i){
   temp_emi <- readr::read_rds(emi_line[i])
 }) %>% data.table::rbindlist() %>% sf::st_as_sf() %>% sf::st_transform(31982) 
+readr::write_rds(x = line,path = "../../data/linestring_emi/cur/cur.rds")
 #
 # plot  (1)
 #
@@ -73,6 +74,8 @@ ggplot() +
 # plot (2)
 #
 line$departure_time1 <- stringr::str_sub(line$departure_time,1,2)
+df <- table(line$departure_time1)
+df
 ggplot(data = line,aes(x = departure_time1, y = as.numeric(EM_CO))) + 
   geom_bar(aes(fill = as.numeric(EM_CO)),stat="identity",colour="black", size=.3, alpha=.8)
 
