@@ -2,12 +2,13 @@
 # temporal plot
 #
 rm(list=ls())
+library(ggplot2); library(patchwork)
 line <- readr::read_rds("../../data/linestring_emi/cur/cur.rds")
 line$departure_time1 <- stringr::str_sub(line$departure_time,1,2)
 #
 # plot - basic
 #
-df <- as.data.table(line)[,EM_CO := sum(EM_CO)/1000,by = departure_time1][,.SD[1],by = departure_time1]
+df <- data.table::as.data.table(line)[,EM_CO := sum(EM_CO)/1000,by = departure_time1][,.SD[1],by = departure_time1]
 pf <- ggplot(data = df,aes(x = departure_time1, y = as.numeric(EM_CO), fill = as.numeric(EM_CO))) + 
   geom_bar(stat = "identity",size=.3, alpha=1) + 
   viridis::scale_fill_viridis(discrete = F,option = "A",
@@ -22,7 +23,7 @@ pf <- ggplot(data = df,aes(x = departure_time1, y = as.numeric(EM_CO), fill = as
 #
 # plot - tipo veiculo
 #
-df1 <- as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
+df1 <- data.table::as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
                           by = .(departure_time1,tipo_de_veiculo)][,.SD[1],
                                                                 by = .(departure_time1,tipo_de_veiculo)]
 pf1 <- ggplot(data = df1,aes(x = departure_time1, y = as.numeric(EM_CO), fill = tipo_de_veiculo)) + 
@@ -36,7 +37,7 @@ pf1 <- ggplot(data = df1,aes(x = departure_time1, y = as.numeric(EM_CO), fill = 
  #
  # plot - tipo category
  #
- df2 <- as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
+ df2 <- data.table::as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
                             by = .(departure_time1,categoria)][,.SD[1],
                                                                      by = .(departure_time1,categoria)]
  pf2 <- ggplot(data = df2,aes(x = departure_time1, y = as.numeric(EM_CO), fill = categoria)) + 
@@ -49,7 +50,7 @@ pf1 <- ggplot(data = df1,aes(x = departure_time1, y = as.numeric(EM_CO), fill = 
  #
  # plot - age
  #
- df3 <- as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
+ df3 <- data.table::as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
                             by = .(tipo_de_veiculo,frota_ano)][,.SD[1],
                                                                by = .(tipo_de_veiculo,frota_ano)]
  df3 <- df3[order(frota_ano,decreasing = FALSE),][,frota_ano := as.character(frota_ano)]
@@ -65,7 +66,7 @@ pf1 <- ggplot(data = df1,aes(x = departure_time1, y = as.numeric(EM_CO), fill = 
  #
  # plot - age and hour
  #
- df4 <- as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
+ df4 <- data.table::as.data.table(line)[,EM_CO := sum(EM_CO)/1000,
                             by = .(departure_time1,frota_ano)][,.SD[1],
                                                                by = .(departure_time1,frota_ano)]
  df4 <- df4[order(frota_ano,decreasing = TRUE),][,frota_ano := as.character(frota_ano)]
@@ -73,7 +74,7 @@ pf1 <- ggplot(data = df1,aes(x = departure_time1, y = as.numeric(EM_CO), fill = 
 pf4 <-  ggplot(data = df4,aes(x = departure_time1,y = as.numeric(EM_CO), fill = frota_ano)) + 
    geom_bar(stat = "identity",size=.3, alpha=1) + 
    labs(fill = "Fleet age") + 
-   xlab("Year of fleet") + ylab("CO emissions [kg]") + 
+   xlab("Hour") + ylab("CO emissions [kg]") + 
   guides(fill=guide_legend(ncol=2))
 # ggsave(plot = pf4,filename = paste0("figures/CO_total_hour_age.jpg"),
 #         width = 10.5,height = 5,units = "cm",scale = 2.2,dpi = 300)
