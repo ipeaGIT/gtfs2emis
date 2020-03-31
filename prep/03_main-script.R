@@ -2,9 +2,11 @@
 # Emissions
 #
 rm(list = ls())
-source('./R/fun/setup.R')
-
-
+#source('./R/fun/setup.R')
+if (interactive()) {
+  suppressMessages(require(devtools))
+}
+load_all()
 # setwd
 
 # -------------------------------------------------------------------------
@@ -13,6 +15,8 @@ proj_cities <- data.table::data.table( abrev_city = c('cur'),
                                        name_city = c('Curitiba'),
                                        name_country = c('Brazil'),
                                        abrev_country = c('BRA'))
+
+proj_cities
 # -------------------------------------------------------------------------
 # 0) Prep data Curitiba
 #

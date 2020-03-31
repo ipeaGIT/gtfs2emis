@@ -1,4 +1,4 @@
-create_gps_outputs <- function(city_abrev){
+create_gps_outputs <- function(city_abrev,filter_weekdays = TRUE){
   # city_abrev = proj_cities$abrev_city
   # city_abrev 
   message(paste0('Working on city: ', city_abrev,', ', which(proj_cities$abrev_city == city_abrev)),
@@ -12,10 +12,11 @@ create_gps_outputs <- function(city_abrev){
   gtfs <- gtfs2gps::read_gtfs(gtfs_file)
   
   # filter time of the day and weekdays
-  gtfs <- gtfs2gps::filter_week_days(gtfs_data = gtfs)
+  if(filter_weekdays == TRUE){  gtfs <- gtfs2gps::filter_week_days(gtfs_data = gtfs) }
+
   
   # check valid shapeids
-  source("prep/01.02_check_valid_shapeids.R")
+  # source("prep/01.02_check_valid_shapeids.R")
   gtfs <- check_valid_shapeid(gtfs_data = gtfs)
   #gtfs <- gtfs2gps::filter_day_period(gtfs, period_start = period_start, period_end = period_end)
   
@@ -24,8 +25,6 @@ create_gps_outputs <- function(city_abrev){
   dir.create(filepath, showWarnings = FALSE)
   
   # convert gtfs to gps-like format
-  #gps_df <- gtfs2gps::gtfs2gps(gtfs_data = gtfs,filepath = filepath,continue = TRUE,
-  #                             spatial_resolution = 15, progress = TRUE)
   source("../../../gtfs2gps/tests_joao/gtfs2gps_tests.R")
   source("../../../gtfs2gps/tests_joao/mod_updates_test.R")
   gps_df <- gtfs2gps(gtfs_data = gtfs,filepath = filepath,continue = TRUE,parallel = FALSE,
