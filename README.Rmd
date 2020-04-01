@@ -4,12 +4,19 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-`# gps2emis
+# GTFS2EMIS
 
 Respository of the R package to estimate public transport emissions based on GTFS files.
 
+### Installation
 
-`prep/01_*.R` - prep scripts 
+```{r}
+# devtools::install_github("rafapereirabr/gtfs2emis")
+```
+
+### Preparation scripts
+
+##### 01) `prep/01_*.R` - prep scripts 
 
 1 - download gps cur
 
@@ -21,18 +28,22 @@ Respository of the R package to estimate public transport emissions based on GTF
 
 5 - read_gps (from points data to linestring)
 
-`prep/02_*.R` - emission
+##### 02) `prep/02_*.R` - emission
 
 1 - emission estimation
 
-`prep/03_*.R` - main 
+##### 03) `prep/03_*.R` - main 
 
 1 - main script
 
-`prep/08_*.R` - plot and visualization
+##### 04) `prep/08_*.R` - plot and visualization
 
 used only for check data purposes
 
-`prep/09_*.R` - auxiliar script / internal functions
+##### 05) `prep/09_*.R` - auxiliar script / internal functions
 
 1 - emission factor from EMEEA
+
+### Project
+
+The main steps of the development should be presented in `projects` sheet
