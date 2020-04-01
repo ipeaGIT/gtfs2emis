@@ -1,24 +1,3 @@
-usethis::create_package()
-usethis::use_git()
-# create function manually
-devtools::load_all()
-devtools::check()
-# edit description manually
-usethis::use_mit_license("Joao Bazzo")
-devtools::document() # it creates a man, updates namespace
-devtools::check() # again, with no warnings
-
-
-usethis::use_testthat()
-usethis::use_test("fbind") # creates with
-# edit file of tests manually on /tests/test-fbind.R
-devtools::test()
-# -----------------------------------------
-# adding dependencies
-usethis::use_package("forcats") # Adding 'forcats' to Imports field in DESCRIPTION
-# creat function 2 manually
-devtools::load_all()
-devtools::document() # it creates a man, updates namespace
 # readme
 usethis::use_readme_rmd() # create template
 # edit template manually
@@ -34,6 +13,7 @@ usethis::use_package("stringr")
 usethis::use_package("units")
 usethis::use_package("magrittr")
 usethis::use_package("readr")
+usethis::use_package("gtfs2gps")
 # create a script called utils.R
 usethis::use_testthat()
 usethis::use_test("gps_to_linestring") #
