@@ -5,3 +5,8 @@
 ^data-raw$          # Code used to create data included in the package
 ^test_joao$
 ^prep$
+^figures$
+^README\.Rmd$
+^LICENSE\.md$
+^tests$
+^gps2emis.Rproj
