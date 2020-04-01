@@ -1,4 +1,4 @@
 library(testthat)
-library(gps2emission)
+library(gps2emis)
 
-test_check("gps2emission")
+test_check("gps2emis")
