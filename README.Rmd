@@ -1,12 +1,15 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-\`\# gps2emis
+`# gps2emis
 
-Respository of the R package to estimate public transport emissions
-based on GTFS files.
+Respository of the R package to estimate public transport emissions based on GTFS files.
 
-`prep/01_*.R` - prep scripts
+
+`prep/01_*.R` - prep scripts 
 
 1 - download gps cur
 
@@ -16,13 +19,13 @@ based on GTFS files.
 
 4 - create hexagons (not working so far I dont know why)
 
-5 - read\_gps (from points data to linestring)
+5 - read_gps (from points data to linestring)
 
 `prep/02_*.R` - emission
 
 1 - emission estimation
 
-`prep/03_*.R` - main
+`prep/03_*.R` - main 
 
 1 - main script
 
