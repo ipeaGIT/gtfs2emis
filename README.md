@@ -4,12 +4,13 @@
 # GTFS2EMIS
 
 Respository of the R package to estimate public transport emissions
-based on GTFS files.
+based on GTFS
+files.
 
 ### Installation
 
 ``` r
-# devtools::install_github("rafapereirabr/gtfs2emis")
+devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
 ```
 
 ### Preparation scripts
