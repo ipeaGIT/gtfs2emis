@@ -23,8 +23,7 @@ gps_to_linestring <- function(input_filepath,output_filepath,fleet_data,overwrit
 
   output_name <- list.files(input_filepath, recursive = FALSE,
                             include.dirs = FALSE,
-                            full.names = FALSE) %>%
-    stringr::str_replace_all(".txt",".rds")
+                            full.names = FALSE) 
   #
   # check existing files in output_filepath
   # files
@@ -98,7 +97,7 @@ gps_to_linestring <- function(input_filepath,output_filepath,fleet_data,overwrit
     # create output dir and save
     #
     filepath <- paste0(output_filepath,"/",output_name[i])
-    readr::write_rds(x = dt3,path = filepath)
+    data.table::fwrite(x = dt3,path = filepath)
     return(NULL)
   })
   return(message('Files exported'))

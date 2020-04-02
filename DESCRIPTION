@@ -13,7 +13,6 @@ Imports:
     data.table,
     sf,
     units,
-    readr,
     magrittr,
     gtfs2gps
 Suggests: 
