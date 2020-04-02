@@ -12,6 +12,10 @@ utils::globalVariables(c("input_folder", "output_folder", "hora_liberacao",
                          'hora_liberacao','departure_time','Placa','Ano_fabricacao','tipo_de_veiculo',
                          'categoria','modelo_chassi','shape_id'))
 utils::globalVariables(c('gps_sf'))
+utils::globalVariables(c('Euro.Standard','Fuel','Load','Pollutant','Road.Slope','Segment','Technology','g','km'))
+
+
+utils::globalVariables(c('ef'))
 # check valid shapeid
 
 check_valid_shapeid <- function(gtfs_data){
