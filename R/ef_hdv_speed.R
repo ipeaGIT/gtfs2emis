@@ -20,6 +20,10 @@
 #' @export
 ef_hdv_speed <- function(vel,veh,fuel,euro,tech,pol,slope = 0.0,load = 0.5,k = 1,show.equation = TRUE){
   #
+  # emission factor
+  #
+  temp_ef <- ef
+  #
   # pre-conditions
   #
   if(euro == "Euro III" | euro == "Euro II"){
@@ -36,7 +40,7 @@ ef_hdv_speed <- function(vel,veh,fuel,euro,tech,pol,slope = 0.0,load = 0.5,k = 1
   #
   # ef
   #
-  ef1 <- ef[Fuel %in% fuel & 
+  temp_ef1 <- temp_ef[Fuel %in% fuel & 
               Segment %in% veh & 
               Euro.Standard %in% euro & 
               Technology %in% tech &
@@ -45,28 +49,28 @@ ef_hdv_speed <- function(vel,veh,fuel,euro,tech,pol,slope = 0.0,load = 0.5,k = 1
               Road.Slope %in% slope &
               Load %in% load,]
   
-  if(nrow(ef1) == 0){return(message("No ef"))}
-  if(nrow(ef1) > 1){ef2 <- ef1[1,];message("More than one")}
-  if(nrow(ef1) == 1){ef2 <- ef1}
+  if(nrow(temp_ef1) == 0){return(message("No ef"))}
+  if(nrow(temp_ef1) > 1){temp_ef1 <- temp_ef1[1,];message("More than one")}
+  if(nrow(temp_ef1) == 1){temp_ef1 <- temp_ef1}
   #
   # show.equation
   #
   if (show.equation == TRUE) {
-    cat(paste0("a = ", ef2$Alpha, ", b = ", ef2$Beta, ", g = ", 
-               ef2$Gamma, ", d = ", ef2$Delta, ", e = ", ef2$Epsilon, ", rf = ", 
-               ef2$`Reduction.Factor.[%]`, ", z = ", ef2$Zita, ", h = ", ef2$Hta, "\n"))
+    cat(paste0("a = ", temp_ef1$Alpha, ", b = ", temp_ef1$Beta, ", g = ", 
+               temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ", 
+               temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", h = ", temp_ef1$Hta, "\n"))
   }
   #
   # fix speed
   #
-  if(length(which(vel < ef2$`Min.Speed.[km/h]`)) > 0) vel[vel < ef2$`Min.Speed.[km/h]`] <- ef2$`Min.Speed.[km/h]`
-  if(length(which(vel > ef2$`Max.Speed.[km/h]`)) > 0) vel[vel > ef2$`Max.Speed.[km/h]`] <- ef2$`Max.Speed.[km/h]`
+  if(length(which(vel < temp_ef1$`Min.Speed.[km/h]`)) > 0) vel[vel < temp_ef1$`Min.Speed.[km/h]`] <- temp_ef1$`Min.Speed.[km/h]`
+  if(length(which(vel > temp_ef1$`Max.Speed.[km/h]`)) > 0) vel[vel > temp_ef1$`Max.Speed.[km/h]`] <- temp_ef1$`Max.Speed.[km/h]`
   #
   # return
   #
-  eq_output <- eq_num(a = ef2$Alpha,b = ef2$Beta,g = ef2$Gamma,d = ef2$Delta,
-                      e = ef2$Epsilon,z = ef2$Zita,h = ef2$Hta,
-                      rf = ef2$`Reduction.Factor.[%]`, v = vel, k = k)
+  eq_output <- eq_num(a = temp_ef1$Alpha,b = temp_ef1$Beta,g = temp_ef1$Gamma,d = temp_ef1$Delta,
+                      e = temp_ef1$Epsilon,z = temp_ef1$Zita,h = temp_ef1$Hta,
+                      rf = temp_ef1$`Reduction.Factor.[%]`, v = vel, k = k)
   eq_output <- units::set_units(eq_output,g/km)
   
   return(eq_output)

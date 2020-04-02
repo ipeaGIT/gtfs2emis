@@ -1,5 +1,6 @@
 #' @importFrom magrittr %>%
 #' @importFrom data.table := .N .SD
+#' @importFrom utils data
 NULL
 
 `%nin%` = Negate(`%in%`)
@@ -13,9 +14,10 @@ utils::globalVariables(c("input_folder", "output_folder", "hora_liberacao",
                          'categoria','modelo_chassi','shape_id'))
 utils::globalVariables(c('gps_sf'))
 utils::globalVariables(c('Euro.Standard','Fuel','Load','Pollutant','Road.Slope','Segment','Technology','g','km'))
+utils::globalVariables(c('temp_ef','temp_ef1','ef'))
 
 
-utils::globalVariables(c('ef'))
+#utils::globalVariables(c('ef'))
 # check valid shapeid
 
 check_valid_shapeid <- function(gtfs_data){
