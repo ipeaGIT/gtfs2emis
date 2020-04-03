@@ -13,6 +13,36 @@ files.
 devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
 ```
 
+    ## 
+    ##      checking for file ‘/tmp/RtmpAtZbN8/remotes6a1a784bd9d/rafapereirabr-gtfs2emis-db6231ebb3d5639601afa826ab06797603dca9f5/DESCRIPTION’ ...  ✓  checking for file ‘/tmp/RtmpAtZbN8/remotes6a1a784bd9d/rafapereirabr-gtfs2emis-db6231ebb3d5639601afa826ab06797603dca9f5/DESCRIPTION’
+    ##   ─  preparing ‘gps2emis’:
+    ##      checking DESCRIPTION meta-information ...  ✓  checking DESCRIPTION meta-information
+    ##   ─  checking for LF line-endings in source and make files and shell scripts
+    ##   ─  checking for empty or unneeded directories
+    ## ─  looking to see if a ‘data/datalist’ file should be added
+    ##        NB: this package now depends on R (>= 3.5.0)
+    ##        WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects:  'gps2emis/inst/extdata/fleet/cur/cur.rds'
+    ##   ─  building 'gps2emis_0.0.0.9000.tar.gz'
+    ##      
+    ## 
+
+### Usage
+
+For now, the function are a little bit adapted to Curitiba’s GTFS and
+fleet characteristics. Also, it still possible to simulate emissions
+only for CO and
+NOx.
+
+``` r
+# ef_hdv_speed(vel = units::set_units(10,km/h),veh = "Urban Buses Midi <=15 t",
+#             fuel = "Diesel",euro = "Euro III",tech = NA,pol = "CO",show.equation = TRUE)
+#
+# gtfs2gps(raw_gtfs = "inst/extdata/gtfs_cur.zip",filepath = "test_joao/gps/",filter_weekdays = TRUE)
+#
+# gps_to_linestring(input_filepath = "test_joao/gps/",output_filepath = "test_joao/lines/",
+#                  fleet_data = "inst/extdata/cur_fleet.tar.xz",overwrite = FALSE)
+```
+
 ### Preparation scripts
 
 ##### 01\) `prep/01_*.R` - prep scripts

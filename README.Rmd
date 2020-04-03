@@ -13,6 +13,20 @@ Respository of the R package to estimate public transport emissions based on GTF
 ```{r,message=FALSE}
 devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
 ```
+### Usage
+
+For now, the function are a little bit adapted to Curitiba's GTFS and fleet characteristics. Also, it still possible to 
+simulate emissions only for CO and NOx.
+
+```{r}
+# ef_hdv_speed(vel = units::set_units(10,km/h),veh = "Urban Buses Midi <=15 t",
+#             fuel = "Diesel",euro = "Euro III",tech = NA,pol = "CO",show.equation = TRUE)
+#
+# gtfs2gps(raw_gtfs = "inst/extdata/gtfs_cur.zip",filepath = "test_joao/gps/",filter_weekdays = TRUE)
+#
+# gps_to_linestring(input_filepath = "test_joao/gps/",output_filepath = "test_joao/lines/",
+#                  fleet_data = "inst/extdata/cur_fleet.tar.xz",overwrite = FALSE)
+```
 
 ### Preparation scripts
 
