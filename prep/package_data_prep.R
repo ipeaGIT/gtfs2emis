@@ -17,3 +17,23 @@ ef$Pollutant %>% unique()
 ef$Mode %>% unique()
 ef$Road.Slope %>% unique()
 ef$Load %>% unique()
+
+#
+# fleet cur
+#
+tempd <- file.path(tempdir(), "fleet") # create tempr dir to save GTFS unzipped files
+unlink(normalizePath(paste0(tempd, "/", dir(tempd)), mustWork = FALSE), recursive = TRUE) # clean tempfiles in that dir
+utils::untar(tarfile = "inst/extdata/cur_fleet.tar.xz",exdir = tempd) # untar files
+# how to read later on
+unzippedfiles <- list.files(tempd) # list of unzipped files
+cur_fleet <- data.table::fread(paste0(tempd,"/cur_fleet.txt"))
+#
+# gtfs2gps::cur
+#
+gtfs <- gtfs2gps::read_gtfs("../../data-raw/gtfs/gtfs_BRA_cur_201910.zip")
+gtfs <- gtfs2gps::filter_week_days(gtfs_data = gtfs)
+gtfs <- check_valid_shapeid(gtfs)
+gtfs <- gtfs2gps::filter_by_shape_id(gtfs,unique(gtfs$shapes$shape_id)[1:40])
+gtfs2gps::write_gtfs(gtfs,zipfile = "inst/extdata/gtfs_cur.zip")
+gtfs1 <- gtfs2gps::read_gtfs("inst/extdata/gtfs_cur.zip")
+object.size(gtfs1)/10^6

@@ -31,13 +31,14 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor,ove
   #
   # files in input_folder
   gps_line <- list.files(input_folder,recursive = FALSE,full.names = TRUE)
-  gps_line_names <- list.files(input_folder,recursive = FALSE,full.names = FALSE) %>% stringr::str_remove_all(".rds")
+  gps_line_names <- list.files(input_folder,recursive = FALSE,full.names = FALSE) %>% 
+    stringr::str_remove_all(".txt")
   #
   # check existing files in output_folder and output 'gps_line'
   # files
   #
   check_files <- paste0(input_folder,"/",list.files(output_folder))
-  check_files_names <- stringr::str_remove_all(list.files(output_folder),".rds")
+  check_files_names <- stringr::str_remove_all(list.files(output_folder),".txt")
   if(length(check_files) > 0 & overwrite == FALSE){
     gps_line <- gps_line[gps_line %nin% check_files]
     gps_line_names <- gps_line_names[gps_line_names %nin% check_files_names]
@@ -51,10 +52,10 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor,ove
     # introduction message
     message(paste0("shape_id #",gps_line_names[i]," range ",i,"/",length(gps_line)))
     # read line
-    dtline <- readr::read_rds(gps_line[i])
+    dtline <- data.table::fread(gps_line[i])
     dtline[,dist := units::set_units(dist,km)]
     #
-    # check fleet completness
+    # check fleet completeness
     if(is.na(dtline$frota_ano)[1] == TRUE){
       message(paste0("shape_id #",gps_line_names[i]," without fleet data"))
       return(NULL)
@@ -85,13 +86,10 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor,ove
                                     veh = veh_type,
                                     year = unique(dtline$frota_ano),
                                     agemax = 1)
-        FE_speed <- ef_hdv_scaled_2019(dfcol = FE_local,vel = dtline$speed,ef = emission_factor,veh = "Buses",
-                                       segment = veh_segment,fuel = "Diesel",
-                                       euro = euro_eq[ano %in% unique(dtline$frota_ano),euro],
-                                       pol = pol,show.equation = FALSE)
-        # FE_vein <- vein::ef_hdv_scaled(dfcol = FE_local,v = "Ubus",t = veh_vein_type,g = veh_gweight,
-        #                                eu = euro_eq[ano %in% unique(dtline$frota_ano),euro_vein],
-        #                                p = pol)[[1]](dtline$speed)
+        FE_speed <- ef_hdv_scaled(dfcol = FE_local,vel = dtline$speed,ef = emission_factor,veh = "Buses",
+                                  segment = veh_segment,fuel = "Diesel",
+                                  euro = euro_eq[ano %in% unique(dtline$frota_ano),euro],
+                                  pol = pol,show.equation = FALSE)
         # allocate into data.table frame
         dtline[,paste0("EM_",pol) := FE_speed * dist]
         return(NULL)
@@ -101,7 +99,7 @@ emis <- function(pol_list, input_folder, output_folder = ".",emission_factor,ove
     #
     # save file
     #
-    readr::write_rds(dtline,paste0(output_folder,"/",unique(dtline$shape_id),".rds"))
+    data.table::fwrite(x = dtline,file = paste0(output_folder,"/",unique(dtline$shape_id),".txt"))
     return(NULL)
   })
 }
