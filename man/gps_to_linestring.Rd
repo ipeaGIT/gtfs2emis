@@ -16,7 +16,7 @@ gps_to_linestring(
 
 \item{output_filepath}{Character; location for export Line-data type}
 
-\item{fleet_data}{Data.table; fleet data associated with information of age, engine size,
+\item{fleet_data}{Character; path of fleet data associated with information of age, engine size,
 weight gross total and shape_id's. This input associated with shape_id's allows the function to relate each
 shape_id to a vehicle, by creating columns of fleet specification in the output.
 Missing entry means no fleet allocation}
