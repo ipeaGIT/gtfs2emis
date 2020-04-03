@@ -14,7 +14,8 @@ Imports:
     sf,
     units,
     magrittr,
-    gtfs2gps
+    gtfs2gps,
+    vein
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
