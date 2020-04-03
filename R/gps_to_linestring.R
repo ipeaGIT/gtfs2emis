@@ -5,20 +5,30 @@
 #'
 #' @param input_filepath Character; location of exported GPS files
 #' @param output_filepath Character; location for export Line-data type
-#' @param fleet_data Data.table; fleet data associated with information of age, engine size,
+#' @param fleet_data Character; path of fleet data associated with information of age, engine size,
 #' weight gross total and shape_id's. This input associated with shape_id's allows the function to relate each
 #' shape_id to a vehicle, by creating columns of fleet specification in the output.
 #' Missing entry means no fleet allocation
 #' @param  overwrite Logical; overwrites files in the output_filepath
 #' @export
 gps_to_linestring <- function(input_filepath,output_filepath,fleet_data,overwrite = TRUE){
+  #
+  # tests
   # input_filepath = paste0("../../data/gps/",proj_cities$abrev_city)
   # output_filepath <- paste0("../../data/gps_linestring/",proj_cities$abrev_city)
   # fleet_data = readr::read_rds(paste0("../../data/fleet/",proj_cities$abrev_city,"/",proj_cities$abrev_city,".rds"))
   #
+  # read fleet
+  #
+  tempd <- file.path(tempdir(), "fleet") # create tempr dir to save GTFS unzipped files
+  unlink(normalizePath(paste0(tempd, "/", dir(tempd)), mustWork = FALSE), recursive = TRUE) # clean tempfiles in that dir
+  utils::untar(tarfile = fleet_data,exdir = tempd) # untar files
+  f <- list.files(tempd)
+  fleet_data = data.table::fread(paste0(tempd,"/",f))
+  #
   # list gps files in 'input_folder'
   #
-  input <- list.files(input_filepath, recursive = FALSE,
+  gps_line <- list.files(input_filepath, recursive = FALSE,
                       include.dirs = FALSE,full.names = TRUE)
 
   output_name <- list.files(input_filepath, recursive = FALSE,
@@ -28,9 +38,9 @@ gps_to_linestring <- function(input_filepath,output_filepath,fleet_data,overwrit
   # check existing files in output_filepath
   # files
   #
-  check_files <- paste0(input_folder,"/",list.files(output_folder))
-  check_files_names <- stringr::str_remove_all(list.files(output_folder),".rds")
-  if(length(check_files) > 0 & overwrite == FALSE){
+  check_files <- paste0(output_filepath,list.files(output_filepath))
+  check_files_names <- stringr::str_remove_all(list.files(output_filepath),".rds")
+  if(length(check_files) > 1 & overwrite == FALSE){
     gps_line <- gps_line[gps_line %nin% check_files]
     gps_line_names <- gps_line_names[gps_line_names %nin% check_files_names]
   }
@@ -41,11 +51,11 @@ gps_to_linestring <- function(input_filepath,output_filepath,fleet_data,overwrit
   #
   # interation of all trip_id's
   #
-  lapply(1:length(input),function(i){ # i = 2
+  lapply(1:length(gps_line),function(i){ # i = 2
     # message
-    message(paste0('shape_id: #', stringr::str_remove(output_name[i],".rds")," , ", i," out of ",length(input)))
+    message(paste0('shape_id: #', stringr::str_remove(output_name[i],".rds")," , ", i," out of ",length(gps_line)))
     # read
-    dt <- data.table::fread(paste0(input[i]))
+    dt <- data.table::fread(paste0(gps_line[i]))
     dt[,id := 1:nrow(dt)]
     # stop division
     id0 <- c(1,which(!is.na(dt$stop_sequence)))
