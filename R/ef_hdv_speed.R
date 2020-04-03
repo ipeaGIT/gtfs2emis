@@ -2,7 +2,7 @@
 #' 
 #' @description Estimates emission factor for buses based on EMEP/EEA 
 #' 
-#' @param vel Units; Speed in units [km/h]
+#' @param vel Numeric; Speed in [km/h]
 #' @param veh Character; Bus type, classified in "Urban Buses Midi <=15 t", "Urban Buses Standard 15 - 18 t", 
 #' "Urban Buses Articulated >18 t", "Coaches Standard <=18 t"       
 #' "Coaches Articulated >18 t", "Urban CNG Buses", "Urban Biodiesel Buses"  
