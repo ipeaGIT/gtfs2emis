@@ -14,15 +14,13 @@ devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62f
 ```
 
     ## 
-    ##      checking for file ‘/tmp/RtmpAtZbN8/remotes6a1a784bd9d/rafapereirabr-gtfs2emis-db6231ebb3d5639601afa826ab06797603dca9f5/DESCRIPTION’ ...  ✓  checking for file ‘/tmp/RtmpAtZbN8/remotes6a1a784bd9d/rafapereirabr-gtfs2emis-db6231ebb3d5639601afa826ab06797603dca9f5/DESCRIPTION’
+    ##      checking for file ‘/tmp/Rtmpst04MI/remotes743366bdef0b/rafapereirabr-gtfs2emis-1581f85a352f01ef8908408440914fdde0d70dd4/DESCRIPTION’ ...  ✓  checking for file ‘/tmp/Rtmpst04MI/remotes743366bdef0b/rafapereirabr-gtfs2emis-1581f85a352f01ef8908408440914fdde0d70dd4/DESCRIPTION’
     ##   ─  preparing ‘gps2emis’:
     ##      checking DESCRIPTION meta-information ...  ✓  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
     ## ─  looking to see if a ‘data/datalist’ file should be added
-    ##        NB: this package now depends on R (>= 3.5.0)
-    ##        WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects:  'gps2emis/inst/extdata/fleet/cur/cur.rds'
-    ##   ─  building 'gps2emis_0.0.0.9000.tar.gz'
+    ##   ─  building ‘gps2emis_0.0.0.9000.tar.gz’
     ##      
     ## 
 
