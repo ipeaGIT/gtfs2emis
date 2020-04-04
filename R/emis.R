@@ -14,24 +14,23 @@
 #' @export
 emis <- function(pol_list, input_folder, output_folder = ".",overwrite = TRUE){
   #
-  # input_folder = paste0("../../data/gps_linestring/",proj_cities$abrev_city)
-  # output_folder = paste0("../../data/gps_linestring_emis/",proj_cities$abrev_city)
+  # input_folder = "test_joao/lines"
+  # output_folder = "test_joao/emis"
   # pol_list = c("CO","NOx")
   # emission_factor = ef
   #
   # files in input_folder
-  gps_line <- list.files(input_folder,recursive = FALSE,full.names = TRUE)
-  gps_line_names <- list.files(input_folder,recursive = FALSE,full.names = FALSE) %>% 
-    stringr::str_remove_all(".txt")
+  gps_line <- list.files(input_folder,recursive = FALSE)
+  #gps_line_names <- list.files(input_folder,recursive = FALSE,full.names = FALSE) %>% 
+  #  gsub(".txt","",gps_line[i])
   #
   # check existing files in output_folder and output 'gps_line'
   # files
   #
-  check_files <- paste0(input_folder,"/",list.files(output_folder))
-  check_files_names <- stringr::str_remove_all(list.files(output_folder),".txt")
-  if(length(check_files) > 0 & overwrite == FALSE){
-    gps_line <- gps_line[gps_line %nin% check_files]
-    gps_line_names <- gps_line_names[gps_line_names %nin% check_files_names]
+  check_files <- paste0(input_folder,"/",list.files(output_folder,recursive = TRUE))
+  #check_files_names <- stringr::str_remove_all(list.files(output_folder),".txt")
+  if(length(check_files) > 1 & overwrite == FALSE){
+    gps_line <- gps_line[gps_line %nin% list.files(output_folder)]
   }
   # euro equivalence
   euro_eq <- data.table::data.table("euro_vein" = c(rep("I",4),rep("II",5),rep("III",6),rep("IV",3),rep("V",8)),
@@ -40,14 +39,14 @@ emis <- function(pol_list, input_folder, output_folder = ".",overwrite = TRUE){
   # loop per line
   lapply(seq_along(gps_line),function(i){ # i = 1
     # introduction message
-    message(paste0("shape_id #",gps_line_names[i]," range ",i,"/",length(gps_line)))
+    message(paste0("shape_id #",gsub(".txt","",gps_line[i])," range ",i,"/",length(gps_line)))
     # read line
-    dtline <- data.table::fwrite(gps_line[i])
+    dtline <- data.table::fread(paste0(input_folder,"/",gps_line[i]))
     dtline[,dist := units::set_units(dist,km)]
     #
     # check fleet completeness
-    if(is.na(dtline$frota_ano)[1] == TRUE){
-      message(paste0("shape_id #",gps_line_names[i]," without fleet data"))
+    if(is.na(dtline$frota_ano[1])){
+      message(paste0("shape_id #",gsub(".txt","",gps_line[i])," without fleet data"))
       return(NULL)
     }else{
       # fleet
@@ -76,7 +75,7 @@ emis <- function(pol_list, input_folder, output_folder = ".",overwrite = TRUE){
                                     veh = veh_type,
                                     year = unique(dtline$frota_ano),
                                     agemax = 1)
-        FE_speed <- ef_hdv_scaled(dfcol = FE_local,vel = dtline$speed,veh = "Buses",fuel = "Diesel",
+        FE_speed <- ef_hdv_scaled(dfcol = FE_local,vel = dtline$speed,veh =  veh_segment,fuel = "Diesel",
                                   euro = euro_eq[ano %in% unique(dtline$frota_ano),euro],
                                   pol = pol,show.equation = FALSE)
         # FE_vein <- vein::ef_hdv_scaled(dfcol = FE_local,v = "Ubus",t = veh_vein_type,g = veh_gweight,
