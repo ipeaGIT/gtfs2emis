@@ -45,7 +45,6 @@ ef_hdv_speed <- function(vel,veh,fuel,euro,tech,pol,slope = 0.0,load = 0.5,k = 1
               Euro.Standard %in% euro & 
               Technology %in% tech &
               Pollutant %in% pol &
-              #Mode %in% mode &
               Road.Slope %in% slope &
               Load %in% load,]
   

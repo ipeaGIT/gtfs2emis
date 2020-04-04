@@ -23,17 +23,21 @@
 ef_hdv_scaled <- function(dfcol,vel,veh,fuel,euro,SDC = 34.12,
                           tech = "SCR",pol,slope = 0.0,load = 0.5,show.equation = TRUE){
   #
+  # test
+  # FE_local = units::set_units(0.5,g/km); vel = 30
+  # fuel = "Diesel"; euro = "Euro V"
+  # SDC = 34.12; tech = "SCR"; veh = "Urban Buses Standard 15 - 18 t"
+  # pol = "CO"; slope = 0.0; load = 0.5; show.equation = TRUE
+  #
   # adjust based on local emission factor
   #
-  if (length(dfcol) != length(euro)) 
-    stop("Length of dfcol must be the same as length of eu")
   dfcol <- as.numeric(dfcol)
-  la <- lapply(1:length(dfcol), function(i) {
-    funIN <- ef_hdv_speed(vel = vel,veh = "Buses",fuel = "Diesel",
+  la <- lapply(1:length(dfcol), function(i) { # i = 1
+    funIN <- ef_hdv_speed(vel = SDC,veh = veh,fuel = "Diesel",
                           euro = euro,
                           tech = tech,pol = pol,show.equation = FALSE)
     k <- dfcol[i]/funIN
-    ef_scaled <- ef_hdv_speed(vel = SDC,veh = "Buses",
+    ef_scaled <- ef_hdv_speed(vel = vel,veh = veh,
                               fuel = "Diesel",
                               euro = euro,
                               tech = tech,pol = pol,k = k,show.equation = FALSE)
