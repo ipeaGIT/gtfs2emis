@@ -10,12 +10,19 @@ Description: Generate estimates of public transport emissions at high spatial an
              temporal resolution by combining GTFS data with basic information on 
              fleet characteristics.
 License: MIT + file LICENSE
+<<<<<<< HEAD
+=======
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
+Depends:
+    R (>= 3.5.0)
+>>>>>>> dd6a1138055262bbfcf0b5ee99a3eb42d9f33400
 Imports: 
     stringr,
     data.table,
     sf (>= 0.9-0),
     units,
-    readr,
     magrittr,
     gtfs2gps,
     vein

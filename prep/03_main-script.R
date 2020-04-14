@@ -59,9 +59,10 @@ read_gps(input_folder = gps_output_fo,fleet_data = fleet)
 source("prep/09_emep-eea_emission-factor.R")
 source("prep/09_ef_hdv_scaled_2019.R")
 
-ef <- openxlsx::read.xlsx("test_joao/references/copert/1.A.3.b.i-iv Road transport hot EFs Annex 2018_Dic.xlsx") %>% 
+ef <- openxlsx::read.xlsx("../joao_gtfs2emis/test_joao/references/copert/1.A.3.b.i-iv Road transport hot EFs Annex 2018_Dic.xlsx") %>% 
   data.table::as.data.table()
 ef <- ef[Category %in% "Buses",]
+ef <- ef[Pollutant %in% "PM Exhaust",Pollutant := "PM"]
 
 
 # ----------------------

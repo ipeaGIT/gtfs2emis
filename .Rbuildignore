@@ -1,4 +1,3 @@
-^.*\.Rproj$         # Designates the directory as an RStudio Project
 ^\.Rproj\.user$     # Used by RStudio for temporary files
 ^LICENSE\.md$       # Full text of the license
 ^README\.Rmd$       # An Rmd file used to generate README.md
@@ -10,3 +9,5 @@
 ^LICENSE\.md$
 ^tests$
 ^gps2emis.Rproj
+^data-raw$
+^.*\.Rproj$

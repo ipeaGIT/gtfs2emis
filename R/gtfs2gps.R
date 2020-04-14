@@ -7,7 +7,8 @@
 #' @param raw_gtfs Character; a path to a GTFS file to be converted to GPS
 #' @param filepath Character; output file path.
 #' @param filter_weekdays Logical; When TRUE (default) is filter the gtfs file, removing the
-#'  trips operating only saturday or sunday. 
+#'  trips operating only saturday or sunday.
+#'   
 #' @export
 gtfs2gps <- function(raw_gtfs,filepath,filter_weekdays = TRUE){
   # read gtfs to memory
@@ -24,7 +25,7 @@ gtfs2gps <- function(raw_gtfs,filepath,filter_weekdays = TRUE){
   # create output directory gtfs 2 gps
   dir.create(filepath, showWarnings = FALSE)
   
-  gps_df <- gtfs2gps::gtfs2gps(gtfs_data = gtfs,filepath = filepath,continue = TRUE,parallel = FALSE,
+  gps_df <- gtfs2gps::gtfs2gps(gtfs_data = gtfs,filepath = filepath,parallel = FALSE,
                      spatial_resolution = 15, progress = TRUE)
   gps_df$dt <- stringr::str_sub(gps_df$departure_time,1,2)
   # table(gps_df$dt)
@@ -33,6 +34,6 @@ gtfs2gps <- function(raw_gtfs,filepath,filter_weekdays = TRUE){
   # gps_sf <- gtfs2gps::gps_as_sf(gtfs)
   
   # save outputs
-  return(gps_sf)
+  return(NULL)
   
 }

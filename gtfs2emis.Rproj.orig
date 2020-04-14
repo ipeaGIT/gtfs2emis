@@ -15,3 +15,7 @@ LaTeX: pdfLaTeX
 BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
+<<<<<<< HEAD:gps2emission.Rproj
+=======
+PackageRoxygenize: rd,collate,namespace
+>>>>>>> dd6a1138055262bbfcf0b5ee99a3eb42d9f33400:gtfs2emis.Rproj
