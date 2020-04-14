@@ -1,17 +1,19 @@
-Package: gps2emis
-Title: Estimate public transportation emissions from GTFS data
+Type: Package
+Package: gtfs2emis
+Title: Generating Estimates Of Public Transport Emissions From GTFS Data
 Version: 0.0.0.9000
-Authors@R: c(person(given="Joao",family="Bazzo",email="joao.bazzo@gmail.com",role=c("aut","cre"),comment = c(ORCID = "0000-0003-4536-5006")),person(given="Rafael H. M.", family="Pereira", email="rafa.pereira.br@gmail.com", role=c("aut"), comment = c(ORCID = "0000-0003-2125-7465")),person(given="Pedro R.", family="Andrade", email="pedro.andrade@inpe.br", role=c("aut"), comment = c(ORCID = "0000-0001-8675-4046")))
-Description: GTFS data from public transportation, combined with fleet characteristics, 
-    is used to estimate emissions of vehicles in a high temporal and spatial resolution.
+Date: 2020-04-13
+Authors@R: c(person(given="Rafael H. M.", family="Pereira", email="rafa.pereira.br@gmail.com", role=c("aut"), comment = c(ORCID = "0000-0003-2125-7465")),
+             person(given="Joao",family="Bazzo",email="joao.bazzo@gmail.com",role=c("aut","cre"),comment = c(ORCID = "0000-0003-4536-5006")),
+             person(given="Pedro R.", family="Andrade", email="pedro.andrade@inpe.br", role=c("aut"), comment = c(ORCID = "0000-0001-8675-4046")))
+Description: Generate estimates of public transport emissions at high spatial and 
+             temporal resolution by combining GTFS data with basic information on 
+             fleet characteristics.
 License: MIT + file LICENSE
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.1.0
 Imports: 
     stringr,
     data.table,
-    sf,
+    sf (>= 0.9-0),
     units,
     readr,
     magrittr,
@@ -21,3 +23,6 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
