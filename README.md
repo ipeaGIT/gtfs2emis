@@ -29,7 +29,7 @@ devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62f
     ##      
     ## 
 
-### Usage
+## Basic Usage
 
 For now, the function are a little bit adapted to Curitiba’s GTFS and
 fleet characteristics. Also, it still possible to simulate emissions
@@ -49,7 +49,6 @@ NOx.
 
 
 
-## Basic Usage
 
 
 ``` r
