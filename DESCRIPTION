@@ -11,11 +11,9 @@ Description: Generate estimates of public transport emissions at high spatial an
              fleet characteristics.
 License: MIT + file LICENSE
 Imports: 
-    stringr,
     data.table,
     sf (>= 0.9-0),
     units,
-    readr,
     magrittr,
     gtfs2gps,
     vein

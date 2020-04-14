@@ -5,9 +5,8 @@
 ^test_joao$
 ^prep$
 ^figures$
-^README\.Rmd$
-^LICENSE\.md$
 ^tests$
 ^gps2emis.Rproj
 ^data-raw$
 ^.*\.Rproj$
+^vignettes$

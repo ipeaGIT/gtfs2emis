@@ -27,7 +27,7 @@ gtfs2gps <- function(raw_gtfs,filepath,filter_weekdays = TRUE){
   
   gps_df <- gtfs2gps::gtfs2gps(gtfs_data = gtfs,filepath = filepath,parallel = FALSE,
                      spatial_resolution = 15, progress = TRUE)
-  gps_df$dt <- stringr::str_sub(gps_df$departure_time,1,2)
+  gps_df$dt <- substr(gps_df$dt,1,2)
   # table(gps_df$dt)
   # gtfs$stop_times %>% dim()
   # gtfs$[shape_id %in% gtfs$shapes$shape_id[1],]
