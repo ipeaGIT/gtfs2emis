@@ -4,19 +4,12 @@
 \alias{gps2line}
 \title{Convert GPS to Lines-data type}
 \usage{
-gps2line(input_filepath, output_filepath, fleet_path = NA, overwrite = TRUE)
+gps2line(input_file, output_filepath = NA)
 }
 \arguments{
-\item{input_filepath}{Character; location of exported GPS files}
+\item{input_file}{Data.frame/Data.table; location of exported GPS files or GPS files}
 
-\item{output_filepath}{Character; location for export Line-data type}
-
-\item{fleet_path}{Character; path of fleet data associated with information of age, engine size,
-weight gross total and shape_id's. This input associated with shape_id's allows the function to relate each
-shape_id to a vehicle, by creating columns of fleet specification in the output.
-Missing entry means no fleet allocation}
-
-\item{overwrite}{Logical; overwrites files in the output_filepath}
+\item{output_filepath}{Character; location for export Line-data type. If missing it returns the values.}
 }
 \description{
 Transform intervals of GPS data of constant speed into
