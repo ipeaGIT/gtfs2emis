@@ -24,7 +24,7 @@ ef_hdv_scaled <- function(dfcol,vel,veh,fuel,euro,SDC = 34.12,
                           tech = "SCR",pol,slope = 0.0,load = 0.5,show.equation = TRUE){
   #
   # test
-  # FE_local = units::set_units(0.5,g/km); vel = 30
+  # dfcol = units::set_units(0.5,g/km); vel = 30
   # fuel = "Diesel"; euro = "Euro V"
   # SDC = 34.12; tech = "SCR"; veh = "Urban Buses Standard 15 - 18 t"
   # pol = "CO"; slope = 0.0; load = 0.5; show.equation = TRUE
@@ -40,7 +40,7 @@ ef_hdv_scaled <- function(dfcol,vel,veh,fuel,euro,SDC = 34.12,
     ef_scaled <- ef_hdv_speed(vel = vel,veh = veh,
                               fuel = "Diesel",
                               euro = euro,
-                              tech = tech,pol = pol,k = k,show.equation = FALSE)
+                              tech = tech,pol = pol,k = k,show.equation = show.equation)
     return(ef_scaled)
   }) %>% unlist()
   return(units::set_units(la,g/km))

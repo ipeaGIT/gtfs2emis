@@ -23,6 +23,7 @@ ef_hdv_speed <- function(vel,veh,fuel,euro,tech,pol,slope = 0.0,load = 0.5,k = 1
   # emission factor
   #
   temp_ef <- ef
+  vel <- as.numeric(vel)
   #
   # pre-conditions
   #
@@ -58,6 +59,7 @@ ef_hdv_speed <- function(vel,veh,fuel,euro,tech,pol,slope = 0.0,load = 0.5,k = 1
     cat(paste0("a = ", temp_ef1$Alpha, ", b = ", temp_ef1$Beta, ", g = ", 
                temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ", 
                temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", h = ", temp_ef1$Hta, "\n"))
+    cat(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
   }
   #
   # fix speed
