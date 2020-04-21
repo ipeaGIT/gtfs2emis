@@ -3,7 +3,7 @@
 export(ef_hdv_scaled)
 export(ef_hdv_speed)
 export(emis)
-export(gps2line)
+export(gps_as_sflinestring)
 importFrom(data.table,":=")
 importFrom(data.table,.N)
 importFrom(data.table,.SD)
