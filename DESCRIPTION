@@ -14,6 +14,7 @@ Imports:
     data.table,
     sf (>= 0.9-0),
     units,
+    sfheaders,
     magrittr,
     gtfs2gps,
     vein
