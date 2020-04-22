@@ -19,14 +19,10 @@ Every interval of GPS data points of constant speed for each trip_id is
  converted into a linestring segment.
 }
 \examples{
-library(gtfs2gps)
-library(gtfs2emis)
-
-cur <- gtfs2gps::gtfs2gps(system.file("extdata/inst/gtfs_cur.zip", package = "gtfs2emis"))
-subset <- filter_by_shape_id(poa, "T2-1") \%>\%
-  filter_single_trip()
-
-poa_gps <- gtfs2gps(subset)
-poa_gps_sf <- gps_as_sf(poa_gps)
+cur_read <- gtfs2gps::read_gtfs(system.file("extdata/gtfs_cur.zip", package ="gtfs2emis"))
+cur_gtfs <- gtfs2gps::filter_by_shape_id(gtfs_data = cur_read,shape_ids = c(1708))
+cur_gtfs <- gtfs2gps::gtfs2gps(gtfs_data = cur_gtfs)
+cur_gpslines <- gps_as_sflinestring(input_file = cur_gtfs) 
+plot(cur_gpslines$geometry)
 
 }
