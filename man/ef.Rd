@@ -30,7 +30,7 @@ A data table with 6431 rows and 22 variables:
 ef
 }
 \description{
-Hot emission factors are speed dependant and are expressed in g/km. They differ by fuel, vehicle class
+Hot emission factors are speed dependent and are expressed in g/km. They differ by fuel, vehicle class
 and engine technology. In previous versions of this chapter a number of functions were provided to 
 calculate hot emission factors for the different vehicle categories. All these functions are now 
 consolidated into a single equation, given by
