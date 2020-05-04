@@ -1,6 +1,6 @@
 #' Emission factors from EMEP/EEA
 #'
-#' Hot emission factors are speed dependant and are expressed in g/km. They differ by fuel, vehicle class
+#' Hot emission factors are speed dependent and are expressed in g/km. They differ by fuel, vehicle class
 #' and engine technology. In previous versions of this chapter a number of functions were provided to 
 #' calculate hot emission factors for the different vehicle categories. All these functions are now 
 #' consolidated into a single equation, given by
@@ -34,3 +34,16 @@
 #' @source \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
 #' 
 "ef"
+#' EMFAC
+#' Describe
+#'
+#' @format A data table with xxx rows and 22 variables:
+#' \describe{
+#'   \item{calendar_year}{calendar_year}
+#'   \item{fuel}{fuel}
+#'   \item{model_year}{model_year}
+#'   \item{speed}{speed}
+#' }
+#' @source \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
+#' 
+"emfac"
