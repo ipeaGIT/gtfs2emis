@@ -16,34 +16,41 @@
 #' @param speed Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
 #'   "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h)
-#' @return Emission factors in units 'g/km'
+#' @return List; Emission factors in units 'g/km' by speed and model_year
 #' @source \url{https://arb.ca.gov/emfac/}
-#'
+#' @examples
+#' ef_emfac(pol = 'CO',calendar_year = 2019,
+#' model_year = c(2016,2017,2018),
+#' speed = units::set_units(seq(1,100,by = 10),'km/h'))
+#' 
 #' @export
 ef_emfac <- function(pol,calendar_year,model_year,speed,fuel = 'Diesel'){
-  # pol = 'COD';calendar_year = 2019;model_year = 2012
-  # speed = units::set_units(10,'km/h'); fuel = 'Diesel'
+  # pol = 'CO';calendar_year = 2019;model_year = c('2006','2006')
+  # speed = units::set_units(c(10,20,30),'km/h'); fuel = 'Diesel'
   # Emission factor filter
-  temp_emfac <- emfac[`Calendar Year` %in% as.character(calendar_year) &
-                        `Model Year` %in% model_year &
-                        Pollutant %in% pol &
-                        Fuel %in% fuel,]
-  if(dim(temp_emfac)[1] == 0){
-    message("Emission Factor do not exist. \n Please check `data(emfac)` for valid emission factors.")
-    return(NULL)
-  }else{
-    # Speed filter applied to EF
-    ef_subset <- sapply(seq_along(speed),function(i){ # i = 1
-      ef <- temp_emfac[lower_speed_interval < speed[i] & 
-                         upper_speed_interval >= speed[i], EF]
-      return(ef)
-    }) %>% units::set_units('g/km')
-    if(length(ef_subset) == 0){
+  ef0 <- lapply(model_year,function(i){ # i = model_year[1]
+    temp_emfac <- emfac[`Calendar Year` %in% as.character(calendar_year) &
+                          `Model Year` %in% as.character(i) &
+                          Pollutant %in% pol &
+                          Fuel %in% fuel,]
+    # 1st condition
+    if(dim(temp_emfac)[1] == 0){
       message("Emission Factor do not exist. \n Please check `data(emfac)` for valid emission factors.")
-    }else{
-      return(ef_subset)
+      return(NULL)
     }
-  }
+    else{
+      # Speed filter applied to EF
+      ef1 <- sapply(seq_along(speed),function(i){ # i = 140
+        ef2 <- temp_emfac[lower_speed_interval < speed[i] & 
+                            upper_speed_interval >= speed[i], EF]
+        #message(i)
+        return(ef2)
+      }) %>% units::set_units('g/km')
+    }
+    return(ef1)
+  }) 
+  names(ef0) <- c(model_year)
   
+  return(ef0)
 }
 

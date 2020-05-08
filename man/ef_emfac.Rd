@@ -29,9 +29,15 @@ such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
 \item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'}
 }
 \value{
-Emission factors in units 'g/km'
+List; Emission factors in units 'g/km' by speed and model_year
 }
 \description{
 Emissions that come out of the vehicle tailpipe while the vehicle is traveling on the road. The function returns emissions factor in units
 'g/km'
+}
+\examples{
+ef_emfac(pol = 'CO',calendar_year = 2019,
+model_year = c(2016,2017,2018),
+speed = units::set_units(seq(1,100,by = 10),'km/h'))
+
 }
