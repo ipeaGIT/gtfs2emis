@@ -4,19 +4,25 @@
 \alias{emis}
 \title{Estimate hot exhaust emissions}
 \usage{
-emis(pol_list, input_folder, output_folder = ".", overwrite = TRUE)
+emis(veh, dist, ef)
 }
 \arguments{
-\item{pol_list}{Character; Vector of list of pollutants}
+\item{veh}{Vehicles data-frame or list of "Vehicles" data-frame.
+Each data-frame as number of columns matching the age distribution of that ype of vehicle. The number of rows is equal to the number of streets link. If this is a list, the length of the list is the vehicles for each hour.}
 
-\item{input_folder}{Character;}
+\item{dist}{Units (in km); Length of each link in km}
 
-\item{output_folder}{Character;}
-
-\item{overwrite}{Logical;}
+\item{ef}{Units (in g/km);    List of functions of emission factors}
+}
+\value{
+Units (in g); emissions per link
 }
 \description{
-Transform intervals of GPS data of constant speed into
-a linestring segment, in order to reduce data size of observations.
-In Curitiba, for the sake of simplicity, I'm adding:
+Calculate hot exhaust emissions
+}
+\examples{
+vehdt <- data.table::data.table("veh1" = 0.75,"veh2" = 0.25)
+efdt <- list("CO"=units::set_units(c(0.25,0.17),'g/km'))
+distdt <- units::set_units(rep(1,10),'km')
+emis(veh = vehdt, dist = distdt, ef = efdt)
 }
