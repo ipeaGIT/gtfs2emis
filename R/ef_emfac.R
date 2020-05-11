@@ -33,24 +33,21 @@ ef_emfac <- function(pol,calendar_year,model_year,speed,fuel = 'Diesel'){
                           `Model Year` %in% as.character(i) &
                           Pollutant %in% pol &
                           Fuel %in% fuel,]
-    # 1st condition
     if(dim(temp_emfac)[1] == 0){
-      message("Emission Factor do not exist. \n Please check `data(emfac)` for valid emission factors.")
-      return(NULL)
+      stop("Emission Factor do not exist. \n Please check `data(emfac)` for valid emission factors.")
     }
     else{
       # Speed filter applied to EF
-      ef1 <- sapply(seq_along(speed),function(i){ # i = 140
+      ef1 <- sapply(seq_along(speed),function(i){ 
         ef2 <- temp_emfac[lower_speed_interval < speed[i] & 
                             upper_speed_interval >= speed[i], EF]
-        #message(i)
         return(ef2)
       }) %>% units::set_units('g/km')
     }
+    # rename list by model_year
+    names(ef1) <- c(model_year)
+    
     return(ef1)
-  }) 
-  names(ef0) <- c(model_year)
-  
+  })
   return(ef0)
 }
-
