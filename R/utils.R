@@ -17,6 +17,7 @@ utils::globalVariables(c('Euro.Standard','Fuel','Load','Pollutant','Road.Slope',
 utils::globalVariables(c('temp_ef','temp_ef1','ef'))
 utils::globalVariables(c('ano','dist','emission_factor','euro'))
 utils::globalVariables(c('geometry','f_linhas','interval_id','i.interval','grp'))
+utils::globalVariables(c('emis_post','time_dt'))
 utils::globalVariables(c('emfac','temp_emfac','Calendar Year','Model Year','EF','EF Model','Year','lower_speed_interval','upper_speed_interval'))
 # check valid shapeid
 
