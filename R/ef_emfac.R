@@ -11,7 +11,7 @@
 #'   Sulfur oxides (SOx); Carbon Dioxide (CO2); 
 #'   Nitrous Oxide (N2O) and Methane (CH4).
 #' @param calendar_year Numeric; Calendar Year between 2010 - 2020
-#' @param fuel Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'
+#' @param fuel Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.
 #' @param model_year Numeric; Model year.
 #' @param speed Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
@@ -44,10 +44,10 @@ ef_emfac <- function(pol,calendar_year,model_year,speed,fuel = 'Diesel'){
         return(ef2)
       }) %>% units::set_units('g/km')
     }
-    # rename list by model_year
-    names(ef1) <- c(model_year)
-    
     return(ef1)
   })
+  # rename list by model_year
+  names(ef0) <- c(model_year)
+  ef0
   return(ef0)
 }
