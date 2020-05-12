@@ -8,15 +8,22 @@
 #' @param ef Units (in g/km);	List of functions of emission factors
 #' @return Units (in g); emissions per link
 #' @examples 
-#' vehdt <- data.table::data.table("veh1" = 0.75,"veh2" = 0.25)
-#' efdt <- list("CO"=units::set_units(c(0.25,0.17),'g/km'))
-#' distdt <- units::set_units(rep(1,10),'km')
-#' emis(veh = vehdt, dist = distdt, ef = efdt)
+#' set.seed(12039)
+#' emis(veh = data.table::data.table("veh1" = 0.75,"veh2" = 0.25),
+#' dist = units::set_units(rnorm(10,mean = 8),'km'),
+#' ef = list("veh1" = units::set_units(rnorm(10,0.35,0.01),'g/km'),
+#' "veh2" = units::set_units(rnorm(10,0.27,0.01),'g/km')))
+#' 
+#' emis(veh = data.table::data.table("veh1" = 1),
+#' dist = units::set_units(rnorm(10,mean = 8),'km'),
+#' ef = list("veh1" = units::set_units(rnorm(10,0.35,0.01),'g/km')))      
 #' @export
 emis <- function(veh,dist,ef){
-  # dist <- units::set_units(rep(2,10),"km")
-  # ef <- list("CO"=set_units(rep(1,5),'g/km'),"MP" = set_units(rep(-1,5),'g/km'))
-  # veh <- data.table("veh1" = 0.2,"veh2" = 0.2,"veh3" = 0.2,"veh4" = 0.2,"veh5" = 0.2)
+  # dist = units::set_units(rep(1,10),'km')
+  # ef <- list("2005"= units::set_units(rep(1,10),'g/km'),
+  #           "2006" = units::set_units(rep(-1,10),'g/km'),
+  #           "2007" = units::set_units(rep(0,10),'g/km'))
+  # veh <- data.table::data.table("veh1" = 0.2,"veh2" = 0.2,"veh3" = 0.2)
   # veh <- vehdt
   # check units
   #
@@ -31,28 +38,29 @@ emis <- function(veh,dist,ef){
   if(class(ef) != "list"){
     stop("ef should be presented in 'list' class. Please, try using 'list(ef)' instead.")
   }
-  for(i in seq_along(ef)){ # i = 1
+  lapply(seq_along(ef),function(i){ # i = 1
     if(class(ef[[i]]) != "units"){
       stop("ef neeeds to has class 'units' in 'g/km'. Please, check package 'units'")
     }
     if(units(ef[[i]])$numerator != "g" | units(ef[[i]])$denominator != "km"){
       stop("ef need to has 'units' in 'g/km'.")
     }
+    # check length with veh
+    if(length(ef[[i]]) != length(dist)){
+      stop(paste0("ef '",names(ef[i]),"' needs to has the same length of dist"))
+    }
+  })
+  # check length of ef with veh
+  if(length(ef) != length(veh)){
+    stop("ef needs to has the same length of veh")
   }
-
-   # disagregated emissions
-  emi <- lapply(seq_along(list(ef)),function(i){ # i = 1 
+  # emissions
+  emi <- lapply(seq_along(ef),function(i){ # i = 1 
     # ef into matrix (efm)
     efm <- matrix(ef[[i]])
-    # check length  
-    if(nrow(efm) != length(veh)){
-      stop("Length of ef is different than veh. \n Lengths should be the same.")
-    }
     # estimate emissions
-    aux <- efm * as.numeric(veh)
-    temp_dist <- as.numeric(dist)
-    temp_emis <- aux %*% t(matrix(temp_dist))
-    row.names(temp_emis) <- names(veh)
+    aux <- efm * as.numeric(veh[[i]])
+    temp_emis <- aux * as.numeric(dist)
     return(temp_emis)
   }) 
   names(emi) <- names(ef)
