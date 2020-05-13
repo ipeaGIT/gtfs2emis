@@ -26,7 +26,7 @@ Nitrous Oxide (N2O) and Methane (CH4).}
 such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
  "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h)}
 
-\item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'}
+\item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.}
 }
 \value{
 List; Emission factors in units 'g/km' by speed and model_year
