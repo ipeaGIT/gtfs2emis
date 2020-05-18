@@ -12,42 +12,91 @@
 #'   Nitrous Oxide (N2O) and Methane (CH4).
 #' @param calendar_year Numeric; Calendar Year between 2010 - 2020
 #' @param fuel Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.
-#' @param model_year Numeric; Model year.
+#' @param model_year Numeric; Model year of vehicle.
 #' @param speed Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
 #'   "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h)
-#' @return List; Emission factors in units 'g/km' by speed and model_year
+#' @param veh numeric; proportion of circulating fleet according to model_year. It has to be 
+#' the same length as model_year.
+#' @param aggregate does the emission factor should be aggregated?
+#' @return Data.table; Emission factors in units 'g/km' by speed and model_year
 #' @source \url{https://arb.ca.gov/emfac/}
 #' @examples
 #' ef_emfac(pol = 'CO',calendar_year = 2019,
-#' model_year = c(2016,2017,2018),
-#' speed = units::set_units(seq(1,100,by = 10),'km/h'))
+#' model_year = c(2016,2017,2018),veh = c(0.25,0.25,0.5),
+#' speed = units::set_units(seq(1,100,by = 10),'km/h'),fuel = 'Diesel')
 #' 
 #' @export
-ef_emfac <- function(pol,calendar_year,model_year,speed,fuel = 'Diesel'){
-  # pol = 'CO';calendar_year = 2019;model_year = c('2006','2006')
-  # speed = units::set_units(c(10,20,30),'km/h'); fuel = 'Diesel'
-  # Emission factor filter
-  ef0 <- lapply(model_year,function(i){ # i = model_year[1]
-    temp_emfac <- emfac[`Calendar Year` %in% as.character(calendar_year) &
-                          `Model Year` %in% as.character(i) &
-                          Pollutant %in% pol &
-                          Fuel %in% fuel,]
+ef_emfac <- function(pol,calendar_year,model_year,speed,veh = NULL,aggregate = TRUE,fuel = 'Diesel'){
+  #
+  # Filter calendar
+  temp_emfac <- emfac[`Calendar Year` %in% as.character(calendar_year) &
+                        Fuel %in% fuel,]
+  #
+  # check veh class
+  if(class(veh) != 'numeric'){stop("'veh' class must be in numeric format.")}
+  #
+  # Filter pollutant
+  ef_pol <- lapply(pol, function(p){ 
+    #
+    # p = pol[1]
+    temp_emfac <- temp_emfac[Pollutant %in% p,]
+    
+    #
+    # check condition
     if(dim(temp_emfac)[1] == 0){
       stop("Emission Factor do not exist. \n Please check `data(emfac)` for valid emission factors.")
     }
-    else{
-      # Speed filter applied to EF
-      ef1 <- sapply(seq_along(speed),function(i){ 
-        ef2 <- temp_emfac[lower_speed_interval < speed[i] & 
-                            upper_speed_interval >= speed[i], EF]
-        return(ef2)
-      }) %>% units::set_units('g/km')
+    
+    #
+    # Filter Model Year
+    temp_ef <- sapply(model_year,function(i){ 
+      
+      # i = model_year[1]
+      temp_emfac <- temp_emfac[`Model Year` %in% as.character(i),]
+      
+      #
+      # check condition (2)
+      if(dim(temp_emfac)[1] == 0){
+        stop("Emission Factor do not exist. \n Please check `data(emfac)` for valid emission factors.")
+      }
+      
+      #
+      # Filter Speed
+      temp_speed <- rep(NA,length(speed))
+      temp_order <- unique(emfac$upper_speed_interval)
+      temp_order <- temp_order[order(temp_order,decreasing = TRUE)]
+      for(t in temp_order){ 
+        temp_speed[which(as.numeric(speed) < t)] <- t
+      }
+      #temp_speed
+      temp_model <- temp_emfac[sapply(temp_speed,function(i){which(
+        upper_speed_interval %in% i)}),EF]
+      return(temp_model)
+    }) %>% data.table::as.data.table()
+    
+    #
+    # aggregate
+    if(aggregate){
+      if(is.null(veh)){stop("Veh file is missing")}else{
+        #
+        # average ef
+        temp_ef_avg <- lapply(seq_along(veh),function(k){
+          temp_ef[,.SD,.SDcols=c(k)] * veh[k]
+          }) 
+        temp_ef_avg <- do.call(cbind,temp_ef_avg) %>% rowSums() %>% data.table::as.data.table()
+        names(temp_ef_avg) <- paste0(p,"_avg")
+        return(temp_ef_avg)
+      }
+    }else{
+      #
+      # do not aggregate emission factors
+      names(temp_ef) <- paste0(p,"_",model_year)
+      return(temp_ef)
     }
-    return(ef1)
-  })
-  # rename list by model_year
-  names(ef0) <- c(model_year)
-  ef0
-  return(ef0)
+  }) 
+  #
+  # return in a data.table like format
+  ef_final <- do.call(cbind,ef_pol)
+  return(ef_final)
 }

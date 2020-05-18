@@ -7,7 +7,15 @@
 \url{https://arb.ca.gov/emfac/}
 }
 \usage{
-ef_emfac(pol, calendar_year, model_year, speed, fuel = "Diesel")
+ef_emfac(
+  pol,
+  calendar_year,
+  model_year,
+  speed,
+  veh = NULL,
+  aggregate = TRUE,
+  fuel = "Diesel"
+)
 }
 \arguments{
 \item{pol}{Character; Pollutants: Carbon monoxide (CO); Nitrogen oxides (NOx); 
@@ -20,16 +28,21 @@ Nitrous Oxide (N2O) and Methane (CH4).}
 
 \item{calendar_year}{Numeric; Calendar Year between 2010 - 2020}
 
-\item{model_year}{Numeric; Model year.}
+\item{model_year}{Numeric; Model year of vehicle.}
 
 \item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
  "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h)}
 
+\item{veh}{numeric; proportion of circulating fleet according to model_year. It has to be 
+the same length as model_year.}
+
+\item{aggregate}{does the emission factor should be aggregated?}
+
 \item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.}
 }
 \value{
-List; Emission factors in units 'g/km' by speed and model_year
+Data.table; Emission factors in units 'g/km' by speed and model_year
 }
 \description{
 Emissions that come out of the vehicle tailpipe while the vehicle is traveling on the road. The function returns emissions factor in units
@@ -37,7 +50,7 @@ Emissions that come out of the vehicle tailpipe while the vehicle is traveling o
 }
 \examples{
 ef_emfac(pol = 'CO',calendar_year = 2019,
-model_year = c(2016,2017,2018),
-speed = units::set_units(seq(1,100,by = 10),'km/h'))
+model_year = c(2016,2017,2018),veh = c(0.25,0.25,0.5),
+speed = units::set_units(seq(1,100,by = 10),'km/h'),fuel = 'Diesel')
 
 }
