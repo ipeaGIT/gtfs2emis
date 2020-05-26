@@ -31,11 +31,22 @@ files.
 
 ``` r
 devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
+#> 
+#>      checking for file ‘/tmp/RtmpOi8sQF/remotes301d7e71ef43/rafapereirabr-gtfs2emis-e419f324caeaada181812bd88defbb5d745ffac1/DESCRIPTION’ ...  ✓  checking for file ‘/tmp/RtmpOi8sQF/remotes301d7e71ef43/rafapereirabr-gtfs2emis-e419f324caeaada181812bd88defbb5d745ffac1/DESCRIPTION’
+#>   ─  preparing ‘gtfs2emis’:
+#>      checking DESCRIPTION meta-information ...  ✓  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#> ─  looking to see if a ‘data/datalist’ file should be added
+#>   ─  building ‘gtfs2emis_0.0.0.9000.tar.gz’
+#>      
+#> 
 ```
 
 ### Basic Usage
 
-More examples in the [intro Vignette](https://cran.r-project.org)
+More examples in the [intro
+Vignette](https://github.com/rafapereirabr/gtfs2emis/blob/master/doc/gtfs2emis-vignette.md)
 
 #### Available transport emission factors:
 

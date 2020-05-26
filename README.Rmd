@@ -27,7 +27,7 @@ devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62f
 
 ### Basic Usage
 
-More examples in the [intro Vignette](https://cran.r-project.org)
+More examples in the [intro Vignette](https://github.com/rafapereirabr/gtfs2emis/blob/master/doc/gtfs2emis-vignette.md)
 
 #### Available transport emission factors:
 
