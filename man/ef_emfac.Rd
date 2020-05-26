@@ -48,9 +48,3 @@ Data.table; Emission factors in units 'g/km' by speed and model_year
 Emissions that come out of the vehicle tailpipe while the vehicle is traveling on the road. The function returns emissions factor in units
 'g/km'
 }
-\examples{
-ef_emfac(pol = 'CO',calendar_year = 2019,
-model_year = c(2016,2017,2018),veh = c(0.25,0.25,0.5),
-speed = units::set_units(seq(1,100,by = 10),'km/h'),fuel = 'Diesel')
-
-}

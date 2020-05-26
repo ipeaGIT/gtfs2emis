@@ -21,11 +21,6 @@
 #' @param aggregate does the emission factor should be aggregated?
 #' @return Data.table; Emission factors in units 'g/km' by speed and model_year
 #' @source \url{https://arb.ca.gov/emfac/}
-#' @examples
-#' ef_emfac(pol = 'CO',calendar_year = 2019,
-#' model_year = c(2016,2017,2018),veh = c(0.25,0.25,0.5),
-#' speed = units::set_units(seq(1,100,by = 10),'km/h'),fuel = 'Diesel')
-#' 
 #' @export
 ef_emfac <- function(pol,calendar_year,model_year,speed,veh = NULL,aggregate = TRUE,fuel = 'Diesel'){
   #
@@ -66,12 +61,12 @@ ef_emfac <- function(pol,calendar_year,model_year,speed,veh = NULL,aggregate = T
       temp_speed <- rep(NA,length(speed))
       temp_order <- unique(emfac$upper_speed_interval)
       temp_order <- temp_order[order(temp_order,decreasing = TRUE)]
-      for(t in temp_order){ 
+      for(t in temp_order){ # t = temp_order[1]
         temp_speed[which(as.numeric(speed) < t)] <- t
       }
       #temp_speed
-      temp_model <- temp_emfac[sapply(temp_speed,function(i){which(
-        upper_speed_interval %in% i)}),EF]
+      temp_model <- temp_emfac[sapply(temp_speed,
+                                      function(i){which(upper_speed_interval %in% i)}),EF]
       return(temp_model)
     }) %>% data.table::as.data.table()
     
@@ -81,11 +76,13 @@ ef_emfac <- function(pol,calendar_year,model_year,speed,veh = NULL,aggregate = T
       if(is.null(veh)){stop("Veh file is missing")}else{
         #
         # average ef
-        temp_ef_avg <- lapply(seq_along(veh),function(k){
+        temp_ef_avg <- lapply(seq_along(veh),function(k){ # k = 1
           temp_ef[,.SD,.SDcols=c(k)] * veh[k]
           }) 
-        temp_ef_avg <- do.call(cbind,temp_ef_avg) %>% rowSums() %>% data.table::as.data.table()
+        temp_ef_avg <- do.call(cbind,temp_ef_avg) %>% rowSums() %>% 
+          units::set_units('g/km') %>% data.table::as.data.table()
         names(temp_ef_avg) <- paste0(p,"_avg")
+        
         return(temp_ef_avg)
       }
     }else{
