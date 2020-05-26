@@ -17,11 +17,6 @@ utils::globalVariables(c('Euro.Standard','Fuel','Load','Pollutant','Road.Slope',
 utils::globalVariables(c('temp_ef','temp_ef1','ef'))
 utils::globalVariables(c('ano','dist','emission_factor','euro'))
 utils::globalVariables(c('geometry','f_linhas','interval_id','i.interval','grp'))
-utils::globalVariables(c('emis_post','time_dt'))
+utils::globalVariables(c('emis_post','time_dt','temp_pol'))
 utils::globalVariables(c('emfac','temp_emfac','Calendar Year','Model Year','EF','EF Model','Year','lower_speed_interval','upper_speed_interval'))
-# check valid shapeid
 
-check_valid_shapeid <- function(gtfs_data){
-  gtfs_data$shapes <- gtfs_data$shapes[shape_id %in% unique(gtfs_data$trips$shape_id),]
-  return(gtfs_data)
-}
