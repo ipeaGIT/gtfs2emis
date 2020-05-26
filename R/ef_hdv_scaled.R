@@ -33,11 +33,11 @@ ef_hdv_scaled <- function(dfcol,vel,veh,fuel,euro,SDC = 34.12,
   #
   dfcol <- as.numeric(dfcol)
   la <- lapply(1:length(dfcol), function(i) { # i = 1
-    funIN <- ef_hdv_speed(vel = SDC,veh = veh,fuel = "Diesel",
+    funIN <- ef_europe(vel = SDC,veh = veh,fuel = "Diesel",
                           euro = euro,
                           tech = tech,pol = pol,show.equation = FALSE)
     k <- dfcol[i]/funIN
-    ef_scaled <- ef_hdv_speed(vel = vel,veh = veh,
+    ef_scaled <- ef_europe(vel = vel,veh = veh,
                               fuel = "Diesel",
                               euro = euro,
                               tech = tech,pol = pol,k = k,show.equation = show.equation)

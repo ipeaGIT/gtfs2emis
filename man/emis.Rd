@@ -20,14 +20,3 @@ Units (in g); emissions per link
 \description{
 Calculate hot exhaust emissions
 }
-\examples{
-set.seed(12039)
-emis(veh = data.table::data.table("veh1" = 0.75,"veh2" = 0.25),
-dist = units::set_units(rnorm(10,mean = 8),'km'),
-ef = list("veh1" = units::set_units(rnorm(10,0.35,0.01),'g/km'),
-"veh2" = units::set_units(rnorm(10,0.27,0.01),'g/km')))
-
-emis(veh = data.table::data.table("veh1" = 1),
-dist = units::set_units(rnorm(10,mean = 8),'km'),
-ef = list("veh1" = units::set_units(rnorm(10,0.35,0.01),'g/km')))      
-}
