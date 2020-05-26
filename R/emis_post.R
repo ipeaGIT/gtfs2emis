@@ -11,39 +11,31 @@
 #' @param time_dt Vector; Vector containing 'departure_time'. 
 #'  Only used when 'hour' or 'hour-minute' is selected. 
 #' @return Units (in g); emissions
-#' @examples 
-#' set.seed(12039)
-#' temp_emi <- emis(veh = data.table::data.table("veh1" = 0.75,"veh2" = 0.25), # sum(veh) = 1
-#'                  dist = units::set_units(rnorm(10,mean = 8),'km'),
-#'                  ef = list("veh1" = units::set_units(rnorm(10,0.35,0.01),'g/km'),
-#'                            "veh2" = units::set_units(rnorm(10,0.27,0.01),'g/km')))
-#' temp_time <- c("10:40","10:40","10:42","10:44","10:45",
-#'                "10:46","10:47","10:48","10:49","10:50")
-#' 
-#' emis_post(emi = temp_emi,veh = 'all',time = 'hour',time_dt = temp_time)
-#' emis_post(emi = temp_emi,veh = 'all',time = 'hour-minute',time_dt = temp_time)
-#' emis_post(emi = temp_emi,veh = 'veh1',time = 'hour-minute',time_dt = temp_time)
-#' emis_post(emi = temp_emi,time = 'hour',time_dt = temp_time)
-#' emis_post(emi = temp_emi,veh = 'veh1')
-#' emis_post(emi = temp_emi)
 #' @export
 emis_post <- function(emi,veh,time,time_dt){
+  #  emi <- units::set_units(2,"g")
+  #  veh <- "all"
+  #  time <- "hour"
+  # time_dt <- "12:40:00"
   # emi filter
   if(missing(emi)) stop("'emi' parameter is missing, without default")
+  if(class(emi) == "units" && is.null(dim(emi))){
+    emi <- data.table::as.data.table(emi)
+  }
   # vehicle category - filter
   if(missing(veh) == FALSE){
     if(veh == "all"){
-      temp_emi <- sapply(seq_along(emi), function(i){emi[[i]]}) %>% rowSums()
-      emi <- list("all" = matrix(temp_emi))
+      temp_emi <- sapply(1:ncol(emi), function(i){emi[,i]}) %>% rowSums()
+      emi <- data.table::data.table("all" = temp_emi)
     }else{
-      emi <- emi[veh]
+      emi <- emi[,veh]
     }
   }
   # time - filter
   if(missing(time) == FALSE){
     if(missing(time_dt)){stop("Please provide 'time_dt' data.")}
     dtt <- data.table::data.table("time" = time_dt) # "12:30:05"
-    lapply(seq_along(emi), function(i){
+    lapply(1:ncol(emi), function(i){ # i =1
       dtt[,names(emi)[i] := emi[[i]]]
     })
     if(time == "hour"){
@@ -57,10 +49,7 @@ emis_post <- function(emi,veh,time,time_dt){
     }
     return(dtt)
   }else{
-    dtt <- data.table::data.table()
-    dtt <- lapply(seq_along(emi), function(i){
-      dtt[,names(emi)[i] := emi[[i]]]
-    }) %>% data.table::rbindlist()
+    dtt <- data.table::data.table(emi)
     return(dtt)
   }
 }
