@@ -9,6 +9,9 @@
 #' @return Units (in g); emissions per link
 #' @export
 emis <- function(veh,dist,ef){
+  # ef <- EF_emfac
+  # dist <- units::set_units(poa_gpslines$dist,'km')
+  # veh = 1
   #
   # check dist units
   if(class(dist) != "units"){
@@ -33,20 +36,27 @@ emis <- function(veh,dist,ef){
     
     #
     # check 'ef' length with veh
-    if(length(ef[[i]]) != length(dist)){
-      stop(paste0("ef '",names(ef[i]),"' needs to has the same length of dist"))
+    if(length(ef[[i]]) == 1){
+      message("Constant emission factor along the route")
+    }else{
+      if(length(ef[[i]]) != length(dist)){
+        stop(paste0("ef '",names(ef[i]),"' needs to has the same length of dist"))
+      }
     }
   })
+  # 
+  # verify how many pollutants 'ef' data has based on names(ef)
+  m <- regexpr(pattern = "\\_",text = names(ef),fixed = FALSE)
+  single_pol <- sapply(regmatches(x = names(ef),m =  m,invert = TRUE),function(i){i[[1]]}) %>% unique()
+  # match 'veh' size based on different pollutant
+  veh <- rep(veh,length(single_pol))
   # emissions
   emi <- lapply(seq_along(ef),function(i){ # i = 1 
-    # ef into matrix (efm)
-    #efm <- matrix(ef[[i]])
     # estimate emissions
     aux <- ef[[i]] * veh[[i]]
     temp_emis <- aux * dist
-    return(temp_emis)
+    return(units::set_units(temp_emis,"g"))
   }) 
-  emi1 <- do.call(cbind,emi) %>% units::set_units("g")
-  names(emi1) <- names(ef)
-  return(emi1)
+  names(emi) <- names(ef)
+  return(emi)
 }
