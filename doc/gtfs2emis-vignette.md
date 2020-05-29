@@ -19,10 +19,11 @@ poa <- gtfs2gps::gtfs2gps(poa)
 
 Input data dimensions can be simplified by using line segments
 (`linestring` geometry type) instead of `points`, since the emissions
-varies according to distance and speed.
+varies according to distance and
+speed.
 
 ``` r
-poa_gpslines <- gtfs2gps::gps_as_sflinestring(poa)
+poa_gpslines <- gtfs2gps::gps_as_sflinestring(poa) %>% data.table::as.data.table()
 object.size(poa) %>% format("Mb")
 #> [1] "20.5 Mb"
 dim(poa)
@@ -30,7 +31,7 @@ dim(poa)
 object.size(poa_gpslines) %>% format("Mb")
 #> [1] "18.7 Mb"
 dim(poa_gpslines)
-#> [1] 22560    12
+#> [1] 22560    13
 ```
 
 ### 2\) Fleet data
@@ -90,20 +91,21 @@ Pollutants (g/km): CO, NOx, HC, PM, CH4, NMHC, CO2, SO2, Pb, FC ,NO,NO2.
 
 euro_stage = c("II","IV","IV","V","V","V","V","V","V") # euro equivalent for brazilian fleet by years  
 EF_europe <- ef_europe(vel = units::set_units(poa_gpslines$speed,'km/h'),
-                          veh_type = "Urban Buses Standard 15 - 18 t",
-                          tech = "SCR",
-                          euro = euro_stage,
-                          pol = "CO",aggregate = TRUE,
-                          veh = veh_distri)
+                       veh_type = "Urban Buses Standard 15 - 18 t",
+                       tech = "SCR",
+                       euro = euro_stage,
+                       pol = c("CO","PM"),aggregate = TRUE,
+                       veh = veh_distri)
+#> no technology associated with Euro II
 #> no technology associated with Euro II
 head(EF_europe)
-#>             CO_avg
-#> 1: 1.860114 [g/km]
-#> 2: 1.860114 [g/km]
-#> 3: 1.860114 [g/km]
-#> 4: 1.860114 [g/km]
-#> 5: 1.860114 [g/km]
-#> 6: 1.860114 [g/km]
+#>             CO_avg            PM_avg
+#> 1: 1.860114 [g/km] 0.05175015 [g/km]
+#> 2: 1.860114 [g/km] 0.05175015 [g/km]
+#> 3: 1.860114 [g/km] 0.05175015 [g/km]
+#> 4: 1.860114 [g/km] 0.05175015 [g/km]
+#> 5: 1.860114 [g/km] 0.05175015 [g/km]
+#> 6: 1.860114 [g/km] 0.05175015 [g/km]
 ```
 
 #### United States emission factors for buses categories
@@ -113,18 +115,14 @@ ROG (reactive organic gases), THC, CH4, PM10, PM2.5, SOx, CO2, N2O and
 CH4.
 
 ``` r
-EF_emfac <- gtfs2emis::ef_emfac(pol = "CO",calendar_year = "2019",
-                                 model_year = colnames(total_fleet),
-                                 speed = units::set_units(poa_gpslines$speed,'km/h'),
-                                 veh = veh_distri,aggregate = TRUE,fuel = "Diesel")
-head(EF_emfac)
-#>               CO_avg
-#> 1: 0.07509172 [g/km]
-#> 2: 0.07509172 [g/km]
-#> 3: 0.07509172 [g/km]
-#> 4: 0.07509172 [g/km]
-#> 5: 0.07509172 [g/km]
-#> 6: 0.07509172 [g/km]
+EF_emfac <- gtfs2emis::ef_emfac(pol = c("CO","PM10"),calendar_year = "2019",
+                                model_year = colnames(total_fleet),
+                                speed = units::set_units(poa_gpslines$speed,'km/h'),
+                                veh = veh_distri,aggregate = TRUE,fuel = "Diesel")
+head(EF_emfac,2)
+#>               CO_avg           PM10_avg
+#> 1: 0.07509172 [g/km] 0.003048018 [g/km]
+#> 2: 0.07509172 [g/km] 0.003048018 [g/km]
 ```
 
 #### Brazil emission factors for buses
@@ -137,27 +135,45 @@ Obtained from `vein` package.
 ``` r
 years <- c("2005","2010","2011","2012","2014","2015","2017","2018")
 
-EF_cetesb <- sapply(seq_along(years),function(i){# i = colnames(total_fleet)[1]
-  vein::ef_cetesb(p = "CO",veh = "BUS_URBAN_D",year = years[i],agemax = 1) * veh_distri[i]
-}) %>% units::set_units("g/km") %>% sum()
-EF_cetesb
+EF_brazil <- lapply(c("CO","PM"),function(j){
+  temp_ef_br <- sapply(seq_along(years),function(i){# i = colnames(total_fleet)[1]
+    vein::ef_cetesb(p = j,veh = "BUS_URBAN_D",year = years[i],agemax = 1) * veh_distri[i]
+  }) %>% units::set_units("g/km") %>% sum()
+  return(temp_ef_br)
+})
+names(EF_brazil) <- paste0(c("CO","PM"),"_avg")
+EF_brazil
+#> $CO_avg
 #> 0.9235538 [g/km]
+#> 
+#> $PM_avg
+#> 0.06822249 [g/km]
 ```
 
 ### 4\) Emission
 
 Emissions are estimated as a product between distance (units `km`) with
-emission factor (units
-`g/km`).
+emission factor (units `g/km`).
 
 #### Using different emission factors
 
 ``` r
-data.table::setDT(poa_gpslines)[,emi_usa := units::set_units(poa_gpslines$dist,'km') * EF_emfac$CO_avg ]
+# USA
+emi_usa <- gtfs2emis::emis(veh = 1,dist = units::set_units(poa_gpslines$dist,'km'),ef = EF_emfac)
+unique_names <- paste0("USA_",names(emi_usa))
+poa_gpslines[,(unique_names) := emi_usa]
 
-poa_gpslines[,emi_europe :=  units::set_units(poa_gpslines$dist,'km') * EF_europe$CO_avg]
-# not speed-dependent
-poa_gpslines[,emi_cetesb := units::set_units(poa_gpslines$dist,'km') * EF_cetesb]
+# EUROPE
+emi_europe <- gtfs2emis::emis(veh = 1,dist = units::set_units(poa_gpslines$dist,'km'),ef = EF_europe)
+unique_names <- paste0("Europe_",names(emi_europe))
+poa_gpslines[,(unique_names) := emi_europe]
+
+# BRAZIL (not speed dependent emission factor)
+unique_names <- paste0("Brazil_",names(EF_brazil))
+emi_brazil <- gtfs2emis::emis(veh = 1,dist = units::set_units(poa_gpslines$dist,'km'),ef = EF_brazil)
+#> Constant emission factor along the route
+#> Constant emission factor along the route
+poa_gpslines[,(unique_names) := emi_brazil]
 ```
 
 ### 5\) Post-processing emissions
@@ -165,7 +181,7 @@ poa_gpslines[,emi_cetesb := units::set_units(poa_gpslines$dist,'km') * EF_cetesb
 #### Hour time stamp
 
 ``` r
-hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$emi_usa,
+hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$USA_CO_avg,
                                   time = "hour",
                                   time_dt = poa_gpslines$departure_time)
 library(ggplot2)
@@ -178,11 +194,12 @@ ggplot() +
 #### Hour-minute time stamp
 
 ``` r
-hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$emi_usa,
-                     time = "hour-minute",time_dt = poa_gpslines$departure_time)
-library(ggplot2)
+hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$USA_CO_avg,
+                                  time = "hour-minute",
+                                  time_dt = poa_gpslines$departure_time)
 ggplot() + 
-  geom_bar(data = hour_post,aes(x = time,y = as.numeric(x)),stat = "identity")
+  geom_bar(data = hour_post,aes(x = as.ITime(time),y = as.numeric(x)),stat = "identity")
+#> Don't know how to automatically pick scale for object of type ITime. Defaulting to continuous.
 ```
 
 ![](gtfs2emis-vignette_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
@@ -205,13 +222,13 @@ Intersection operation
 
 ``` r
 poa_sf <- sf::st_as_sf(poa_gpslines)
-pol_gps <- vein::emis_grid(spobj = poa_sf["emi_usa"],g = grid_gps)
+pol_gps <- vein::emis_grid(spobj = poa_sf["USA_CO_avg"],g = grid_gps)
 #> Your units are:
 #> g
 #> Sum of street emissions 784.92
 #> Sum of gridded emissions 784.92
-pol_gps <- pol_gps[as.numeric(pol_gps$emi_usa) > 0,]
-plot(pol_gps["emi_usa"])
+pol_gps <- pol_gps[as.numeric(pol_gps$USA_CO_avg) > 0,]
+plot(pol_gps["USA_CO_avg"])
 ```
 
 ![](gtfs2emis-vignette_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
