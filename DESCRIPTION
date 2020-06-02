@@ -10,6 +10,8 @@ Description: Generate estimates of public transport emissions at high spatial an
              temporal resolution by combining GTFS data with basic information on 
              fleet characteristics.
 License: MIT + file LICENSE
+Depends:
+    R (>= 3.5)
 Imports: 
     data.table,
     sf (>= 0.9-0),
