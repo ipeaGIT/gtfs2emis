@@ -19,6 +19,7 @@ Imports:
     sfheaders,
     magrittr,
     gtfs2gps,
+    ggplot2,
     vein
 Suggests: 
     testthat (>= 2.1.0),
