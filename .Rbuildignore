@@ -6,7 +6,6 @@
 ^prep$
 ^figures$
 ^tests$
-^gps2emis.Rproj
 ^data-raw$
 ^.*\.Rproj$
 ^vignettes$
