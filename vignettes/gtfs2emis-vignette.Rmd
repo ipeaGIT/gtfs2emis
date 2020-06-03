@@ -52,14 +52,16 @@ The GPS-like data can be converted into line segments (`linestring`). This conve
 poa_gpslines <- gtfs2gps::gps_as_sflinestring(poa_gps) %>%
   dplyr::select(speed, dist)
 
-# PEDRO: colocar isto? estas conversoes nao deveriam estar no gtfs2gps?
-# poa_gpslines$speed <- units::set_units(poa_gpslines$speed, "km/h")
-# poa_gpslines$dist <- units::set_units(poa_gpslines$dist, "km")
-
-object.size(poa_gps) %>% format("Mb")
 dim(poa_gps)
-object.size(poa_gpslines) %>% format("Mb")
 dim(poa_gpslines)
+```
+
+We will also update the two relevant attributes to use units of measurement.
+
+```{r}
+poa_gpslines$speed <- units::set_units(poa_gpslines$speed, "km/h")
+poa_gpslines$dist <- units::set_units(poa_gpslines$dist, "km")
+
 ```
 
 # Fleet data
@@ -117,7 +119,7 @@ Supported pollutants are (g/km): CO, NOx, HC, PM, CH4, NMHC, CO2, SO2, Pb, FC , 
 # PEDRO: euro_stage nao poderia ser um atributo de veh_distrib?
 euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V", "V") # euro equivalent for brazilian fleet by years  
 
-EF_europe <- ef_europe(vel = units::set_units(poa_gpslines$speed, "km/h"),
+EF_europe <- ef_europe(vel = poa_gpslines$speed,
                        veh_type = "Urban Buses Standard 15 - 18 t",
                        tech = "SCR",
                        euro = euro_stage,
@@ -145,7 +147,7 @@ EF_emfac <- gtfs2emis::ef_emfac(pol = "CO",
                                 calendar_year = "2019",
                                 model_year = colnames(total_fleet),
                                 # PEDRO: este argumento acima pode sumir?
-                                speed = units::set_units(poa_gpslines$speed, "km/h"),
+                                speed = poa_gpslines$speed,
                                 veh = veh_distrib, # PEDRO: aqui viraria total_fleet
                                 aggregate = TRUE,
                                 fuel = "Diesel")
@@ -183,11 +185,11 @@ Emissions are estimated as a product between distance (units `km`) with emission
 # PEDRO: como a conversao é simplesmente uma multiplicação, isto nao poderia estar nas 
 # funcoes acima? receberia o poa_gpslines e teria um argumento com o nome do atributo
 # a ser criado
-data.table::setDT(poa_gpslines)[, emi_usa := units::set_units(poa_gpslines$dist, "km") * EF_emfac$CO_avg]
+data.table::setDT(poa_gpslines)[, emi_usa := poa_gpslines$dist * EF_emfac$CO_avg]
 
-poa_gpslines[, emi_europe := units::set_units(poa_gpslines$dist, "km") * EF_europe$CO_avg]
+poa_gpslines[, emi_europe := poa_gpslines$dist * EF_europe$CO_avg]
 # not speed-dependent
-poa_gpslines[, emi_cetesb := units::set_units(poa_gpslines$dist, "km") * EF_cetesb]
+poa_gpslines[, emi_cetesb := poa_gpslines$dist * EF_cetesb]
 ```
 
 # Post-processing emissions
