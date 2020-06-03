@@ -18,6 +18,7 @@ Imports:
     units,
     sfheaders,
     magrittr,
+    dplyr,
     gtfs2gps,
     ggplot2,
     vein

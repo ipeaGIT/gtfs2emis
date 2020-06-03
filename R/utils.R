@@ -1,4 +1,5 @@
 #' @importFrom magrittr %>%
+#' @importFrom dplyr select
 #' @importFrom data.table := .N .SD .I .GRP
 #' @importFrom utils data
 NULL
