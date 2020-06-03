@@ -18,13 +18,13 @@ Imports:
     units,
     sfheaders,
     magrittr,
-    dplyr,
     gtfs2gps,
-    ggplot2,
     vein
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
+    dplyr,
+    ggplot2,
     rmarkdown
 VignetteBuilder: knitr
 Encoding: UTF-8
