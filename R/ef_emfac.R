@@ -1,7 +1,7 @@
 #' @title Running exhaust emissions factors from EMFAC2017 model
 #' 
 #' @description Emissions that come out of the vehicle tailpipe while the vehicle is traveling on the road. The function returns emissions factor in units
-#' 'g/km'
+#' 'g/km'.
 #'
 #' @param pol Character; Pollutants: Carbon monoxide (CO); Nitrogen oxides (NOx); 
 #'   Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 
@@ -9,20 +9,20 @@
 #'   Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
 #'   and particulate matters 2.5 microns or less in diameter (PM2.5);
 #'   Sulfur oxides (SOx); Carbon Dioxide (CO2); 
-#'   Nitrous Oxide (N2O) and Methane (CH4).
-#' @param calendar_year Numeric; Calendar Year between 2010 - 2020
+#'   Nitrous Oxide (N2O), and Methane (CH4).
+#' @param calendar_year Numeric; Calendar Year between 2010 - 2020.
 #' @param fuel Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.
 #' @param model_year Numeric; Model year of vehicle.
 #' @param speed Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
-#'   "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h)
+#'   "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h).
 #' @param veh numeric; proportion of circulating fleet according to model_year. It has to be 
 #' the same length as model_year.
 #' @param aggregate does the emission factor should be aggregated?
-#' @return Data.table; Emission factors in units 'g/km' by speed and model_year
+#' @return Data.table; Emission factors in units 'g/km' by speed and model_year.
 #' @source \url{https://arb.ca.gov/emfac/}
 #' @export
-ef_emfac <- function(pol,calendar_year,model_year,speed,veh = NULL,aggregate = TRUE,fuel = 'Diesel'){
+ef_emfac <- function(pol, calendar_year, model_year, speed, veh = NULL, aggregate = TRUE, fuel = 'Diesel'){
   #
   # Filter calendar
   temp_emfac <- emfac[`Calendar Year` %in% as.character(calendar_year) &

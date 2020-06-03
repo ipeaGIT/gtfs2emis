@@ -24,15 +24,15 @@ THC (total hydrocarbon), or CH4 (methane);
 Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
 and particulate matters 2.5 microns or less in diameter (PM2.5);
 Sulfur oxides (SOx); Carbon Dioxide (CO2); 
-Nitrous Oxide (N2O) and Methane (CH4).}
+Nitrous Oxide (N2O), and Methane (CH4).}
 
-\item{calendar_year}{Numeric; Calendar Year between 2010 - 2020}
+\item{calendar_year}{Numeric; Calendar Year between 2010 - 2020.}
 
 \item{model_year}{Numeric; Model year of vehicle.}
 
 \item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
- "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h)}
+ "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h).}
 
 \item{veh}{numeric; proportion of circulating fleet according to model_year. It has to be 
 the same length as model_year.}
@@ -42,9 +42,9 @@ the same length as model_year.}
 \item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.}
 }
 \value{
-Data.table; Emission factors in units 'g/km' by speed and model_year
+Data.table; Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
 Emissions that come out of the vehicle tailpipe while the vehicle is traveling on the road. The function returns emissions factor in units
-'g/km'
+'g/km'.
 }
