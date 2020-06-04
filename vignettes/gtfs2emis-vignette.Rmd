@@ -126,13 +126,6 @@ EF_europe <- ef_europe(vel = poa_gpslines$speed,
 head(EF_europe)
 # PEDRO: isto aqui eh para cada veh_distrib, certo? nao seria melhor retornar uma
 # coluna a mais no data.frame para indicar isto?
-# PEDRO: mostrar que existe mais do que um valor, head nao esta bom
-# PEDRO: converter para factor?
-# object.size(EF_europe)
-# 97624 bytes
-# EF_europe$CO_avg <- as.factor(EF_europe$CO_avg)
-# object.size(EF_europe)
-# 49720 bytes
 ```
 
 ## United States emission factors for buses categories
@@ -149,8 +142,6 @@ EF_emfac <- gtfs2emis::ef_emfac(pol = c("CO","PM10"),
                                 aggregate = TRUE,
                                 fuel = "Diesel")
 head(EF_emfac)
-# PEDRO: de alguma maneira mostrar os dois valores em EF_emfac
-# PEDRO: converter isto para factor?
 ```
 
 ## Brazil emission factors for buses
