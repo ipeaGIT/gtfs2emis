@@ -37,15 +37,12 @@ These information are created when we convert GTFS data to GPS-like
 records, using `gtfs2gps::gtfs2gps()`. The example below uses GTFS data from Porto Alegre municipality, in Brazil. It processes only one `shape_id` in order to speedup processing time.
 
 ```{r, message = FALSE}
-poa <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>%
-  gtfs2gps::filter_by_shape_id("T2-1")
+poa <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+  gtfs2gps::filter_by_shape_id("51982")
 poa_gps <- gtfs2gps::gtfs2gps(poa)
 poa_gps
 ```
 The GPS-like data can be converted into line segments (`linestring`). This conversion breaks the trips into several segments, each one between two stops.
-
-# PEDRO: a conversao aqui é para simplificar? Nao esta diminuindo muito o tamanho
-# alterar a unidade de medida logo aqui?
 
 
 ```{r}
@@ -84,11 +81,11 @@ total_fleet <- data.table::data.table("2005" = 1, "2010" = 61, "2011" = 50,
 ```
 with probability of distribution based on frequency of `total_fleet`
 
+```{r}
 # PEDRO: melhor nao seria ter veh_distrib dentro de total_fleet e passar simplesmente
 # total_fleet como argumento para as funcoes?
 # total <- sum(total_fleet[1, ]
 # total_fleet[1, ] <- total_fleet[1, ] / total
-```{r}
 veh_distrib <- as.numeric(total_fleet[1, ] / sum(total_fleet[1, ]))
 veh_distrib
 sum(veh_distrib)
@@ -123,7 +120,7 @@ EF_europe <- ef_europe(vel = poa_gpslines$speed,
                        veh_type = "Urban Buses Standard 15 - 18 t",
                        tech = "SCR",
                        euro = euro_stage,
-                       pol = c("CO","PM"),
+                       pol = c("CO", "PM"),
                        aggregate = TRUE,
                        veh = veh_distrib) # PEDRO: onde esta a idade aqui nos parametros?
 head(EF_europe)
