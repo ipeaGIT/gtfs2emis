@@ -50,7 +50,7 @@ The GPS-like data can be converted into line segments (`linestring`). This conve
 
 ```{r}
 poa_gpslines <- gtfs2gps::gps_as_sflinestring(poa_gps) %>%
-  dplyr::select(speed, dist)
+  dplyr::select(speed, dist, departure_time)
 
 dim(poa_gps)
 dim(poa_gpslines)
@@ -123,7 +123,7 @@ EF_europe <- ef_europe(vel = poa_gpslines$speed,
                        veh_type = "Urban Buses Standard 15 - 18 t",
                        tech = "SCR",
                        euro = euro_stage,
-                       pol = "CO",
+                       pol = c("CO","PM"),
                        aggregate = TRUE,
                        veh = veh_distrib) # PEDRO: onde esta a idade aqui nos parametros?
 head(EF_europe)
@@ -143,7 +143,7 @@ head(EF_europe)
 Supported pollutants are (g/km): CO, NOx, Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), THC, CH4, PM10, PM2.5, SOx, CO2, N2O and CH4.
 
 ```{r}
-EF_emfac <- gtfs2emis::ef_emfac(pol = "CO",
+EF_emfac <- gtfs2emis::ef_emfac(pol = c("CO","PM10"),
                                 calendar_year = "2019",
                                 model_year = colnames(total_fleet),
                                 # PEDRO: este argumento acima pode sumir?
@@ -165,13 +165,17 @@ years <- c("2005", "2010", "2011", "2012", "2014", "2015", "2017", "2018")
 
 # PEDRO: encapsular isto em uma funcao?
 # note que o usuario precisa controlar year e veh_distrib manualmente
-EF_cetesb <- sapply(seq_along(years), function(i){# i = colnames(total_fleet)[1]
-    vein::ef_cetesb(p = "CO",
-                  veh = "BUS_URBAN_D",
-                  year = years[i],
-                  agemax = 1) * veh_distrib[i]
-}) %>% units::set_units("g/km") %>% sum()
-EF_cetesb
+EF_brazil <- lapply(c("CO", "PM"), function(j){
+  temp_ef_br <- sapply(seq_along(years), function(i){# i = colnames(total_fleet)[1]
+    vein::ef_cetesb(p = j,
+                    veh = "BUS_URBAN_D",
+                    year = years[i],
+                    agemax = 1) * veh_distrib[i]
+  }) %>% units::set_units("g/km") %>% sum()
+  return(temp_ef_br)
+})
+names(EF_brazil) <- paste0(c("CO", "PM"), "_avg")
+EF_brazil
 ```
 
 # Emission 
@@ -185,11 +189,26 @@ Emissions are estimated as a product between distance (units `km`) with emission
 # PEDRO: como a conversao é simplesmente uma multiplicação, isto nao poderia estar nas 
 # funcoes acima? receberia o poa_gpslines e teria um argumento com o nome do atributo
 # a ser criado
-data.table::setDT(poa_gpslines)[, emi_usa := poa_gpslines$dist * EF_emfac$CO_avg]
 
-poa_gpslines[, emi_europe := poa_gpslines$dist * EF_europe$CO_avg]
-# not speed-dependent
-poa_gpslines[, emi_cetesb := poa_gpslines$dist * EF_cetesb]
+# USA
+
+# PEDRO: a funcao abaixo retorna uma lista. poderia retornar um data.frame
+emi_usa <- gtfs2emis::emis(veh = 1, dist = poa_gpslines$dist, ef = EF_emfac)
+emi_usa <- as.data.frame(emi_usa)
+colnames(emi_usa) <- paste0("USA_", colnames(emi_usa))
+poa_gpslines <- cbind(poa_gpslines, emi_usa)
+
+# EUROPE
+emi_europe <- gtfs2emis::emis(veh = 1, dist = poa_gpslines$dist, ef = EF_europe)
+emi_europe <- as.data.frame(emi_europe)
+colnames(emi_europe) <- paste0("EU_", colnames(emi_europe))
+poa_gpslines <- cbind(poa_gpslines, emi_europe)
+
+# BRAZIL (not speed dependent emission factor)
+unique_names <- paste0("Brazil_", names(EF_brazil))
+emi_brazil <- gtfs2emis::emis(veh = 1, dist = poa_gpslines$dist, ef = EF_brazil)
+emi_brazil <- as.data.frame(emi_brazil)
+poa_gpslines <- cbind(poa_gpslines, emi_brazil)
 ```
 
 # Post-processing emissions
@@ -200,9 +219,9 @@ poa_gpslines[, emi_cetesb := poa_gpslines$dist * EF_cetesb]
 #hour_post <- gtfs2emis::emis_post(poa_gpslines,
 #                                  emi = "emi_usa",
 #                                  time = "hour",
-#                                  time_dt = "departure_time")
+#                                  time_dt = "departure_time") # usar departure_time como default
 
-hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$emi_usa,
+hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$USA_CO_avg,
                                   time = "hour",
                                   time_dt = poa_gpslines$departure_time)
 
@@ -212,17 +231,17 @@ ggplot() +
 
 ## Hour-minute time stamp
 ```{r}
-hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$emi_usa,
+hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$USA_CO_avg,
                                   time = "hour-minute",
                                   time_dt = poa_gpslines$departure_time)
-
 ggplot() + 
-  geom_bar(data = hour_post, aes(x = time, y = as.numeric(x)), stat = "identity")
+  geom_bar(data = hour_post,aes(x = time, y = as.numeric(x)), stat = "identity")
 ```
 
 ## Spatialize
 
-Make grid for visualize emissions
+Make grid to visualize emissions as a map.
+
 ```{r}
 # PEDRO: funcao para escolher a resolucao? esta funcao deveria receber um objeto
 # com unidade de medida, para casar com "km"
@@ -234,7 +253,7 @@ Intersection operation
 
 ```{r}
 poa_sf <- sf::st_as_sf(poa_gpslines)
-pol_gps <- vein::emis_grid(spobj = poa_sf["emi_usa"], g = grid_gps)
-pol_gps <- pol_gps[as.numeric(pol_gps$emi_usa) > 0, ]
-plot(pol_gps["emi_usa"])
+pol_gps <- vein::emis_grid(spobj = poa_sf["USA_CO_avg"], g = grid_gps)
+pol_gps <- pol_gps[as.numeric(pol_gps$USA_CO_avg) > 0, ]
+plot(pol_gps["USA_CO_avg"])
 ```
