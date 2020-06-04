@@ -4,13 +4,13 @@
 #' 
 #' @param vel Units; Speed in [km/h]
 #' @param veh_type Character; Bus type, classified in "Urban Buses Midi <=15 t", "Urban Buses Standard 15 - 18 t", 
-#' "Urban Buses Articulated >18 t", "Coaches Standard <=18 t"       
-#' "Coaches Articulated >18 t", "Urban CNG Buses", "Urban Biodiesel Buses"  
-#' @param fuel Character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel"
+#' "Urban Buses Articulated >18 t",  "Coaches Standard <=18 t",
+#' "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".  
+#' @param fuel Character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel".
 #' @param euro Character; Euro period of vehicle, classified in "Conventional", "I", "II", "Euro III", 
-#' "IV", "V", "VI" and "EEV"  
-#' @param tech Character; Technology, classified in "SCR", "EGR" and "DPF+SCR"
-#' @param pol Character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel Consumption), "CH4", "NH3" and "N2O"
+#' "IV", "V", "VI" and "EEV".
+#' @param tech Character; Technology, classified in "SCR", "EGR" and "DPF+SCR".
+#' @param pol Character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel Consumption), "CH4", "NH3" and "N2O".
 #' @param aggregate Logical; does the emission factor should be aggregated? Default is TRUE.
 #' @param veh Numeric; Distribution of vehicle type, required only when aggregate == TRUE.
 #' @param slope Numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
@@ -18,9 +18,9 @@
 #' @param load Numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
 #' @param show.equation Logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
 #' @param k Numeric; constant value to adjust emission factors. Default is 1.0.
-#' @return Emission factors in units g/km
+#' @return Emission factors in units g/km.
 #' @export
-ef_europe <- function(vel,veh_type,veh,fuel = "Diesel",aggregate = TRUE,euro,tech,pol,slope = 0.0,load = 0.5,k = 1,show.equation = TRUE){
+ef_europe <- function(vel, veh_type, veh, fuel = "Diesel", aggregate = TRUE, euro, tech, pol, slope = 0.0, load = 0.5, k = 1, show.equation = TRUE){
   # vel <- units::set_units(poa_gpslines$speed,"km/h")
   # veh_type <- "Urban Buses Standard 15 - 18 t"
   # euro <- c("IV","V")

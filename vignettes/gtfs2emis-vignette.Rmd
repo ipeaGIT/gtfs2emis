@@ -1,11 +1,15 @@
 ---
-title: "Introduction to GTFS2EMIS"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{my-vignette}
-  %\VignetteEngine{knitr::rmarkdown}
+title: "Introduction to gtfs2emis"
+author: "Joao Bazzo, Rafael H. M. Pereira, Pedro R. Andrade"
+abstract: Package `gtfs2emis` generates emissions estimates from GTFS data.
+output: github_document
+urlcolor: blue
+vignette: |
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{gtfs2emis}
 ---
+02 June 2020
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -13,148 +17,223 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-### 1) GTFS data
+# Introduction
 
-The estimation of hot exhaust emissions from GTFS data uses functions from `gtfs2gps` package, as shown in the reproducible example below. The main information used from this data is `speed` and distance `dist`.
+Package `gtfs2emis` estimates hot exhaust emissions from GTFS data. This vignette introduces the main functions of the package. It uses the following packages:
 
 ```{r, message = FALSE}
-library(gtfs2gps)
-library(data.table)
 library(gtfs2emis)
 library(vein)
+library(gtfs2gps)
+library(data.table)
 library(magrittr)
-poa <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps"))
-poa <- gtfs2gps::filter_by_shape_id(poa,"T2-1")
-poa <- gtfs2gps::gtfs2gps(poa)
+library(ggplot2)
 ```
-Input data dimensions can be simplified by using line segments (`linestring` geometry type) instead of `points`, since the emissions varies according to distance and speed. 
+
+# GTFS data
+
+To estimate emissions from GTFS data, first it is necessary to compute `speed` and distance (`dist`) for each trip.
+These information are created when we convert GTFS data to GPS-like
+records, using `gtfs2gps::gtfs2gps()`. The example below uses GTFS data from Porto Alegre municipality, in Brazil. It processes only one `shape_id` in order to speedup processing time.
+
+```{r, message = FALSE}
+poa <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+  gtfs2gps::filter_by_shape_id("51982")
+poa_gps <- gtfs2gps::gtfs2gps(poa)
+poa_gps
+```
+The GPS-like data can be converted into line segments (`linestring`). This conversion breaks the trips into several segments, each one between two stops.
+
 
 ```{r}
-poa_gpslines <- gtfs2gps::gps_as_sflinestring(poa)
-object.size(poa) %>% format("Mb")
-dim(poa)
-object.size(poa_gpslines) %>% format("Mb")
+poa_gpslines <- gtfs2gps::gps_as_sflinestring(poa_gps) %>%
+  dplyr::select(speed, dist, departure_time)
+
+dim(poa_gps)
 dim(poa_gpslines)
 ```
 
-### 2) Fleet data
-
-There are different types of fleet data that can be used for estimating emissions. 
-
-#### Regional data
-
-Data often obtained from registry of vehicles in local agencies of transportation, which generally does not relate a certain vehicle category (age and/or technology) to a specific route or shape in the GTFS. 
-In this situation, only a distribution of fleet is known, so the inputs in each shape or route is given by a probability of distribution. It considers that, on average, all vehicles has the same chance to circulate in each route or shape. 
+We will also update the two relevant attributes to use units of measurement.
 
 ```{r}
-total_fleet <- data.table::data.table("2005"=1,"2010"=61,"2011"=50,"2012"=1,
-                                     "2014"=45,"2015"=18,"2017"=62,"2018"=27,"2019"=31)
+poa_gpslines$speed <- units::set_units(poa_gpslines$speed, "km/h")
+poa_gpslines$dist <- units::set_units(poa_gpslines$dist, "km")
+
+```
+
+# Fleet data
+
+Computing emissions depend on fleet data, which include age and technology.
+There are two types of fleet data to be used for estimating emissions. We call them _regional data_ and _detailed data_.
+
+## Regional data
+
+Data obtained from registry of vehicles in local agencies of transportation generally do not relate a specific route or shape in the GTFS to the respective vehicle category (age and/or technology). 
+In this situation, usually only a distribution of fleet is known. In this case, the vehicles of each shape or route must be given from a probability distribution. Package `gtfs2emis` considers that, on average, all vehicles have the same probability to circulate in each route or shape. We need then to create a `data.table` with the content of the fleet.
+
+
+```{r}
+# PEDRO: melhor ano como colnames ou como uma coluna separada?
+# como coluna separada o ano pode ser um numero
+total_fleet <- data.table::data.table("2005" = 1, "2010" = 61, "2011" = 50,
+                                      "2012" = 1, "2014" = 45, "2015" = 18,
+                                      "2017" = 62, "2018" = 27, "2019" = 31)
 ```
 with probability of distribution based on frequency of `total_fleet`
-```{r}
- veh_distri <- as.numeric( total_fleet[1,]/sum(total_fleet[1,]) )
- veh_distri
- sum(veh_distri)
-```
-
-#### Detailed data
-
-Used when the category of the vehicle is known for each route/shape of GTFS. 
 
 ```{r}
-det_fleet <- data.table::data.table("shape_id" = unique(poa$shapes$shape_id),
-                                    "bus_age" = c("2010","2011","2012","2013"),
-                                    "bus_fuel" = "Diesel")
+# PEDRO: melhor nao seria ter veh_distrib dentro de total_fleet e passar simplesmente
+# total_fleet como argumento para as funcoes?
+# total <- sum(total_fleet[1, ]
+# total_fleet[1, ] <- total_fleet[1, ] / total
+veh_distrib <- as.numeric(total_fleet[1, ] / sum(total_fleet[1, ]))
+veh_distrib
+sum(veh_distrib)
 ```
 
-### 3) Emission factor
+## Detailed data
 
-Emission factors functions is expressed in units `g/km`, and can be speed-dependent according to emission factor data source. The avaliable emissions factors are:
+Detailed data is used when the category of the vehicle is known for each route or shape of GTFS.
 
-#### European emission factors for buses categories
+```{r}
+# PEDRO: este objeto nao e usado em nenhum outro lugar deste vignette
+det_fleet <- data.table::data.table(shape_id = unique(poa$shapes$shape_id),
+                                    # PEDRO: bus_age nao poderia vir de veh_distrib ou de alguma
+                                    # fonte externa?
+                                    bus_age = c("2010", "2011", "2012", "2013"),
+                                    bus_fuel = "Diesel")
+```
 
-Pollutants (g/km): CO, NOx, HC, PM, CH4, NMHC, CO2, SO2, Pb, FC ,NO,NO2.
+# Emission factor
 
-```{r }
+Emission factors functions are expressed in `g/km`. They can also be speed-dependent, according to emission factor data source. The avaliable emissions factors available in `gtfs2emis` are from Europe, US, and Brazil.
 
-euro_stage = c("II","IV","IV","V","V","V","V","V","V") # euro equivalent for brazilian fleet by years  
-EF_europe <- ef_europe(vel = units::set_units(poa_gpslines$speed,'km/h'),
-                          veh_type = "Urban Buses Standard 15 - 18 t",
-                          tech = "SCR",
-                          euro = euro_stage,
-                          pol = "CO",aggregate = TRUE,
-                          veh = veh_distri)
+## European emission factors for buses categories
+
+Supported pollutants are (g/km): CO, NOx, HC, PM, CH4, NMHC, CO2, SO2, Pb, FC , NO, and NO2.
+
+```{r}
+# PEDRO: euro_stage nao poderia ser um atributo de veh_distrib?
+euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V", "V") # euro equivalent for brazilian fleet by years  
+
+EF_europe <- ef_europe(vel = poa_gpslines$speed,
+                       veh_type = "Urban Buses Standard 15 - 18 t",
+                       tech = "SCR",
+                       euro = euro_stage,
+                       pol = c("CO", "PM"),
+                       aggregate = TRUE,
+                       veh = veh_distrib) # PEDRO: onde esta a idade aqui nos parametros?
 head(EF_europe)
+# PEDRO: isto aqui eh para cada veh_distrib, certo? nao seria melhor retornar uma
+# coluna a mais no data.frame para indicar isto?
 ```
 
-#### United States emission factors for buses categories
+## United States emission factors for buses categories
 
-Pollutants (g/km): CO, NOx, Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), THC, CH4, PM10, PM2.5, SOx, CO2, N2O and CH4.
+Supported pollutants are (g/km): CO, NOx, Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), THC, CH4, PM10, PM2.5, SOx, CO2, N2O and CH4.
 
 ```{r}
-EF_emfac <- gtfs2emis::ef_emfac(pol = "CO",calendar_year = "2019",
-                                 model_year = colnames(total_fleet),
-                                 speed = units::set_units(poa_gpslines$speed,'km/h'),
-                                 veh = veh_distri,aggregate = TRUE,fuel = "Diesel")
+EF_emfac <- gtfs2emis::ef_emfac(pol = c("CO","PM10"),
+                                calendar_year = "2019",
+                                model_year = colnames(total_fleet),
+                                # PEDRO: este argumento acima pode sumir?
+                                speed = poa_gpslines$speed,
+                                veh = veh_distrib, # PEDRO: aqui viraria total_fleet
+                                aggregate = TRUE,
+                                fuel = "Diesel")
 head(EF_emfac)
 ```
 
-#### Brazil emission factors for buses
+## Brazil emission factors for buses
 
-Pollutants: CO, HC, NMHC, CH4, NOx, CO2,RCHO, ETOH, PM, N2O, KML, FC, NO2, NO, gD/KWH, gCO2/KWH, RCHO, CO_0km, HC_0km, NMHC_0km, NOx_0km, NO2_0km ,NO_0km, RCHO_0km and ETOH_0km, FS (fuel sales) (g/km).
-Obtained from `vein` package.
+Supported pollutants are (g/km): CO, HC, NMHC, CH4, NOx, CO2, RCHO, ETOH, PM, N2O, KML, FC, NO2, NO, gD/KWH, gCO2/KWH, RCHO, CO_0km, HC_0km, NMHC_0km, NOx_0km, NO2_0km ,NO_0km, RCHO_0km, ETOH_0km, and FS (fuel sales). This data was Obtained from `vein` package.
  
 ```{r}
-years <- c("2005","2010","2011","2012","2014","2015","2017","2018")
+years <- c("2005", "2010", "2011", "2012", "2014", "2015", "2017", "2018")
 
-EF_cetesb <- sapply(seq_along(years),function(i){# i = colnames(total_fleet)[1]
-  vein::ef_cetesb(p = "CO",veh = "BUS_URBAN_D",year = years[i],agemax = 1) * veh_distri[i]
-}) %>% units::set_units("g/km") %>% sum()
-EF_cetesb
+# PEDRO: encapsular isto em uma funcao?
+# note que o usuario precisa controlar year e veh_distrib manualmente
+EF_brazil <- lapply(c("CO", "PM"), function(j){
+  temp_ef_br <- sapply(seq_along(years), function(i){# i = colnames(total_fleet)[1]
+    vein::ef_cetesb(p = j,
+                    veh = "BUS_URBAN_D",
+                    year = years[i],
+                    agemax = 1) * veh_distrib[i]
+  }) %>% units::set_units("g/km") %>% sum()
+  return(temp_ef_br)
+})
+names(EF_brazil) <- paste0(c("CO", "PM"), "_avg")
+EF_brazil
 ```
 
-### 4) Emission 
+# Emission 
 
 Emissions are estimated as a product between distance (units `km`) with emission factor (units `g/km`).
 
 
-#### Using different emission factors
+## Using different emission factors
 
 ```{r}
-data.table::setDT(poa_gpslines)[,emi_usa := units::set_units(poa_gpslines$dist,'km') * EF_emfac$CO_avg ]
+# PEDRO: como a conversao é simplesmente uma multiplicação, isto nao poderia estar nas 
+# funcoes acima? receberia o poa_gpslines e teria um argumento com o nome do atributo
+# a ser criado
 
-poa_gpslines[,emi_europe :=  units::set_units(poa_gpslines$dist,'km') * EF_europe$CO_avg]
-# not speed-dependent
-poa_gpslines[,emi_cetesb := units::set_units(poa_gpslines$dist,'km') * EF_cetesb]
+# USA
+
+# PEDRO: a funcao abaixo retorna uma lista. poderia retornar um data.frame
+emi_usa <- gtfs2emis::emis(veh = 1, dist = poa_gpslines$dist, ef = EF_emfac)
+emi_usa <- as.data.frame(emi_usa)
+colnames(emi_usa) <- paste0("USA_", colnames(emi_usa))
+poa_gpslines <- cbind(poa_gpslines, emi_usa)
+
+# EUROPE
+emi_europe <- gtfs2emis::emis(veh = 1, dist = poa_gpslines$dist, ef = EF_europe)
+emi_europe <- as.data.frame(emi_europe)
+colnames(emi_europe) <- paste0("EU_", colnames(emi_europe))
+poa_gpslines <- cbind(poa_gpslines, emi_europe)
+
+# BRAZIL (not speed dependent emission factor)
+unique_names <- paste0("Brazil_", names(EF_brazil))
+emi_brazil <- gtfs2emis::emis(veh = 1, dist = poa_gpslines$dist, ef = EF_brazil)
+emi_brazil <- as.data.frame(emi_brazil)
+poa_gpslines <- cbind(poa_gpslines, emi_brazil)
 ```
 
-### 5) Post-processing emissions
+# Post-processing emissions
 
-
-#### Hour time stamp
+## Hour time stamp
 ```{r}
-hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$emi_usa,
+# PEDRO: eu prefiro algo do tipo:
+#hour_post <- gtfs2emis::emis_post(poa_gpslines,
+#                                  emi = "emi_usa",
+#                                  time = "hour",
+#                                  time_dt = "departure_time") # usar departure_time como default
+
+hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$USA_CO_avg,
                                   time = "hour",
                                   time_dt = poa_gpslines$departure_time)
-library(ggplot2)
+
 ggplot() + 
-  geom_bar(data = hour_post,aes(x = time,y = as.numeric(x)),stat = "identity")
+  geom_bar(data = hour_post, aes(x = time, y = as.numeric(x)), stat = "identity")
 ```
 
-#### Hour-minute time stamp
+## Hour-minute time stamp
 ```{r}
-hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$emi_usa,
-                     time = "hour-minute",time_dt = poa_gpslines$departure_time)
-library(ggplot2)
+hour_post <- gtfs2emis::emis_post(emi = poa_gpslines$USA_CO_avg,
+                                  time = "hour-minute",
+                                  time_dt = poa_gpslines$departure_time)
 ggplot() + 
-  geom_bar(data = hour_post,aes(x = time,y = as.numeric(x)),stat = "identity")
+  geom_bar(data = hour_post,aes(x = time, y = as.numeric(x)), stat = "identity")
 ```
 
-#### Spatially
+## Spatialize
 
-Make grid for visualize emissions
+Make grid to visualize emissions as a map.
+
 ```{r}
-grid_gps <- vein::make_grid(spobj = poa_gpslines,width =  0.25/102.47) #500 mts
+# PEDRO: funcao para escolher a resolucao? esta funcao deveria receber um objeto
+# com unidade de medida, para casar com "km"
+grid_gps <- vein::make_grid(spobj = poa_gpslines, width =  0.25 / 102.47) # 500 meters
 plot(grid_gps["id"])
 ```
 
@@ -162,9 +241,7 @@ Intersection operation
 
 ```{r}
 poa_sf <- sf::st_as_sf(poa_gpslines)
-pol_gps <- vein::emis_grid(spobj = poa_sf["emi_usa"],g = grid_gps)
-pol_gps <- pol_gps[as.numeric(pol_gps$emi_usa) > 0,]
-plot(pol_gps["emi_usa"])
+pol_gps <- vein::emis_grid(spobj = poa_sf["USA_CO_avg"], g = grid_gps)
+pol_gps <- pol_gps[as.numeric(pol_gps$USA_CO_avg) > 0, ]
+plot(pol_gps["USA_CO_avg"])
 ```
-
-
