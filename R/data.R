@@ -33,7 +33,7 @@
 #' }
 #' @source \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
 #' 
-"ef"
+"europe" # data(europe)
 #' EMFAC
 #' Running exhaust emissions factors from EMFAC2017 model
 #'
@@ -55,4 +55,4 @@
 #' }
 #' @source \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
 #' 
-"emfac"
+"usa" # data(usa)
