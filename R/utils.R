@@ -1,11 +1,11 @@
 #' @importFrom magrittr %>%
-#' @importFrom data.table := .N .SD .I .GRP
-#' @importFrom utils data
+#' @importFrom data.table := .SD .I .GRP %like%
+# @importFrom utils data
 NULL
 
 `%nin%` = Negate(`%in%`)
 
-#`%nlike%` = Negate(`%like%`)
+`%nlike%` = Negate(`%like%`)
 
 # Globals
 utils::globalVariables(c("hora_liberacao",
@@ -18,5 +18,6 @@ utils::globalVariables(c('temp_ef','temp_ef1','ef'))
 utils::globalVariables(c('ano','dist','emission_factor','euro'))
 utils::globalVariables(c('geometry','f_linhas','interval_id','i.interval','grp'))
 utils::globalVariables(c('emis_post','time_dt','temp_pol'))
-utils::globalVariables(c('emfac','temp_emfac','Calendar Year','Model Year','EF','EF Model','Year','lower_speed_interval','upper_speed_interval'))
+utils::globalVariables(c('europe'))
+utils::globalVariables(c('usa','temp_emfac','Calendar Year','Model Year','EF','EF Model','Year','lower_speed_interval','upper_speed_interval'))
 
