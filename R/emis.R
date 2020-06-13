@@ -2,18 +2,21 @@
 #'
 #' @description Calculate hot exhaust emissions
 #'
-#' @param veh Vehicles data-frame or list of "Vehicles" data-frame.
-#' Each data-frame as number of columns matching the age distribution of that ype of vehicle. The number of rows is equal to the number of streets link. If this is a list, the length of the list is the vehicles for each hour.
+#' @param fleet_composition Fleet composition; Vector.
 #' @param dist Units (in km); Length of each link in km
 #' @param ef Units (in g/km);	List of functions of emission factors
+#' @param aggregate Logical; if TRUE (default) emissions are aggregated by pollutant
 #' @return Units (in g); emissions per link
 #' @export
-emis <- function(veh,dist,ef){
-  # ef <- EF_emfac
-  # dist <- units::set_units(poa_gpslines$dist,'km')
-  # veh = 1
-  #
-  # check dist units
+emis <- function(fleet_composition,dist,ef,aggregate = TRUE){
+  
+  # fleet_composition = total_fleet$fleet_composition
+  # dist = spo_gpslines$dist
+  # ef = EF_brazil
+  # 
+  
+  # check units----
+  
   if(class(dist) != "units"){
     stop("dist neeeds to has class 'units' in 'km'. Please, check package 'units'")
   }
@@ -21,11 +24,14 @@ emis <- function(veh,dist,ef){
     stop("dist need to has 'units' in 'km'.")
   }
   
-  #
-  # check ef units
-  #if(class(ef) != "list"){
-  #  stop("ef should be presented in 'list' class. Please, try using 'list(ef)' instead.")
-  #}
+  # ef----
+  
+  # check if ef is constant
+  if(length(ef[[1]]) == 1){
+    message("Constant emission factor along the route")
+  }
+  
+  # units
   lapply(seq_along(ef),function(i){ # i = 1
     if(class(ef[[i]]) != "units"){
       stop("ef neeeds to has class 'units' in 'g/km'. Please, check package 'units'")
@@ -33,30 +39,51 @@ emis <- function(veh,dist,ef){
     if(units(ef[[i]])$numerator != "g" | units(ef[[i]])$denominator != "km"){
       stop("ef need to has 'units' in 'g/km'.")
     }
-    
-    #
     # check 'ef' length with veh
-    if(length(ef[[i]]) == 1){
-      message("Constant emission factor along the route")
-    }else{
-      if(length(ef[[i]]) != length(dist)){
-        stop(paste0("ef '",names(ef[i]),"' needs to has the same length of dist"))
-      }
+    if(length(ef[[i]]) != 1 & length(ef[[i]]) != length(dist)){
+      stop(paste0("ef '",names(ef[i]),"' needs to has the same length of dist"))
     }
   })
-  # 
+  
+  # extract single pollutants----
+  
   # verify how many pollutants 'ef' data has based on names(ef)
-  m <- regexpr(pattern = "\\_",text = names(ef),fixed = FALSE)
-  single_pol <- sapply(regmatches(x = names(ef),m =  m,invert = TRUE),function(i){i[[1]]}) %>% unique()
-  # match 'veh' size based on different pollutant
-  veh <- rep(veh,length(single_pol))
-  # emissions
+  m <- regexpr(pattern = "\\_",text =  colnames(ef),fixed = FALSE)
+  # get unique pollutants
+  single_pol <- sapply(regmatches(x = colnames(ef),m =  m,invert = TRUE),function(i){i[[1]]}) %>% 
+    unique()
+  
+  # match 'veh' size based on different pollutant----
+  
+  fleet_composition <- rep(fleet_composition,length(single_pol))
+  
+  # emissions----
+  
   emi <- lapply(seq_along(ef),function(i){ # i = 1 
-    # estimate emissions
-    aux <- ef[[i]] * veh[[i]]
+    aux <- ef[[i]] * fleet_composition[[i]]
     temp_emis <- aux * dist
-    return(units::set_units(temp_emis,"g"))
-  }) 
-  names(emi) <- names(ef)
+    return(temp_emis)
+  })
+  emi <- do.call(cbind,emi) %>% data.table::as.data.table()
+  colnames(emi) <- colnames(ef)
+  
+  # aggregate condition----
+  
+  if(aggregate){
+    # aggregate by single pollutant
+    lapply(single_pol,function(i){ # i = single_pol[2]
+      colnames_temp <- colnames(emi)[colnames(emi) %like% paste0(i,"_")]
+      names_newcol <- paste0(i,"_total")
+      emi[,(names_newcol) := sum(.SD),.SDcols = colnames_temp]
+    })
+    # keep only total_emissions
+    colnames_avg <- colnames(emi)[colnames(emi) %like% "_total"]
+    emi <- emi[,.SD,.SDcols = colnames_avg]
+  }
+  
+  # units convertion----
+  
+  to_units <- function(i){units::set_units(i,"g")} # not sure why I couldn't use it within data.table
+  emi <- emi[,lapply(.SD,to_units)]
   return(emi)
 }
