@@ -4,15 +4,16 @@
 \alias{emis}
 \title{Estimate hot exhaust emissions}
 \usage{
-emis(veh, dist, ef)
+emis(fleet_composition, dist, ef, aggregate = TRUE)
 }
 \arguments{
-\item{veh}{Vehicles data-frame or list of "Vehicles" data-frame.
-Each data-frame as number of columns matching the age distribution of that ype of vehicle. The number of rows is equal to the number of streets link. If this is a list, the length of the list is the vehicles for each hour.}
+\item{fleet_composition}{Fleet composition; Vector.}
 
 \item{dist}{Units (in km); Length of each link in km}
 
 \item{ef}{Units (in g/km);    List of functions of emission factors}
+
+\item{aggregate}{Logical; if TRUE (default) emissions are aggregated by pollutant}
 }
 \value{
 Units (in g); emissions per link
