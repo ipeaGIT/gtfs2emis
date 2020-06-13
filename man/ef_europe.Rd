@@ -5,14 +5,12 @@
 \title{Emission factor dependent on speed by EMEP/EEA}
 \usage{
 ef_europe(
-  vel,
+  speed,
   veh_type,
-  veh,
   fuel = "Diesel",
-  aggregate = TRUE,
   euro,
   tech,
-  pol,
+  pollutant,
   slope = 0,
   load = 0.5,
   k = 1,
@@ -20,24 +18,20 @@ ef_europe(
 )
 }
 \arguments{
-\item{vel}{Units; Speed in [km/h]}
+\item{speed}{Units; Speed in [km/h]}
 
 \item{veh_type}{Character; Bus type, classified in "Urban Buses Midi <=15 t", "Urban Buses Standard 15 - 18 t", 
 "Urban Buses Articulated >18 t",  "Coaches Standard <=18 t",
 "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".}
 
-\item{veh}{Numeric; Distribution of vehicle type, required only when aggregate == TRUE.}
-
 \item{fuel}{Character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel".}
-
-\item{aggregate}{Logical; does the emission factor should be aggregated? Default is TRUE.}
 
 \item{euro}{Character; Euro period of vehicle, classified in "Conventional", "I", "II", "Euro III", 
 "IV", "V", "VI" and "EEV".}
 
 \item{tech}{Character; Technology, classified in "SCR", "EGR" and "DPF+SCR".}
 
-\item{pol}{Character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel Consumption), "CH4", "NH3" and "N2O".}
+\item{pollutant}{Character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel Consumption), "CH4", "NH3" and "N2O".}
 
 \item{slope}{Numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
 Negative gradients means downhills and positive uphills. Default is 0.0.}
