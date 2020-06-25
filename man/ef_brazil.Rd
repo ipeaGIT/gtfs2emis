@@ -2,8 +2,7 @@
 % Please edit documentation in R/ef_brazil.R
 \name{ef_brazil}
 \alias{ef_brazil}
-\title{Brazilian Emissions factors for Environment Company of Sao Paulo, Brazil (CETESB) 2017. 
-Data obtained from VEIN package.}
+\title{Emission factor for buses in Brazil}
 \source{
 \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/.}
 }
@@ -31,7 +30,9 @@ If project is 'constant' values above 2017 and below 1980 will be repeated}
 Data.table; Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
-returns a vector or data.frame of Brazilian emission factors.
+Returns a vector or data.frame of emission factors for buses based on
+estimates from the [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
+and obtained via the VEIN package. Estimates expressed in units 'g/km'.
 }
 \note{
 The new convention for vehicles names are translated from CETESB report:

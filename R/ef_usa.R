@@ -1,7 +1,8 @@
 #' @title Running exhaust emissions factors from United States (EMFAC2017 model)
 #' 
-#' @description Emissions that come out of the vehicle tailpipe while the vehicle is traveling on the road. The function returns emissions factor in units
-#' 'g/km'.
+#' @description Returns a vector or data.frame of emission factors for buses based on 
+#' values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
+#' Estimates expressed in units 'g/km'.
 #'
 #' @param pollutant Character; Pollutants: Carbon monoxide (CO); Nitrogen oxides (NOx); 
 #'   Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 

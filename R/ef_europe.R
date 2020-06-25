@@ -1,6 +1,8 @@
 #' @title Emission factor dependent on speed by EMEP/EEA
 #' 
-#' @description Estimates emission factor for buses based on EMEP/EEA 
+#' @description Returns a vector or data.frame of emission factors for buses based on EMEP/EEA. Function based on
+#' values from the [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
+#' Estimates expressed in units 'g/km'.
 #' 
 #' @param speed Units; Speed in [km/h]
 #' @param veh_type Character; Bus type, classified in "Urban Buses Midi <=15 t", "Urban Buses Standard 15 - 18 t", 

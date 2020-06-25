@@ -46,5 +46,7 @@ Negative gradients means downhills and positive uphills. Default is 0.0.}
 Emission factors in units g/km.
 }
 \description{
-Estimates emission factor for buses based on EMEP/EEA
+Returns a vector or data.frame of emission factors for buses based on EMEP/EEA. Function based on
+values from the [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
+Estimates expressed in units 'g/km'.
 }

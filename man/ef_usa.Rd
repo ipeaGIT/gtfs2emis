@@ -33,6 +33,7 @@ the same length as model_year.}
 Data.table; Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
-Emissions that come out of the vehicle tailpipe while the vehicle is traveling on the road. The function returns emissions factor in units
-'g/km'.
+Returns a vector or data.frame of emission factors for buses based on 
+values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
+Estimates expressed in units 'g/km'.
 }

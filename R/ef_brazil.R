@@ -1,7 +1,9 @@
-#' @title Brazilian Emissions factors for Environment Company of Sao Paulo, Brazil (CETESB) 2017. 
-#' Data obtained from VEIN package.
+#' @title Emission factor for buses in Brazil
 #' 
-#' @description returns a vector or data.frame of Brazilian emission factors.
+#' @description Returns a vector or data.frame of emission factors for buses based on
+#' estimates from the [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
+#' and obtained via the VEIN package. Estimates expressed in units 'g/km'.
+#'
 #'
 #' @param pollutant Character; Pollutants: "CO", "HC", "NMHC", "CH4", "NOx", "CO2","RCHO", "ETOH", "PM",
 #'  "N2O", "KML", "FC", "NO2", "NO", "gD/KWH", "gCO2/KWH", "RCHO", "CO_0km", "HC_0km", "NMHC_0km", 
