@@ -164,24 +164,20 @@ Here is an example using using different emission factors from Europe, USA and B
 # USA
 emi_usa <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                            dist = spo_gpslines$dist,
-                           ef = EF_usa)
-colnames(emi_usa) <- paste0("USA_", colnames(emi_usa))
+                           ef = EF_usa, prefix = "USA")
 
 
 # EUROPE
 emi_europe <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                               dist = spo_gpslines$dist,
                               ef = EF_europe,
-                              aggregate = TRUE)
-
-colnames(emi_europe) <- paste0("EU_", colnames(emi_europe))
-
+                              prefix = "EU")
 
 # BRAZIL (not speed dependent emission factor)
 emi_brazil <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                               dist = spo_gpslines$dist,
-                              ef = EF_brazil)
-colnames(emi_brazil) <- paste0("BR_", colnames(emi_brazil))
+                              ef = EF_brazil,
+                              prefix = "BR")
 head(emi_brazil, 3)
 
 
@@ -227,13 +223,15 @@ minute_emissions <- gtfs2emis::emis_post(data = spo_emis,
                                   time_class = "hour-minute",
                                   time_column = 'departure_time')
 
-breaks <- minute_emissions$departure_time[seq(1,nrow(hour_emissions),length.out = 5)]
+minute_emissions[,group_x := .GRP, by = departure_time]
+breaks <- minute_emissions$group_x[seq(1,nrow(minute_emissions),length.out = 10)]
+x_labels <- minute_emissions[breaks,departure_time]
 
 ggplot(data = minute_emissions) +
-  geom_line(aes(group = 1, x = departure_time, y = as.numeric(BR_CO_total)/1000), color='gray50') +
-  geom_line(aes(group = 1, x = departure_time, y = as.numeric(EU_CO_total)/1000)) +
+  geom_line(aes(group = 1, x = group_x, y = as.numeric(BR_CO_total)/1000), color='gray50') +
+  geom_line(aes(group = 1, x = group_x, y = as.numeric(EU_CO_total)/1000)) +
   xlab("Time of the day") + ylab("Total CO emitted in Kilograms") +
-  scale_x_discrete(breaks = breaks) +
+  scale_x_continuous(breaks = breaks,labels = x_labels) +
   theme_bw()
 
 ```
