@@ -4,7 +4,7 @@
 \alias{emis}
 \title{Estimate hot exhaust emissions}
 \usage{
-emis(fleet_composition, dist, ef, aggregate = TRUE)
+emis(fleet_composition, dist, ef, aggregate = TRUE, prefix)
 }
 \arguments{
 \item{fleet_composition}{Fleet composition; Vector.}
@@ -14,6 +14,8 @@ emis(fleet_composition, dist, ef, aggregate = TRUE)
 \item{ef}{Units (in g/km);    List of functions of emission factors}
 
 \item{aggregate}{Logical; if TRUE (default) emissions are aggregated by pollutant}
+
+\item{prefix}{Character; Add prefix into emissions names. Missing parameter (Default) means empty prefix.}
 }
 \value{
 Units (in g); emissions per link

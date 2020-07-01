@@ -6,14 +6,15 @@
 #' @param dist Units (in km); Length of each link in km
 #' @param ef Units (in g/km);	List of functions of emission factors
 #' @param aggregate Logical; if TRUE (default) emissions are aggregated by pollutant
+#' @param prefix Character; Add prefix into emissions names. Missing parameter (Default) means empty prefix.
 #' @return Units (in g); emissions per link
 #' @export
-emis <- function(fleet_composition,dist,ef,aggregate = TRUE){
+emis <- function(fleet_composition,dist,ef,aggregate = TRUE, prefix){
   
   # fleet_composition = total_fleet$fleet_composition
   # dist = spo_gpslines$dist
   # ef = EF_brazil
-  # 
+  # prefix = ""
   
   # check units----
   
@@ -80,6 +81,13 @@ emis <- function(fleet_composition,dist,ef,aggregate = TRUE){
     colnames_avg <- colnames(emi)[colnames(emi) %like% "_total"]
     emi <- emi[,.SD,.SDcols = colnames_avg]
   }
+  
+  # prefix condition----
+  
+  if(missing(prefix) == FALSE){
+    colnames(emi) <- paste0(prefix,"_",colnames(emi))
+  }
+  
   
   # units convertion----
   
