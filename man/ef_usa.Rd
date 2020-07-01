@@ -18,7 +18,8 @@ and particulate matters 2.5 microns or less in diameter (PM2.5);
 Sulfur oxides (SOx); Carbon Dioxide (CO2); 
 Nitrous Oxide (N2O), and Methane (CH4).}
 
-\item{calendar_year}{Numeric; Calendar Year between 2010 - 2020.}
+\item{calendar_year}{Numeric; Calendar Year between 2010 - 2020. Year in which the emissions inventory is estimated,
+in order to consider the effect of degradation.}
 
 \item{model_year}{Numeric; Model year of vehicle.}
 

@@ -11,7 +11,8 @@
 #'   and particulate matters 2.5 microns or less in diameter (PM2.5);
 #'   Sulfur oxides (SOx); Carbon Dioxide (CO2); 
 #'   Nitrous Oxide (N2O), and Methane (CH4).
-#' @param calendar_year Numeric; Calendar Year between 2010 - 2020.
+#' @param calendar_year Numeric; Calendar Year between 2010 - 2020. Year in which the emissions inventory is estimated,
+#'  in order to consider the effect of degradation.
 #' @param fuel Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.
 #' @param model_year Numeric; Model year of vehicle.
 #' @param speed Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
