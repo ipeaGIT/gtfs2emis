@@ -1,5 +1,5 @@
 #' @importFrom magrittr %>%
-#' @importFrom data.table := .SD .I .GRP %like%
+#' @importFrom data.table := .SD .I .GRP %like% setDT
 # @importFrom utils data
 NULL
 
@@ -20,4 +20,4 @@ utils::globalVariables(c('geometry','f_linhas','interval_id','i.interval','grp')
 utils::globalVariables(c('emis_post','time_dt','temp_pol'))
 utils::globalVariables(c('europe'))
 utils::globalVariables(c('usa','temp_emfac','Calendar Year','Model Year','EF','EF Model','Year','lower_speed_interval','upper_speed_interval'))
-
+utils::globalVariables(c('lkm_inter','ratio','temp_lkm'))
