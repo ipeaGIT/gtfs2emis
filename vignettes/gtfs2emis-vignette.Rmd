@@ -164,7 +164,8 @@ Here is an example using using different emission factors from Europe, USA and B
 # USA
 emi_usa <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                            dist = spo_gpslines$dist,
-                           ef = EF_usa, prefix = "USA")
+                           ef = EF_usa, 
+                           prefix = "USA")
 
 
 # EUROPE
@@ -282,24 +283,28 @@ pol_gps_hour <- gtfs2emis::emis_grid(data = spo_sf,
                       grid = grid_gps,
                       time_class = 'hour',
                       time_column = 'departure_time')
-# changing name for ggplot
-pol_gps_hour$time_column <- paste('Hour',pol_gps_hour$time_column)
-pol_gps_hour$time_column <- factor(pol_gps_hour$time_column ,paste("Hour",0:23))
+
+# subset hours of interest
+pol_gps_hour <- subset(pol_gps_hour, time_column %in% c(8, 16, 23))
+to_string <- as_labeller(c(`8` = "Hour 8", `16` = "Hour 16", `23` = "Hour 23"))
 
 ggplot(data = pol_gps_hour) +
   geom_sf(aes(fill=as.numeric(EU_CO_total)/1000), color=NA) +
   scale_fill_viridis_c(option = "plasma") +
-  labs(fill = "Daily CO\nemitted locally\n(kg)") +
-    theme(panel.background = element_rect(fill = "white", 
-      colour = NA), 
-      panel.border = element_rect(fill = NA, 
-      colour = "grey20"), 
-      axis.text.x =  element_text(angle = -90),
-      panel.grid = element_line(colour = "grey92"), 
-      panel.grid.minor = element_line(size = rel(0.5)), 
-      strip.background = element_rect(fill = "grey85", 
-        colour = "grey20"), legend.key = element_rect(fill = "white", 
-        colour = NA), complete = TRUE) + 
-  facet_wrap(facets = vars(time_column))
+  labs(fill = "Hourly CO\nemitted\n(kg)") +
+    # theme(panel.background = element_rect(fill = "white", 
+    #   colour = NA), 
+    #   panel.border = element_rect(fill = NA, 
+    #   colour = "grey20"), 
+    #   axis.text.x =  NULL,
+    #   panel.grid = element_line(colour = "grey92"), 
+    #   panel.grid.minor = element_line(size = rel(0.5)), 
+    #   strip.background = element_rect(fill = "grey85", 
+        # colour = "grey20"), legend.key = element_rect(fill = "white", 
+        # colour = NA), complete = TRUE) + 
+  facet_wrap(facets = ~time_column, labeller = to_string) + 
+  theme_minimal() +
+  theme(axis.text=element_blank(),
+        strip.background = element_rect(fill="gray80", color=NA))
 
 ```
