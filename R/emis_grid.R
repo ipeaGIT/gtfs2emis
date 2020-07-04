@@ -49,7 +49,7 @@ emis_grid <- function(data,
       # retrieve units
       emi_units[i] <- units::deparse_unit(netdata[,.SD,.SDcols = (i)][[1]])
       
-      message(paste0('input data "',i,'" to has units: ',  emi_units[i]))
+      message(paste0('input data "',i,'" is in units: ',  emi_units[i]))
       
     }else{
       
