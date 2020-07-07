@@ -15,7 +15,7 @@ emis <- function(fleet_composition,dist,ef,aggregate = TRUE, prefix){
   # dist = spo_gpslines$dist
   # ef = EF_brazil
   # prefix = ""
-  
+  # 
   # check units----
   
   if(class(dist) != "units"){
@@ -72,10 +72,10 @@ emis <- function(fleet_composition,dist,ef,aggregate = TRUE, prefix){
   
   if(aggregate){
     # aggregate by single pollutant
-    lapply(single_pol,function(i){ # i = single_pol[2]
+    lapply(single_pol,function(i){ # i = single_pol[1]
       colnames_temp <- colnames(emi)[colnames(emi) %like% paste0(i,"_")]
       names_newcol <- paste0(i,"_total")
-      emi[,(names_newcol) := sum(.SD),.SDcols = colnames_temp]
+      emi[,(names_newcol) := rowSums(.SD),.SDcols = colnames_temp]
     })
     # keep only total_emissions
     colnames_avg <- colnames(emi)[colnames(emi) %like% "_total"]
