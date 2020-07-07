@@ -28,7 +28,6 @@ vignette: |
   library(magrittr)
   library(ggplot2)
   library(vein)
-
 ```
   
   # GTFS data
@@ -51,7 +50,7 @@ The GPS-like data can be converted into line segments (`linestring`). This conve
   
   
 ```{r}
-spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% dplyr::select(speed, dist, departure_time)
+spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% dplyr::select(trip_id,speed, dist, departure_time)
 
 dim(spo_gps)
 dim(spo_gpslines)
@@ -66,7 +65,8 @@ We will also update units of measurement of the attributes in our data.
 
 ```{r}
 spo_gpslines$speed <- units::set_units(spo_gpslines$speed, "km/h")
-spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "km")
+spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "m") %>% 
+  units::set_units("km")
 
 # The data shows the average speed and distance between pairs of stops
 head(spo_gpslines)
@@ -203,7 +203,7 @@ To facilitate the analysis of these emissions estimates, the `gtfs2emis` package
 ## Hour time stamp
 ```{r}
 hour_emissions <- gtfs2emis::emis_post(data = spo_emis,
-                                  emi = c('BR_CO_total','EU_CO_total'), 
+                                  emi = c('BR_CO_total','EU_CO_total'),
                                   time_class = "hour",
                                   time_column = 'departure_time')
 
