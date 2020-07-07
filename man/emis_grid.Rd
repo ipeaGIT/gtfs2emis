@@ -13,7 +13,7 @@ emis_grid(data, emi, grid, time_class = "all periods", time_column)
 
 \item{grid}{Spatial (sf polygon); Grid cell data to allocate emissions}
 
-\item{time_class}{Character; Emissions can be aggregated by all periods (Default),
+\item{time_class}{Character; Emissions can be aggregated by 'all periods' (Default),
 'hour' or 'hour-minute'.}
 
 \item{time_column}{Vector; Column name of 'departure_time' information (from data input). 
@@ -24,6 +24,6 @@ Spatial data (emissions into grid cells).
 }
 \description{
 Aggregate emissions proportionally into grid cells, by performing an intersection 
-operation between emissions data in linestring format and grid cells. It considers aggregation 
-per grid cells and
+operation between emissions data in linestring format and grid cells. It also considers aggregation 
+per grid cells and time.
 }

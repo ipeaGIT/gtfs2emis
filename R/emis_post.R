@@ -10,16 +10,43 @@
 #'  Only used when 'hour' or 'hour-minute' is selected. 
 #' @return Units (in g); emissions
 #' @export
+#' @examples 
+#' data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+#'   gtfs2gps::filter_by_shape_id(c("51982")) %>%
+#'   gtfs2gps::gtfs2gps() %>%
+#'   gtfs2gps::gps_as_sflinestring() %>%
+#'   dplyr::select(trip_id,speed, dist, departure_time)
+#' 
+#' data$speed <- units::set_units(data$speed,"km/h")
+#' data$dist <- units::set_units(data$dist,"m") %>%
+#'   units::set_units("km")
+#' 
+#' total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012,2014,2015,2017,2018,2019),
+#'                                       bus = c(1,61,50,1,45,18,62,27,31),
+#'                                       veh_type_euro = "Urban Buses Standard 15 - 18 t",
+#'                                       euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V","V"))
+#' total_fleet$fleet_composition = total_fleet$bus/sum(total_fleet$bus)
+#' 
+#' EF_usa <-  gtfs2emis::ef_usa(pollutant = c("CO","PM10"),
+#'                  calendar_year = "2019",
+#'                  model_year = total_fleet$year,
+#'                  speed = data$speed,
+#'                  fuel = "Diesel")
+#' emi_usa <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
+#'                            dist = data$dist,
+#'                            ef = EF_usa,
+#'                            prefix = "USA")
+#' data <- cbind(data,emi_usa)
+#' emi_post_usa <- gtfs2emis::emis_post(data = data, time_class = 'hour',
+#'                                      emi = c("USA_CO_total","USA_PM10_total")
+#'                                       time_column = 'departure_time')
+#'  
+#' 
 emis_post <- function(data,emi,time_class,time_column = 'departure_time'){
-  
-  # data = spo_gpslines
-  # emi = c('BR_CO_total','EU_CO_total') # check better names
-  # time_class = "hour"
-  # time_column = 'departure_time'
   # 
   # check input consistency----
   
-  # to data tabke
+  # to data table
   data <- data.table::setDT(data)
   
   if(missing(data)) stop("'data' parameter is missing, without default")
@@ -35,7 +62,7 @@ emis_post <- function(data,emi,time_class,time_column = 'departure_time'){
 
   # check emis class
   
-  lapply(seq_along(emi),function(i){ # i = 2
+  lapply(seq_along(emi),function(i){ # i = 1
     temp_emi <- data[,.SD,.SDcols = emi[i]]
     if(class(temp_emi[[1]]) != "units"){
       stop("emi neeeds to has class 'units'. Please, check package 'units'")
@@ -45,9 +72,14 @@ emis_post <- function(data,emi,time_class,time_column = 'departure_time'){
     }
   })
   
+  #
+  # agreggate by TIME
+  #
+  
   # time - filter
   temp_data <- data[,.SD,.SDcols = c(emi,time_column)]
-  temp_data <- temp_data[,departure_time := data.table::as.ITime(departure_time)][order(departure_time),]
+  temp_data[,(time_column) := data.table::as.ITime(get(time_column))]
+  temp_data <- temp_data[order(get(time_column)),]
   
   if(missing(time_column) == FALSE){
     if(missing(time_class)){stop("Please provide 'time_class' data.")}
@@ -55,18 +87,21 @@ emis_post <- function(data,emi,time_class,time_column = 'departure_time'){
     # 'hour' time stamp
     
     if(time_class == "hour"){
-      temp_data[,departure_time := data.table::hour(departure_time)]
-      temp_data <- temp_data[ , lapply(.SD, sum), .SDcols = !"departure_time", by = "departure_time"]
+      temp_data[,(time_column) := data.table::hour(get(time_column))]
     }
     
     # 'hour-minute' time stamp
     
     if(time_class == "hour-minute"){
-      temp_data[,departure_time := paste0(data.table::hour(departure_time),":",
-                          data.table::minute(departure_time))]
-
-      temp_data <- temp_data[ , lapply(.SD, sum), .SDcols = !"departure_time", by = "departure_time"]
+      temp_data[,(time_column) := paste0(data.table::hour(get(time_column)),":",
+                          data.table::minute(get(time_column)))]
     }
+    
+    # aggregate emissions and rename
+    
+    temp_data <- temp_data[ , lapply(.SD, sum), .SDcols = !(time_column), by = .("time"=get(time_column))]
+    data.table::setnames(temp_data,"time",time_column)
+    
     return(temp_data)
   }else{
     return(temp_data)
