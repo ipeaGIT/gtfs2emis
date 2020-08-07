@@ -32,7 +32,10 @@ vignette: |
   
   # GTFS data
   
-  To estimate emissions from GTFS data, we need first to compute `speed` and distance (`dist`) ofr each trip between pairs of public transport stops/stations.
+  To estimate emissions from GTFS data, we need first to:
+  
+  - **compute `speed` and distance (`dist`)** of each trip between pairs of public transport stops/stations.
+  
   This information is created when we convert GTFS data to GPS-like
   records, using `gtfs2gps::gtfs2gps()`. The example below uses a sample of the GTFS data from São Paulo municipality, in Brazil. In this example we will only process the trips of two `shape_id`s to speedup processing time.
   
@@ -93,6 +96,7 @@ total_fleet[,fleet_composition := bus/sum(bus)]
 # The input data looks like this
 head(total_fleet)
 
+sum(total_fleet$fleet_composition)
 ```
 
 
@@ -127,7 +131,19 @@ EF_europe <- ef_europe(pollutant = c("CO", "PM"),
                        tech = "SCR",
                        euro = total_fleet$euro_stage)
 head(EF_europe,3)
+
+
+EF_europe2 <- ef_europe(pollutant = c("CO", "PM"),
+                       speed = spo_gpslines$speed,
+                       veh_type = total_fleet$veh_type_euro,
+                       tech = "SCR",
+                       euro = total_fleet$euro_stage,
+                       fcorr = rnorm(9, 0.5, 0.1))
+head(EF_europe2,3)
+
 ```
+
+Please, note that the 
 
 ## United States emission factors for buses
 

@@ -20,9 +20,21 @@
 #' @param load Numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
 #' @param show.equation Logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
 #' @param k Numeric; constant value to adjust emission factors. Default is 1.0.
+#' @param fcorr Numeric; Correction based on fuel composition. The length must be one per
+#' each euro standards. Default is 1.0.
 #' @return Emission factors in units g/km.
 #' @export
-ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant,slope = 0.0, load = 0.5, k = 1, show.equation = TRUE){
+ef_europe <- function(speed, 
+                      veh_type, 
+                      fuel = "Diesel", 
+                      euro, 
+                      tech, 
+                      pollutant,
+                      slope = 0.0, 
+                      load = 0.5, 
+                      k = 1, 
+                      fcorr = 1,
+                      show.equation = TRUE){
   # speed <- units::set_units(poa_gpslines$speed,"km/h")
   # veh_type <- "Urban Buses Standard 15 - 18 t"
   #  euro <- c("IV","V")
@@ -58,7 +70,9 @@ ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant,sl
   if(length(euro) != length(fuel) && length(fuel) == 1){
     fuel <- rep(fuel,length(euro))
   }
-  
+  if(length(fcorr) == 1){
+    fcorr <- rep(fcorr,length(euro))
+  }
   # polynomial expression----
   
   eq_num <- function(a,b,g,d,e,z,h,rf,v,k){
@@ -99,7 +113,8 @@ ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant,sl
       eq_output <- eq_num(a = temp_ef3$Alpha,b = temp_ef3$Beta,g = temp_ef3$Gamma,
                           d = temp_ef3$Delta,e = temp_ef3$Epsilon,z = temp_ef3$Zita,
                           h = temp_ef3$Hta,rf = temp_ef3$`Reduction.Factor.[%]`,
-                          v = speed, k = k)
+                          v = speed, 
+                          k = k*fcorr[i])
       return(eq_output)
     })
     

@@ -39,7 +39,8 @@ total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012,2014,2015,201
                                       veh_type_euro = "Urban Buses Standard 15 - 18 t",
                                       euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V","V"))
 total_fleet$fleet_composition = total_fleet$bus/sum(total_fleet$bus)
-EF_usa <- ef_usa(pollutant = c("CO","PM10"),
+
+EF_usa <-  gtfs2emis::ef_usa(pollutant = c("CO","PM10"),
                  calendar_year = "2019",
                  model_year = total_fleet$year,
                  speed = data$speed,

@@ -14,6 +14,7 @@ ef_europe(
   slope = 0,
   load = 0.5,
   k = 1,
+  fcorr = 1,
   show.equation = TRUE
 )
 }
@@ -39,6 +40,9 @@ Negative gradients means downhills and positive uphills. Default is 0.0.}
 \item{load}{Numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
 
 \item{k}{Numeric; constant value to adjust emission factors. Default is 1.0.}
+
+\item{fcorr}{Numeric; Correction based on fuel composition. The length must be one per
+each euro standards. Default is 1.0.}
 
 \item{show.equation}{Logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.}
 }
