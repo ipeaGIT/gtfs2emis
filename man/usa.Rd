@@ -6,7 +6,7 @@
 \title{EMFAC
 Running exhaust emissions factors from EMFAC2017 model}
 \format{
-A data table with 106920 rows and 7 variables:
+A data.table with 106920 rows and 7 variables:
 \describe{
 \item{pol}{Character; Pollutants: Carbon monoxide (CO); Nitrogen oxides (NOx); 
   Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 
@@ -19,8 +19,8 @@ A data table with 106920 rows and 7 variables:
   \item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'}
   \item{model_year}{Model year.}
   \item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
- such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
-  "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h)}
+ such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50"
+  "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h)}
 }
 }
 \source{

@@ -19,35 +19,36 @@ ef_euro_scaled(
 )
 }
 \arguments{
-\item{dfcol}{Units; Local emission factors, in units [g/km]}
+\item{dfcol}{units; Local emission factors, in units [g/km]}
 
-\item{speed}{Units; Speed, in units [km/h]}
+\item{speed}{units; Speed, in units [km/h]}
 
-\item{veh_type}{Character; Bus type, classified in "Urban Buses Midi <=15 t", "Urban Buses Standard 15 - 18 t", 
-"Urban Buses Articulated >18 t", "Coaches Standard <=18 t"       
-"Coaches Articulated >18 t", "Urban CNG Buses", "Urban Biodiesel Buses"}
+\item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t",
+"Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t"       
+"Coaches Articulated >18 t", "Urban CNG Buses", "Urban Biodiesel Buses".}
 
-\item{fuel}{Character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel"}
+\item{fuel}{character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel".}
 
-\item{euro}{Character; Euro period of vehicle, classified in "Conventional", "Euro I", "Euro II", "Euro III", 
-"Euro IV", "Euro V", "Euro VI" and "EEV"}
+\item{euro}{character; Euro period of vehicle, classified in "Conventional", "Euro I", "Euro II",
+"Euro III", "Euro IV", "Euro V", "Euro VI" and "EEV".}
 
-\item{SDC}{Numeric; Speed Driving Cycle (default = 34.12)}
+\item{SDC}{numeric; Speed Driving Cycle (default = 34.12).}
 
-\item{tech}{Character; Technology, classified in "SCR", "EGR", "DPF+SCR" or NA (Not available). For EURO IV, V, default is "SCR".
-For Euro III, default is NA.}
+\item{tech}{character; Technology, classified in "SCR", "EGR", "DPF+SCR" or NA (Not available).
+For EURO IV, V, default is "SCR". For Euro III, default is NA.}
 
-\item{pollutant}{Character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC", "CH4", "NH3" and "N2O"}
+\item{pollutant}{character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC", "CH4", "NH3"
+and "N2O".}
 
-\item{slope}{Numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
-Negative gradients means downhills and positive uphills. Default is 0.0.}
+\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
+0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
 
-\item{load}{Numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
+\item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
 
-\item{show.equation}{Logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.}
+\item{show.equation}{logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.}
 }
 \value{
-Emission factors in units g/km
+emission factors in units 'g/km'.
 }
 \description{
 Estimates scaled emission factor for buses based on EMEP/EEA

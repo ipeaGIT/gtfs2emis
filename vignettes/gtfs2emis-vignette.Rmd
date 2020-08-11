@@ -23,11 +23,8 @@ vignette: |
   
 ```{r, message = FALSE}
   library(gtfs2emis)
-  library(gtfs2gps)
-  library(data.table)
   library(magrittr)
   library(ggplot2)
-  library(vein)
 ```
   
   # GTFS data
@@ -57,8 +54,6 @@ dim(spo_gpslines)
 
 # the bus routes look like this:
 plot(spo_gpslines['speed'])
-
-
 ```
 
 We will also update units of measurement of the attributes in our data.
@@ -112,8 +107,6 @@ head(det_fleet)
 
 Before we estimate emission levels, we need first need to calculate what are the emission factors for each pollutant given a combination of fleet characteristics. For Europe and the United States, we can use more rigorous functions that also account for speed information as well. The `gtfs2emis` package generates emission factors expressed in `g/km` for each trip segment between consecutive pairs of stops. The emission factors currently available in `gtfs2emis` are from Europe, US, and Brazil, see below.
 
-
-
 ## European emission factors for buses
 
 The `ef_europe` function can be used to estimate the emission factors for multiple pollutants considering different types of vehicles and technologies listed in the [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook). See documentation for list of options `?ef_europe`. Supported pollutants: CO, NOx, HC, PM, CH4, NMHC, CO2, SO2, Pb, FC , NO, and NO2.
@@ -121,12 +114,12 @@ The `ef_europe` function can be used to estimate the emission factors for multip
 The function works like this:
 
 ```{r}
-EF_europe <- ef_europe(pollutant = c("CO", "PM"),
+EF_europe <- gtfs2emis::ef_europe(pollutant = c("CO", "PM"),
                        speed = spo_gpslines$speed,
                        veh_type = total_fleet$veh_type_euro,
                        tech = "SCR",
                        euro = total_fleet$euro_stage)
-head(EF_europe,3)
+head(EF_europe, 3)
 ```
 
 ## United States emission factors for buses
@@ -180,8 +173,6 @@ emi_brazil <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                               ef = EF_brazil,
                               prefix = "BR")
 head(emi_brazil, 3)
-
-
 ```
 
 When we join emission estimates with `sf` spatial data, it looks like this.
@@ -192,7 +183,6 @@ spo_emis <- cbind(spo_emis, emi_europe)
 spo_emis <- cbind(spo_emis, emi_brazil)
 
 head(spo_emis)
-
 ```
 
 
@@ -212,7 +202,6 @@ ggplot(data = hour_emissions) +
     geom_line(aes(x = departure_time, y = as.numeric(EU_CO_total)/1000)) +
     xlab("Hour of the day") + ylab("Total CO emitted in Kilograms") +
     theme_bw()
-
 ```
 
 ## Hour-minute time stamp
@@ -306,5 +295,4 @@ ggplot(data = pol_gps_hour) +
   theme_minimal() +
   theme(axis.text=element_blank(),
         strip.background = element_rect(fill="gray80", color=NA))
-
 ```
