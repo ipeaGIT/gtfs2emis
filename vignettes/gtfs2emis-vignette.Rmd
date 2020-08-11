@@ -12,40 +12,36 @@ vignette: |
 7 August 2020
   
 ```{r, include = FALSE}
-  knitr::opts_chunk$set(
+knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
-  )
+  comment = "#>")
 ```
-  # Introduction
+
+# Introduction
   
-  The package `gtfs2emis` estimates hot exhaust emissions for public transport networks at high spatial and temporal resolutions based on GTFS data. This vignette introduces the main functions of the package. Here are the following packages we will use:
+The package `gtfs2emis` estimates hot exhaust emissions for public transport networks at high spatial and temporal resolutions based on GTFS data. This vignette introduces the main functions of the package. Here are the following packages we will use:
   
 ```{r, message = FALSE}
-  library(gtfs2emis)
-  library(magrittr)
-  library(ggplot2)
+library(gtfs2emis)
+library(magrittr)
+library(ggplot2)
 ```
   
-  # GTFS data
+# GTFS data
   
-  To estimate emissions from GTFS data, we need first to:
-  
-  - **compute `speed` and distance (`dist`)** of each trip between pairs of public transport stops/stations.
-  
-  This information is created when we convert GTFS data to GPS-like
-  records, using `gtfs2gps::gtfs2gps()`. The example below uses a sample of the GTFS data from São Paulo municipality, in Brazil. In this example we will only process the trips of two `shape_id`s to speedup processing time.
+To estimate emissions from GTFS data, we need first to compute `speed` and distance (`dist`) of each trip between pairs of public transport stops/stations.
+This information is created when we convert GTFS data to GPS-like
+records, using `gtfs2gps::gtfs2gps()`. The example below uses a sample of the GTFS data from São Paulo municipality, in Brazil. In this example we will only process the trips of two `shape_id`s to speedup processing time.
   
 ```{r, message = FALSE}
-  # 'spo'
-  spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
-  gtfs2gps::filter_by_shape_id(c("51982","50784"))
-  spo_gps <- gtfs2gps::gtfs2gps(spo)
-  
-  # the ouput is a data.table, like this
-  head(spo_gps)
-  
+spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+  gtfs2gps::filter_by_shape_id(c("51982", "50784"))
+spo_gps <- gtfs2gps::gtfs2gps(spo)
+
+# the ouput is a data.table, like this
+head(spo_gps)
 ```
+
 The GPS-like data can be converted into line segments (`linestring`). This conversion breaks the trips into separate segments between consecutive pairs of stops. This will give us a much smaller data set to work on, and allows to capture the spatial-temporal variation of speeds and emissions levels. 
   
   
@@ -77,23 +73,21 @@ To compute emission estimates, we need some basic information on the age and tec
 ## Regional fleet data
 
 Regional fleet data input is a simple `data.frame` with information on the **relative composition of the fleet in terms of age and technology**. For many cities, this is the only data from registry of vehicles made available by local transport agencies. In this typical situation, there is no information on which vehicles (age and/or technology) are assigned to specific routes in the GTFS. In this case, the package `gtfs2emis` considers that, on average, all vehicles have the same probability to operate on every route of the transport network.
-Here is an example of how a _regional fleed data_ looks like:
-
+Here is an example of how a _regional fleet data_ looks like:
 
 ```{r}
-total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012,2014,2015,2017,2018,2019),
-                                      bus = c(1,61,50,1,45,18,62,27,31),
+total_fleet <- data.table::data.table(year = c(2005, 2010:2012, 2014:2015, 2017:2019),
+                                      bus = c(1, 61, 50, 1, 45, 18, 62, 27, 31),
                                       veh_type_euro = "Urban Buses Standard 15 - 18 t",
-                                      euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V","V"))
+                                      euro_stage = c("II", "IV", "IV", rep("V", 6)))
 
-total_fleet[,fleet_composition := bus/sum(bus)]
+total_fleet[,fleet_composition := bus / sum(bus)]
 
 # The input data looks like this
 head(total_fleet)
 
 sum(total_fleet$fleet_composition)
 ```
-
 
 ## Detailed fleet data
 
@@ -132,12 +126,12 @@ head(EF_europe, 3)
 For the United States, the `ef_usa` function estimates emission factors for multiple pollutants considering different types of fuel, speed and fleet age information based on the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/). See documentation for list of options `?ef_usa`. Supported pollutants: CO, NOx, Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), THC, CH4, PM10, PM2.5, SOx, CO2, N2O and CH4.
 
 ```{r}
-EF_usa <- ef_usa(pollutant = c("CO","PM10"),
+EF_usa <- ef_usa(pollutant = c("CO", "PM10"),
                  calendar_year = "2019",
                  model_year = total_fleet$year,
                  speed = spo_gpslines$speed,
                  fuel = "Diesel")
-head(EF_usa,3)
+head(EF_usa, 3)
 ```
 
 ## Brazil emission factors for buses
@@ -145,7 +139,7 @@ head(EF_usa,3)
 For buses in Brazil, the `ef_brazil` functions estimates emission factors considering model year and types of buses. These estimates are based on data from [CETESB 2017](https://cetesb.sp.gov.br/veicular/) obtained via the [`vein` package](https://atmoschem.github.io/vein/). Supported pollutants: CO, HC, NMHC, CH4, NOx, CO2, RCHO, ETOH, PM, N2O, KML, FC, NO2, NO, gD/KWH, gCO2/KWH, RCHO, CO_0km, HC_0km, NMHC_0km, NOx_0km, NO2_0km, NO_0km, RCHO_0km, ETOH_0km, and FS (fuel sales).
 
 ```{r}
-EF_brazil <- ef_brazil(pollutant = c("CO","CO2"),
+EF_brazil <- ef_brazil(pollutant = c("CO", "CO2"),
                        veh_type = "BUS_URBAN_D",
                        years = total_fleet$year) # fleet_composition
 head(EF_brazil, 3)
@@ -163,7 +157,6 @@ emi_usa <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                            dist = spo_gpslines$dist,
                            ef = EF_usa, 
                            prefix = "USA")
-
 
 # EUROPE
 emi_europe <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
@@ -196,12 +189,12 @@ To facilitate the analysis of these emissions estimates, the `gtfs2emis` package
 ## Hour time stamp
 ```{r}
 hour_emissions <- gtfs2emis::emis_post(data = spo_emis,
-                                  emi = c('BR_CO_total','EU_CO_total'),
-                                  time_class = "hour",
-                                  time_column = 'departure_time')
+                                       emi = c('BR_CO_total','EU_CO_total'),
+                                       time_class = "hour",
+                                       time_column = 'departure_time')
 
 ggplot(data = hour_emissions) + 
-    geom_line(aes(x = departure_time, y = as.numeric(BR_CO_total)/1000), color='gray50') +
+    geom_line(aes(x = departure_time, y = as.numeric(BR_CO_total)/1000), color = 'gray50') +
     geom_line(aes(x = departure_time, y = as.numeric(EU_CO_total)/1000)) +
     xlab("Hour of the day") + ylab("Total CO emitted in Kilograms") +
     theme_bw()
@@ -212,21 +205,21 @@ Alternatively, the user can aggregate the results at every minute, getting a muc
 
 ```{r}
 minute_emissions <- gtfs2emis::emis_post(data = spo_emis,
-                                  emi = c('BR_CO_total','EU_CO_total'),
-                                  time_class = "hour-minute",
-                                  time_column = 'departure_time')
+                                         emi = c('BR_CO_total','EU_CO_total'),
+                                         time_class = "hour-minute",
+                                         time_column = 'departure_time')
 
-minute_emissions[,group_x := .GRP, by = departure_time]
-breaks <- minute_emissions$group_x[seq(1,nrow(minute_emissions),length.out = 10)]
-x_labels <- minute_emissions[breaks,departure_time]
+minute_emissions[, group_x := .GRP, by = departure_time]
+breaks <- minute_emissions$group_x[seq(1, nrow(minute_emissions), length.out = 10)]
+x_labels <- minute_emissions[breaks, departure_time]
 
 ggplot(data = minute_emissions) +
-  geom_line(aes(group = 1, x = group_x, y = as.numeric(BR_CO_total)/1000), color='gray50') +
-  geom_line(aes(group = 1, x = group_x, y = as.numeric(EU_CO_total)/1000)) +
-  xlab("Time of the day") + ylab("Total CO emitted in Kilograms") +
-  scale_x_continuous(breaks = breaks,labels = x_labels) +
+  geom_line(aes(group = 1, x = group_x, y = as.numeric(BR_CO_total) / 1000), color = 'gray50') +
+  geom_line(aes(group = 1, x = group_x, y = as.numeric(EU_CO_total) / 1000)) +
+  xlab("Time of the day") + 
+  ylab("Total CO emitted in Kilograms") +
+  scale_x_continuous(breaks = breaks, labels = x_labels) +
   theme_bw()
-
 ```
 
 ## Spatialize
@@ -243,47 +236,48 @@ grid_gps <- vein::make_grid(spobj = spo_emis, width =  0.25 / 102.47) # 500 mete
 plot(grid_gps["id"])
 ```
 
-Intersect and aggregate data
-
-Emissions can be allocated into grid through emis_grid function, which sums the total emissions into a single grid cell.
+Emissions can be allocated into grid through `emis_grid` function, which sums the total emissions into a single grid cell.
 
 ```{r}
 # convert estimates to sf spatial object
 spo_sf <- sf::st_as_sf(spo_emis)
 
-# # spatial aggregation
- pol_gps <- gtfs2emis::emis_grid(data = spo_sf,
-                      emi = c("EU_CO_total","BR_CO_total"),
-                      grid = grid_gps,
-                      time_class = 'all periods')
-# 
+# spatial aggregation
+pol_gps <- gtfs2emis::emis_grid(data = spo_sf,
+                                emi = c("EU_CO_total", "BR_CO_total"),
+                                grid = grid_gps,
+                                time_class = 'all periods')
+
 ggplot() +
-  geom_sf(data=pol_gps, aes(fill=as.numeric(EU_CO_total)/1000), color=NA) +
+  geom_sf(data = pol_gps, aes(fill = as.numeric(EU_CO_total) / 1000), color = NA) +
   scale_fill_viridis_c(option = "plasma") +
   labs(fill = "Daily CO\nemitted locally\n(g)") +
   theme_bw()
-
 ```
 
 User can also display gridded emissions by time and grid cell by specifying `hour` or `hour-minute` in the `time_class` argument. 
  
- 
 ```{r}
 # # spatial aggregation by hour
 pol_gps_hour <- gtfs2emis::emis_grid(data = spo_sf,
-                      emi = c("EU_CO_total","BR_CO_total"),
-                      grid = grid_gps,
-                      time_class = 'hour',
-                      time_column = 'departure_time')
+                                     emi = c("EU_CO_total", "BR_CO_total"),
+                                     grid = grid_gps,
+                                     time_class = 'hour',
+                                     time_column = 'departure_time')
 
 # subset hours of interest
 pol_gps_hour <- subset(pol_gps_hour, time_column %in% c(8, 16, 23))
 to_string <- as_labeller(c(`8` = "Hour 8", `16` = "Hour 16", `23` = "Hour 23"))
 
 ggplot(data = pol_gps_hour) +
-  geom_sf(aes(fill=as.numeric(EU_CO_total)/1000), color=NA) +
+  geom_sf(aes(fill=as.numeric(EU_CO_total) / 1000), color = NA) +
   scale_fill_viridis_c(option = "plasma") +
   labs(fill = "Hourly CO\nemitted\n(kg)") +
+  facet_wrap(facets = ~time_column, labeller = to_string) + 
+  theme_minimal() +
+  theme(axis.text = element_blank(),
+        strip.background = element_rect(fill = "gray80", color = NA))
+
     # theme(panel.background = element_rect(fill = "white", 
     #   colour = NA), 
     #   panel.border = element_rect(fill = NA, 
@@ -294,8 +288,4 @@ ggplot(data = pol_gps_hour) +
     #   strip.background = element_rect(fill = "grey85", 
         # colour = "grey20"), legend.key = element_rect(fill = "white", 
         # colour = NA), complete = TRUE) + 
-  facet_wrap(facets = ~time_column, labeller = to_string) + 
-  theme_minimal() +
-  theme(axis.text=element_blank(),
-        strip.background = element_rect(fill="gray80", color=NA))
 ```
