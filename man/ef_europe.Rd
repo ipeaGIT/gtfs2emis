@@ -19,38 +19,39 @@ ef_europe(
 )
 }
 \arguments{
-\item{speed}{Units; Speed in [km/h]}
+\item{speed}{units; Speed in [km/h].}
 
-\item{veh_type}{Character; Bus type, classified in "Urban Buses Midi <=15 t", "Urban Buses Standard 15 - 18 t", 
-"Urban Buses Articulated >18 t",  "Coaches Standard <=18 t",
+\item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t",
+"Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t",
 "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".}
 
-\item{fuel}{Character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel".}
+\item{fuel}{character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel".}
 
-\item{euro}{Character; Euro period of vehicle, classified in "Conventional", "I", "II", "Euro III", 
-"IV", "V", "VI" and "EEV".}
+\item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II",
+"Euro III", "IV", "V", "VI", and "EEV".}
 
-\item{tech}{Character; Technology, classified in "SCR", "EGR" and "DPF+SCR".}
+\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR".}
 
-\item{pollutant}{Character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel Consumption), "CH4", "NH3" and "N2O".}
+\item{pollutant}{character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
+Consumption), "CH4", "NH3" and "N2O".}
 
-\item{slope}{Numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
+\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
 Negative gradients means downhills and positive uphills. Default is 0.0.}
 
-\item{load}{Numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
+\item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
 
-\item{k}{Numeric; constant value to adjust emission factors. Default is 1.0.}
+\item{k}{numeric; constant value to adjust emission factors. Default is 1.0.}
 
-\item{fcorr}{Numeric; Correction based on fuel composition. The length must be one per
+\item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
 each euro standards. Default is 1.0.}
 
-\item{show.equation}{Logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.}
+\item{show.equation}{logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.}
 }
 \value{
-Emission factors in units g/km.
+emission factors in units 'g/km' (a vector or a data.frame).
 }
 \description{
-Returns a vector or data.frame of emission factors for buses based on EMEP/EEA. Function based on
-values from the [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
+Returns a vector or data.frame of emission factors for buses based on EMEP/EEA.
+Function based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
 Estimates expressed in units 'g/km'.
 }

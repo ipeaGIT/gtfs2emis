@@ -7,19 +7,20 @@
 emis(fleet_composition, dist, ef, aggregate = TRUE, prefix)
 }
 \arguments{
-\item{fleet_composition}{Fleet composition; Vector.}
+\item{fleet_composition}{vector; Fleet composition.}
 
-\item{dist}{Units (in km); Length of each link in km}
+\item{dist}{units (in km); Length of each link in km.}
 
-\item{ef}{Units (in g/km);    List of functions of emission factors}
+\item{ef}{units (in g/km);    List of functions of emission factors.}
 
-\item{aggregate}{Logical; if TRUE (default) emissions are aggregated by pollutant}
+\item{aggregate}{logical; if TRUE (default) emissions are aggregated by pollutant.}
 
-\item{prefix}{Character; Add prefix into emissions names. Missing parameter (Default) means empty prefix.}
+\item{prefix}{character; Add prefix into emissions names. Missing parameter (default)
+means empty prefix.}
 }
 \value{
-Units (in g); emissions per link
+units (in g); emissions per link.
 }
 \description{
-Calculate hot exhaust emissions
+Calculate hot exhaust emissions.
 }

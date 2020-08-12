@@ -1,40 +1,32 @@
 #' @title Emission factor dependent on speed by EMEP/EEA
 #' 
-#' @description Returns a vector or data.frame of emission factors for buses based on EMEP/EEA. Function based on
-#' values from the [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
+#' @description Returns a vector or data.frame of emission factors for buses based on EMEP/EEA.
+#' Function based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
 #' Estimates expressed in units 'g/km'.
 #' 
-#' @param speed Units; Speed in [km/h]
-#' @param veh_type Character; Bus type, classified in "Urban Buses Midi <=15 t", "Urban Buses Standard 15 - 18 t", 
-#' "Urban Buses Articulated >18 t",  "Coaches Standard <=18 t",
-#' "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".  
-#' @param fuel Character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel".
-#' @param euro Character; Euro period of vehicle, classified in "Conventional", "I", "II", "Euro III", 
-#' "IV", "V", "VI" and "EEV".
-#' @param tech Character; Technology, classified in "SCR", "EGR" and "DPF+SCR".
-#' @param pollutant Character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel Consumption), "CH4", "NH3" and "N2O".
+#' @param speed units; Speed in [km/h].
+#' @param veh_type character; Bus type, classified in "Urban Buses Midi <=15 t",
+#' "Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t",
+#' "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".
+#' @param fuel character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel".
+#' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II",
+#' "Euro III", "IV", "V", "VI", and "EEV".
+#' @param tech character; Technology, classified in "SCR", "EGR", and "DPF+SCR".
+#' @param pollutant character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
+#' Consumption), "CH4", "NH3" and "N2O".
 # @param aggregate Logical; does the emission factor should be aggregated? Default is TRUE.
 # @param veh_distribution Numeric; Distribution of vehicle type, required only when aggregate == TRUE.
-#' @param slope Numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
+#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
 #'  Negative gradients means downhills and positive uphills. Default is 0.0.
-#' @param load Numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
-#' @param show.equation Logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
-#' @param k Numeric; constant value to adjust emission factors. Default is 1.0.
-#' @param fcorr Numeric; Correction based on fuel composition. The length must be one per
+#' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
+#' @param show.equation logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
+#' @param k numeric; constant value to adjust emission factors. Default is 1.0.
+#' @param fcorr numeric; Correction based on fuel composition. The length must be one per
 #' each euro standards. Default is 1.0.
-#' @return Emission factors in units g/km.
+#' @return emission factors in units 'g/km' (a vector or a data.frame).
 #' @export
-ef_europe <- function(speed, 
-                      veh_type, 
-                      fuel = "Diesel", 
-                      euro, 
-                      tech, 
-                      pollutant,
-                      slope = 0.0, 
-                      load = 0.5, 
-                      k = 1, 
-                      fcorr = 1,
-                      show.equation = TRUE){
+ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant, slope = 0.0,
+                      load = 0.5, k = 1, fcorr = 1, show.equation = TRUE){
   # speed <- units::set_units(poa_gpslines$speed,"km/h")
   # veh_type <- "Urban Buses Standard 15 - 18 t"
   #  euro <- c("IV","V")
@@ -46,17 +38,18 @@ ef_europe <- function(speed,
   
   # euro vector----
   
-  euro <- paste0("Euro ",euro)
+  euro <- paste0("Euro ", euro)
   temp_ef <- europe
   
   # check units and lengths----
   
   if(class(speed) != "units"){
-    stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'")
+    stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'.")
   }
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
     stop("speed need to has 'units' in 'km/h'.")
   }
+
   speed <- as.numeric(speed)
   
   # check lengths
@@ -89,7 +82,7 @@ ef_europe <- function(speed,
       
       if(euro[i] == "Euro III" | euro[i] == "Euro II"){
         tech[i] = NA
-        message(paste0("no technology associated with ",euro[i]))
+        message(paste0("no technology associated with ", euro[i]))
       }
       temp_ef3 <- temp_ef[Fuel %in% fuel[i] & 
                             Segment %in% veh_type[i] & 
@@ -97,7 +90,7 @@ ef_europe <- function(speed,
                             Technology %in% tech[i] &
                             Pollutant %in% pollutant[j] &
                             Road.Slope %in% slope &
-                            Load %in% load,]
+                            Load %in% load, ]
       
       if(nrow(temp_ef3) == 0){
         stop("No available emission factor. Please check `data(europe)` for available data.")
@@ -105,31 +98,30 @@ ef_europe <- function(speed,
       
       # fix speed
       
-      if(length(which(speed < temp_ef3$`Min.Speed.[km/h]`)) > 0) speed[speed < temp_ef3$`Min.Speed.[km/h]`] <- temp_ef3$`Min.Speed.[km/h]`
-      if(length(which(speed > temp_ef3$`Max.Speed.[km/h]`)) > 0) speed[speed > temp_ef3$`Max.Speed.[km/h]`] <- temp_ef3$`Max.Speed.[km/h]`
+      if(length(which(speed < temp_ef3$`Min.Speed.[km/h]`)) > 0)
+        speed[speed < temp_ef3$`Min.Speed.[km/h]`] <- temp_ef3$`Min.Speed.[km/h]`
+      if(length(which(speed > temp_ef3$`Max.Speed.[km/h]`)) > 0)
+        speed[speed > temp_ef3$`Max.Speed.[km/h]`] <- temp_ef3$`Max.Speed.[km/h]`
       
       # return
       
-      eq_output <- eq_num(a = temp_ef3$Alpha,b = temp_ef3$Beta,g = temp_ef3$Gamma,
-                          d = temp_ef3$Delta,e = temp_ef3$Epsilon,z = temp_ef3$Zita,
-                          h = temp_ef3$Hta,rf = temp_ef3$`Reduction.Factor.[%]`,
-                          v = speed, 
-                          k = k*fcorr[i])
+      eq_output <- eq_num(a = temp_ef3$Alpha, b = temp_ef3$Beta, g = temp_ef3$Gamma,
+                          d = temp_ef3$Delta, e = temp_ef3$Epsilon, z = temp_ef3$Zita,
+                          h = temp_ef3$Hta, rf = temp_ef3$`Reduction.Factor.[%]`,
+                          v = speed, k = k * fcorr[i])
       return(eq_output)
     })
     
-      # do not aggregate emission factors
-      
-      temp_ef3 <- do.call(cbind,temp_ef2) %>% 
-        units::set_units('g/km') %>% data.table::as.data.table()
-      names(temp_ef3) <- paste0(pollutant[j],"_",rep(euro))
-      return(temp_ef3)
-    #}
+    # do not aggregate emission factors
+    temp_ef3 <- do.call(cbind, temp_ef2) %>% 
+      units::set_units('g/km') %>% data.table::as.data.table()
+    names(temp_ef3) <- paste0(pollutant[j], "_", rep(euro))
+    return(temp_ef3)
   })
   
   # show.equation----
   
-  if (show.equation == TRUE) {
+  if (show.equation) {
    # cat(paste0("a = ", temp_ef1$Alpha, ", b = ", temp_ef1$Beta, ", g = ",
    #            temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ",
    #            temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", h = ", temp_ef1$Hta, "\n"))
@@ -138,6 +130,6 @@ ef_europe <- function(speed,
 
   # return in a data.table like format----
   
-  ef_final <- do.call(cbind,temp_ef1)
+  ef_final <- do.call(cbind, temp_ef1)
   return(ef_final)
 }

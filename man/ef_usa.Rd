@@ -10,28 +10,27 @@
 ef_usa(pollutant, calendar_year, model_year, speed, fuel = "Diesel")
 }
 \arguments{
-\item{pollutant}{Character; Pollutants: Carbon monoxide (CO); Nitrogen oxides (NOx); 
+\item{pollutant}{character; Pollutants: Carbon monoxide (CO), Nitrogen oxides (NOx), 
 Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 
-THC (total hydrocarbon), or CH4 (methane); 
+THC (total hydrocarbon), or CH4 (methane).
 Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
-and particulate matters 2.5 microns or less in diameter (PM2.5);
-Sulfur oxides (SOx); Carbon Dioxide (CO2); 
+and particulate matters 2.5 microns or less in diameter (PM2.5),
+Sulfur oxides (SOx), Carbon Dioxide (CO2),
 Nitrous Oxide (N2O), and Methane (CH4).}
 
-\item{calendar_year}{Numeric; Calendar Year between 2010 - 2020. Year in which the emissions inventory is estimated,
-in order to consider the effect of degradation.}
+\item{calendar_year}{numeric; Calendar Year between 2010 - 2020. Year in which the emissions
+inventory is estimated, in order to consider the effect of degradation.}
 
-\item{model_year}{Numeric; Model year of vehicle.}
+\item{model_year}{numeric; Model year of vehicle.}
 
-\item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
- such as "5-10","10-15","15-20","20-25","25-30","30-35","35-40","40-45","45-50"
-  "50-55","55-60","60-65","65-70","70-75","75-80","80-85","85-90".">90" mph (miles/h).
-the same length as model_year.}
+\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals 
+such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50",
+ "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h).}
 
-\item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.}
+\item{fuel}{character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.}
 }
 \value{
-Data.table; Emission factors in units 'g/km' by speed and model_year.
+data.table; Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
 Returns a vector or data.frame of emission factors for buses based on 
