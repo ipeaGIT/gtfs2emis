@@ -23,3 +23,4 @@ utils::globalVariables(c('europe'))
 utils::globalVariables(c('usa', 'temp_emfac', 'Calendar Year', 'Model Year', 'EF', 'EF Model',
                          'Year', 'lower_speed_interval', 'upper_speed_interval'))
 utils::globalVariables(c('lkm_inter', 'ratio', 'temp_lkm'))
+utils::globalVariables(c('Fcorr','fuel_cor','cn','t95'))
