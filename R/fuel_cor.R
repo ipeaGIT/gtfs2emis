@@ -2,8 +2,7 @@
 #'
 #' @description Relations between emissions and fuel properties for diesel heavy-duty vehicles based on EMEP/EEA. Function based on
 #' values from the [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
-#' Estimates are given by the ratio between fuel correction for base fuel quality of vehicle 
-#' technology 
+#' Estimates are given by the ratio between correction factor of improved fuel by the correction factor of base fuel.    
 #' 
 #' @param pollutant character; Pollutant classified in "CO", "VOC", "NOx" or "PM".
 #' @param euro_stage character; EURO period of vehicle, classified in "PRE", "I", "II",
@@ -66,7 +65,7 @@ fuel_cor <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40,
             paste0(c('den','s','pah','cn','t95'),"_base") := .(i.den,i.s,i.pah,i.cn,i.t95)]
   temp_year[diesel_fuel,on = c("improved_fuel" = "year"),
             paste0(c('den','s','pah','cn','t95'),"_imp") := .(i.den,i.s,i.pah,i.cn,i.t95)]
-
+  
   lapply(seq_along(pollutant),function(i){ # i = 1
     temp_year[,(paste0(pollutant[i],"_base")) := 
                 fcorr_list[pollutant[i]][[1]](den_base,pah_base,cn_base,t95_base,s_base)]
