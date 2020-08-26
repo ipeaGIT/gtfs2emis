@@ -67,17 +67,8 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel')
         stop("Emission Factor do not exist. \nPlease check `data(usa)` for valid emission factors.")
       }
       
-      # Filter Speed based on emission factor data.table speed interval
+      temp_model <- temp_emfac[, EF]
       
-      temp_speed <- rep(NA, length(speed))
-      temp_order <- unique(usa$upper_speed_interval)
-      temp_order <- temp_order[order(temp_order, decreasing = TRUE)]
-      for(t in temp_order){ # t = temp_order[1]
-        temp_speed[which(speed < t)] <- t
-      }
-      #temp_speed
-      temp_model <- temp_emfac[sapply(temp_speed,
-                                      function(i){which(upper_speed_interval %in% i)}), EF]
       return(temp_model)
     }) %>% data.table::as.data.table()
     
@@ -90,7 +81,17 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel')
   # return in a data.table like format
   
   ef_final <- do.call(cbind, ef_pol)
+  # Filter Speed based on emission factor data.table speed interval
+  temp_speed <- rep(NA, length(speed))
+  temp_order <- unique(usa$upper_speed_interval)
+  temp_order <- temp_order[order(temp_order, decreasing = TRUE)]
+  for(t in temp_order){ # t = temp_order[1]
+    temp_speed[which(speed < t)] <- t
+  }
+  #temp_speed
   
+  ef_final <- ef_final[as.integer(as.factor(temp_speed)), ]
+    
   to_units <- function(i){units::set_units(i, "g/km")}
   ef_final <- ef_final[, lapply(.SD, to_units)]
   
