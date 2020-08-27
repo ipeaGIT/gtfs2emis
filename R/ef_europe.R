@@ -50,7 +50,9 @@ ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant, s
     stop("speed need to has 'units' in 'km/h'.")
   }
 
-  speed <- as.numeric(speed)
+  speed <- round(as.numeric(speed))
+  speed[speed < 1] <- 1
+  maxSpeed <- max(speed)
   
   # check lengths
   
@@ -97,18 +99,17 @@ ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant, s
       }
       
       # fix speed
+      tmpSpeed <- 1:maxSpeed
       
-      if(length(which(speed < temp_ef3$`Min.Speed.[km/h]`)) > 0)
-        speed[speed < temp_ef3$`Min.Speed.[km/h]`] <- temp_ef3$`Min.Speed.[km/h]`
-      if(length(which(speed > temp_ef3$`Max.Speed.[km/h]`)) > 0)
-        speed[speed > temp_ef3$`Max.Speed.[km/h]`] <- temp_ef3$`Max.Speed.[km/h]`
+      tmpSpeed[tmpSpeed < temp_ef3$`Min.Speed.[km/h]`] <- temp_ef3$`Min.Speed.[km/h]`
+      tmpSpeed[tmpSpeed > temp_ef3$`Max.Speed.[km/h]`] <- temp_ef3$`Max.Speed.[km/h]`
       
       # return
       
       eq_output <- eq_num(a = temp_ef3$Alpha, b = temp_ef3$Beta, g = temp_ef3$Gamma,
                           d = temp_ef3$Delta, e = temp_ef3$Epsilon, z = temp_ef3$Zita,
                           h = temp_ef3$Hta, rf = temp_ef3$`Reduction.Factor.[%]`,
-                          v = speed, k = k * fcorr[i])
+                          v = tmpSpeed, k = k * fcorr[i])
       return(eq_output)
     })
     
@@ -131,5 +132,5 @@ ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant, s
   # return in a data.table like format----
   
   ef_final <- do.call(cbind, temp_ef1)
-  return(ef_final)
+  return(ef_final[speed, ])
 }
