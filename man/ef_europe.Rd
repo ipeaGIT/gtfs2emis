@@ -7,10 +7,10 @@
 ef_europe(
   speed,
   veh_type,
-  fuel = "Diesel",
   euro,
-  tech,
   pollutant,
+  fuel = "Diesel",
+  tech = "SCR",
   slope = 0,
   load = 0.5,
   k = 1,
@@ -25,15 +25,15 @@ ef_europe(
 "Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t",
 "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".}
 
-\item{fuel}{character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel".}
-
 \item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II",
 "Euro III", "IV", "V", "VI", and "EEV".}
 
-\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR".}
-
 \item{pollutant}{character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
 Consumption), "CH4", "NH3" and "N2O".}
+
+\item{fuel}{character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel". Default is "Diesel".}
+
+\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR". Default is "SCR".}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
 Negative gradients means downhills and positive uphills. Default is 0.0.}

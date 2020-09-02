@@ -8,24 +8,24 @@
 #' @param veh_type character; Bus type, classified in "Urban Buses Midi <=15 t",
 #' "Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t",
 #' "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".
-#' @param fuel character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel".
 #' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II",
 #' "Euro III", "IV", "V", "VI", and "EEV".
-#' @param tech character; Technology, classified in "SCR", "EGR", and "DPF+SCR".
 #' @param pollutant character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
 #' Consumption), "CH4", "NH3" and "N2O".
 # @param aggregate Logical; does the emission factor should be aggregated? Default is TRUE.
 # @param veh_distribution Numeric; Distribution of vehicle type, required only when aggregate == TRUE.
+#' @param fuel character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel". Default is "Diesel".
+#' @param tech character; Technology, classified in "SCR", "EGR", and "DPF+SCR". Default is "SCR".
 #' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
 #'  Negative gradients means downhills and positive uphills. Default is 0.0.
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
-#' @param show.equation logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
 #' @param k numeric; constant value to adjust emission factors. Default is 1.0.
 #' @param fcorr numeric; Correction based on fuel composition. The length must be one per
 #' each euro standards. Default is 1.0.
+#' @param show.equation logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
 #' @return emission factors in units 'g/km' (a vector or a data.frame).
 #' @export
-ef_europe <- function(speed, veh_type, fuel = "Diesel", euro, tech, pollutant, slope = 0.0,
+ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech = "SCR", slope = 0.0,
                       load = 0.5, k = 1, fcorr = 1, show.equation = TRUE){
   # speed <- units::set_units(poa_gpslines$speed,"km/h")
   # veh_type <- "Urban Buses Standard 15 - 18 t"
