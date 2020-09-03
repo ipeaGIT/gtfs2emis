@@ -13,10 +13,13 @@
 #' @param pollutant character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
 #' Consumption), "CH4", "NH3" and "N2O".
 # @param aggregate Logical; does the emission factor should be aggregated? Default is TRUE.
-# @param veh_distribution Numeric; Distribution of vehicle type, required only when aggregate == TRUE.
-#' @param fuel character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel". Default is "Diesel".
+# @param veh_distribution Numeric; Distribution of vehicle type, required only when 
+# aggregate == TRUE.
+#' @param fuel character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel". Default is 
+#' "Diesel".
 #' @param tech character; Technology, classified in "SCR", "EGR", and "DPF+SCR". Default is "SCR".
-#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 0.06.
+#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
+#' 0.06.
 #'  Negative gradients means downhills and positive uphills. Default is 0.0.
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
 #' @param k numeric; constant value to adjust emission factors. Default is 1.0.
@@ -25,8 +28,8 @@
 #' @param show.equation logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
 #' @return emission factors in units 'g/km' (a vector or a data.frame).
 #' @export
-ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech = "SCR", slope = 0.0,
-                      load = 0.5, k = 1, fcorr = 1, show.equation = TRUE){
+ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech = "SCR", 
+                      slope = 0.0, load = 0.5, k = 1, fcorr = 1, show.equation = TRUE){
   # speed <- units::set_units(poa_gpslines$speed,"km/h")
   # veh_type <- "Urban Buses Standard 15 - 18 t"
   #  euro <- c("IV","V")
@@ -125,7 +128,8 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   if (show.equation) {
    # cat(paste0("a = ", temp_ef1$Alpha, ", b = ", temp_ef1$Beta, ", g = ",
    #            temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ",
-   #            temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", h = ", temp_ef1$Hta, "\n"))
+   #            temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", 
+  #             h = ", temp_ef1$Hta, "\n"))
    cat(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
   }
 
