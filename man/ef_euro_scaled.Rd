@@ -19,9 +19,9 @@ ef_euro_scaled(
 )
 }
 \arguments{
-\item{dfcol}{units; Local emission factors, in units [g/km]}
+\item{dfcol}{units; Local emission factors, in units 'g/km'.}
 
-\item{speed}{units; Speed, in units [km/h]}
+\item{speed}{units; Speed, in units 'km/h'.}
 
 \item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t",
 "Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t"       

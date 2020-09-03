@@ -2,8 +2,8 @@
 #' 
 #' @description Estimates scaled emission factor for buses based on EMEP/EEA 
 #' 
-#' @param dfcol units; Local emission factors, in units [g/km]
-#' @param speed units; Speed, in units [km/h]
+#' @param dfcol units; Local emission factors, in units 'g/km'.
+#' @param speed units; Speed, in units 'km/h'.
 #' @param veh_type character; Bus type, classified in "Urban Buses Midi <=15 t",
 #' "Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t"       
 #' "Coaches Articulated >18 t", "Urban CNG Buses", "Urban Biodiesel Buses".

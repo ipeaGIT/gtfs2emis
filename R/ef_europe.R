@@ -4,7 +4,7 @@
 #' Function based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
 #' Estimates expressed in units 'g/km'.
 #' 
-#' @param speed units; Speed in [km/h].
+#' @param speed units; Speed in 'km/h'.
 #' @param veh_type character; Bus type, classified in "Urban Buses Midi <=15 t",
 #' "Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t",
 #' "Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".

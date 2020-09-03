@@ -8,7 +8,7 @@
 #' @param time_class character; Emissions can be aggregated by 'hour' or 'hour-minute'.
 #' @param time_column vector; Vector containing 'departure_time'. 
 #'  Only used when 'hour' or 'hour-minute' is selected. 
-#' @return units (in g); emissions.
+#' @return units ('g'); emissions.
 #' @export
 #' @examples 
 #' require(magrittr)

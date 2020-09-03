@@ -9,7 +9,8 @@ A data table with 6431 rows and 22 variables:
 \describe{
   \item{Category}{Buses.}
   \item{Fuel}{Diesel, Compressed Natural Gas (CNG) or Biodiesel.}
-  \item{Segment}{Urban Buses Midi <=15 t, Urban Buses Standard 15 - 18 t, Urban Buses Articulated >18 t, Coaches Standard <=18 t,
+  \item{Segment}{Urban Buses Midi <=15 t, Urban Buses Standard 15 - 18 t, 
+  Urban Buses Articulated >18 t, Coaches Standard <=18 t,
   Coaches Articulated >18 t,Urban CNG Buses,Urban Biodiesel Buses.}
   \item{Euro.Standard}{Conventional, Euro I, Euro II, Euro III, Euro IV, Euro V, Euro VI, EEV.}
   \item{Technology}{NA, SCR, EGR, DPF+SCR.}
@@ -30,8 +31,8 @@ A data table with 6431 rows and 22 variables:
 europe
 }
 \description{
-Hot emission factors are speed dependent and are expressed in g/km. They differ by fuel, vehicle class
-and engine technology. Several functions are 
+Hot emission factors are speed dependent and are expressed in g/km. They differ by fuel, 
+vehicle class and engine technology. Several functions are 
 consolidated into a single equation, given by
 }
 \details{
@@ -40,8 +41,8 @@ EF = (Alpha x V^2 + Beta x V + Gamma + Delta / V) / (Epsilon x V^2 + Zeta x V + 
 where Alpha, Beta, Gamma, Delta, Epsilon, Zera, Eta are constant parameters that depend on
 pollutant, speed, technology, and vehicle category.
 
-The emissions factors are derived from the EMEP/EEA air pollutant emission inventory guidebook (formerly 
-called the EMEP CORINAIR emission inventory guidebook). The guide provides guidance on estimating emissions 
-from both anthropogenic and natural emission sources.
+The emissions factors are derived from the EMEP/EEA air pollutant emission inventory guidebook
+(formerly called the EMEP CORINAIR emission inventory guidebook). The guide provides guidance on
+estimating emissions from both anthropogenic and natural emission sources.
 }
 \keyword{datasets}
