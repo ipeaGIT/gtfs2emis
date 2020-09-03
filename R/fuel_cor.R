@@ -7,15 +7,13 @@
 #' @param pollutant character; Pollutant classified in "CO", "VOC", "NOx" or "PM".
 #' @param euro_stage character; EURO period of vehicle, classified in "PRE", "I", "II",
 #' "III", "IV", "V" and "VI".
-#' @param improved_fuel; numeric; Numeric vector for characteristics of an improved fuel, ordered by:
+#' @param improved_fuel numeric; Numeric vector for characteristics of an improved fuel, ordered by:
 #' den (Density at 15 degrees C), s (Sulphur content in ppm), pah (Polycyclic aromatics content in \%),
 #' cn (Cetane number), t95 (Back end distillation in degrees C). Default input uses
 #' c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320).
 #' @return numeric; fuel correction factor.
 #' @export
 fuel_cor <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320)){
-  
-  
   # init config
   # 
   # euro_stage <- c("PRE", "PRE", "I", "I", "II", "III", "IV", "V", "VI")
