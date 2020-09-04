@@ -91,7 +91,7 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix){
   
   # units convertion----
   
-  to_units <- function(i){units::set_units(i, "g")} # not sure why I couldn't use it within data.table
+  to_units <- function(i){units::set_units(i, "g")} # not sure why couldn't use it within data.table
   emi <- emi[, lapply(.SD, to_units)]
   return(emi)
 }

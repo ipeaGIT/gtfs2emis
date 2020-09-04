@@ -8,7 +8,7 @@
 #' @param time_class character; Emissions can be aggregated by 'hour' or 'hour-minute'.
 #' @param time_column vector; Vector containing 'departure_time'. 
 #'  Only used when 'hour' or 'hour-minute' is selected. 
-#' @return units (in g); emissions.
+#' @return units ('g'); emissions.
 #' @export
 #' @examples 
 #' require(magrittr)
@@ -25,7 +25,7 @@
 #' total_fleet <- data.table::data.table(year = c(2005, 2010:2012, 2014, 2015, 2017:2019),
 #'                                       bus = c(1, 61, 50, 1, 45, 18, 62, 27, 31),
 #'                                       veh_type_euro = "Urban Buses Standard 15 - 18 t",
-#'                                       euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V","V"))
+#'                                       euro_stage = c("II", "IV", "IV", rep("V", 6)))
 #' total_fleet$fleet_composition = total_fleet$bus/sum(total_fleet$bus)
 #' 
 #' EF_usa <-  gtfs2emis::ef_usa(pollutant = c("CO", "PM10"),
@@ -96,7 +96,8 @@ emis_post <- function(data, emi, time_class, time_column = 'departure_time'){
     
     # aggregate emissions and rename
     
-    temp_data <- temp_data[, lapply(.SD, sum), .SDcols = !(time_column), by = .("time" = get(time_column))]
+    temp_data <- temp_data[, lapply(.SD, sum), .SDcols = !(time_column),
+                           by = .("time" = get(time_column))]
     data.table::setnames(temp_data, "time", time_column)
   }
 
