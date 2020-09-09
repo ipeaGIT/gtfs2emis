@@ -3,12 +3,12 @@
 #' @description Calculate hot exhaust emissions.
 #'
 #' @param fleet_composition vector; Fleet composition.
-#' @param dist units (in km); Length of each link in km.
-#' @param ef units (in g/km);	List of functions of emission factors.
+#' @param dist units ('km'); Length of each link in km.
+#' @param ef units ('g/km');	List of functions of emission factors.
 #' @param aggregate logical; if TRUE (default) emissions are aggregated by pollutant.
 #' @param prefix character; Add prefix into emissions names. Missing parameter (default)
 #' means empty prefix.
-#' @return units (in g); emissions per link.
+#' @return units ('g'); emissions per link.
 #' @export
 emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix){
   # fleet_composition = total_fleet$fleet_composition

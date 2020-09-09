@@ -45,16 +45,9 @@ emis_post <- function(data, emi, time_class, time_column = 'departure_time'){
   # check input consistency----
   
   data <- data.table::setDT(data)
-  
-  if(missing(data)) stop("'data' parameter is missing, without default")
-  if(missing(emi)) stop("'emi' parameter is missing, without default")
-  
-  # departure time
-  if(missing(time_column) && colnames(data) %nin% 'departure_time'){
-    stop("'departure_time' is missing without association to 'data' input.")
-  }
-  if(missing(time_column) && colnames(data) %in% 'departure_time'){
-    message("'departure_time' is selected from 'data' input.")
+
+  if(time_column %nin% colnames(data)){
+    stop(paste0("'", time_column, "' is missing in the 'data'."))
   }
 
   # check emis class
@@ -79,8 +72,6 @@ emis_post <- function(data, emi, time_class, time_column = 'departure_time'){
   temp_data <- temp_data[order(get(time_column)), ]
   
   if(missing(time_column) == FALSE){
-    if(missing(time_class)){stop("Please provide 'time_class' data.")}
-    
     # 'hour' time stamp
     
     if(time_class == "hour"){

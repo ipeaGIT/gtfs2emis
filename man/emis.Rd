@@ -9,9 +9,9 @@ emis(fleet_composition, dist, ef, aggregate = TRUE, prefix)
 \arguments{
 \item{fleet_composition}{vector; Fleet composition.}
 
-\item{dist}{units (in km); Length of each link in km.}
+\item{dist}{units ('km'); Length of each link in km.}
 
-\item{ef}{units (in g/km);    List of functions of emission factors.}
+\item{ef}{units ('g/km');    List of functions of emission factors.}
 
 \item{aggregate}{logical; if TRUE (default) emissions are aggregated by pollutant.}
 
@@ -19,7 +19,7 @@ emis(fleet_composition, dist, ef, aggregate = TRUE, prefix)
 means empty prefix.}
 }
 \value{
-units (in g); emissions per link.
+units ('g'); emissions per link.
 }
 \description{
 Calculate hot exhaust emissions.

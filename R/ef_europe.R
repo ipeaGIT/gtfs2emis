@@ -29,7 +29,7 @@
 #' @return emission factors in units 'g/km' (a vector or a data.frame).
 #' @export
 ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech = "SCR", 
-                      slope = 0.0, load = 0.5, k = 1, fcorr = 1, show.equation = TRUE){
+                      slope = 0.0, load = 0.5, k = 1, fcorr = 1, show.equation = FALSE){
   # speed <- units::set_units(poa_gpslines$speed,"km/h")
   # veh_type <- "Urban Buses Standard 15 - 18 t"
   #  euro <- c("IV","V")
@@ -42,7 +42,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   # euro vector----
   
   euro <- paste0("Euro ", euro)
-  temp_ef <- europe
+  temp_ef <- gtfs2emis::europe
   
   # check units and lengths----
   
@@ -130,7 +130,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
    #            temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ",
    #            temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", 
   #             h = ", temp_ef1$Hta, "\n"))
-   cat(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
+   message(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
   }
 
   # return in a data.table like format----

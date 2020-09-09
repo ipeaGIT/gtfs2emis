@@ -101,8 +101,6 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
   #
   
   if(missing(time_column) == FALSE){
-    if(missing(time_class)) stop("Please provide 'time_class' data.")
-    
     # 'hour' time stamp
     if(time_class == "hour"){
       netg[, (time_column) := data.table::hour(get(time_column))]

@@ -15,7 +15,7 @@ ef_europe(
   load = 0.5,
   k = 1,
   fcorr = 1,
-  show.equation = TRUE
+  show.equation = FALSE
 )
 }
 \arguments{
