@@ -58,9 +58,7 @@ plot(spo_gpslines['speed'])
 We will also update units of measurement of the attributes in our data.
 
 ```{r}
-spo_gpslines$speed <- units::set_units(spo_gpslines$speed, "km/h")
-spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "m") %>% 
-  units::set_units("km")
+spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "km")
 
 # The data shows the average speed and distance between pairs of stops
 head(spo_gpslines)
