@@ -7,9 +7,7 @@ test_that("emis_post", {
   
   spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% dplyr::select(trip_id,speed, dist, departure_time)
   
-  spo_gpslines$speed <- units::set_units(spo_gpslines$speed, "km/h")
-  spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "m") %>% 
-    units::set_units("km")
+  spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "km")
   
   total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012,2014,2015,2017,2018,2019),
                                         bus = c(1,61,50,1,45,18,62,27,31),

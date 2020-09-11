@@ -18,9 +18,7 @@
 #'   gtfs2gps::gps_as_sflinestring() %>%
 #'   dplyr::select(trip_id, speed, dist, departure_time)
 #' 
-#' data$speed <- units::set_units(data$speed, "km/h")
-#' data$dist <- units::set_units(data$dist, "m") %>%
-#'   units::set_units("km")
+#' data$dist <- units::set_units(data$dist, "km")
 #' 
 #' total_fleet <- data.table::data.table(year = c(2005, 2010:2012, 2014, 2015, 2017:2019),
 #'                                       bus = c(1, 61, 50, 1, 45, 18, 62, 27, 31),

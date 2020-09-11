@@ -30,7 +30,6 @@
 #' @export
 ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech = "SCR", 
                       slope = 0.0, load = 0.5, k = 1, fcorr = 1, show.equation = FALSE){
-  # speed <- units::set_units(poa_gpslines$speed,"km/h")
   # veh_type <- "Urban Buses Standard 15 - 18 t"
   #  euro <- c("IV","V")
   # # veh_distribution <- c(0.5,0.5)

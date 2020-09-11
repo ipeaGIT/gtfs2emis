@@ -33,12 +33,12 @@ ef_euro_scaled <- function(dfcol, speed, veh_type, fuel, euro, SDC = 34.12,
 
   dfcol <- as.numeric(dfcol)
   temp_ef <- lapply(1:length(dfcol), function(i) { # i = 1
-    funIN <- ef_europe(speed = SDC,veh_type = veh_type,fuel = "Diesel", euro = euro,
+    funIN <- ef_europe(speed = SDC, veh_type = veh_type, fuel = "Diesel", euro = euro,
                        tech = tech, pollutant = pollutant, show.equation = show.equation)
     k <- dfcol[i] / funIN
     ef_scaled <- ef_europe(speed = speed, veh_type = veh_type, fuel = "Diesel", euro = euro,
                            tech = tech, pollutant = pollutant, k = k, show.equation = show.equation)
     return(ef_scaled)
   }) %>% unlist()
-  return(units::set_units(temp_ef,'g/km'))
+  return(units::set_units(temp_ef, 'g/km'))
 }
