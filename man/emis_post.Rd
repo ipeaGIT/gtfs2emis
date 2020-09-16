@@ -31,7 +31,7 @@ data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2
   gtfs2gps::gps_as_sflinestring() \%>\%
   dplyr::select(trip_id, speed, dist, departure_time)
 
-data$dist <- vein::Speed(data$dist)
+data$dist <- units::set_units(data$dist, "km")
 
 total_fleet <- data.table::data.table(year = c(2005, 2010:2012, 2014, 2015, 2017:2019),
                                       bus = c(1, 61, 50, 1, 45, 18, 62, 27, 31),

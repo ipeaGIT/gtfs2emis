@@ -53,6 +53,14 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   }
 
   speed <- round(as.numeric(speed))
+  # Tem que revisar os valores da velocidade em que sao validos os fatores
+  # o limiar minimo varia entre 1 e 11 km/h e depende do tipo de onibus
+  # Se nao for possivel variar a velocidad pelo tipo de onibus
+  # poderia ser decido um valor medio.
+  # Isto e porque velocidadesmuito baixar poderia dar valores de emissoes
+  # Absurdamente altos
+  # Depois de tomar a decisao, seria bom fazer um teste de sensibilidade
+  # Com graficos de FE / Speed
   speed[speed < 1] <- 1
   maxSpeed <- max(speed)
   

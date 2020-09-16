@@ -28,7 +28,8 @@ example we will only process the trips of two `shape_id`s to speedup
 processing time.
 
 ``` r
-spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", 
+                                       package = "gtfs2gps")) %>%
   gtfs2gps::filter_by_shape_id(c("51982", "50784"))
 spo_gps <- gtfs2gps::gtfs2gps(spo)
 
@@ -64,7 +65,11 @@ work on, and allows to capture the spatial-temporal variation of speeds
 and emissions levels.
 
 ``` r
-spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% dplyr::select(trip_id,speed, dist, departure_time)
+spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% 
+  dplyr::select(trip_id,
+                speed, 
+                dist, 
+                departure_time)
 
 dim(spo_gps)
 #> [1] 124900     15
@@ -78,6 +83,8 @@ plot(spo_gpslines['speed'])
 ![](/home/sergio/models/gtfs2emis/vignettes/gtfs2emis-vignette_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 We will also update units of measurement of the attributes in our data.
+
+*This means that each line is a bus?*
 
 ``` r
 spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "km")
@@ -199,25 +206,25 @@ EF_europe <- ef_europe(pollutant = c("CO", "PM"),
 #> no technology associated with Euro II
 head(EF_europe, 3)
 #>         CO_Euro II       CO_Euro IV       CO_Euro IV       CO_Euro V
-#> 1: 1.461709 [g/km] 1.1405010 [g/km] 0.6821520 [g/km] 4.148589 [g/km]
-#> 2: 1.026624 [g/km] 0.7786811 [g/km] 0.4657417 [g/km] 1.311601 [g/km]
-#> 3: 1.130609 [g/km] 0.8537907 [g/km] 0.5106660 [g/km] 1.462192 [g/km]
+#> 1: 2.483018 [g/km] 0.9391083 [g/km] 1.4338521 [g/km] 4.804252 [g/km]
+#> 2: 1.743936 [g/km] 0.6411795 [g/km] 0.9789677 [g/km] 1.518893 [g/km]
+#> 3: 1.920575 [g/km] 0.7030261 [g/km] 1.0733964 [g/km] 1.693284 [g/km]
 #>          CO_Euro V       CO_Euro V       CO_Euro V       CO_Euro V
-#> 1: 6.806037 [g/km] 5.661368 [g/km] 5.386490 [g/km] 7.628262 [g/km]
-#> 2: 2.151769 [g/km] 1.789876 [g/km] 1.702971 [g/km] 2.411721 [g/km]
-#> 3: 2.398824 [g/km] 1.995379 [g/km] 1.898497 [g/km] 2.688622 [g/km]
-#>          CO_Euro V        PM_Euro II        PM_Euro IV        PM_Euro IV
-#> 1: 5.593590 [g/km] 0.11595638 [g/km] 0.03759811 [g/km] 0.02248803 [g/km]
-#> 2: 1.768447 [g/km] 0.08326247 [g/km] 0.02922220 [g/km] 0.01747827 [g/km]
-#> 3: 1.971491 [g/km] 0.08980496 [g/km] 0.03114395 [g/km] 0.01862770 [g/km]
+#> 1: 4.318326 [g/km] 5.553226 [g/km] 4.641368 [g/km] 6.779151 [g/km]
+#> 2: 1.365265 [g/km] 1.755686 [g/km] 1.467396 [g/km] 2.143269 [g/km]
+#> 3: 1.522017 [g/km] 1.957264 [g/km] 1.635875 [g/km] 2.389348 [g/km]
+#>          CO_Euro V       PM_Euro II        PM_Euro IV        PM_Euro IV
+#> 1: 5.378772 [g/km] 0.1969761 [g/km] 0.03095893 [g/km] 0.04726881 [g/km]
+#> 2: 1.700531 [g/km] 0.1414387 [g/km] 0.02406206 [g/km] 0.03673851 [g/km]
+#> 3: 1.895777 [g/km] 0.1525525 [g/km] 0.02564447 [g/km] 0.03915456 [g/km]
 #>            PM_Euro V         PM_Euro V         PM_Euro V         PM_Euro V
-#> 1: 0.04278901 [g/km] 0.07019823 [g/km] 0.05839199 [g/km] 0.05555687 [g/km]
-#> 2: 0.02842759 [g/km] 0.04663736 [g/km] 0.03879369 [g/km] 0.03691013 [g/km]
-#> 3: 0.03083938 [g/km] 0.05059407 [g/km] 0.04208494 [g/km] 0.04004158 [g/km]
+#> 1: 0.04955159 [g/km] 0.04453970 [g/km] 0.05727659 [g/km] 0.04787159 [g/km]
+#> 2: 0.03292042 [g/km] 0.02959069 [g/km] 0.03805266 [g/km] 0.03180429 [g/km]
+#> 3: 0.03571339 [g/km] 0.03210116 [g/km] 0.04128104 [g/km] 0.03450256 [g/km]
 #>            PM_Euro V         PM_Euro V
-#> 1: 0.07867876 [g/km] 0.05769292 [g/km]
-#> 2: 0.05227154 [g/km] 0.03832925 [g/km]
-#> 3: 0.05670625 [g/km] 0.04158110 [g/km]
+#> 1: 0.06992092 [g/km] 0.05547726 [g/km]
+#> 2: 0.04645313 [g/km] 0.03685724 [g/km]
+#> 3: 0.05039420 [g/km] 0.03998420 [g/km]
 ```
 
 ## United States emission factors for buses
@@ -347,13 +354,13 @@ head(spo_emis)
 #> 4 407E-10-0  5.761980 0.08712751 [km]       00:04:29 0.02537615 [g]
 #> 5 407E-10-0 10.585952 0.19520212 [km]       00:05:35 0.03930829 [g]
 #> 6 407E-10-0  7.569150 0.12146853 [km]       00:06:56 0.03537807 [g]
-#>     USA_PM10_total    EU_CO_total      EU_PM_total    BR_CO_total  BR_CO2_total
-#> 1 0.0001811507 [g] 0.02219217 [g] 0.0006650718 [g] 0.03886771 [g]  53.69613 [g]
-#> 2 0.0012285936 [g] 0.11752732 [g] 0.0043200145 [g] 0.32788019 [g] 452.96975 [g]
-#> 3 0.0012179394 [g] 0.11338741 [g] 0.0040501557 [g] 0.28812444 [g] 398.04680 [g]
-#> 4 0.0003976372 [g] 0.04781831 [g] 0.0014598744 [g] 0.08531707 [g] 117.86639 [g]
-#> 5 0.0008079989 [g] 0.10098948 [g] 0.0032599562 [g] 0.19114598 [g] 264.07009 [g]
-#> 6 0.0005543645 [g] 0.06467514 [g] 0.0020352790 [g] 0.11894451 [g] 164.32303 [g]
+#>     USA_PM10_total    EU_CO_total     EU_PM_total    BR_CO_total  BR_CO2_total
+#> 1 0.0001811507 [g] 0.01956193 [g] 0.000572762 [g] 0.03886771 [g]  53.69613 [g]
+#> 2 0.0012285936 [g] 0.10076944 [g] 0.003704181 [g] 0.32788019 [g] 452.96975 [g]
+#> 3 0.0012179394 [g] 0.09726715 [g] 0.003474656 [g] 0.28812444 [g] 398.04680 [g]
+#> 4 0.0003976372 [g] 0.04190332 [g] 0.001257249 [g] 0.08531707 [g] 117.86639 [g]
+#> 5 0.0008079989 [g] 0.08676645 [g] 0.002804287 [g] 0.19114598 [g] 264.07009 [g]
+#> 6 0.0005543645 [g] 0.05611416 [g] 0.001752789 [g] 0.11894451 [g] 164.32303 [g]
 #>                         geometry
 #> 1 LINESTRING (-46.44303 -23.6...
 #> 2 LINESTRING (-46.44285 -23.6...
@@ -452,10 +459,10 @@ pol_gps <- gtfs2emis::emis_grid(data = spo_sf,
 #> input data "EU_CO_total" is in units: g
 #> input data "BR_CO_total" is in units: g
 #> Sum of street emissions
-#> EU_CO_total = 990.98 g
+#> EU_CO_total = 851.28 g
 #> BR_CO_total = 3205.7 g
 #> Sum of gridded emissions
-#> EU_CO_total = 990.98 g
+#> EU_CO_total = 851.28 g
 #> BR_CO_total = 3205.7 g
 
 ggplot() +
@@ -480,10 +487,10 @@ pol_gps_hour <- gtfs2emis::emis_grid(data = spo_sf,
 #> input data "EU_CO_total" is in units: g
 #> input data "BR_CO_total" is in units: g
 #> Sum of street emissions
-#> EU_CO_total = 990.98 g
+#> EU_CO_total = 851.28 g
 #> BR_CO_total = 3205.7 g
 #> Sum of gridded emissions
-#> EU_CO_total = 990.98 g
+#> EU_CO_total = 851.28 g
 #> BR_CO_total = 3205.7 g
 
 # subset hours of interest

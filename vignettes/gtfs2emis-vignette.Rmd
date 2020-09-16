@@ -34,7 +34,8 @@ This information is created when we convert GTFS data to GPS-like
 records, using `gtfs2gps::gtfs2gps()`. The example below uses a sample of the GTFS data from São Paulo municipality, in Brazil. In this example we will only process the trips of two `shape_id`s to speedup processing time.
   
 ```{r, message = FALSE}
-spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", 
+                                       package = "gtfs2gps")) %>%
   gtfs2gps::filter_by_shape_id(c("51982", "50784"))
 spo_gps <- gtfs2gps::gtfs2gps(spo)
 
@@ -46,7 +47,11 @@ The GPS-like data can be converted into line segments (`linestring`). This conve
   
   
 ```{r}
-spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% dplyr::select(trip_id,speed, dist, departure_time)
+spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% 
+  dplyr::select(trip_id,
+                speed, 
+                dist, 
+                departure_time)
 
 dim(spo_gps)
 dim(spo_gpslines)
@@ -56,6 +61,8 @@ plot(spo_gpslines['speed'])
 ```
 
 We will also update units of measurement of the attributes in our data.
+
+*This means that each line is a bus?*
 
 ```{r}
 spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "km")
