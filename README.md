@@ -24,23 +24,12 @@ transport system would change under different policy scenarios. Simple
 modifications to the package input would allow one to estimate how
 emissions levels could be affected by different interventions such as
 electrifying the fleet, building new transport corridors, changing route
-itineraries or frequencies and fleet renewal.
-files.
+itineraries or frequencies and fleet renewal. files.
 
 ### Installation
 
 ``` r
 devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
-#> 
-#>      checking for file ‘/tmp/RtmpOi8sQF/remotes301d7e71ef43/rafapereirabr-gtfs2emis-e419f324caeaada181812bd88defbb5d745ffac1/DESCRIPTION’ ...  ✓  checking for file ‘/tmp/RtmpOi8sQF/remotes301d7e71ef43/rafapereirabr-gtfs2emis-e419f324caeaada181812bd88defbb5d745ffac1/DESCRIPTION’
-#>   ─  preparing ‘gtfs2emis’:
-#>      checking DESCRIPTION meta-information ...  ✓  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#> ─  looking to see if a ‘data/datalist’ file should be added
-#>   ─  building ‘gtfs2emis_0.0.0.9000.tar.gz’
-#>      
-#> 
 ```
 
 ### Basic Usage
@@ -57,8 +46,14 @@ Vignette](https://github.com/rafapereirabr/gtfs2emis/blob/master/doc/gtfs2emis-v
 ### **Related projects**
 
 It would be nice to mention {vein} and other R packages related to
-transport
-emissions.
+transport emissions.
+
+  - [vein](https://github.com/atmoschem/vein) Bottom-up and top-down
+    inventory.
+  - [EmissV](https://github.com/atmoschem/emissv) Top-down inventory.
+  - [Yeti](https://github.com/twollnik/YETI) (It seems abandon).
+  - [PythonEmissData](https://github.com/adelgadop/PythonEmissData)
+    Jupyter notebook to estimate simple top-down emissions.
 
 -----
 

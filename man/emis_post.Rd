@@ -31,7 +31,7 @@ data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2
   gtfs2gps::gps_as_sflinestring() \%>\%
   dplyr::select(trip_id, speed, dist, departure_time)
 
-data$dist <- units::set_units(data$dist, "km")
+data$dist <- vein::Speed(data$dist)
 
 total_fleet <- data.table::data.table(year = c(2005, 2010:2012, 2014, 2015, 2017:2019),
                                       bus = c(1, 61, 50, 1, 45, 18, 62, 27, 31),
@@ -42,7 +42,7 @@ total_fleet$fleet_composition = total_fleet$bus/sum(total_fleet$bus)
 EF_usa <-  gtfs2emis::ef_usa(pollutant = c("CO", "PM10"),
                  calendar_year = "2019",
                  model_year = total_fleet$year,
-                 speed = data$speed,
+                 speed = vein::Speed(data$speed),
                  fuel = "Diesel")
 emi_usa <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                            dist = data$dist, ef = EF_usa, prefix = "USA")
