@@ -84,7 +84,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
       
       # pre-conditions
       
-      if(euro[i] == "Euro III" | euro[i] == "Euro II"){
+      if(euro[i] %in%  c("Conventional","Euro I","Euro II","Euro III")){
         tech[i] = NA
         message(paste0("no technology associated with ", euro[i]))
       }
