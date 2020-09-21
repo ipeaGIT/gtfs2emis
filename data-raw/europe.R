@@ -14,6 +14,7 @@ europe <- europe[Pollutant %in% "PM Exhaust",Pollutant := "PM"]
 europe <- europe[Mode %in% "", Mode := NA]
 europe <- europe[Technology %in% "", Technology := NA]
 europe <- europe[,`EF.[g/km].or.ECF.[MJ/km]`:= NULL]
-names(europe)
+europe[is.na(Load), Load := 0.5]
+europe[is.na(Road.Slope), Road.Slope := 0.0]
 
 usethis::use_data(europe,overwrite = TRUE)
