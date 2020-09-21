@@ -51,7 +51,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
     stop("speed need to has 'units' in 'km/h'.")
   }
-
+  
   speed <- round(as.numeric(speed))
   speed[speed < 1] <- 1
   maxSpeed <- max(speed)
@@ -125,13 +125,13 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   # show.equation----
   
   if (show.equation) {
-   # cat(paste0("a = ", temp_ef1$Alpha, ", b = ", temp_ef1$Beta, ", g = ",
-   #            temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ",
-   #            temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", 
-  #             h = ", temp_ef1$Hta, "\n"))
-   message(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
+    # cat(paste0("a = ", temp_ef1$Alpha, ", b = ", temp_ef1$Beta, ", g = ",
+    #            temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ",
+    #            temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", 
+    #             h = ", temp_ef1$Hta, "\n"))
+    message(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
   }
-
+  
   # return in a data.table like format----
   
   ef_final <- do.call(cbind, temp_ef1)

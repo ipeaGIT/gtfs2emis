@@ -34,7 +34,8 @@ This information is created when we convert GTFS data to GPS-like
 records, using `gtfs2gps::gtfs2gps()`. The example below uses a sample of the GTFS data from São Paulo municipality, in Brazil. In this example we will only process the trips of two `shape_id`s to speedup processing time.
   
 ```{r, message = FALSE}
-spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", 
+                                       package = "gtfs2gps")) %>%
   gtfs2gps::filter_by_shape_id(c("51982", "50784"))
 spo_gps <- gtfs2gps::gtfs2gps(spo)
 
@@ -46,7 +47,11 @@ The GPS-like data can be converted into line segments (`linestring`). This conve
   
   
 ```{r}
-spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% dplyr::select(trip_id,speed, dist, departure_time)
+spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% 
+  dplyr::select(trip_id,
+                speed, 
+                dist, 
+                departure_time)
 
 dim(spo_gps)
 dim(spo_gpslines)
@@ -56,6 +61,8 @@ plot(spo_gpslines['speed'])
 ```
 
 We will also update units of measurement of the attributes in our data.
+
+*This means that each line is a bus?*
 
 ```{r}
 spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "km")
@@ -111,7 +118,7 @@ The function works like this:
 
 ```{r}
 EF_europe <- ef_europe(pollutant = c("CO", "PM"),
-                       speed = spo_gpslines$speed,
+                       speed = vein::Speed(spo_gpslines$speed),
                        veh_type = total_fleet$veh_type_euro,
                        tech = "SCR",
                        euro = total_fleet$euro_stage,
@@ -127,14 +134,18 @@ For the United States, the `ef_usa` function estimates emission factors for mult
 EF_usa <- ef_usa(pollutant = c("CO", "PM10"),
                  calendar_year = "2019",
                  model_year = total_fleet$year,
-                 speed = spo_gpslines$speed,
+                 speed = vein::Speed(spo_gpslines$speed),
                  fuel = "Diesel")
 head(EF_usa, 3)
 ```
 
 ## Brazil emission factors for buses
 
-For buses in Brazil, the `ef_brazil` functions estimates emission factors considering model year and types of buses. These estimates are based on data from [CETESB 2017](https://cetesb.sp.gov.br/veicular/) obtained via the [`vein` package](https://atmoschem.github.io/vein/). Supported pollutants: CO, HC, NMHC, CH4, NOx, CO2, RCHO, ETOH, PM, N2O, KML, FC, NO2, NO, gD/KWH, gCO2/KWH, RCHO, CO_0km, HC_0km, NMHC_0km, NOx_0km, NO2_0km, NO_0km, RCHO_0km, ETOH_0km, and FS (fuel sales).
+For buses in Brazil, the `ef_brazil` functions estimates emission factors considering model year and types of buses. These estimates are based on data from [CETESB 2017](https://cetesb.sp.gov.br/veicular/) obtained via the [`vein` package](https://atmoschem.github.io/vein/). Supported pollutants: CO, HC, NMHC, CH4, NOx, CO2, RCHO, ETOH, PM, N2O, KML, FC, NO2, NO, gD/KWH, gCO2/KWH, RCHO.
+, CO_0km, HC_0km, NMHC_0km, NOx_0km, NO2_0km, NO_0km, RCHO_0km, ETOH_0km, and FS (fuel sales).
+
+
+_Acho que não é necessario mostrar os fatores 0km, pois só ussados os deteriorados. Inclusive, os fatores deteriorados só aplicam a veículos com moor Otto ou Flex, então não aplica incluir aqui. FS tambem não, pois é pensado na estimativa de emissões evaporativas desde o veículo ao ambiente aomomento de abastecimento_
 
 ```{r}
 EF_brazil <- ef_brazil(pollutant = c("CO", "CO2"),

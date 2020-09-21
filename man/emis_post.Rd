@@ -42,7 +42,7 @@ total_fleet$fleet_composition = total_fleet$bus/sum(total_fleet$bus)
 EF_usa <-  gtfs2emis::ef_usa(pollutant = c("CO", "PM10"),
                  calendar_year = "2019",
                  model_year = total_fleet$year,
-                 speed = data$speed,
+                 speed = vein::Speed(data$speed),
                  fuel = "Diesel")
 emi_usa <- gtfs2emis::emis(fleet_composition = total_fleet$fleet_composition,
                            dist = data$dist, ef = EF_usa, prefix = "USA")

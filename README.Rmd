@@ -21,7 +21,7 @@ files.
 
 ### Installation
 
-```{r installation, message = FALSE}
+```{r installation, message = FALSE, eval=FALSE}
 devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
 ```
 
@@ -40,6 +40,11 @@ More examples in the [intro Vignette](https://github.com/rafapereirabr/gtfs2emis
 ### **Related projects**
 
 It would be nice to mention {vein} and other R packages related to transport emissions.
+
+- [vein](https://github.com/atmoschem/vein) Bottom-up and top-down inventory.
+- [EmissV](https://github.com/atmoschem/emissv) Top-down inventory.
+- [Yeti](https://github.com/twollnik/YETI) (It seems abandon).
+- [PythonEmissData](https://github.com/adelgadop/PythonEmissData) Jupyter notebook to estimate simple top-down emissions.
 
 
 -----
