@@ -30,13 +30,12 @@
 #' @export
 ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech = "SCR", 
                       slope = 0.0, load = 0.5, k = 1, fcorr = 1, show.equation = FALSE){
+  # local test
+  # speed <- vein::Speed(1:100)
   # veh_type <- "Urban Buses Standard 15 - 18 t"
-  #  euro <- c("IV","V")
-  # # veh_distribution <- c(0.5,0.5)
-  #  pollutant <- c("CO","NOx")
-  # tech <- "SCR"
-  # fuel <- "Diesel"; slope = 0.0; load = 0.5; k =1
-  # aggregate = TRUE
+  # euro <- c("IV","V")
+  # pollutant <- c("CO","NOx")
+  # fuel <- "Diesel";tech <- "SCR"; slope = 0.0; load = 0.5; k =1; fcorr = 1;i = j = 1
   
   # euro vector----
   
@@ -67,8 +66,17 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   if(length(euro) != length(fuel) && length(fuel) == 1){
     fuel <- rep(fuel,length(euro))
   }
+  if(length(euro) != length(k) && length(k) == 1){
+    k <- rep(k,length(euro))
+  }
   if(length(fcorr) == 1){
     fcorr <- rep(fcorr,length(euro))
+  }
+  if(length(slope) == 1){
+    slope <- rep(slope,length(euro))
+  }
+  if(length(load) == 1){
+    load <- rep(load,length(euro))
   }
   # polynomial expression----
   
@@ -93,11 +101,17 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
                             Euro.Standard %in% euro[i] & 
                             Technology %in% tech[i] &
                             Pollutant %in% pollutant[j] &
-                            Road.Slope %in% slope &
-                            Load %in% load, ]
+                            Road.Slope %in% slope[i] &
+                            Load %in% load[i], ]
       
       if(nrow(temp_ef3) == 0){
-        stop("No available emission factor. Please check `data(europe)` for available data.")
+        erro_msg <- paste("No available emission factor for combination of the following parameters\n",
+                       "fuel = ",fuel[i],"| veh_type = ",veh_type[i],
+                       "\n euro = ",euro[i],"| tech = ",tech[i],
+                      "| pollutant = ",pollutant[j],"| slope = ",slope[i],
+                      "| load = ",load[i],
+                      "\n Please check `data(europe)` for available data.")
+        stop(erro_msg)
       }
       
       # fix speed
@@ -111,7 +125,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
       eq_output <- eq_num(a = temp_ef3$Alpha, b = temp_ef3$Beta, g = temp_ef3$Gamma,
                           d = temp_ef3$Delta, e = temp_ef3$Epsilon, z = temp_ef3$Zita,
                           h = temp_ef3$Hta, rf = temp_ef3$`Reduction.Factor.[%]`,
-                          v = tmpSpeed, k = k * fcorr[i])
+                          v = tmpSpeed, k = k[i] * fcorr[i])
       return(eq_output)
     })
     
@@ -125,10 +139,6 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   # show.equation----
   
   if (show.equation) {
-    # cat(paste0("a = ", temp_ef1$Alpha, ", b = ", temp_ef1$Beta, ", g = ",
-    #            temp_ef1$Gamma, ", d = ", temp_ef1$Delta, ", e = ", temp_ef1$Epsilon, ", rf = ",
-    #            temp_ef1$`Reduction.Factor.[%]`, ", z = ", temp_ef1$Zita, ", 
-    #             h = ", temp_ef1$Hta, "\n"))
     message(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
   }
   
