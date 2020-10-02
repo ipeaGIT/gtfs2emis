@@ -117,7 +117,7 @@ The `ef_europe` function can be used to estimate the emission factors for multip
 The function works like this:
 
 ```{r}
-EF_europe <- ef_europe(pollutant = c("CO", "PM"),
+EF_europe <- ef_europe(pollutant = c("CO", "PM10"),
                        speed = vein::Speed(spo_gpslines$speed),
                        veh_type = total_fleet$veh_type_euro,
                        tech = "SCR",
