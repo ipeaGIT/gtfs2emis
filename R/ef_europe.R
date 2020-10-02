@@ -38,7 +38,6 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   
   euro <- paste0("Euro ", euro)
   temp_ef <- gtfs2emis::europe
-  temp_ef$Pollutant %>% unique()
   
   # check units and lengths----
   
