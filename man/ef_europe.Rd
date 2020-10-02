@@ -20,19 +20,18 @@ ef_europe(
 \item{speed}{units; Speed in 'km/h'.}
 
 \item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t",
-"Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t",
-"Coaches Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".}
+"Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".}
 
 \item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II",
 "Euro III", "IV", "V", "VI", and "EEV".}
 
 \item{pollutant}{character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
-Consumption), "CH4", "NH3" and "N2O".}
+Consumption), "CO2", "CH4", "NH3" and "N2O".}
 
 \item{fuel}{character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel". Default is 
 "Diesel".}
 
-\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR". Default is "SCR".}
+\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro IV). Default is "SCR".}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
 0.06.
