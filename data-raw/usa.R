@@ -1,3 +1,4 @@
+rm(list=ls())
 library(data.table)
 library(magrittr)
 emfac <- data.table::fread("../../Dropbox/IPEA/data-raw/emission_factors/EMFAC/EMFAC2017-ER-2011Class-Statewide2010-2011-2012-2013-2014-2015-2016-2017-2019-2020-Annual-20200512000741.csv")
