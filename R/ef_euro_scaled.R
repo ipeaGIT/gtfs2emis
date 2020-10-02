@@ -20,22 +20,21 @@
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
 #' @param fcorr numeric; Correction based on fuel composition. The length must be one per
 #' each euro standards. Default is 1.0.
-#' @param show.equation logical; show.equation from EMEP/EEEA used? Default parameter is TRUE
 #' @return emission factors in units 'g/km'.
 #' @export
 ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC = 34.12,
                            tech = "SCR", slope = 0.0, 
-                           load = 0.5, fcorr = 1, show.equation = TRUE){
+                           load = 0.5, fcorr = 1){
   # local test
-  # ef_local = gtfs2emis::ef_brazil(pollutant = c("CO","PM"),
-  #                                 veh_type = "BUS_URBAN_D",
-  #                                 years = c(2008:2018))
+  # ef_local = ef_brazil(pollutant = c("CO","PM"),
+  #                      veh_type = "BUS_URBAN_D",
+  #                      years = c(2008:2018))
   # speed = vein::Speed(1:100)
   # veh_type = "Urban Buses Standard 15 - 18 t"
   # euro = c(rep("IV",5),rep("V",6))
   # fuel = "Diesel"
-  # pollutant = c("CO","PM")
-  # SDC = 34.12; tech = "SCR"; slope = 0.0; load = 0.5; fcorr = 1; show.equation = FALSE
+  # pollutant = c("CO","PM10")
+  # SDC = 34.12; tech = "SCR"; slope = 0.0; load = 0.5; fcorr = 1;
   
   #
   # check dimensions
@@ -72,7 +71,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   ef_sdc <- ef_europe(speed = units::set_units(SDC,"km/h"), 
                       veh_type = veh_type, euro = euro, pollutant = pollutant,
                       fuel = fuel, tech = tech, slope = slope, load = load, 
-                      fcorr = fcorr, show.equation = FALSE)
+                      fcorr = fcorr)
   
   # adjustment factor
   k <- as.numeric(ef_local)/as.numeric(ef_sdc) 
@@ -81,7 +80,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   ef_speed <- ef_europe(speed = speed, 
                         veh_type = veh_type, fuel = fuel, euro = euro,
                         slope = slope, load = load, tech = tech, 
-                        pollutant = pollutant, show.equation = show.equation)
+                        pollutant = pollutant)
   ef_speed <- as.matrix(ef_speed)
   #
   # ef_scaled

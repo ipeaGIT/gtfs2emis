@@ -15,8 +15,7 @@ ef_euro_scaled(
   tech = "SCR",
   slope = 0,
   load = 0.5,
-  fcorr = 1,
-  show.equation = TRUE
+  fcorr = 1
 )
 }
 \arguments{
@@ -48,8 +47,6 @@ For EURO IV, V, default is "SCR". For Euro III, default is NA.}
 
 \item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
 each euro standards. Default is 1.0.}
-
-\item{show.equation}{logical; show.equation from EMEP/EEEA used? Default parameter is TRUE}
 }
 \value{
 emission factors in units 'g/km'.
