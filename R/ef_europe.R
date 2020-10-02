@@ -22,25 +22,24 @@
 #' 0.06.
 #'  Negative gradients means downhills and positive uphills. Default is 0.0.
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
-#' @param k numeric; constant value to adjust emission factors. Default is 1.0.
 #' @param fcorr numeric; Correction based on fuel composition. The length must be one per
 #' each euro standards. Default is 1.0.
-#' @param show.equation logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.
 #' @return emission factors in units 'g/km' (a vector or a data.frame).
 #' @export
 ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech = "SCR", 
-                      slope = 0.0, load = 0.5, k = 1, fcorr = 1, show.equation = FALSE){
+                      slope = 0.0, load = 0.5, fcorr = 1){
   # local test
   # speed <- vein::Speed(1:100)
   # veh_type <- "Urban Buses Standard 15 - 18 t"
   # euro <- c("IV","V")
-  # pollutant <- c("CO","NOx")
-  # fuel <- "Diesel";tech <- "SCR"; slope = 0.0; load = 0.5; k =1; fcorr = 1;i = j = 1
-  
+  # pollutant <- c("CO2","NOx")
+  # fuel <- "Diesel";tech <- c("SCR","EGR"); slope = 0.0; load = 0.5; k =1; fcorr = 1;i = j = 1
+
   # euro vector----
   
   euro <- paste0("Euro ", euro)
   temp_ef <- gtfs2emis::europe
+  temp_ef$Pollutant %>% unique()
   
   # check units and lengths----
   
@@ -78,41 +77,58 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   if(length(load) == 1){
     load <- rep(load,length(euro))
   }
+  if(length(fcorr) == 1){
+    fcorr <- rep(fcorr,length(euro))
+  }
   # polynomial expression----
   
-  eq_num <- function(a,b,g,d,e,z,h,rf,v,k){
-    eq <- (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k
-    return(eq)
+  eq_num <- function(Alpha,Beta,Gamma,Delta,Epsilon,Zita,Hta,RF,Speed,Function_ID,k,fcorr){
+    switch(Function_ID,
+           "1" = fcorr*(Alpha*(Beta^Speed))*(Speed^Gamma),
+           "2" = fcorr*(Alpha*(Speed^Beta))+(Gamma*(Speed^Delta)),
+           "3" = fcorr*(exp((Alpha+(Beta/Speed))+(Gamma*log(Speed)))),
+           "4" = fcorr*(Alpha*(Speed^3)+Beta*(Speed^2)+Gamma*Speed+Delta),
+           "5" = fcorr*(Alpha*(Beta^Speed)*(Speed^Gamma)),
+           "6" = fcorr*(Alpha/(1+(Beta*exp(((-1)*Gamma)*Speed)))),
+           "7" = fcorr*(1/(Alpha+(Beta*(Speed^Gamma)))),
+           "8" = fcorr*(Alpha-(Beta*exp(((-1)*Gamma)*(Speed^ Delta)))),
+           "9" = fcorr*(1/(Alpha+(Beta*Speed))),
+           "10" = fcorr*(Alpha*(Speed^3)+(Beta*(Speed^2))+(Gamma*Speed)+Delta),
+           "11" = fcorr*(Alpha*Speed^2+Beta*Speed+Gamma+Delta/Speed)/(Epsilon*Speed^2+Zita*Speed+Hta)*(1-RF)*k
+    )
   }
   
   # emission factor----
-  
   temp_ef1 <- lapply(seq_along(pollutant),function(j){  # j = 1
-    temp_ef2 <- lapply(seq_along(euro),function(i){    # i = 1
+    temp_ef2 <- lapply(seq_along(euro),function(i){    # i = 2
       
       # pre-conditions
-      
+      #message(paste0(pollutant[j]))
+      #message(paste0(euro[i]))
+      #message(i)
       if(euro[i] %in%  c("Conventional","Euro I","Euro II","Euro III")){
         tech[i] = NA
         message(paste0("no technology associated with ", euro[i]))
       }
-      temp_ef3 <- temp_ef[Fuel %in% fuel[i] & 
-                            Segment %in% veh_type[i] & 
-                            Euro.Standard %in% euro[i] & 
-                            Technology %in% tech[i] &
-                            Pollutant %in% pollutant[j] &
-                            Road.Slope %in% slope[i] &
-                            Load %in% load[i], ]
+      temp_ef3 <- temp_ef[ Pollutant %in% pollutant[j] &  
+                             Fuel %in% fuel[i] & 
+                             Segment %in% veh_type[i] & 
+                             Technology %in% tech[i] &
+                             Euro.Standard %in% euro[i] & 
+                             Road.Slope %in% slope[i] & 
+                             Load == load[i], ]
       
+      # no EF
       if(nrow(temp_ef3) == 0){
-        erro_msg <- paste("No available emission factor for combination of the following parameters\n",
-                       "fuel = ",fuel[i],"| veh_type = ",veh_type[i],
-                       "\n euro = ",euro[i],"| tech = ",tech[i],
-                      "| pollutant = ",pollutant[j],"| slope = ",slope[i],
-                      "| load = ",load[i],
-                      "\n Please check `data(europe)` for available data.")
+        erro_msg <- paste("No available emission factor for the following combination of parameters\n",
+                          "fuel = ",fuel[i],"| veh_type = ",veh_type[i],
+                          "\n euro = ",euro[i],"| tech = ",tech[i],
+                          "| pollutant = ",pollutant[j],"| slope = ",slope[i],
+                          "| load = ",load[i],
+                          "\n Please check `data(europe)` for available data.")
         stop(erro_msg)
       }
+      
       
       # fix speed
       tmpSpeed <- 1:maxSpeed
@@ -122,10 +138,12 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
       
       # return
       
-      eq_output <- eq_num(a = temp_ef3$Alpha, b = temp_ef3$Beta, g = temp_ef3$Gamma,
-                          d = temp_ef3$Delta, e = temp_ef3$Epsilon, z = temp_ef3$Zita,
-                          h = temp_ef3$Hta, rf = temp_ef3$`Reduction.Factor.[%]`,
-                          v = tmpSpeed, k = k[i] * fcorr[i])
+      eq_output <- eq_num(Alpha = temp_ef3$Alpha, Beta = temp_ef3$Beta, 
+                          Gamma = temp_ef3$Gamma, Delta = temp_ef3$Delta, 
+                          Epsilon = temp_ef3$Epsilon, Zita = temp_ef3$Zita,
+                          Hta = temp_ef3$Hta, RF = temp_ef3$RF,
+                          Speed = tmpSpeed, Function_ID = temp_ef3$Function_ID, 
+                          k = temp_ef3$k, fcorr = fcorr[i])
       return(eq_output)
     })
     
@@ -135,12 +153,6 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
     names(temp_ef3) <- paste0(pollutant[j], "_", rep(euro))
     return(temp_ef3)
   })
-  
-  # show.equation----
-  
-  if (show.equation) {
-    message(paste0("ef = (a * v^2 + b * v + g + d/v) / (e * v^2 + z * v + h) * (1 - rf) * k"))
-  }
   
   # return in a data.table like format----
   

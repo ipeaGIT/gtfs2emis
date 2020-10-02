@@ -13,9 +13,7 @@ ef_europe(
   tech = "SCR",
   slope = 0,
   load = 0.5,
-  k = 1,
-  fcorr = 1,
-  show.equation = FALSE
+  fcorr = 1
 )
 }
 \arguments{
@@ -42,12 +40,8 @@ Consumption), "CH4", "NH3" and "N2O".}
 
 \item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
 
-\item{k}{numeric; constant value to adjust emission factors. Default is 1.0.}
-
 \item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
 each euro standards. Default is 1.0.}
-
-\item{show.equation}{logical; show.equation from EMEP/EEEA used? Default parameter is TRUE.}
 }
 \value{
 emission factors in units 'g/km' (a vector or a data.frame).
