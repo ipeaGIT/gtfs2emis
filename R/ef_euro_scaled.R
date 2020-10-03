@@ -40,15 +40,17 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   # check dimensions
   #
   
-  if(length(veh_type) == 1 && length(veh_type) != length(euro)){
+  if(length(veh_type) == 1){
     veh_type <- rep(veh_type,length(euro))
-  }else{
+  }
+  if(length(veh_type) != length(euro)) {
     stop("'euro' and 'veh_type' need to have the same length.")
   }
-  if(length(fuel) == 1 && length(fuel) != length(euro)){
+  if(length(fuel) == 1){
     fuel <- rep(fuel,length(euro))
-  }else{
-    stop("'euro' and 'fuel' need to have the same length.")
+  }
+  if(length(fuel) != length(euro)) {
+    stop("'fuel' and 'veh_type' need to have the same length.")
   }
   
   #
