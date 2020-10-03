@@ -63,9 +63,6 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   if(length(euro) != length(fuel) && length(fuel) == 1){
     fuel <- rep(fuel,length(euro))
   }
-  if(length(euro) != length(k) && length(k) == 1){
-    k <- rep(k,length(euro))
-  }
   if(length(fcorr) == 1){
     fcorr <- rep(fcorr,length(euro))
   }
