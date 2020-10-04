@@ -106,6 +106,7 @@ ef_brazil <- function(pollutant, veh_type, years){
       vein::ef_cetesb(p = p,
                       veh = veh_type[i],
                       year = years[i],
+                      scale = "tunnel",
                       agemax = 1) 
     })
     ef_temp <- do.call(cbind, ef_temp)
