@@ -57,7 +57,7 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
   
   # add 'id' info into grid data ---
   
-  grid$id <- 1:nrow(grid)
+  grid$id <- 1:length(grid)
   
   # check projections ---
   
