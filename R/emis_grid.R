@@ -13,20 +13,67 @@
 #' Only used when 'hour' or 'hour-minute' is selected. 
 #' @return Spatial data (emissions into grid cells).
 #' @export
+#' @examples 
+#' data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+#' gtfs2gps::filter_by_shape_id(c("51982")) %>%
+#'   gtfs2gps::gtfs2gps() %>%
+#'   gtfs2gps::gps_as_sflinestring() %>%
+#'   dplyr::select(speed, dist, departure_time)  %>%
+#'   dplyr::rename(departure_time1 = departure_time)
+#' ef <- ef_europe(speed = data$speed,
+#'                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+#'                 euro = c("IV","V"),
+#'                 pollutant = c("CO2","NOx"),
+#'                 fuel = "Diesel" ,
+#'                 tech =  c("SCR","EGR"),
+#'                 slope = 0.0,
+#'                 load = 0.5,
+#'                 fcorr = 1,
+#'                 as_list = TRUE)
+#' emi <- emis(fleet_composition =  c(0.7,0.3),
+#'             dist = units::set_units(data$dist,"km"),
+#'             ef = ef,
+#'             aggregate = FALSE,
+#'             as_list = FALSE)  
+#' emi <- cbind(emi,data$geometry) %>% sf::st_as_sf()
+#' grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
+#' my_grid <- emis_grid(data = emi,
+#'                      grid = grid,
+#'                      emi = c("CO2_Euro_IV","CO2_Euro_V","NOx_Euro_IV","NOx_Euro_V"))
+#' 
 emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
+  
   # input
-  # rm(list=ls())
   # data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
   #   gtfs2gps::filter_by_shape_id(c("51982")) %>%
-  #   gtfs2gps::gtfs2gps() %>% 
-  #   gtfs2gps::gps_as_sflinestring() %>% 
-  #   dplyr::select(speed, dist, departure_time)  %>% 
+  #   gtfs2gps::gtfs2gps() %>%
+  #   gtfs2gps::gps_as_sflinestring() %>%
+  #   dplyr::select(speed, dist, departure_time)  %>%
   #   dplyr::rename(departure_time1 = departure_time)
+  # ef <- ef_europe(speed = data$speed,
+  #                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+  #                 euro = c("IV","V"),
+  #                 pollutant = c("CO2","NOx"),
+  #                 fuel = "Diesel" ,
+  #                 tech =  c("SCR","EGR"),
+  #                 slope = 0.0,
+  #                 load = 0.5,
+  #                 fcorr = 1,
+  #                 as_list = TRUE)
+  # emi <- emis(fleet_composition =  c(0.7,0.3),
+  #             dist = units::set_units(data$dist,"km"),
+  #             ef = ef,
+  #             aggregate = FALSE,
+  #             as_list = FALSE)
+  # data <- cbind(emi,data$geometry) %>% sf::st_as_sf()
+  # grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
   # 
+  # emi = colnames(emi)
+  # rm(ef)
   # 
   # grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
   # 
-  # emi = c('speed','dist') 
+  # emi = c("CO2_Euro_IV","CO2_Euro_V","NOx_Euro_IV","NOx_Euro_V")
   # time_class = "hour"
   # time_column = 'departure_time1'
   
