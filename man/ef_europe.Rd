@@ -13,7 +13,8 @@ ef_europe(
   tech = "SCR",
   slope = 0,
   load = 0.5,
-  fcorr = 1
+  fcorr = 1,
+  as_list = TRUE
 )
 }
 \arguments{
@@ -34,19 +35,34 @@ Consumption), "CO2", "CH4", "NH3" and "N2O".}
 \item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro IV). Default is "SCR".}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
-0.06.
- Negative gradients means downhills and positive uphills. Default is 0.0.}
+0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
 
 \item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
 
 \item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
 each euro standards. Default is 1.0.}
+
+\item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
 \value{
-emission factors in units 'g/km' (a vector or a data.frame).
+emission factors in units 'g/km' (list or a data.table).
 }
 \description{
-Returns a vector or data.frame of emission factors for buses based on EMEP/EEA.
-Function based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
+Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
+Function is based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
 Estimates expressed in units 'g/km'.
+}
+\examples{
+set.seed(1335)
+dist = units::set_units(rnorm(100,0.250,0.03),"km")
+ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+                veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+                euro = c("IV","V"),
+                pollutant = c("CO2","NOx"),
+                fuel = "Diesel" ,
+                tech =  c("SCR","EGR"),
+                slope = 0.0,
+                load = 0.5,
+                fcorr = 1,
+                as_list = TRUE)
 }

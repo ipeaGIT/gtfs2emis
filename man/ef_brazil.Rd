@@ -7,7 +7,7 @@
 \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
 }
 \usage{
-ef_brazil(pollutant, veh_type, years)
+ef_brazil(pollutant, veh_type, years, as_list = TRUE)
 }
 \arguments{
 \item{pollutant}{character; Pollutants: "CO", "HC", "NMHC", "CH4", "NOx", "CO2", "RCHO", "ETOH",
@@ -17,14 +17,13 @@ Evaporative emissions at average temperature ranges: "D_20_35", "S_20_35", "R_20
 "D_10_25", "S_10_25", "R_10_25", "D_0_15", "S_0_15" and "R_0_15" where D means diurnal (g/day),
 S hot/warm soak (g/trip) and R hot/warm running losses (g/trip).}
 
-\item{veh_type}{character; Vehicle categories by fuel: "PC_G", "PC_FG", "PC_FE", "PC_E", "LCV_G",
-"LCV_FG", "LCV_FE", "LCV_E", "LCV_D", "TRUCKS_SL", "TRUCKS_L", "TRUCKS_M", "TRUCKS_SH",
-"TRUCKS_H", "BUS_URBAN", "BUS_MICRO", "BUS_COACH", "BUS_ARTIC", "MC_G_150", "MC_G_150_500",
-"MC_G_500", "MC_FG_150", "MC_FG_150_500", "MC_FG_500", "MC_FE_150", "MC_FE_150_500",
-"MC_FE_500", "CICLOMOTOR", "GNV".}
+\item{veh_type}{character; Vehicle categories by fuel:"BUS_URBAN", "BUS_MICRO", "BUS_COACH",
+"BUS_ARTIC", "MC_G_150", "MC_G_150_500".}
 
 \item{years}{numeric; Filter the emission factor to start from a specific base year.
 If project is 'constant' values above 2017 and below 1980 will be repeated.}
+
+\item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
 \value{
 data.table; Emission factors in units 'g/km' by speed and model_year.
@@ -39,33 +38,10 @@ Estimates are expressed in units 'g/km'.
 \note{
 The new convention for vehicles names are translated from CETESB report:\tabular{ll}{
    vehicle \tab description \cr
-   PC_G \tab Passenger Car Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   PC_E \tab Passenger Car Ethanol (hydrous ethanol) \cr
-   PC_FG \tab Passenger Car Flex Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   PC_FE \tab Passenger Car Flex Ethanol (hydrous ethanol) \cr
-   LCV_G \tab Light Commercial Vehicle Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   LCV_E \tab Light Commercial Vehicle Ethanol (hydrous ethanol) \cr
-   LCV_FG \tab Light Commercial Vehicle Flex Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   LCV_FE \tab Light Commercial Vehicle Flex Ethanol (hydrous ethanol) \cr
-   LCV_D \tab Light Commercial Vehicle Diesel (5perc bio-diesel) \cr
-   TRUCKS_SL_D \tab Trucks Semi Light Diesel (5perc bio-diesel) \cr
-   TRUCKS_L_D \tab Trucks Light Diesel (5perc bio-diesel) \cr
-   TRUCKS_M_D \tab Trucks Medium Diesel (5perc bio-diesel) \cr
-   TRUCKS_SH_D \tab Trucks Semi Heavy Diesel (5perc bio-diesel) \cr
-   TRUCKS_H_D \tab Trucks Heavy Diesel (5perc bio-diesel) \cr
    BUS_URBAN_D \tab Urban Bus Diesel (5perc bio-diesel) \cr
    BUS_MICRO_D \tab Micro Urban Bus Diesel (5perc bio-diesel) \cr
    BUS_COACH_D \tab Coach (inter-state) Bus Diesel (5perc bio-diesel) \cr
    BUS_ARTIC_D \tab Articulated Urban Bus Diesel (5perc bio-diesel) \cr
-   MC_150_G \tab Motorcycle engine less than 150cc Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   MC_150_500_G \tab Motorcycle engine 150-500cc Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   MC_500_G \tab Motorcycle greater than 500cc Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   MC_150_FG \tab Flex Motorcycle engine less than 150cc Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   MC_150_500_FG \tab Flex Motorcycle engine 150-500cc Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   MC_500_FG \tab Flex Motorcycle greater than 500cc Gasohol (Gasoline + 27perc of anhydrous ethanol) \cr
-   MC_150_FE \tab Flex Motorcycle engine less than 150cc Ethanol (hydrous ethanol) \cr
-   MC_150_500_FE \tab Flex Motorcycle engine 150-500cc Ethanol (hydrous ethanol) \cr
-   MC_500_FE \tab Flex Motorcycle greater than 500cc Ethanol (hydrous ethanol) \cr
 }
 
 
@@ -78,27 +54,9 @@ air pollutant emission inventory guidebook.
 \item Also, the emission factors were extended till 50 years of use, repeating the oldest value.
 \item CNG emission factors were expanded to other pollutants by comparison of US.EPA-AP42 emission
 factor: Section 1.4 Natural Gas Combustion.
-}
-
-In the previous versions I used the letter 'd' for deteriorated. I removed the letter 'd'
-internally to not break older code.
-If by mistake, the user inputs one of veh names from the old convention, they are internally
-changed to the new convention: "SLT", "LT", "MT", "SHT","HT", "UB", "SUB", "COACH", "ARTIC",
-"M_G_150", "M_G_150_500", "M_G_500", "M_FG_150", "M_FG_150_500", "M_FG_500", "M_FE_150",
-"M_FE_150_500","M_FE_500",
-If pollutant is "SO2", it needs 'sppm.' It is designed when 'veh' has length 1, if it has length
-2 or more, it will show a warning
-Emission factor for vehicles older than the reported by CETESB were filled as the moving average
-of 2:
-Range EF from PC and LCV otto: 2018 - 1982. EF for 1981 and older as moving average.
 Range LCV diesel : 2018 - 2006. EF for 2005 and older as moving average.
-Range Trucks and Buses: 2018 - 1998. EF for 1997 and older as moving average.
-Range MC Gasoline: 2018 - 2003. EF for 2002 and older as moving average.
-Range MC Flex 150-500cc and >500cc: 2018 - 2012. EF for 2011 and older as moving average.
-Currently, 2020, there are not any system for recovery of fuel vapors in Brazil.
-Hence, the FS takes into account the vapour that comes from the fuel tank inside the car and
-released into the atmosphere when injecting new fuel. There are discussions about incrementing
-implementing stage I and II and/or ORVR thesedays. The ef FS is calculated by transforming
-g FC/km into (L/KM)*g/L with g/L 1.14 fgor gasoline and 0.37 for ethanol (CETESB, 2016). The
-density considered is 0.75425 for gasoline and 0.809 for ethanol (t/m^3).
+}
+}
+\examples{
+ef_brazil(pollutant = c("CO2","NOx"),veh_type = "BUS_URBAN_D", years = 2016)
 }
