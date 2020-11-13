@@ -2,21 +2,59 @@
 #'
 #' @description Calculate hot exhaust emissions.
 #'
-#' @param fleet_composition vector; Fleet composition.
+#' @param fleet_composition vector; Fleet composition, which is a distribution of fleet based on frequency. 
+#' If there is only one.
 #' @param dist units ('km'); Length of each link in km.
-#' @param ef units ('g/km');	List of functions of emission factors.
+#' @param ef list or data.table;	Emission factors.
 #' @param aggregate logical; if TRUE (default) emissions are aggregated by pollutant.
 #' @param prefix character; Add prefix into emissions names. Missing parameter (default)
 #' means empty prefix.
+#' @param as_list logical; if TRUE (default) emissions are returned inside 'ef' list.
 #' @return units ('g'); emissions per link.
 #' @export
-emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix){
-  # fleet_composition = total_fleet$fleet_composition
-  # dist = spo_gpslines$dist
-  # ef = EF_brazil
-  # prefix = ""
+#' @examples 
+#' set.seed(1335)
+#' dist = units::set_units(rnorm(100,0.250,0.03),"km")
+#' ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+#'                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+#'                 euro = c("IV","V"),
+#'                 pollutant = c("CO2","NOx"),
+#'                 fuel = "Diesel" ,
+#'                 tech =  c("SCR","EGR"),
+#'                 slope = 0.0,
+#'                 load = 0.5,
+#'                 fcorr = 1,
+#'                 as_list = TRUE)
+#' 
+#' emi <- emis(fleet_composition =  c(0.7,0.3),
+#'             dist = dist,
+#'             ef = ef,
+#'             aggregate = FALSE,
+#'             as_list = TRUE)  
+#'             
+emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
+  
+  #
+  # init---
+  #
+  
+  # set.seed(1335)
+  # fleet_composition = c(0.7,0.3)
+  # dist = units::set_units(rnorm(100,0.250,0.03),"km")
+  # ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+  #                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+  #                 euro = c("IV","V"),
+  #                 pollutant = c("CO2","NOx"),
+  #                 fuel = "Diesel" ,
+  #                 tech =  c("SCR","EGR"),
+  #                 slope = 0.0,
+  #                 load = 0.5,
+  #                 fcorr = 1,
+  #                 as.list = TRUE)
+  
   # 
   # check units----
+  #
   
   if(class(dist) != "units"){
     stop("dist neeeds to has class 'units' in 'km'. Please, check package 'units'")
@@ -27,32 +65,42 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix){
   
   # ef----
   
+  # check if its a list
+  if(class(ef) == "list"){
+    tmpEf <- ef$EF
+  }else{
+    tmpEf <- ef
+  }
   # check if ef is constant
-  if(length(ef[[1]]) == 1){
+  if(length(tmpEf[[1]]) == 1){
     message("Constant emission factor along the route")
   }
   
   # units
-  lapply(seq_along(ef), function(i){ # i = 1
-    if(class(ef[[i]]) != "units"){
+  lapply(seq_along(tmpEf), function(i){ # i = 1
+    if(class(tmpEf[[i]]) != "units"){
       stop("ef neeeds to has class 'units' in 'g/km'. Please, check package 'units'")
     }
-    if(units(ef[[i]])$numerator != "g" | units(ef[[i]])$denominator != "km"){
+    if(units(tmpEf[[i]])$numerator != "g" | units(tmpEf[[i]])$denominator != "km"){
       stop("ef need to has 'units' in 'g/km'.")
     }
-    # check 'ef' length with veh
-    if(length(ef[[i]]) != 1 & length(ef[[i]]) != length(dist)){
-      stop(paste0("ef '", names(ef[i]), "' needs to has the same length of dist"))
+    # check 'tmpEf' length with veh
+    if(length(tmpEf[[i]]) != 1 & length(tmpEf[[i]]) != length(dist)){
+      stop(paste0("ef '", names(tmpEf[i]), "' needs to has the same length of dist"))
     }
   })
   
   # extract single pollutants----
   
-  # verify how many pollutants 'ef' data has based on names(ef)
-  m <- regexpr(pattern = "\\_", text = colnames(ef), fixed = FALSE)
-  # get unique pollutants
-  single_pol <- sapply(regmatches(x = colnames(ef), m = m, invert = TRUE), function(i){i[[1]]}) %>% 
-    unique()
+  if(class(ef) == "list"){
+    single_pol <- unique(ef$pollutant)
+  }else{
+    # verify how many pollutants 'ef' data has based on names(ef)
+    m <- regexpr(pattern = "\\_", text = colnames(ef), fixed = FALSE)
+    # get unique pollutants
+    single_pol <- sapply(regmatches(x = colnames(ef), m = m, invert = TRUE), function(i){i[[1]]}) %>% 
+      unique()
+  }
   
   # match 'veh' size based on different pollutant----
   
@@ -60,16 +108,17 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix){
   
   # emissions----
   
-  emi <- lapply(seq_along(ef), function(i){ # i = 1 
-    aux <- ef[[i]] * fleet_composition[[i]]
-    temp_emis <- aux * dist
+  emi <- lapply(seq_along(tmpEf), function(i){ # i = 1 
+    temp_emis <- tmpEf[[i]] * fleet_composition[[i]] * dist
     return(temp_emis)
   })
-
-  emi <- do.call(cbind, emi) %>% data.table::as.data.table()
-  colnames(emi) <- colnames(ef)
   
+  emi <- do.call(cbind, emi) %>% data.table::as.data.table()
+  colnames(emi) <- colnames(tmpEf)
+  
+  #
   # aggregate condition----
+  #
   
   if(aggregate){
     # aggregate by single pollutant
@@ -83,15 +132,23 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix){
     emi <- emi[, .SD, .SDcols = colnames_avg]
   }
   
-  # prefix condition----
+  # prefix condition ----
   
   if(missing(prefix) == FALSE){
     colnames(emi) <- paste0(prefix, "_", colnames(emi))
   }
   
-  # units convertion----
+  # units conversion ----
   
-  to_units <- function(i){units::set_units(i, "g")} # not sure why couldn't use it within data.table
-  emi <- emi[, lapply(.SD, to_units)]
-  return(emi)
+  emi <- emi[, lapply(.SD, units::set_units,'g')]
+  
+  # export ---
+  
+  if(as_list & class(ef) == "list"){
+    ef$emi <- emi
+    return(ef)
+  }else{
+    return(emi)
+  }
+  
 }

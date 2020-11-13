@@ -4,23 +4,54 @@
 \alias{emis}
 \title{Estimate hot exhaust emissions}
 \usage{
-emis(fleet_composition, dist, ef, aggregate = TRUE, prefix)
+emis(
+  fleet_composition,
+  dist,
+  ef,
+  aggregate = TRUE,
+  prefix = NULL,
+  as_list = TRUE
+)
 }
 \arguments{
-\item{fleet_composition}{vector; Fleet composition.}
+\item{fleet_composition}{vector; Fleet composition, which is a distribution of fleet based on frequency. 
+If there is only one.}
 
 \item{dist}{units ('km'); Length of each link in km.}
 
-\item{ef}{units ('g/km');    List of functions of emission factors.}
+\item{ef}{list or data.table;    Emission factors.}
 
 \item{aggregate}{logical; if TRUE (default) emissions are aggregated by pollutant.}
 
 \item{prefix}{character; Add prefix into emissions names. Missing parameter (default)
 means empty prefix.}
+
+\item{as_list}{logical; if TRUE (default) emissions are returned inside 'ef' list.}
 }
 \value{
 units ('g'); emissions per link.
 }
 \description{
 Calculate hot exhaust emissions.
+}
+\examples{
+set.seed(1335)
+dist = units::set_units(rnorm(100,0.250,0.03),"km")
+ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+                veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+                euro = c("IV","V"),
+                pollutant = c("CO2","NOx"),
+                fuel = "Diesel" ,
+                tech =  c("SCR","EGR"),
+                slope = 0.0,
+                load = 0.5,
+                fcorr = 1,
+                as_list = TRUE)
+
+emi <- emis(fleet_composition =  c(0.7,0.3),
+            dist = dist,
+            ef = ef,
+            aggregate = FALSE,
+            as_list = TRUE)  
+            
 }
