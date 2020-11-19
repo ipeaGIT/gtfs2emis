@@ -54,7 +54,6 @@ Estimates expressed in units 'g/km'.
 }
 \examples{
 set.seed(1335)
-dist = units::set_units(rnorm(100,0.250,0.03),"km")
 ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
                 euro = c("IV","V"),
