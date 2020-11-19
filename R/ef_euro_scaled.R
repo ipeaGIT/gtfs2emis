@@ -28,7 +28,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   # local test
   # ef_local = ef_brazil(pollutant = c("CO","PM"),
   #                      veh_type = "BUS_URBAN_D",
-  #                      years = c(2008:2018))
+  #                      years = c(2008:2018),as_list = TRUE)
   # speed = vein::Speed(1:100)
   # veh_type = "Urban Buses Standard 15 - 18 t"
   # euro = c(rep("IV",5),rep("V",6))
@@ -40,6 +40,9 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   # check dimensions
   #
   
+  if(class(ef_local) == "list"){
+    ef_local <- ef_local$EF
+  }
   if(length(veh_type) == 1){
     veh_type <- rep(veh_type,length(euro))
   }
@@ -69,29 +72,53 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   #
   # ef_europe with SDC (speed of driving cycle)
   #
-  
+  euro1 <- euro
   ef_sdc <- ef_europe(speed = units::set_units(SDC,"km/h"), 
-                      veh_type = veh_type, euro = euro, pollutant = pollutant,
-                      fuel = fuel, tech = tech, slope = slope, load = load, 
-                      fcorr = fcorr)
+                      veh_type = veh_type,
+                      euro = euro1,
+                      pollutant = pollutant,
+                      fuel = fuel,
+                      tech = tech,
+                      slope = slope,
+                      load = load, 
+                      fcorr = fcorr,
+                      as_list = FALSE)
   
+  #' ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+  #'                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+  #'                 euro = c("IV","V"),
+  #'                 pollutant = c("CO2","NOx"),
+  #'                 fuel = "Diesel" ,
+  #'                 tech =  c("SCR","EGR"),
+  #'                 slope = 0.0,
+  #'                 load = 0.5,
+  #'                 fcorr = 1,
+  #'                 as_list = TRUE)
   # adjustment factor
   k <- as.numeric(ef_local)/as.numeric(ef_sdc) 
   
   # ef europe speed
   ef_speed <- ef_europe(speed = speed, 
-                        veh_type = veh_type, fuel = fuel, euro = euro,
-                        slope = slope, load = load, tech = tech, 
-                        pollutant = pollutant)
-  ef_speed <- as.matrix(ef_speed)
+                        veh_type = veh_type,
+                        fuel = fuel,
+                        euro = euro1,
+                        slope = slope,
+                        load = load,
+                        tech = tech, 
+                        fcorr = fcorr,
+                        pollutant = pollutant,
+                        as_list = TRUE)
+  ef_speed$EF <- as.matrix(ef_speed$EF)
   #
   # ef_scaled
   #
-  ef_scaled <- sapply(seq_along(k),function(i){ef_speed[,i] * k[i]})
+  ef_scaled <- sapply(seq_along(k),function(i){ef_speed$EF[,i] * k[i]})
   # to units
   ef_scaled <- units::set_units(ef_scaled, 'g/km')
   ef_scaled <- data.table::as.data.table(ef_scaled)
-  colnames(ef_scaled) <- colnames(ef_speed)
+  colnames(ef_scaled) <- colnames(ef_speed$EF)
+  # add back to list
+  ef_speed$EF <- ef_scaled
   
-  return(ef_scaled)
+  return(ef_speed)
 }
