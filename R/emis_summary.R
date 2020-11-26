@@ -148,8 +148,9 @@ emis_summary <- function(emi, emi_vars, by, time_column = NULL,pol_vars = NULL, 
     # aggregate emissions and reorder
     tmp_dt <- tmp_dt[, lapply(.SD, sum), .SDcols = !("time"),
                      by =  time]
+    newCols <- names(tmp_dt)[names(tmp_dt) %nin% "time"]
     data.table::setcolorder(tmp_dt,
-                            neworder = c(colnames(emi[[emi_vars]]),"time"))
+                            neworder = c(newCols,"time"))
     # aggregate by pollutant
     single_pol <- unique(emi[[pol_vars]])
     for(i in seq_along(single_pol)){ # i = 2
