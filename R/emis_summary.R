@@ -151,11 +151,12 @@ emis_summary <- function(emi, emi_vars, by, time_column = NULL,pol_vars = NULL, 
     newCols <- names(tmp_dt)[names(tmp_dt) %nin% "time"]
     data.table::setcolorder(tmp_dt,
                             neworder = c(newCols,"time"))
+    
     # aggregate by pollutant
     single_pol <- unique(emi[[pol_vars]])
-    for(i in seq_along(single_pol)){ # i = 2
-      colPol <- colnames(tmp_dt)[which(emi[[pol_vars]] %in% single_pol[i])]
-      tmp_dt[, (single_pol[i]) := rowSums(.SD,na.rm = TRUE), .SDcols = colPol]
+    for(j in seq_along(single_pol)){ # i = 2
+      colPol <- colnames(tmp_dt)[colnames(tmp_dt) %like% paste0(single_pol[j],"_")]
+      tmp_dt[, (single_pol[j]) := rowSums(.SD,na.rm = TRUE), .SDcols = colPol]
     }
     # export
     tmp_dt <- tmp_dt[,.SD, .SDcols = c("time",unique(single_pol))]
@@ -187,7 +188,7 @@ emis_summary <- function(emi, emi_vars, by, time_column = NULL,pol_vars = NULL, 
         tmp_dt[,(veh_vars) := colType[j]]
         tmp_dt[,(pol_vars) := single_pol[i]]
         # add segment id
-        tmp_dt[,segment_id := 1:nrow(tmp_dt)]
+        tmp_dt[,segment_id := .GRP]
         # remove unecessary columns
         tmp_dt <- tmp_dt[,.SD, .SDcols = c("segment_id",veh_vars,pol_vars,emi_vars)]
         # 
@@ -218,7 +219,7 @@ emis_summary <- function(emi, emi_vars, by, time_column = NULL,pol_vars = NULL, 
       tmp_dt <- tmp_dt[,.SD,.SDcols = emi_vars]
       tmp_dt[,(pol_vars) := single_pol[i]]
       # add segment id
-      tmp_dt[,segment_id := 1:nrow(tmp_dt)]
+      tmp_dt[,segment_id := .GRP]
       # remove unecessary columns
       data.table::setcolorder(tmp_dt,neworder = c("segment_id",pol_vars,emi_vars))
       # 
