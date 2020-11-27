@@ -21,20 +21,23 @@
 # @param veh_distribution numeric; proportion of circulating fleet according to model_year.
 # It has to be the same length as model_year.
 # @param aggregate does the emission factor should be aggregated?
+#' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
 #' @return data.table; Emission factors in units 'g/km' by speed and model_year.
 #' @source \url{https://arb.ca.gov/emfac/}
 #' @export
-ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel'){
+#'  ef_usa(pollutant = c("CO","PM10"),calendar_year = 2019,model_year = 2015,
+#'        speed = units::set_units(1:100,"km/h"),fuel = "Diesel", as_list = TRUE)
+ef_usa <- function(pollutant, calendar_year, model_year, speed,fuel = 'Diesel',as_list = TRUE){
   # pollutant = c("CO","PM10")
   # calendar_year = "2019"
-  # model_year = total_fleet$year
-  # speed = spo_gpslines$speed
+  # model_year = "2014"
+  # speed = units::set_units(1:100,"km/h")
   # fuel = "Diesel"
-
+  
   # Filter calendar and fuel----
   
   temp_emfac <- usa[`Calendar Year` %in% as.character(calendar_year) &
-                        Fuel %in% fuel, ]
+                      Fuel %in% fuel, ]
   
   # check units and lengths----
   
@@ -56,7 +59,7 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel')
     if(dim(temp_emfac)[1] == 0){
       stop("Emission Factor do not exist. \n Please check `data(usa)` for valid emission factors.")
     }
-
+    
     # Filter Model Year----
     
     temp_ef <- sapply(model_year, function(i){       # i = model_year[1]
@@ -77,7 +80,7 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel')
     names(temp_ef) <- paste0(p, "_", model_year)
     return(temp_ef)
   })
-
+  
   # return in a data.table like format
   
   ef_final <- do.call(cbind, ef_pol)
@@ -91,9 +94,17 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel')
   #temp_speed
   
   ef_final <- ef_final[as.integer(as.factor(temp_speed)), ]
-    
-  to_units <- function(i){units::set_units(i, "g/km")}
-  ef_final <- ef_final[, lapply(.SD, to_units)]
+  ef_final <- ef_final[, lapply(.SD, units::set_units, "g/km")]
+  
+  # list
+  if(as_list == TRUE){
+    # local test
+    ef_final <- list("pollutant" = rep(pollutant,each = length(model_year)),
+                     "model_year" = rep(model_year,length(pollutant)),
+                     "fuel" = rep(fuel,length(pollutant)),
+                     "EF" = ef_final)
+  }
   
   return(ef_final)
 }
+
