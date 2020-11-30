@@ -67,7 +67,8 @@ emi_to_dt <- function(emi_list,emi_vars,veh_vars,pol_vars,segment_vars = NULL){
   # pol_vars = "pollutant"
   # segment_vars = NULL #c("slope","load")
   # 
-  all_vars = c(veh_vars, pol_vars, segment_vars,emi_vars)
+  all_vars = c(veh_vars, pol_vars,emi_vars)
+  
   
   #
   # check units previously
@@ -75,7 +76,7 @@ emi_to_dt <- function(emi_list,emi_vars,veh_vars,pol_vars,segment_vars = NULL){
   
   myunits <- sapply(seq_along(emi_list[[emi_vars]]),function(i){
     units::deparse_unit(emi_list[[emi_vars]][[i]])
-    })
+  })
   
   if(length(unique(myunits)) == 1){
     myunits <- myunits[1]
@@ -91,11 +92,18 @@ emi_to_dt <- function(emi_list,emi_vars,veh_vars,pol_vars,segment_vars = NULL){
   dt <- lapply(1:length(emi_list[[pol_vars]]),function(i){ # i = 1
     
     # add vars
-    tmp_dt <- lapply(seq_along(all_vars),function(j){ # j = 1
+    tmp_dt <- lapply(seq_along(all_vars),function(j){ # j = 1;i = 1
       emi_list[[all_vars[[j]]]][[i]]
     })
-    tmp_dt <- do.call(cbind,tmp_dt) %>% data.table::as.data.table()
-    names(tmp_dt) <- all_vars
+    if(!is.null(segment_vars)){
+      tmp_dt <- do.call(c, list(tmp_dt, emi_list[segment_vars]))
+      tmp_dt <- do.call(cbind,tmp_dt) %>% data.table::as.data.table()
+      names(tmp_dt) <- c(all_vars,segment_vars)
+    }else{
+      tmp_dt <- do.call(cbind,tmp_dt) %>% data.table::as.data.table()
+      names(tmp_dt) <- all_vars
+    }
+    
     
     # convert columns
     
@@ -107,7 +115,7 @@ emi_to_dt <- function(emi_list,emi_vars,veh_vars,pol_vars,segment_vars = NULL){
     
     return(tmp_dt)
   }) %>% data.table::rbindlist()
-
+  
   # add units back ----
   
   units(dt[[emi_vars]]) <- myunits
