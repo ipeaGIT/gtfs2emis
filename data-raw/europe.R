@@ -30,14 +30,18 @@ keep_digits <- function(i){
 # read 2019 ------------------
 # --
 link2019 <- "https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/at_download/file"
+emep2019_raw <- openxlsx::read.xlsx(link2019,sheet = 2) %>% data.table::setDT()
 
-
-emep2019 <- openxlsx::read.xlsx(link2019,sheet = 2) %>% data.table::setDT()
-emep2019 <- emep2019[Category %in% "Buses" & Segment %like% "Buses",]
+emep2019 <- data.table::copy(emep2019_raw)[Category %in% "Buses" & Segment %like% "Buses",]
 emep2019[Pollutant %in% "PM Exhaust",Pollutant := "PM10"]
+# test to check diff "Euro VI A/B/C" & "DPF+SCR"
+emep2019[Euro.Standard %like% "A/B/C" | Euro.Standard %like% "D/E",Euro.Standard := "Euro VI"]
+tempCol <- names(emep2019)[1:10]
+emep2019 <- emep2019[,.SD[1], by = tempCol]
+emep2019 <- emep2019[-which(emep2019$Pollutant %in% "CH4" & emep2019$Mode != "Urban Peak")]
 emep2019[Mode %in% "", Mode := NA]
 emep2019[Technology %in% "", Technology := NA]
-emep2019[,`:=`(`50` = NULL,`Bio.Reduction.Factor.[%]` = NULL,
+emep2019[,`:=`(`15` = NULL,`Bio.Reduction.Factor.[%]` = NULL,
                `EF.[g/km].or.ECF.[MJ/km]` = NULL)]
 emep2019[is.na(Load), Load := 0.5]
 emep2019[is.na(Road.Slope), Road.Slope := 0.0]
@@ -115,10 +119,12 @@ data.table::setnames(emep2013,old = c("Sector","Sub-Sector",
                      new = c("Category","Segment",
                              "Min.Speed.[km/h]","Max.Speed.[km/h]","Function_ID","Function","Hta"))
 
+#emep2013[,.SD[1],by = .(Category,Fuel,Segment,Euro.Standard,Technology,Pollutant)][3]$Technology == is.na()
 # reorder columns of 'emep2013' based on 'emep2019'
 data.table::setcolorder(emep2013,neworder = names(emep2019))
-head(emep2013,1)
-head(emep2019,1)
+# check consistencies
+names(emep2013) == names(emep2019)
+
 
 # add co2
 # make a copy from fuel consumption from 2009 EMEP/EEA data.base
@@ -164,7 +170,6 @@ emep2009[Type %in% "BUS", Type := "Buses"]
 emep2009[Subsegment %like% "SCR",Technology := "SCR"]
 emep2009[Subsegment %like% "EGR",Technology := "SCR"]
 # fix variable of functions
-emep2009[,.SD[1],by = Function_ID][,.(Function,Function_ID)]
 formulas_dt <- data.table::data.table(Function = c(
   "(Alpha*(Beta^Speed))*(Speed^Gamma)",
   "(Alpha*(Speed^Beta))+(Gamma*(Speed^Delta))",
@@ -199,8 +204,11 @@ data.table::setnames(emep2009,old = c("Type","SSC_NAME",
                              "Alpha","Beta","Gamma","Delta","Epsilon","Zita","Hta"))
 # reorder columns of 'emep2009' based on 'emep2019'
 data.table::setcolorder(emep2009,neworder = names(emep2019))
-head(emep2009,1)
-head(emep2019,1)
+
+#emep2009[Euro.Standard %in% "Euro IV",.SD[1], by = .(Category,Fuel,Segment,Technology,Pollutant)]
+#emep2019[Euro.Standard %in% "Euro IV",.SD[1], by = .(Category,Fuel,Segment,Technology,Pollutant)]
+#head(emep2009,1)
+#head(emep2019,1)
 # add co2
 # make a copy from fuel consumption from 2009 EMEP/EEA data.base
 # table_32.9 
@@ -224,12 +232,13 @@ europe[Euro.Standard %in% "Euro VI", Technology := "DPF+SCR"]
 #
 # rename Function_ID
 europe[,Function_ID := .GRP, by = Function]
+
+#
+# NA to "-"
+#
+for(i in names(europe)) europe[is.na(get(i)),(i) := "-"]
+
 #
 # export
 #
-
-# break()
-# for(i in colnames(europe)[1:9]){ # i = colnames(europe)[1]
-#   print(europe[,get(i)] %>% unique())
-# }
 usethis::use_data(europe,overwrite = TRUE)
