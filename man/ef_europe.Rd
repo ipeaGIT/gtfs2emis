@@ -20,19 +20,19 @@ ef_europe(
 \arguments{
 \item{speed}{units; Speed in 'km/h'.}
 
-\item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t",
-"Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".}
+\item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t","Urban Buses Standard 15 - 18 t"
+"Urban Buses Articulated >18 t",  "Urban Buses Diesel Hybrid", "Urban CNG Buses",  "Urban Biodiesel Buses".}
 
 \item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II",
 "Euro III", "IV", "V", "VI", and "EEV".}
 
-\item{pollutant}{character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
-Consumption), "CO2", "CH4", "NH3" and "N2O".}
+\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O"}
 
-\item{fuel}{character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel". Default is 
-"Diesel".}
+\item{fuel}{character; Fuel type, classified in "Diesel","Diesel Hybrid ~ Diesel","Diesel Hybrid ~ Electricity",
+"CNG","Biodiesel"}
 
-\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro IV). Default is "SCR".}
+\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro VI). Default is "SCR". There are 
+no available technology associated with euro standards "Conventional", "I", "II" and "III".}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}

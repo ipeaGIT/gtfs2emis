@@ -5,15 +5,15 @@
 #' Estimates expressed in units 'g/km'.
 #' 
 #' @param speed units; Speed in 'km/h'.
-#' @param veh_type character; Bus type, classified in "Urban Buses Midi <=15 t",
-#' "Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Urban CNG Buses", and "Urban Biodiesel Buses".
+#' @param veh_type character; Bus type, classified in "Urban Buses Midi <=15 t","Urban Buses Standard 15 - 18 t"
+#' "Urban Buses Articulated >18 t",  "Urban Buses Diesel Hybrid", "Urban CNG Buses",  "Urban Biodiesel Buses".
 #' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II",
 #' "Euro III", "IV", "V", "VI", and "EEV".
-#' @param pollutant character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC" (Fuel
-#' Consumption), "CO2", "CH4", "NH3" and "N2O".
-#' @param fuel character; Fuel type, classified in "Diesel", "CNG", and "Biodiesel". Default is 
-#' "Diesel".
-#' @param tech character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro IV). Default is "SCR".
+#' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O" 
+#' @param fuel character; Fuel type, classified in "Diesel","Diesel Hybrid ~ Diesel","Diesel Hybrid ~ Electricity",
+#' "CNG","Biodiesel"   
+#' @param tech character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro VI). Default is "SCR". There are 
+#' no available technology associated with euro standards "Conventional", "I", "II" and "III". 
 #' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
 #' 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
@@ -40,11 +40,12 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   # local test
   #
   
-  # speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
-  # #speed = units::set_units(rep(1:100,2),"km/h")
+  # library(magrittr)
+  # #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
+  # speed = units::set_units(rep(1:100,2),"km/h")
   # veh_type <- c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t")
   # euro <-c("IV","V")
-  # pollutant <- c("CO2","NOx")
+  # pollutant <- c("CO2","NOx","CH4","PM10","CO")
   # fuel <- "Diesel"
   # tech <- c("SCR","EGR")
   # slope = 0.0
@@ -52,9 +53,10 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   # k =1
   # fcorr = 1
   # i = j = 1
-  
+  # 
   # euro vector----
   
+  devtools::load_all()
   neweuro <- paste0("Euro ", euro)
   temp_ef <- gtfs2emis::europe
   
@@ -120,14 +122,21 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   temp_ef1 <- lapply(seq_along(pollutant),function(i){  # i = 1
     temp_ef2 <- lapply(seq_along(neweuro),function(j){    # j = 1
       
+      # message(paste0("i=",i,"| j=",j))
       #
       # condition for missing technologies
       #
       
       if(neweuro[j] %in%  c("Conventional","Euro I","Euro II","Euro III")){
-        tech[j] = NA
+        tech[j] = "-"
         message(paste0("no technology associated with ", neweuro[j]))
       }
+      if(neweuro[j] %in%  c("Euro IV") && pollutant[i] == "CO2"){
+        tech[j] = "SCR"
+        message(paste0("Only 'SCR' technology associated with ", neweuro[j]," and pollutant ", pollutant[i]))
+      }
+      
+      
       
       #
       # fix load and slope
