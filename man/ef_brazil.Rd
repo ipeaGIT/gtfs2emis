@@ -58,5 +58,6 @@ Range LCV diesel : 2018 - 2006. EF for 2005 and older as moving average.
 }
 }
 \examples{
-ef_brazil(pollutant = c("CO2","NOx"),veh_type = "BUS_URBAN_D", years = 2016)
+ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"),
+veh_type = "BUS_URBAN_D",years = 2015,as_list = TRUE)
 }

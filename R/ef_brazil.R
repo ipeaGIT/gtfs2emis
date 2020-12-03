@@ -43,7 +43,8 @@
 #' @source \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
 #' @export
 #' @examples 
-#' ef_brazil(pollutant = c("CO2","NOx"),veh_type = "BUS_URBAN_D", years = 2016)
+#' ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"),
+#' veh_type = "BUS_URBAN_D",years = 2015,as_list = TRUE)
 ef_brazil <- function(pollutant, veh_type, years, as_list = TRUE){
   
   #
@@ -72,7 +73,7 @@ ef_brazil <- function(pollutant, veh_type, years, as_list = TRUE){
     ef_temp <- do.call(cbind, ef_temp)
     return(ef_temp)
   })
-
+  
   ef_final <- do.call(cbind, ef_temp1)  %>% units::set_units("g/km")  
   
   # rename colnames

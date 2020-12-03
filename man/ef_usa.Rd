@@ -46,3 +46,7 @@ Returns a vector or data.frame of emission factors for buses based on
 values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
 Estimates expressed in units 'g/km'.
 }
+\examples{
+ ef_usa(pollutant = c("CO","PM10"),calendar_year = 2019,model_year = 2015,
+       speed = units::set_units(1:100,"km/h"),fuel = "Diesel", as_list = TRUE)
+}

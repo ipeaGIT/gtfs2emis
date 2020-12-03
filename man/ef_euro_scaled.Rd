@@ -23,24 +23,21 @@ ef_euro_scaled(
 
 \item{speed}{units; Speed, in units 'km/h'.}
 
-\item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t",
-"Urban Buses Standard 15 - 18 t", "Urban Buses Articulated >18 t", "Coaches Standard <=18 t"       
-"Coaches Articulated >18 t", "Urban CNG Buses", "Urban Biodiesel Buses".}
+\item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t","Urban Buses Standard 15 - 18 t"
+"Urban Buses Articulated >18 t",  "Urban Buses Diesel Hybrid", "Urban CNG Buses",  "Urban Biodiesel Buses".}
 
-\item{euro}{character; Euro period of vehicle, classified in "Conventional", "Euro I", "Euro II",
-"Euro III", "Euro IV", "Euro V", "Euro VI" and "EEV".}
+\item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II",
+"Euro III", "IV", "V", "VI", and "EEV".}
 
-\item{fuel}{character; Fuel type, classified in "Diesel", "CNG"  and "Biodiesel".}
+\item{fuel}{character; Fuel type, classified in "Diesel","Diesel Hybrid ~ Diesel","Diesel Hybrid ~ Electricity",
+"CNG","Biodiesel"}
 
-\item{pollutant}{character; Pollutant, classified in "CO", "NOx", "VOC", "PM", "FC", "CH4", "NH3"
-and "N2O".}
+\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O"}
 
-\item{SDC}{numeric; Speed Driving Cycle (default = 34.12).}
+\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro VI). Default is "SCR". There are 
+no available technology associated with euro standards "Conventional", "I", "II" and "III".}
 
-\item{tech}{character; Technology, classified in "SCR", "EGR", "DPF+SCR" or NA (Not available).
-For EURO IV, V, default is "SCR". For Euro III, default is NA.}
-
-\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
+\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
 
 \item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
@@ -53,4 +50,29 @@ emission factors in units 'g/km'.
 }
 \description{
 Estimates scaled emission factor for buses based on EMEP/EEA
+}
+\examples{
+temp_ef_br <- ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"), 
+veh_type = "BUS_URBAN_D",years = 2015,as_list = TRUE)
+temp_ef_europe <- ef_europe(speed = units::set_units(1:100,"km/h"),
+                            veh_type = "Urban Buses Standard 15 - 18 t",
+                            euro = "IV",fuel = "Diesel",
+                            pollutant = c("CO","PM10","CO2","CH4","NOx")) 
+
+temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
+                                 speed = units::set_units(1:100,"km/h"),
+                                 veh_type = "Urban Buses Standard 15 - 18 t",
+                                 euro = "IV",fuel = "Diesel",
+                                 pollutant = c("CO","PM10","CO2","CH4","NOx"))
+
+ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+                veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+                euro = c("IV","V"),
+                pollutant = c("CO2","NOx"),
+                fuel = "Diesel" ,
+                tech =  c("SCR","EGR"),
+                slope = 0.0,
+                load = 0.5,
+                fcorr = 1,
+                as_list = TRUE)
 }

@@ -25,6 +25,7 @@
 #' @return data.table; Emission factors in units 'g/km' by speed and model_year.
 #' @source \url{https://arb.ca.gov/emfac/}
 #' @export
+#' @examples 
 #'  ef_usa(pollutant = c("CO","PM10"),calendar_year = 2019,model_year = 2015,
 #'        speed = units::set_units(1:100,"km/h"),fuel = "Diesel", as_list = TRUE)
 ef_usa <- function(pollutant, calendar_year, model_year, speed,fuel = 'Diesel',as_list = TRUE){
