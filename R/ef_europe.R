@@ -56,7 +56,6 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   # 
   # euro vector----
   
-  devtools::load_all()
   neweuro <- paste0("Euro ", euro)
   temp_ef <- gtfs2emis::europe
   
@@ -119,10 +118,10 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
   
   # emission factor----
   
-  temp_ef1 <- lapply(seq_along(pollutant),function(i){  # i = 1
+  temp_ef1 <- lapply(seq_along(pollutant),function(i){  # i = 3
     temp_ef2 <- lapply(seq_along(neweuro),function(j){    # j = 1
       
-      # message(paste0("i=",i,"| j=",j))
+       #message(paste0("i=",i,"| j=",j))
       #
       # condition for missing technologies
       #
@@ -193,7 +192,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
                           Epsilon = temp_ef3$Epsilon, Zita = temp_ef3$Zita,
                           Hta = temp_ef3$Hta, RF = temp_ef3$RF,
                           Speed = tmpSpeedPol, Function_ID = temp_ef3$Function_ID, 
-                          k = temp_ef3$k, fcorr = fcorr[i])
+                          k = temp_ef3$k, fcorr = fcorr[j])
       
       # expands speed---
       
