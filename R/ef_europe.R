@@ -167,8 +167,8 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "Diesel", tech 
       
       if(nrow(temp_ef3) == 0){
         erro_msg <- paste("No available emission factor for the following combination of parameters\n",
-                          "fuel = ",fuel[i],"| veh_type = ",veh_type[i],
-                          "\n euro = ",neweuro[i],"| tech = ",tech[i],
+                          "fuel = ",fuel[j],"| veh_type = ",veh_type[j],
+                          "\n euro = ",neweuro[j],"| tech = ",tech[j],
                           "| pollutant = ",pollutant[i],"| slope = ",slope[i],
                           "| load = ",load[i],
                           "\n Please check `data(europe)` for available data.")
