@@ -16,22 +16,24 @@
 #' @format A data table with 6431 rows and 22 variables:
 #' \describe{
 #'   \item{Category}{Buses.}
-#'   \item{Fuel}{Diesel, Compressed Natural Gas (CNG) or Biodiesel.}
-#'   \item{Segment}{Urban Buses Midi <=15 t, Urban Buses Standard 15 - 18 t, 
-#'   Urban Buses Articulated >18 t, Coaches Standard <=18 t,
-#'   Coaches Articulated >18 t,Urban CNG Buses,Urban Biodiesel Buses.}
-#'   \item{Euro.Standard}{Conventional, Euro I, Euro II, Euro III, Euro IV, Euro V, Euro VI, EEV.}
-#'   \item{Technology}{NA, SCR, EGR, DPF+SCR.}
-#'   \item{Pollutant}{CO, NOx, VOC, PM, FC, CH4, NH3, N2O.}
-#'   \item{Mode}{NA, Urban Peak, Urban Off Peak, Rural, Highway.}
-#'   \item{Road.Slope}{-0.06, -0.04, -0.02, 0.00, 0.02, 0.04, 0.06, NA.}   
-#'   \item{Min.Speed}{Minimum speed for emission factor estimation, in km/h.}
-#'   \item{Max.Speed}{Maximum speed for emission factor estimation, in km/h.}
+#'   \item{Fuel}{ Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
+#' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel). }
+#'   \item{Segment}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
+#' "Coaches Std <=18 t","Coaches Artic >18 t".}
+#'   \item{Euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
+#'   \item{Technology}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
+#' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
+#' no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". }
+#'   \item{Pol}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. }
+#'   \item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
+#'   \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
 #'   \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
-#'   \item{Reduction.Factor}{In \% units.}
-#'   \item{Bio.Reduction.Factor}{In \% units.}
+#'   \item{RF}{In \% units.}
+#'   \item{k}{Constante factor.}
 #' }
-#' @source \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
+#' @source \url{"https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/
+#' 
+#' https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/"}
 #' 
 "europe" # data(europe)
 #' EMFAC
