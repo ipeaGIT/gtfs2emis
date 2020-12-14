@@ -21,21 +21,20 @@ ef_euro_scaled(
 \arguments{
 \item{ef_local}{units; Local emission factors, in units 'g/km'.}
 
-\item{speed}{units; Speed, in units 'km/h'.}
+\item{speed}{units; Speed in 'km/h'.}
 
-\item{veh_type}{character; Bus type, classified in "Urban Buses Midi <=15 t","Urban Buses Standard 15 - 18 t"
-"Urban Buses Articulated >18 t",  "Urban Buses Diesel Hybrid", "Urban CNG Buses",  "Urban Biodiesel Buses".}
+\item{veh_type}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
+"Coaches Std <=18 t","Coaches Artic >18 t".}
 
-\item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II",
-"Euro III", "IV", "V", "VI", and "EEV".}
+\item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
 
-\item{fuel}{character; Fuel type, classified in "Diesel","Diesel Hybrid ~ Diesel","Diesel Hybrid ~ Electricity",
-"CNG","Biodiesel"}
+\item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
+"DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).}
 
-\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O"}
+\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.}
 
-\item{tech}{character; Technology, classified in "SCR", "EGR", and "DPF+SCR" (for Euro VI). Default is "SCR". There are 
-no available technology associated with euro standards "Conventional", "I", "II" and "III".}
+\item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
+"EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}

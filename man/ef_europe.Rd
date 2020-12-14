@@ -50,18 +50,11 @@ emission factors in units 'g/km' (list or a data.table).
 \description{
 Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
 Function is based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
+And [2016 edition](https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/)
 Estimates expressed in units 'g/km'.
 }
 \examples{
-set.seed(1335)
-ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
-                veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
-                euro = c("IV","V"),
-                pollutant = c("CO2","NOx"),
-                fuel = "Diesel" ,
-                tech =  c("SCR","EGR"),
-                slope = 0.0,
-                load = 0.5,
-                fcorr = 1,
-                as_list = TRUE)
+ef_europe( speed = units::set_units(1:100,"km/h"), veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
+euro = c("III","IV","V"),fuel = "D",pollutant = c("CO","PM10","CO2","CH4","NOx"),as_list = FALSE)
+
 }
