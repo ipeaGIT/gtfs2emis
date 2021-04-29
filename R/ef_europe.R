@@ -32,22 +32,22 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
   #
   # local test
   #
-  
-  # library(magrittr)
-  # #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
-  # speed = units::set_units(rep(1:100,2),"km/h")
-  # veh_type <- c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t")
-  # euro <-c("IV","IV","V")
-  # pollutant <- c("CO2","NOx","CH4","PM10","CO")
-  # fuel <- "D"
-  # tech <- c("EGR","EGR","SCR")
-  # slope = 0.0
-  # load = 0.5
-  # k =1
-  # fcorr = 1
-  # i = j = 1
-  # data(europe)
-  # temp_ef <- europe
+# 
+#   library(magrittr)
+#   #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
+#   speed = units::set_units(rep(1:100,2),"km/h")
+#   veh_type <- c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t")
+#   euro <-c("IV","IV","V")
+#  pollutant <- c("CO21","NOx","CH4","PM10","CO")
+#   fuel <- "D"
+#   tech <- c("EGR","EGR","SCR")
+#   slope = 0.0
+#   load = 0.5
+#   k =1
+#   fcorr = 1
+#   i = j = 1
+#   data(europe)
+#   temp_ef <- europe
   #
   # euro vector----
   
@@ -150,12 +150,15 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
       #
       
       if(nrow(temp_ef3) == 0){
-        erro_msg <- paste("No available emission factor for the following combination of parameters\n",
-                          "fuel = ",fuel[j],"| veh_type = ",veh_type[j],
-                          "\n euro = ",euro[j],"| tech = ",tech[j],
-                          "| pollutant = ",pollutant[i],"| slope = ",slope[i],
-                          "| load = ",load[i],
-                          "\n Please check `data(europe)` for available data.")
+        erro_msg <- paste0("No available emission factor for the following combination of parameters:\n\n",
+                          "europe[Pol %in% '",pollutant[i],
+                          "' &\n Fuel %in% '",fuel[j],
+                          "' &\n Segment %in% '",veh_type[j],
+                          "' &\n Technology %in% '",tech[j],
+                          "' &\n Euro %in% '",euro[j],
+                          "' &\n Slope %in% ",slope[k],
+                          " &\n Load == ",load[k],", ]",
+                          "\n\n Please check `data(europe)` for available data.")
         stop(erro_msg)
       }
       
