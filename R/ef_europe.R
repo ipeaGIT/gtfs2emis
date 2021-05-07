@@ -33,21 +33,22 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
   # local test
   #
 # 
-#   library(magrittr)
-#   #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
-#   speed = units::set_units(rep(1:100,2),"km/h")
-#   veh_type <- c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t")
-#   euro <-c("IV","IV","V")
-#  pollutant <- c("CO21","NOx","CH4","PM10","CO")
-#   fuel <- "D"
-#   tech <- c("EGR","EGR","SCR")
-#   slope = 0.0
-#   load = 0.5
-#   k =1
-#   fcorr = 1
-#   i = j = 1
-#   data(europe)
-#   temp_ef <- europe
+ #  library(magrittr)
+ #  #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
+ #  speed = units::set_units(rep(1:100,2),"km/h")
+ #  veh_type <- c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
+ #                "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t")
+ #  euro <-c("I","II","III","IV","V","VI")
+ # pollutant <- c("CO2","NOx","CH4","PM10","CO")
+ #  fuel <- "D"
+ #  tech <- c("SCR")
+ #  slope = 0.0
+ #  load = 0.5
+ #  k =1
+ #  fcorr = 1
+ #  i = j = 1
+ #  data(europe)
+ #  temp_ef <- europe
   #
   # euro vector----
   
@@ -96,9 +97,28 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
   
   eq_num <- function(Alpha,Beta,Gamma,Delta,Epsilon,Zita,Hta,RF,Speed,Function_ID,k,fcorr){
     switch(Function_ID,
-           "1" = fcorr*(Alpha*Speed^2+Beta*Speed+Gamma+Delta/Speed)/(Epsilon*Speed^2+Zita*Speed+Hta)*(1-RF)*k
-    )
-  }
+           "1" = (Alpha*Speed^2+Beta*Speed+Gamma+Delta/Speed)/(Epsilon*Speed^2+Zita*Speed+Hta) * (1-RF) * k * fcorr,
+           "2019_1" = (Alpha*Speed^2+Beta*Speed+Gamma+Delta/Speed)/(Epsilon*Speed^2+Zita*Speed+Hta) * (1-RF) * k * fcorr,
+           "2013_3" = (((Alpha * (Beta ^ Speed)) * (Speed ^ Gamma))) * k * fcorr,
+           "2013_12" = ((Alpha / (1 + (Beta * exp(((-1) * Gamma) * Speed))))) * k * fcorr,
+           "2013_9" = ((1 / (Alpha + (Beta * (Speed ^ Gamma))))) * k * fcorr,
+           "2013_11"= ((Alpha - (Beta * exp(((-1) * Gamma) * (Speed ^ Delta))))) * k * fcorr,
+           "2013_4" = (((Alpha * (Speed ^ Beta)) + (Gamma * (Speed ^ Delta)))) * k * fcorr,
+           "2013_16" = (exp((Alpha + (Beta / Speed)) + (Gamma * log(Speed)))) * k * fcorr,
+           "2013_10" = ((1 / (Alpha + (Beta * Speed)))) * k * fcorr,
+           "2013_1" = (((((Alpha * (Speed ^ 3)) + (Beta * (Speed ^ 2))) + (Gamma * Speed)) + Delta)) * k * fcorr,
+           "2007_1" = ((Epsilon+(Alpha*exp(((-1)*Beta)*Speed)))+(Gamma*exp(((-1)*Delta)*Speed))) * k * fcorr,
+           "2007_2" = ((Alpha*(Beta^Speed))*(Speed^Gamma)) * k * fcorr,
+           "2007_3" = ((Alpha*(Speed^Beta))+(Gamma*(Speed^Delta))) * k * fcorr,
+           "2007_4" = (Alpha+(Beta/(1+exp((((-1)*Gamma)+(Delta*log(Speed)))+(Epsilon*Speed))))) * k * fcorr,
+           "2007_5" = ((Alpha+(Beta*Speed))+(((Gamma-Beta)*(1-exp(((-1)*Delta)*Speed)))/Delta)) * k * fcorr,
+           "2007_6" = (Gamma+(Alpha*exp(Beta*Speed))) * k * fcorr,
+           "2007_7" = ((((Alpha*(Speed^3))+(Beta*(Speed^2)))+(Gamma*Speed))+Delta) * k * fcorr,
+           "2007_9" = (1/(((Gamma*(Speed^2))+(Beta*Speed))+Alpha)) * k * fcorr,
+           "2007_10" = (Alpha/(1+(Beta*exp(((-1)*Gamma)*Speed)))) * k * fcorr,
+           "2007_11" = exp((Alpha+(Beta/Speed))+(Gamma*log(Speed))) * k * fcorr,
+           "2007_8" =  (Gamma+(Alpha*exp(((-1)*Beta)*Speed))) * k * fcorr,
+    ) }
   
   # emission factor----
   
@@ -115,6 +135,10 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
         message(paste0("no technology associated with ", euro[j]))
       }
       if(euro[j] %in%  c("IV") && pollutant[i] == "CO2"){
+        tech[j] = "-"
+        message(paste0("no technology associated with ", euro[j]," and pollutant ", pollutant[i]))
+      }
+      if(euro[j] %in%  c("V") && pollutant[i] == "CO2"){
         tech[j] = "SCR"
         message(paste0("Only 'SCR' technology associated with ", euro[j]," and pollutant ", pollutant[i]))
       }
@@ -141,7 +165,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
                                Segment %in% veh_type[j] & 
                                Technology %in% tech[j] &
                                Euro %in% euro[j] & 
-                               Slope %in% slope[1] & 
+                               Slope == slope[1] & 
                                Load == load[1], ]
       }
       
@@ -156,8 +180,8 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
                           "' &\n Segment %in% '",veh_type[j],
                           "' &\n Technology %in% '",tech[j],
                           "' &\n Euro %in% '",euro[j],
-                          "' &\n Slope %in% ",slope[k],
-                          " &\n Load == ",load[k],", ]",
+                          "' &\n Slope == ",slope[1],
+                          " &\n Load == ",load[1],", ]",
                           "\n\n Please check `data(europe)` for available data.")
         stop(erro_msg)
       }
@@ -174,12 +198,18 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
       # Ef estimates
       #
       
-      eq_output <- eq_num(Alpha = temp_ef3$Alpha, Beta = temp_ef3$Beta, 
-                          Gamma = temp_ef3$Gamma, Delta = temp_ef3$Delta, 
-                          Epsilon = temp_ef3$Epsilon, Zita = temp_ef3$Zita,
-                          Hta = temp_ef3$Hta, RF = temp_ef3$RF,
-                          Speed = tmpSpeedPol, Function_ID = temp_ef3$Function_ID, 
-                          k = temp_ef3$k, fcorr = fcorr[j])
+      eq_output <- eq_num(Alpha = temp_ef3$Alpha
+                          , Beta = temp_ef3$Beta
+                          , Gamma = temp_ef3$Gamma
+                          , Delta = temp_ef3$Delta
+                          , Epsilon = temp_ef3$Epsilon
+                          , Zita = temp_ef3$Zita
+                          , Hta = temp_ef3$Hta
+                          , RF = temp_ef3$RF
+                          , Speed = tmpSpeedPol
+                          , Function_ID = temp_ef3$Function_ID
+                          , k = temp_ef3$k
+                          , fcorr = fcorr[j])
       
       # expands speed---
       
