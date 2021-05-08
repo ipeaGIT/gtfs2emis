@@ -134,17 +134,18 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
         tech[j] = "-"
         message(paste0("no technology associated with ", euro[j]))
       }
-      if(euro[j] %in%  c("IV") && pollutant[i] == "CO2"){
+      if(euro[j] %in%  c("IV") && (pollutant[i] == "CO2" | pollutant[i] == "FC") ){
         tech[j] = "-"
         message(paste0("no technology associated with ", euro[j]," and pollutant ", pollutant[i]))
       }
-      if(euro[j] %in%  c("V") && pollutant[i] == "CO2"){
+      if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("CO2","FC"))){
         tech[j] = "SCR"
         message(paste0("Only 'SCR' technology associated with ", euro[j]," and pollutant ", pollutant[i]))
       }
-      
-      
-      
+      if((euro[j] %in%  c("VI")) && (pollutant[i] %nin% c("CO2","FC"))){
+        tech[j] = "DPF+SCR"
+        message(paste0("Only 'DPF+SCR' technology associated with ", euro[j]," and pollutant ", pollutant[i]))
+      }
       #
       # fix load and slope
       #
