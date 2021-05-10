@@ -52,12 +52,15 @@ ef_brazil <- function(pollutant, veh_type, years, as_list = TRUE){
   #
   # pollutant = c("CO","PM")
   # veh_type = c("BUS_MICRO_D","BUS_URBAN_D") #veh_type
-  # years = c(2001,2005)
+  # years = c(2001)
   
   # check lengths----
   
   if(length(years) != length(veh_type) && length(veh_type) == 1){
     veh_type <- rep(veh_type, length(years))
+  }
+  if(length(years) != length(veh_type) && length(years) == 1){
+    years <- rep(years, length(veh_type))
   }
   
   # vehicle distribution----
