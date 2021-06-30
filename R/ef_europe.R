@@ -52,7 +52,7 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
   # euro vector----
   
   
-  temp_ef <- gtfs2emis::data(europe)
+  temp_ef <- data(europe)
   
   # check units and lengths----
   
