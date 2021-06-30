@@ -32,27 +32,27 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
   #
   # local test
   #
-# 
- #  library(magrittr)
- #  #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
- #  speed = units::set_units(rep(1:100,2),"km/h")
- #  veh_type <- c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
- #                "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t")
- #  euro <-c("I","II","III","IV","V","VI")
- # pollutant <- c("CO2","NOx","CH4","PM10","CO")
- #  fuel <- "D"
- #  tech <- c("SCR")
- #  slope = 0.0
- #  load = 0.5
- #  k =1
- #  fcorr = 1
- #  i = j = 1
- #  data(europe)
- #  temp_ef <- europe
+  # 
+  # library(magrittr)
+  # #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
+  # speed = units::set_units(rep(1:100,2),"km/h")
+  # veh_type <- c("Ubus Std 15 - 18 t")
+  # euro <-c("I","II","III","IV")
+  # pollutant <- c("CO2")
+  # fuel <- "D"
+  # tech <- c("-")
+  # slope = 0.0
+  # load = 0.5
+  # k =1
+  # fcorr = 1
+  # i = j = 1
+  # data(europe)
+  # temp_ef <- europe
   #
   # euro vector----
   
-  temp_ef <- gtfs2emis::europe
+  gtfs2emis::data(europe)
+  temp_ef <- europe
   
   # check units and lengths----
   
@@ -176,14 +176,14 @@ ef_europe <- function(speed, veh_type,  euro,  pollutant, fuel = "D", tech = "SC
       
       if(nrow(temp_ef3) == 0){
         erro_msg <- paste0("No available emission factor for the following combination of parameters:\n\n",
-                          "europe[Pol %in% '",pollutant[i],
-                          "' &\n Fuel %in% '",fuel[j],
-                          "' &\n Segment %in% '",veh_type[j],
-                          "' &\n Technology %in% '",tech[j],
-                          "' &\n Euro %in% '",euro[j],
-                          "' &\n Slope == ",slope[1],
-                          " &\n Load == ",load[1],", ]",
-                          "\n\n Please check `data(europe)` for available data.")
+                           "europe[Pol %in% '",pollutant[i],
+                           "' &\n Fuel %in% '",fuel[j],
+                           "' &\n Segment %in% '",veh_type[j],
+                           "' &\n Technology %in% '",tech[j],
+                           "' &\n Euro %in% '",euro[j],
+                           "' &\n Slope == ",slope[1],
+                           " &\n Load == ",load[1],", ]",
+                           "\n\n Please check `data(europe)` for available data.")
         stop(erro_msg)
       }
       

@@ -1,6 +1,3 @@
-rm(list=ls())
-library(openxlsx)
-
 #' REPORT 
 #' 
 #' There are four main steps in this script
@@ -23,8 +20,10 @@ library(openxlsx)
 # Author: Joao Bazzo (joao.bazzo@gmail.com)
 
 #### LOAD LIBRARIES----
+#rm(list=ls())
 library(magrittr)
 library(data.table)
+library(openxlsx)
 `%nin%` = Negate(`%in%`)
 `%nlike%` = Negate(`%like%`)
 
@@ -161,6 +160,7 @@ emep2016[,Segment := stringr::str_replace_all(Segment,"Ubus Diesel Hybrid","Ubus
 
 # simplify by fuel
 emep2016$Fuel %>% unique()
+emep2016[Fuel %in% "CNG",]
 emep2016[Fuel %in% "Diesel", Fuel := "D"]
 emep2016[Fuel %in% "Biodiesel", Fuel := "BD"]
 
@@ -192,7 +192,7 @@ data.table::setnames(emep2016,"Pollutant","Pol")
 
 # add function column
 emep2016[,Function := "(Alpha*Speed^2+Beta*Speed+Gamma+Delta/Speed)/(Epsilon*Speed^2+Zita*Speed+Hta)*(1-rf)*k"]
-emep2016[,Function_ID := "2016_1"]
+emep2016[,Function_ID := "2019_1"]
 
 # simplify "Mode"
 emep2016$Mode %>% unique()
@@ -213,14 +213,16 @@ ColNames <- c("Category","Fuel","Segment","Euro","Technology","Pol","Slope","Loa
 emep2016 <- emep2016[,.SD[1],by = ColNames]
 emep2016[,Mode := NULL]
 
+# fix Load info
+emep2016[is.na(Load),Load := 0.5]
+emep2016[is.na(Technology),Technology := "-"]
 # add CO2
 # rhc = 1.86 and roc = 0.0
-co2_2016 <- data.table::copy(emep2016)[,Pol := "CO2"]
+co2_2016 <- data.table::copy(emep2016)[Pol == "FC" & Fuel == "CNG",][,Pol := "CO2"]
 co2_2016[,k := 44.011 / (12.001 + 1.008 * 1.86  + 16 * 0 ) ]
 
 # rbind emep2016
 emep2016_final <- data.table::rbindlist(l = list(emep2016,co2_2016))
-
 
 
 #
@@ -487,7 +489,6 @@ emep2007_final <- data.table::rbindlist(l = list(emep2007,co2_2007))
 
 
 
-
 ### overlap between emep2007 and emep2013 ----
 # 
 # we can see that both emep2007 and emep2013 database 
@@ -543,7 +544,8 @@ tmp_emep2016b <- emep2016b[Euro == "II" &
                              Fuel == "D"]
 tmp_emep2007b
 tmp_emep2013b
-tmp_emep2016b
+emep2016_final[Fuel == "CNG"
+               ,]
 
 # speed_func(dt = tmp_emep2007b, speed = 33)
 # speed_func(dt = tmp_emep2013b, speed = 33)
@@ -555,10 +557,14 @@ tmp_emep2016b
 # CO2
 #
 
-europe <- data.table::rbindlist(list(emep2019,emep2013_final,emep2007_final),use.names = TRUE)
+europe <- data.table::rbindlist(list(emep2019
+                                     , emep2016_final[(Pol == "FC"|Pol == "CO2") & Fuel == "CNG"]
+                                     , emep2013_final
+                                     , emep2007_final),use.names = TRUE)
 
 # export
 #
+
 usethis::use_data(europe,overwrite = TRUE)
 rm(list=ls())
 
