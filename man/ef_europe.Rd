@@ -54,7 +54,10 @@ And [2016 edition](https://www.eea.europa.eu/publications/emep-eea-guidebook-201
 Estimates expressed in units 'g/km'.
 }
 \examples{
-ef_europe( speed = units::set_units(1:100,"km/h"), veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-euro = c("III","IV","V"),fuel = "D",pollutant = c("CO","PM10","CO2","CH4","NOx"),as_list = FALSE)
-
+ef_europe( speed = units::set_units(1:100,"km/h"),
+           veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
+           euro = c("III","IV","V"),
+           fuel = "D",
+           pollutant = c("CO","PM10","CO2","CH4","NOx"),
+           as_list = FALSE) 
 }

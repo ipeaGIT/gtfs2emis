@@ -564,7 +564,6 @@ europe <- data.table::rbindlist(list(emep2019
 
 # export
 #
-
 usethis::use_data(europe,overwrite = TRUE)
 rm(list=ls())
 
