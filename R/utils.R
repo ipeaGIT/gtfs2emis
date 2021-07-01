@@ -8,7 +8,7 @@ NULL
 
 # Globals
 utils::globalVariables(c('id', '.'))
-utils::globalVariables(c('Euro', 'Fuel', 'Load', 'Pol','time', 'Slope', 'Segment','segment_id',
+utils::globalVariables(c('Euro', 'Fuel', 'Load', 'Pol','Pollutant','time', 'Slope', 'Segment','segment_id',
                          'Technology'))
 utils::globalVariables(c('europe'))
 utils::globalVariables(c('usa', 'Calendar Year', 'Model Year', 'EF'))
