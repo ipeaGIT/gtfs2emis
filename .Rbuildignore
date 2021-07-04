@@ -3,6 +3,7 @@
 ^README\.Rmd$
 ^data-raw$
 ^test_joao$
+^test_rafa$
 ^prep$
 ^figures$
 ^tests$
