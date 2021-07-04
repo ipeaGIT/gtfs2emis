@@ -152,7 +152,7 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
   for (col in emi) netg[, (col) := get(col) * ratio]
   
   #
-  # agreggate by TIME-------------------
+  # aggregate by TIME-------------------
   #
   
   if(missing(time_column) == FALSE){

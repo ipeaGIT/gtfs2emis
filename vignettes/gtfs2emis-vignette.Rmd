@@ -1,17 +1,22 @@
 ---
-title: "Introduction to gtfs2emis"
+title: 'Introduction to gtfs2emis'
 author: "Joao Bazzo, Rafael H. M. Pereira, Pedro R. Andrade"
-abstract: "Package `gtfs2emis` generates emission estimates for public transport networks based on GTFS data."
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+abstract: "Package `gtfs2emis` generates emission estimates for public transport networks based on GTFS data."
 urlcolor: blue
 vignette: |
-%\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{gtfs2emis}
+  %\VignetteIndexEntry{Introduction to gtfs2emis} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  \usepackage[utf8]{inputenc}
 ---
 
 
+
+
+
+
+---
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
 collapse = TRUE,
