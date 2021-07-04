@@ -33,6 +33,8 @@ ef_euro_scaled(
 
 \item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.}
 
+\item{SDC}{numeric ????}
+
 \item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
 "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".}
 
@@ -45,24 +47,29 @@ ef_euro_scaled(
 each euro standards. Default is 1.0.}
 }
 \value{
-emission factors in units 'g/km'.
+list. Emission factors in units 'g/km'.
 }
 \description{
 Estimates scaled emission factor for buses based on EMEP/EEA
 }
 \examples{
-temp_ef_br <- ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"), 
-veh_type = "BUS_URBAN_D",years = 2015,as_list = TRUE)
+temp_ef_br <- ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"),
+                        veh_type = "BUS_URBAN_D",
+                        years = 2015,
+                        as_list = TRUE)
+                        
 temp_ef_europe <- ef_europe(speed = units::set_units(1:100,"km/h"),
                             veh_type = "Urban Buses Standard 15 - 18 t",
                             euro = "IV",fuel = "Diesel",
-                            pollutant = c("CO","PM10","CO2","CH4","NOx")) 
+                            pollutant = c("CO","PM10","CO2","CH4","NOx")
+                            ) 
 
 temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
                                  speed = units::set_units(1:100,"km/h"),
                                  veh_type = "Urban Buses Standard 15 - 18 t",
                                  euro = "IV",fuel = "Diesel",
-                                 pollutant = c("CO","PM10","CO2","CH4","NOx"))
+                                 pollutant = c("CO","PM10","CO2","CH4","NOx")
+                                 )
 
 ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),

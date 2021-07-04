@@ -1,8 +1,10 @@
-#' @title Street emissions into grid
+#' @title 
+#' Street emissions into grid
 #'
-#' @description Aggregate emissions proportionally into grid cells, by performing an intersection 
-#' operation between emissions data in linestring format and grid cells. It also considers
-#' aggregation per grid cells and time.
+#' @description 
+#' Aggregate emissions proportionally into grid cells, by performing an 
+#' intersection operation between emissions data in `sf linestring` format and 
+#' grid cells. It also considers aggregation per grid cells and time.
 #'
 #' @param data data.table; Data.table with emissions and departure_time data.
 #' @param emi character; Columns names of emissions information.
@@ -11,8 +13,10 @@
 #' 'hour' or 'hour-minute'.
 #' @param time_column vector; Column name of 'departure_time' information (from data input). 
 #' Only used when 'hour' or 'hour-minute' is selected. 
-#' @return Spatial data (emissions into grid cells).
+#' 
+#' @return An `"sf" "data.frame"` object with emissions estimates per grid cell.
 #' @export
+#' 
 #' @examples 
 #' data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
 #' gtfs2gps::filter_by_shape_id(c("51982")) %>%
@@ -20,6 +24,7 @@
 #'   gtfs2gps::gps_as_sflinestring() %>%
 #'   dplyr::select(speed, dist, departure_time)  %>%
 #'   dplyr::rename(departure_time1 = departure_time)
+#'   
 #' ef <- ef_europe(speed = data$speed,
 #'                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
 #'                 euro = c("IV","V"),
@@ -30,11 +35,13 @@
 #'                 load = 0.5,
 #'                 fcorr = 1,
 #'                 as_list = TRUE)
+#'                 
 #' emi <- emis(fleet_composition =  c(0.7,0.3),
 #'             dist = units::set_units(data$dist,"km"),
 #'             ef = ef,
 #'             aggregate = FALSE,
-#'             as_list = FALSE)  
+#'             as_list = FALSE)
+#'             
 #' emi <- cbind(emi,data$geometry) %>% sf::st_as_sf()
 #' grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
 #' my_grid <- emis_grid(data = emi,
@@ -129,7 +136,7 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
 
   # intersection operation -----
   # Keep only polygons that intersect with lines
-  intersect_index <- st_intersects(net, grid)
+  intersect_index <- sf::st_intersects(net, grid)
   intersect_index <- unlist(intersect_index)
   intersect_index <- unique(intersect_index)
   grid <- subset(grid, id %in% intersect_index)

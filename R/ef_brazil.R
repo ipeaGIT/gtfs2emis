@@ -17,8 +17,10 @@
 #' @param years numeric; Filter the emission factor to start from a specific base year. 
 #' If project is 'constant' values above 2017 and below 1980 will be repeated.
 #' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
+#' 
 #' @return data.table; Emission factors in units 'g/km' by speed and model_year.
-#' @note 
+#' 
+#' @details 
 #' 
 #' The new convention for vehicles names are translated from CETESB report:
 #' 

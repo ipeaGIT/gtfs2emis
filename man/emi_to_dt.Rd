@@ -2,7 +2,7 @@
 % Please edit documentation in R/emi_do_dt.R
 \name{emi_to_dt}
 \alias{emi_to_dt}
-\title{Emissions from list to data.table format}
+\title{Convert emissions estimates from list to data.table format}
 \usage{
 emi_to_dt(emi_list, emi_vars, veh_vars, pol_vars, segment_vars = NULL)
 }
@@ -18,7 +18,7 @@ emi_to_dt(emi_list, emi_vars, veh_vars, pol_vars, segment_vars = NULL)
 \item{segment_vars}{Character; Attributes of segment link data on 'emi_list'}
 }
 \value{
-Emissions in data.table like format.
+data.table.
 }
 \description{
 Read emissions in list format and export to data.table format.
@@ -26,8 +26,10 @@ Read emissions in list format and export to data.table format.
 \examples{
 set.seed(1335)
 dist = units::set_units(rnorm(100,0.250,0.03),"km")
-ef <- ef_brazil(pollutant = c("CO2","NOx"),veh_type = "BUS_URBAN_D", years = 2016)
-ef
+ef <- ef_brazil(pollutant = c("CO2","NOx"),
+                veh_type = "BUS_URBAN_D", 
+                years = 2016)
+
 ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
                 euro = c("IV","V"),
@@ -43,10 +45,11 @@ emi <- emis(fleet_composition =  c(0.7,0.3),
             dist = dist,
             ef = ef,
             aggregate = FALSE,
-            as_list = TRUE)  
- to DT
+            as_list = TRUE)
+              
+# to data.table
 dt <- emi_to_dt(emi_list = emi,
-                emi_vars = "emi", # "emi"
+                emi_vars = "emi", # "emi" var
                 veh_vars = c("veh_type","euro","fuel","tech"), # "veh_type"
                 pol_vars = "pollutant", # pollutant
                 segment_vars = c("slope","load")) # NULL

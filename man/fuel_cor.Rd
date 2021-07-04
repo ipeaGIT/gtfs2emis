@@ -28,6 +28,6 @@ numeric; fuel correction factor.
 Relations between emissions and fuel properties for diesel heavy-duty vehicles
 based on EMEP/EEA. Function based on values from the 
 [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
-Estimates are given by the ratio between correction factor of improved fuel by the correction
-factor of base fuel.
+Estimates are given by the ratio between correction factor of improved fuel by
+ the correction factor of base fuel.
 }

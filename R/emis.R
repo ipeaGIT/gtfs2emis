@@ -1,6 +1,8 @@
-#' @title Estimate hot exhaust emissions 
+#' @title 
+#' Estimate hot exhaust emissions 
 #'
-#' @description Calculate hot exhaust emissions.
+#' @description 
+#' Calculate hot exhaust emissions.
 #'
 #' @param fleet_composition vector; Fleet composition, which is a distribution of fleet based on frequency. 
 #' If there is only one.
@@ -10,7 +12,9 @@
 #' @param prefix character; Add prefix into emissions names. Missing parameter (default)
 #' means empty prefix.
 #' @param as_list logical; if TRUE (default) emissions are returned inside 'ef' list.
+#' 
 #' @return units ('g'); emissions per link.
+#' 
 #' @export
 #' @examples 
 #' set.seed(1335)

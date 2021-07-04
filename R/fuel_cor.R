@@ -1,10 +1,12 @@
-#' @title Correction factor equation
+#' @title 
+#' Correction factor equation
 #'
-#' @description Relations between emissions and fuel properties for diesel heavy-duty vehicles
+#' @description 
+#' Relations between emissions and fuel properties for diesel heavy-duty vehicles
 #' based on EMEP/EEA. Function based on values from the 
 #' [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
-#' Estimates are given by the ratio between correction factor of improved fuel by the correction
-#' factor of base fuel.    
+#' Estimates are given by the ratio between correction factor of improved fuel by
+#'  the correction factor of base fuel.    
 #' 
 #' @param pollutant character; Pollutant classified in "CO", "VOC", "NOx" or "PM".
 #' @param euro_stage character; EURO period of vehicle, classified in "PRE", "I", "II",
@@ -13,10 +15,11 @@
 #' by: den (Density at 15 degrees C), s (Sulphur content in ppm), pah (Polycyclic aromatics content
 #' in \%), cn (Cetane number), t95 (Back end distillation in degrees C). Default input uses
 #' c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320).
+#' 
 #' @return numeric; fuel correction factor.
+#' 
 #' @export
-fuel_cor <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40, pah = 5, cn = 53,
-                                                              t95 = 320)){
+fuel_cor <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320)){
   # init config
   # 
   # euro_stage <- c("PRE", "PRE", "I", "I", "II", "III", "IV", "V", "VI")

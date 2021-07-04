@@ -35,7 +35,7 @@ estimates from the
 and obtained via vein package.
 Estimates are expressed in units 'g/km'.
 }
-\note{
+\details{
 The new convention for vehicles names are translated from CETESB report:\tabular{ll}{
    vehicle \tab description \cr
    BUS_URBAN_D \tab Urban Bus Diesel (5perc bio-diesel) \cr

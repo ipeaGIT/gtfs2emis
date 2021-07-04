@@ -45,10 +45,11 @@ each euro standards. Default is 1.0.}
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
 \value{
-emission factors in units 'g/km' (list or a data.table).
+List. emission factors in units 'g/km' (list or a data.table).
 }
 \description{
-Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
+R
+eturns a list or data.frame of emission factors for buses based on EMEP/EEA.
 Function is based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
 And [2016 edition](https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/)
 Estimates expressed in units 'g/km'.

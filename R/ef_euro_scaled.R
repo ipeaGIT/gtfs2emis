@@ -1,6 +1,8 @@
-#' @title Scaled emission factors from European (EMEP/EEA) methodology
+#' @title 
+#' Scaled emission factors from European (EMEP/EEA) methodology
 #' 
-#' @description Estimates scaled emission factor for buses based on EMEP/EEA 
+#' @description 
+#' Estimates scaled emission factor for buses based on EMEP/EEA 
 #' 
 #' @param ef_local units; Local emission factors, in units 'g/km'.
 #' @param speed units; Speed in 'km/h'.
@@ -8,6 +10,7 @@
 #' "Coaches Std <=18 t","Coaches Artic >18 t".
 #' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".
 #' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. 
+#' @param SDC numeric ????
 #' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 #' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel). 
 #' @param tech character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
@@ -17,21 +20,28 @@
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
 #' @param fcorr numeric; Correction based on fuel composition. The length must be one per
 #' each euro standards. Default is 1.0.
-#' @return emission factors in units 'g/km'.
+#' 
+#' @return list. Emission factors in units 'g/km'.
 #' @export
+#' 
 #' @examples 
-#' temp_ef_br <- ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"), 
-#' veh_type = "BUS_URBAN_D",years = 2015,as_list = TRUE)
+#' temp_ef_br <- ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"),
+#'                         veh_type = "BUS_URBAN_D",
+#'                         years = 2015,
+#'                         as_list = TRUE)
+#'                         
 #' temp_ef_europe <- ef_europe(speed = units::set_units(1:100,"km/h"),
 #'                             veh_type = "Urban Buses Standard 15 - 18 t",
 #'                             euro = "IV",fuel = "Diesel",
-#'                             pollutant = c("CO","PM10","CO2","CH4","NOx")) 
+#'                             pollutant = c("CO","PM10","CO2","CH4","NOx")
+#'                             ) 
 #' 
 #' temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
 #'                                  speed = units::set_units(1:100,"km/h"),
 #'                                  veh_type = "Urban Buses Standard 15 - 18 t",
 #'                                  euro = "IV",fuel = "Diesel",
-#'                                  pollutant = c("CO","PM10","CO2","CH4","NOx"))
+#'                                  pollutant = c("CO","PM10","CO2","CH4","NOx")
+#'                                  )
 #' 
 ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC = 34.12,
                            tech = "SCR", slope = 0.0, 

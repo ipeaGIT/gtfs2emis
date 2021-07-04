@@ -1,6 +1,8 @@
-#' @title Running exhaust emissions factors from United States (EMFAC2017 model)
+#' @title 
+#' Running exhaust emissions factors from United States (EMFAC2017 model)
 #' 
-#' @description Returns a vector or data.frame of emission factors for buses based on 
+#' @description 
+#' Returns a vector or data.frame of emission factors for buses based on 
 #' values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
 #' Estimates expressed in units 'g/km'.
 #'
@@ -22,13 +24,20 @@
 # It has to be the same length as model_year.
 # @param aggregate does the emission factor should be aggregated?
 #' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
-#' @return data.table; Emission factors in units 'g/km' by speed and model_year.
+#' 
+#' @return List. Emission factors in units 'g/km' by speed and model_year.
 #' @source \url{https://arb.ca.gov/emfac/}
 #' @export
+#' 
 #' @examples 
-#'  ef_usa(pollutant = c("CO","PM10"),calendar_year = 2019,model_year = 2015,
-#'        speed = units::set_units(1:100,"km/h"),fuel = "Diesel", as_list = TRUE)
-ef_usa <- function(pollutant, calendar_year, model_year, speed,fuel = 'Diesel',as_list = TRUE){
+#'  ef_usa(pollutant = c("CO","PM10"),
+#'         calendar_year = 2019,
+#'         model_year = 2015,
+#'         speed = units::set_units(1:100,"km/h"),
+#'         fuel = "Diesel",
+#'         as_list = TRUE)
+#'         
+ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel', as_list = TRUE){
   # pollutant = c("CO","PM10")
   # calendar_year = "2019"
   # model_year = "2014"

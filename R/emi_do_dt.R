@@ -1,19 +1,25 @@
-#' @title Emissions from list to data.table format
+#' @title 
+#' Convert emissions estimates from list to data.table format
 #' 
-#' @description Read emissions in list format and export to data.table format.
+#' @description 
+#' Read emissions in list format and export to data.table format.
 #' 
 #' @param emi_list List; Emissions list.
 #' @param emi_vars Character; Name of emissions data on 'emi_list'
 #' @param veh_vars Character; Attributes of vehicle data on 'emi_list'
 #' @param pol_vars Character; Attributes of pollutants data on 'emi_list'
 #' @param segment_vars Character; Attributes of segment link data on 'emi_list'
-#' @return Emissions in data.table like format.
+#' 
+#' @return data.table.
 #' @export
+#' 
 #' @examples 
 #' set.seed(1335)
 #' dist = units::set_units(rnorm(100,0.250,0.03),"km")
-#' ef <- ef_brazil(pollutant = c("CO2","NOx"),veh_type = "BUS_URBAN_D", years = 2016)
-#' ef
+#' ef <- ef_brazil(pollutant = c("CO2","NOx"),
+#'                 veh_type = "BUS_URBAN_D", 
+#'                 years = 2016)
+#' 
 #' ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
 #'                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
 #'                 euro = c("IV","V"),
@@ -29,15 +35,16 @@
 #'             dist = dist,
 #'             ef = ef,
 #'             aggregate = FALSE,
-#'             as_list = TRUE)  
-#'  to DT
+#'             as_list = TRUE)
+#'               
+#' # to data.table
 #' dt <- emi_to_dt(emi_list = emi,
-#'                 emi_vars = "emi", # "emi"
+#'                 emi_vars = "emi", # "emi" var
 #'                 veh_vars = c("veh_type","euro","fuel","tech"), # "veh_type"
 #'                 pol_vars = "pollutant", # pollutant
 #'                 segment_vars = c("slope","load")) # NULL
 #' 
-emi_to_dt <- function(emi_list,emi_vars,veh_vars,pol_vars,segment_vars = NULL){
+emi_to_dt <- function(emi_list, emi_vars, veh_vars, pol_vars, segment_vars = NULL){
   
   #
   # init config

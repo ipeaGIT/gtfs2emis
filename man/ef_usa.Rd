@@ -39,7 +39,7 @@ such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
 \value{
-data.table; Emission factors in units 'g/km' by speed and model_year.
+List. Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
 Returns a vector or data.frame of emission factors for buses based on 
@@ -47,6 +47,11 @@ values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.go
 Estimates expressed in units 'g/km'.
 }
 \examples{
- ef_usa(pollutant = c("CO","PM10"),calendar_year = 2019,model_year = 2015,
-       speed = units::set_units(1:100,"km/h"),fuel = "Diesel", as_list = TRUE)
+ ef_usa(pollutant = c("CO","PM10"),
+        calendar_year = 2019,
+        model_year = 2015,
+        speed = units::set_units(1:100,"km/h"),
+        fuel = "Diesel",
+        as_list = TRUE)
+        
 }
