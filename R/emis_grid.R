@@ -79,8 +79,9 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
   
   # working files -----
   
-  net <- data
-  netdata <- data.table::as.data.table(data)
+  net <- data.table::copy(data)
+  netdata <- data.table::copy(data)
+  setDT(netdata)
   
   # check units ----
   
@@ -125,14 +126,21 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
     sumofstreets <- netdata[, lapply(.SD, sum), .SDcols = i]
     message(paste(i, "=", round(sumofstreets, 2), emi_units[[i]]))
   })
-  
+
   # intersection operation -----
+  # Keep only polygons that intersect with lines
+  intersect_index <- st_intersects(net, grid)
+  intersect_index <- unlist(intersect_index)
+  intersect_index <- unique(intersect_index)
+  grid <- subset(grid, id %in% intersect_index)
   
+
+  # intersection
   net$temp_lkm <- sf::st_length(net)
   
   netg <- suppressMessages(suppressWarnings(
     sf::st_intersection(net, grid)))
-  
+
   netg$lkm_inter <- sf::st_length(netg)
   
   # ratio of 'lkm'
