@@ -211,7 +211,7 @@ Finally, we can also map how emission levels varies across space and time of the
 The spatial aggregation can be done using any spatial polygons, including hexagonal grids, census tracts etc. In this example we are using some support functions from the `VEIN` package to generate a regular grid.
 
 
-```{r}
+```{r, message = FALSE, eval = FALSE}
 # PEDRO: funcao para escolher a resolucao? esta funcao deveria receber um objeto
 # com unidade de medida, para casar com "km"
 #
@@ -222,7 +222,7 @@ plot(grid_gps["id"])
 
 Emissions can be aggregated into the grid with the `emis_grid` function, which sums the total emissions into each single grid cell.
 
-```{r}
+```{r, message = FALSE, eval = FALSE}
 # convert estimates to sf spatial object
 poa_sf <- sf::st_as_sf(poa_gpslines)
 poa_sf$emi_co2_total <- emi_brazil$emi$BR_CO2_total
@@ -241,7 +241,7 @@ ggplot() +
 
 User can also display gridded emissions by time and grid cell by specifying `hour` or `hour-minute` in the `time_class` argument. 
 
-```{r}
+```{r, message = FALSE, eval = FALSE}
 # # spatial aggregation by hour
 pol_gps_hour <- gtfs2emis::emis_grid(data = poa_sf,
                                      emi = c("emi_co2_total"),
