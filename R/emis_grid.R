@@ -18,12 +18,10 @@
 #' @export
 #' 
 #' @examples 
-#' data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+#' gps <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
 #' gtfs2gps::filter_by_shape_id(c("51982")) %>%
 #'   gtfs2gps::gtfs2gps() %>%
-#'   gtfs2gps::gps_as_sflinestring() %>%
-#'   dplyr::select(speed, dist, departure_time)  %>%
-#'   dplyr::rename(departure_time1 = departure_time)
+#'   gtfs2gps::gps_as_sflinestring() 
 #'   
 #' ef <- ef_europe(speed = data$speed,
 #'                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
@@ -42,66 +40,68 @@
 #'             aggregate = FALSE,
 #'             as_list = FALSE)
 #'             
-#' emi <- cbind(emi,data$geometry) %>% sf::st_as_sf()
+#' data <- cbind(emi,gps) %>% sf::st_as_sf()
 #' grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
 #' my_grid <- emis_grid(data = emi,
 #'                      grid = grid,
 #'                      emi = c("CO2_Euro_IV","CO2_Euro_V","NOx_Euro_IV","NOx_Euro_V"))
 #' 
-emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
+emis_grid <- function(data, emi, grid, time_class, time_column){
   
-  # input
-  # data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
+  # # 0) input----
+  # rm(list=ls())
+  # library(magrittr)
+  # devtools::load_all()
+  # gps <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
   #   gtfs2gps::filter_by_shape_id(c("51982")) %>%
   #   gtfs2gps::gtfs2gps() %>%
-  #   gtfs2gps::gps_as_sflinestring() %>%
-  #   dplyr::select(speed, dist, departure_time)  %>%
-  #   dplyr::rename(departure_time1 = departure_time)
-  # ef <- ef_europe(speed = data$speed,
-  #                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+  #   gtfs2gps::gps_as_sflinestring()
+  # ef <- ef_europe(speed = gps$speed,
+  #                 veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
   #                 euro = c("IV","V"),
   #                 pollutant = c("CO2","NOx"),
-  #                 fuel = "Diesel" ,
+  #                 fuel = "D" ,
   #                 tech =  c("SCR","EGR"),
   #                 slope = 0.0,
   #                 load = 0.5,
   #                 fcorr = 1,
   #                 as_list = TRUE)
-  # emi <- emis(fleet_composition =  c(0.7,0.3),
-  #             dist = units::set_units(data$dist,"km"),
-  #             ef = ef,
-  #             aggregate = FALSE,
-  #             as_list = FALSE)
-  # data <- cbind(emi,data$geometry) %>% sf::st_as_sf()
-  # grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
+  # dt_emi <- emis(fleet_composition =  c(0.7,0.3),
+  #                dist = units::set_units(gps$dist,"km"),
+  #                ef = ef,
+  #                aggregate = FALSE,
+  #                as_list = FALSE)
+  # data <- cbind(dt_emi,gps) %>% sf::st_as_sf()
+  # emi <- names(dt_emi)
   # 
-  # emi = colnames(emi)
-  # rm(ef)
-  # 
-  # grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
-  # 
-  # emi = c("CO2_Euro_IV","CO2_Euro_V","NOx_Euro_IV","NOx_Euro_V")
+  # grid <- vein::make_grid(spobj = data$geometry, width =  0.25 / 102.47) # 500 meters
+
   # time_class = "hour"
-  # time_column = 'departure_time1'
+  # time_column = 'departure_time'
   
-  # working files -----
+  # I) rename for working with unique columns ----
+  data.table::setDT(data)
+  emi_input <- emi
+  emi <- paste0(emi,"_",1:length(emi))
+  data.table::setnames(data,old = emi_input,new = emi)
   
-  net <- data.table::copy(data)
+  # II) working files -----
+  net <- data.table::copy(data) %>% sf::st_as_sf()
   netdata <- data.table::copy(data)
-  setDT(netdata)
   
-  # check units ----
+  
+  # III) check units ----
   
   emi_units <- c()
-  for(i in emi){ # i = emi[1]
-    if(class(netdata[, .SD, .SDcols = (i)][[1]]) == "units"){
+  for(i in 1:length(emi)){ # i = 1
+    if(class(netdata[, .SD, .SDcols = (emi[i])][[1]]) == "units"){
       # retrieve units
-      emi_units[i] <- units::deparse_unit(netdata[, .SD, .SDcols = (i)][[1]])
+      emi_units[i] <- units::deparse_unit(netdata[, .SD, .SDcols = (emi[i])][[1]])
       
-      message(paste0('input data "', i, '" is in units: ', emi_units[i]))
+      message(paste0('input data "', emi_input[i], '" is in units: ', emi_units[i]))
     }else{
       emi_units[i] <- NA
-      message(paste0('input data "', i, '" has no units'))
+      message(paste0('input data "', emi[i], '" has no units'))
       
     }
   }
@@ -110,11 +110,11 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
   
   netdata[, (emi) := lapply(.SD, as.numeric), .SDcols = emi]
   
-  # add 'id' info into grid data ---
+  # add 'id' info into grid data ----
   
   grid$id <- 1:(dim(grid)[1])
   
-  # check projections ---
+  # IV) check projections ----
   
   if(identical(sf::st_crs(grid), sf::st_crs(net)) == FALSE){
     message("Transforming input data into lat/long projection")
@@ -122,36 +122,74 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
     net <- sf::st_transform(net, 4326)
   }
   
-  # display emissions sum BEFORE intersection -----
+  # V) display emissions sum BEFORE intersection -----
   #
   # objective: user verification purposes, they can check if
   # the intersection operation into grid are displaying the total 
   # emissions correctly
   #
   message("Sum of street emissions ")
-  sapply(emi, function(i){
-    sumofstreets <- netdata[, lapply(.SD, sum), .SDcols = i]
-    message(paste(i, "=", round(sumofstreets, 2), emi_units[[i]]))
+  sapply(seq_along(emi), function(j){
+    sumofstreets <- netdata[, lapply(.SD, sum), .SDcols = emi[j]]
+    message(paste(emi_input[j], "=", round(sumofstreets, 2), emi_units[j]))
   })
-
-  # intersection operation -----
+  
+  # VI) estimate emissions over the linestring-------
+  
+  tmp_netdata <- data.table::copy(netdata)
+  if(missing(time_column) == FALSE){
+    # 'hour' time stamp------
+    if(time_class == "hour"){
+      tmp_netdata[, "time_column" := data.table::hour(get(time_column))]
+    }
+    # 'hour-minute' time stamp------
+    if(time_class == "hour-minute"){
+      tmp_netdata[, "time_column" := paste0(data.table::hour(get(time_column)), ":",
+                                            data.table::minute(get(time_column)))]
+    } 
+    tmp_netdata <- tmp_netdata[, lapply(.SD, sum, na.rm = TRUE)
+                               , .SDcols = emi
+                               , by = .(time_column
+                                        , shape_id
+                                        , stop_sequence
+                                        , from_stop_id
+                                        , to_stop_id)]
+  }else{
+    # no 'time_column' scenario------
+    tmp_netdata <- tmp_netdata[, lapply(.SD, sum, na.rm = TRUE)
+                               , .SDcols = emi
+                               , by = .(shape_id
+                                        , stop_sequence
+                                        , from_stop_id
+                                        , to_stop_id)]
+  }
+  
+  # VII) Add info of geometry into 'netdata' ----
+  
+    tmp_netdata[netdata,on = c("shape_id"
+                               ,"stop_sequence"
+                               ,"from_stop_id"
+                               ,"to_stop_id"),geometry := i.geometry]
+  # 'tmp_netdata' to net
+  net <- tmp_netdata %>% sf::st_as_sf()
+  
+  # VIII) Reduce grid size  -----
   # Keep only polygons that intersect with lines
   intersect_index <- sf::st_intersects(net, grid)
   intersect_index <- unlist(intersect_index)
   intersect_index <- unique(intersect_index)
   grid <- subset(grid, id %in% intersect_index)
-  
-
-  # intersection
   net$temp_lkm <- sf::st_length(net)
+  
+  # IV) Intersection -----
   
   netg <- suppressMessages(suppressWarnings(
     sf::st_intersection(net, grid)))
-
+  
   netg$lkm_inter <- sf::st_length(netg)
   
   # ratio of 'lkm'
-  setDT(netg)
+  data.table::setDT(netg)
   netg[, ratio := lkm_inter / temp_lkm]
   
   # adjust emissions by ratio
@@ -159,43 +197,54 @@ emis_grid <- function(data, emi, grid, time_class = "all periods", time_column){
   for (col in emi) netg[, (col) := get(col) * ratio]
   
   #
-  # aggregate by TIME-------------------
+  # V) aggregate by TIME-------------------
   #
   
   if(missing(time_column) == FALSE){
-    # 'hour' time stamp
-    if(time_class == "hour"){
-      netg[, (time_column) := data.table::hour(get(time_column))]
-      netg <- netg[, lapply(.SD, sum), .SDcols = emi, by = .('time_column' = get(time_column), id)]
-      
-    }
-    
-    # 'hour-minute' time stamp
-    if(time_class == "hour-minute"){
-      netg[, (time_column) := paste0(data.table::hour(get(time_column)), ":",
-                                          data.table::minute(get(time_column)))]
-      netg <- netg[, lapply(.SD, sum), .SDcols = emi, by = .('time_column' = get(time_column), id)]
-    }
+    # time_class
+      netg <- netg[, lapply(.SD, sum, na.rm = TRUE)
+                   ,.SDcols = emi, 
+                   by = .(time_column, id)]
   }else{
     # aggregation of emissions without specified time
-    netg <- netg[, lapply(.SD, sum), by = "id", .SDcols = emi]
+    netg <- netg[, lapply(.SD, sum, na.rm = TRUE)
+                 , by = .(id)
+                 ,.SDcols = emi]
   }
-
-  # prepare output file--------
   
-  temp_output <- setDT(grid)[netg,on = "id"] 
+  # VI) prepare output file--------
+  
+  temp_output <- netg[data.table::setDT(grid),on = "id",
+                                         geometry := i.geometry] 
+  
+  # add units
+  temp_output[, (emi) := lapply(.SD, as.numeric), .SDcols = emi]
+  
+  for(k in 1:length(emi_units)){ # k = 1
+    temp_output[, (emi[k]) := lapply(.SD, 
+                                     units::as_units,
+                                     emi_units[k]),
+                .SDcols = emi[k]]
+  }
   
   #
-  # display emissions sum AFTER intersection -----
+  # VII) display emissions sum AFTER intersection -----
   # print emission sum after operation 
   #
+  
   message("Sum of gridded emissions ")
-  sapply(emi, function(i){ # i = emi[1]
-    sumofgrids <- temp_output[, lapply(.SD, sum), .SDcols = i]
-    message(paste(i, "=", round(sumofgrids, 2), emi_units[[i]]))
+  sapply(seq_along(emi), function(l){ # l = 1
+    sumofgrids <- temp_output[, lapply(.SD, sum), .SDcols = emi[l]]
+    message(paste(emi_input[l], "=", round(sumofgrids, 2), emi_units[l]))
   })
   
-  #
+  # rename columns
+  data.table::setnames(temp_output,old = emi,new = emi_input)
+  if(missing(time_column) == FALSE){
+    data.table::setnames(temp_output,old = "time_column",new = time_column)
+  }
+  
+  
   # return output ------
   #
   
