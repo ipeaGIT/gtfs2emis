@@ -10,7 +10,7 @@
 #' "Coaches Std <=18 t","Coaches Artic >18 t".
 #' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".
 #' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. 
-#' @param SDC numeric ????
+#' @param SDC numeric; Speed of the driving cycle in 'km/h'.
 #' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 #' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel). 
 #' @param tech character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
@@ -29,19 +29,17 @@
 #'                         veh_type = "BUS_URBAN_D",
 #'                         years = 2015,
 #'                         as_list = TRUE)
-#'                         
+#' 
 #' temp_ef_europe <- ef_europe(speed = units::set_units(1:100,"km/h"),
-#'                             veh_type = "Urban Buses Standard 15 - 18 t",
-#'                             euro = "IV",fuel = "Diesel",
-#'                             pollutant = c("CO","PM10","CO2","CH4","NOx")
-#'                             ) 
+#'                             veh_type = "Ubus Std 15 - 18 t",
+#'                             euro = "IV",fuel = "D",tech="SCR",
+#'                             pollutant = c("CO","PM10","CO2","CH4","NOx")) 
 #' 
 #' temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
 #'                                  speed = units::set_units(1:100,"km/h"),
-#'                                  veh_type = "Urban Buses Standard 15 - 18 t",
-#'                                  euro = "IV",fuel = "Diesel",
-#'                                  pollutant = c("CO","PM10","CO2","CH4","NOx")
-#'                                  )
+#'                                  veh_type = "Ubus Std 15 - 18 t",
+#'                                  euro = "IV",fuel = "D",tech="SCR",
+#'                                  pollutant = c("CO","PM10","CO2","CH4","NOx"))
 #' 
 ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC = 34.12,
                            tech = "SCR", slope = 0.0, 

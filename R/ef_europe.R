@@ -1,8 +1,8 @@
 #' @title 
 #' Emission factor dependent on speed by EMEP/EEA
 #' 
-#' @description R
-#' eturns a list or data.frame of emission factors for buses based on EMEP/EEA.
+#' @description 
+#' Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
 #' Function is based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
 #' And [2016 edition](https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/)
 #' Estimates expressed in units 'g/km'.
@@ -182,7 +182,7 @@ ef_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR
       
       if(nrow(temp_ef3) == 0){
         erro_msg <- paste0("No available emission factor for the following combination of parameters:\n\n",
-                           "europe[Pollutant %in% '",pollutant[i],
+                           "europe[Pol %in% '",pollutant[i],
                            "' &\n Fuel %in% '",fuel[j],
                            "' &\n Segment %in% '",veh_type[j],
                            "' &\n Technology %in% '",tech[j],

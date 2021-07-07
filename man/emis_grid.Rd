@@ -4,7 +4,7 @@
 \alias{emis_grid}
 \title{Street emissions into grid}
 \usage{
-emis_grid(data, emi, grid, time_class = "all periods", time_column)
+emis_grid(data, emi, grid, time_class, time_column)
 }
 \arguments{
 \item{data}{data.table; Data.table with emissions and departure_time data.}
@@ -28,12 +28,10 @@ intersection operation between emissions data in `sf linestring` format and
 grid cells. It also considers aggregation per grid cells and time.
 }
 \examples{
-data <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) \%>\%
+gps <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) \%>\%
 gtfs2gps::filter_by_shape_id(c("51982")) \%>\%
   gtfs2gps::gtfs2gps() \%>\%
-  gtfs2gps::gps_as_sflinestring() \%>\%
-  dplyr::select(speed, dist, departure_time)  \%>\%
-  dplyr::rename(departure_time1 = departure_time)
+  gtfs2gps::gps_as_sflinestring() 
   
 ef <- ef_europe(speed = data$speed,
                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
@@ -52,7 +50,7 @@ emi <- emis(fleet_composition =  c(0.7,0.3),
             aggregate = FALSE,
             as_list = FALSE)
             
-emi <- cbind(emi,data$geometry) \%>\% sf::st_as_sf()
+data <- cbind(emi,gps) \%>\% sf::st_as_sf()
 grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
 my_grid <- emis_grid(data = emi,
                      grid = grid,
