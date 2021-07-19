@@ -15,4 +15,6 @@ utils::globalVariables(c('usa', 'Calendar Year', 'Model Year', 'EF'))
 utils::globalVariables(c('lkm_inter', 'ratio', 'temp_lkm'))
 utils::globalVariables(c('year','i.den','i.s','i.pah','i.cn','i.t95','den_base',
                          'pah_base','cn_base','t95_base','s_base','den_imp','pah_imp',
-                         'cn_imp','t95_imp','s_imp'))
+                         'cn_imp','t95_imp','s_imp',
+                         'from_stop_id', 'geometry', 'i.geometry',
+                         'shape_id', 'stop_sequence', 'to_stop_id'))
