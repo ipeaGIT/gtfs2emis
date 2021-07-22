@@ -12,7 +12,7 @@ test_that("emis", {
   
   total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012,2014,2015,2017,2018,2019),
                                         bus = c(1,61,50,1,45,18,62,27,31),
-                                        veh_type_euro = "Urban Buses Standard 15 - 18 t",
+                                        veh_type_euro = "Ubus Std 15 - 18 t",
                                         euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V","V"))
   
   total_fleet[,fleet_composition := bus/sum(bus)]
@@ -25,7 +25,7 @@ test_that("emis", {
                               calendar_year = "2019",
                               model_year = total_fleet$year,
                               speed = spo_gpslines$speed,
-                              fuel = "Diesel")
+                              fuel = "D")
 
   expect_equal(sum(EF_usa), 32090.02, 0.1)
 
