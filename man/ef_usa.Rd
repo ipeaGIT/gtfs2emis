@@ -34,7 +34,7 @@ inventory is estimated, in order to consider the effect of degradation.}
 such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50",
  "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h).}
 
-\item{fuel}{character; Type of fuel: 'Diesel','Gasoline','Natural Gas'. Default is 'Diesel'.}
+\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
@@ -51,7 +51,7 @@ Estimates expressed in units 'g/km'.
         calendar_year = 2019,
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
-        fuel = "Diesel",
+        fuel = "D",
         as_list = TRUE)
         
 }
