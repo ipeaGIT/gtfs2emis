@@ -69,14 +69,4 @@ temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
                                  euro = "IV",fuel = "D",tech="SCR",
                                  pollutant = c("CO","PM10","CO2","CH4","NOx"))
 
-ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
-                veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
-                euro = c("IV","V"),
-                pollutant = c("CO2","NOx"),
-                fuel = "Diesel" ,
-                tech =  c("SCR","EGR"),
-                slope = 0.0,
-                load = 0.5,
-                fcorr = 1,
-                as_list = TRUE)
 }
