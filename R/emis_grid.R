@@ -18,6 +18,7 @@
 #' @export
 #' 
 #' @examples 
+#' library(magrittr)
 #' gps <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) %>%
 #' gtfs2gps::filter_by_shape_id(c("51982")) %>%
 #'   gtfs2gps::gtfs2gps() %>%
