@@ -31,10 +31,10 @@ ef <- ef_brazil(pollutant = c("CO2","NOx"),
                 years = 2016)
 
 ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
-                veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+                veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
                 euro = c("IV","V"),
                 pollutant = c("CO2","NOx"),
-                fuel = "Diesel" ,
+                fuel = "D" ,
                 tech =  c("SCR","EGR"),
                 slope = 0.0,
                 load = 0.5,

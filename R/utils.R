@@ -10,6 +10,7 @@ NULL
 utils::globalVariables(c('id', '.'))
 utils::globalVariables(c('Euro', 'Fuel', 'Load', 'Pol','Pollutant','time', 'Slope', 'Segment','segment_id',
                          'Technology'))
+utils::globalVariables(c( 'from_stop_id', 'geometry', 'i.geometry', 'shape_id', 'stop_sequence', 'to_stop_id'))
 utils::globalVariables(c('europe'))
 utils::globalVariables(c('usa', 'Calendar Year', 'Model Year', 'EF'))
 utils::globalVariables(c('lkm_inter', 'ratio', 'temp_lkm'))

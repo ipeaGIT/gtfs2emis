@@ -34,10 +34,10 @@ gtfs2gps::filter_by_shape_id(c("51982")) \%>\%
   gtfs2gps::gps_as_sflinestring() 
   
 ef <- ef_europe(speed = data$speed,
-                veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+                veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
                 euro = c("IV","V"),
                 pollutant = c("CO2","NOx"),
-                fuel = "Diesel" ,
+                fuel = "D" ,
                 tech =  c("SCR","EGR"),
                 slope = 0.0,
                 load = 0.5,
