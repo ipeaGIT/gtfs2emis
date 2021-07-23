@@ -10,7 +10,7 @@ library(vein)
 
 
 emfac <- data.table::fread("../../Dropbox/IPEA/gtfs2gps/data-raw/emission_factors/EMFAC/EMFAC2017-ER-2011Class-Statewide2010-2011-2012-2013-2014-2015-2016-2017-2019-2020-Annual-20200512000741.csv")
-
+names(emfac) <- janitor::make_clean_names(names(emfac))
 
 #
 # generate fuel correction
@@ -27,68 +27,70 @@ emfac <- data.table::fread("../../Dropbox/IPEA/gtfs2gps/data-raw/emission_factor
 
 
 # fix categories
-emfac <- emfac[`Vehicle Category` %in% 'UBUS',]
+emfac <- emfac[vehicle_category %in% 'UBUS',]
 
 
 # 1) fix fuel names ----
-emfac$Fuel %>% unique()
-emfac[Fuel %in% "Natural Gas", Fuel := "CNG"]
-emfac[Fuel %in% "Diesel", Fuel := "D"]
-emfac[Fuel %in% "Gasoline", Fuel := "G"]
+emfac$fuel %>% unique()
+emfac[fuel %in% "Natural Gas", fuel := "CNG"]
+emfac[fuel %in% "Diesel", fuel := "D"]
+emfac[fuel %in% "Gasoline", fuel := "G"]
 
 # 2) units of VMT----
-emfac[,VMT := VMT %>% 
+emfac[,vmt := vmt %>% 
         units::set_units('mile') %>% 
         units::set_units("km")]
 
 
 # 3) rearrange data cols----
-colpol <- names(emfac)[names(emfac) %like% "RUNEX"]
+colpol <- names(emfac)[names(emfac) %like% "runex"]
 emfac <- lapply(colpol,function(i){ # i = colpol[1]
-  ef_pol <- emfac[,c('Calendar Year','Model Year','Speed','Fuel','VMT',i),with = FALSE]
-  ef_pol[,Pollutant := gsub("_RUNEX","",i)]
-  names(ef_pol) <- c(names(ef_pol)[1:5],"EF","Pollutant")
+  ef_pol <- emfac[,c('calendar_year','model_year','speed','fuel','vmt',i),with = FALSE]
+  ef_pol[,Pollutant := gsub("_runex","",i)]
+  names(ef_pol) <- c(names(ef_pol)[1:5],"ef","pollutant")
   return(ef_pol)
 }) %>% data.table::rbindlist()
 
+# 3.1) rename pollutant
+emfac$pollutant %>% unique()
+emfac[,pollutant := stringr::str_remove_all(pollutant,"\\_") %>% toupper()]
+emfac[pollutant %in% "NOX", pollutant := "NOx"]
+
+
 # 4) add speed intervals----
-emfac[,lower_speed_interval := Speed - 5]
-emfac[,upper_speed_interval := Speed]
-emfac[Speed %in% 90,upper_speed_interval := 130]
-emfac[,Speed := NULL]
+emfac[,lower_speed_interval := speed - 5]
+emfac[,upper_speed_interval := speed]
+emfac[speed %in% 90,upper_speed_interval := 150]
+emfac[,speed := NULL]
 
 
 
 # 5) remove EF equal to zero----
-emfac <- emfac[EF > 0,]
+emfac <- emfac[ef > 0,]
+
+# 6) add units to lower and upper speed interval
+emfac[,lower_speed_interval := lower_speed_interval %>% 
+        units::set_units("mile/h") %>% 
+        units::set_units("km/h") %>% 
+        round(0)]
+emfac[,upper_speed_interval := upper_speed_interval %>% 
+        units::set_units("mile/h") %>% 
+        units::set_units("km/h") %>% 
+        round(0)]
 
 
-
-# 6) adjust to all speeds-----
-emfac01 <- lapply(1:nrow(emfac),function(i){ # i = 1
-  tmp_dt <- data.table::data.table(emfac[i,]
-                                   ,"speed" = emfac[i,lower_speed_interval]:(emfac[i,upper_speed_interval]-1)
-                                   )
-  return(tmp_dt)
-}) %>% data.table::rbindlist()
+# units of EF
+emfac[,ef := ef %>% 
+        units::set_units("g/mile") %>% 
+        units::set_units("g/km")]
 
 
-# 7) add a moving average----
+emfac[as.numeric(lower_speed_interval) > 0
+      , lower_speed_interval := lower_speed_interval + units::set_units(1,"km/h")]
 
-emfac02 <- data.table::copy(emfac01)
-emfac02[,EF_1s := data.table::frollmean(EF,n = 2), by = .(`Calendar Year`,
-                                                          `Model Year`,
-                                                          Fuel,Pollutant)]
-emfac02[is.na(EF_1s),EF_1s := EF]
-emfac02[,EF_1s := EF_1s %>% 
-          units::set_units("g/mile") %>% 
-          units::set_units("g/km")]
-
-# 8) setnames
-usa <- data.table::copy(emfac02)
-usa[,EF := NULL]
-
-data.table::setnames(usa,"EF_1s","EF")
+# 7) export-----
+break()
+usa <- data.table::copy(emfac)
 usethis::use_data(usa,overwrite = TRUE)
 
 

@@ -12,7 +12,7 @@ utils::globalVariables(c('Euro', 'Fuel', 'Load', 'Pol','Pollutant','time', 'Slop
                          'Technology'))
 utils::globalVariables(c( 'from_stop_id', 'geometry', 'i.geometry', 'shape_id', 'stop_sequence', 'to_stop_id'))
 utils::globalVariables(c('europe'))
-utils::globalVariables(c('usa', 'Calendar Year', 'Model Year', 'EF'))
+utils::globalVariables(c('usa', 'calendar_year', 'model_year', 'ef','pollutant'))
 utils::globalVariables(c('lkm_inter', 'ratio', 'temp_lkm'))
 utils::globalVariables(c('year','i.den','i.s','i.pah','i.cn','i.t95','den_base',
                          'pah_base','cn_base','t95_base','s_base','den_imp','pah_imp',

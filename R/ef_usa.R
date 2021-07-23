@@ -39,16 +39,16 @@
 #'         
 ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel', as_list = TRUE){
   
-  # pollutant = c("CO","PM10","CH4")
-  # calendar_year = "2019"
-  # model_year = c("2014","2013")
-  # speed = units::set_units(1:100,"km/h")
-  # fuel = c("Diesel","CNG")
-  
+   # pollutant = c("CO","PM10","CH4")
+   # calendar_year = "2019"
+   # model_year = c("2014","2013")
+   # speed = units::set_units(1:100,"km/h")
+   # fuel = c("Diesel","CNG")
+   # 
   # Filter calendar and fuel----
   
-  temp_emfac <- usa[`Calendar Year` %in% as.character(unique(calendar_year)) &
-                      Fuel %in% unique(fuel), ]
+  temp_emfac <- usa[calendar_year %in% as.character(unique(calendar_year)) &
+                      fuel %in% unique(fuel), ]
   
   # check units and lengths----
   
@@ -74,14 +74,14 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel',
     # Filter Model Year----
     temp_ef0 <- sapply(seq_along(model_year), function(j){   # j = 1
       # model_year
-      temp_emfac2 <- data.table::copy(temp_emfac)[Pollutant %in% i & 
-                                                    `Model Year` %in% as.character(model_year[j]) & 
-                                                    Fuel %in% fuel[j], ]
+      temp_emfac2 <- data.table::copy(temp_emfac)[pollutant %in% i & 
+                                                    model_year %in% as.character(model_year[j]) & 
+                                                    fuel %in% fuel[j], ]
       # check condition (2)
       if(dim(temp_emfac2)[1] == 0){
         stop("Emission Factor do not exist. \nPlease check `data(usa)` for valid emission factors.")
       }
-      return(temp_emfac2[, EF])
+      return(temp_emfac2[, ef])
     }) 
     temp_ef0 <- data.table::as.data.table(temp_ef0)
     names(temp_ef0) <- paste(i, as.character(model_year),fuel,sep = "_")
