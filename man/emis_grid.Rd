@@ -34,7 +34,7 @@ gtfs2gps::filter_by_shape_id(c("51982")) \%>\%
   gtfs2gps::gtfs2gps() \%>\%
   gtfs2gps::gps_as_sflinestring() 
   
-ef <- ef_europe(speed = data$speed,
+ef <- ef_europe(speed = gps$speed,
                 veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
                 euro = c("IV","V"),
                 pollutant = c("CO2","NOx"),
@@ -46,14 +46,14 @@ ef <- ef_europe(speed = data$speed,
                 as_list = TRUE)
                 
 emi <- emis(fleet_composition =  c(0.7,0.3),
-            dist = units::set_units(data$dist,"km"),
+            dist = units::set_units(gps$dist,"km"),
             ef = ef,
             aggregate = FALSE,
             as_list = FALSE)
             
 data <- cbind(emi,gps) \%>\% sf::st_as_sf()
 grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
-my_grid <- emis_grid(data = emi,
+my_grid <- emis_grid(data = data,
                      grid = grid,
                      emi = c("CO2_Euro_IV","CO2_Euro_V","NOx_Euro_IV","NOx_Euro_V"))
 
