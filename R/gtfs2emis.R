@@ -16,19 +16,7 @@
 #' 
 #' @return units ('g'); emissions per link.
 #' 
-#' @export
-#' @examples
-#' 
-#' library(gtfs2emis)
-#' library(data.table)
-#' library(magrittr)
-#' 
-#' gtfs <- read_gtfs(system.file("extdata/gtfs_cur.zip", package = "gtfs2emis")) %>%
-#'               filter_by_shape_id("1708") %>%
-#'                  filter_single_trip()
-#'
-#'
-#'             
+#' @export           
 gtfs2emis <- function(gtfs_data, fleet_composition, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
   
   #

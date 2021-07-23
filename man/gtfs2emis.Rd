@@ -36,15 +36,5 @@ units ('g'); emissions per link.
 Calculate hot exhaust emissions.
 }
 \examples{
-
-library(gtfs2emis)
-library(data.table)
-library(magrittr)
-
-gtfs <- read_gtfs(system.file("extdata/gtfs_cur.zip", package = "gtfs2emis")) \%>\%
-              filter_by_shape_id("1708") \%>\%
-                 filter_single_trip()
-
-
             
 }
