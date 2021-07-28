@@ -58,11 +58,6 @@ temp_ef_br <- ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"),
                         years = 2015,
                         as_list = TRUE)
 
-temp_ef_europe <- ef_europe(speed = units::set_units(1:100,"km/h"),
-                            veh_type = "Ubus Std 15 - 18 t",
-                            euro = "IV",fuel = "D",tech="SCR",
-                            pollutant = c("CO","PM10","CO2","CH4","NOx")) 
-
 temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
                                  speed = units::set_units(1:100,"km/h"),
                                  veh_type = "Ubus Std 15 - 18 t",

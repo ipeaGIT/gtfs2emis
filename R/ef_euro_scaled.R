@@ -30,11 +30,6 @@
 #'                         years = 2015,
 #'                         as_list = TRUE)
 #' 
-#' temp_ef_europe <- ef_europe(speed = units::set_units(1:100,"km/h"),
-#'                             veh_type = "Ubus Std 15 - 18 t",
-#'                             euro = "IV",fuel = "D",tech="SCR",
-#'                             pollutant = c("CO","PM10","CO2","CH4","NOx")) 
-#' 
 #' temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
 #'                                  speed = units::set_units(1:100,"km/h"),
 #'                                  veh_type = "Ubus Std 15 - 18 t",
@@ -47,13 +42,13 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   # local test
   # ef_local = ef_brazil(pollutant = c("CO","PM"),
   #                      veh_type = "BUS_URBAN_D",
-  #                      years = c(2008:2018),as_list = TRUE)
-  # speed = vein::Speed(1:100)
-  # veh_type = "Urban Buses Standard 15 - 18 t"
-  # euro = c(rep("IV",5),rep("V",6))
-  # fuel = "Diesel"
+  #                      years = c(2008:2017),as_list = TRUE)
+  # speed = units::set_units(rep(1,1),"km/h")
+  # veh_type = rep("Ubus Std 15 - 18 t",10)
+  # euro = c(rep("IV",5),rep("V",5))
+  # fuel = rep("D",10)
   # pollutant = c("CO","PM10")
-  # SDC = 34.12; tech = "SCR"; slope = 0.0; load = 0.5; fcorr = 1;
+  # SDC = 34.12; tech = rep("SCR",10); slope = 0.0; load = 0.5; fcorr = 1;
   
   #
   # check dimensions
@@ -91,6 +86,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   #
   # ef_europe with SDC (speed of driving cycle)
   #
+  
   euro1 <- euro
   ef_sdc <- ef_europe(speed = units::set_units(SDC,"km/h"), 
                       veh_type = veh_type,
@@ -103,16 +99,16 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
                       fcorr = fcorr,
                       as_list = FALSE)
   
- # ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
- #                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
- #                 euro = c("IV","V"),
- #                 pollutant = c("CO2","NOx"),
- #                 fuel = "Diesel" ,
- #                 tech =  c("SCR","EGR"),
- #                 slope = 0.0,
- #                 load = 0.5,
- #                 fcorr = 1,
- #                 as_list = TRUE)
+  # ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+  #                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
+  #                 euro = c("IV","V"),
+  #                 pollutant = c("CO2","NOx"),
+  #                 fuel = "Diesel" ,
+  #                 tech =  c("SCR","EGR"),
+  #                 slope = 0.0,
+  #                 load = 0.5,
+  #                 fcorr = 1,
+  #                 as_list = TRUE)
   # adjustment factor
   k <- as.numeric(ef_local)/as.numeric(ef_sdc) 
   
@@ -128,10 +124,17 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
                         pollutant = pollutant,
                         as_list = TRUE)
   ef_speed$EF <- as.matrix(ef_speed$EF)
+  
   #
   # ef_scaled
   #
+  
   ef_scaled <- sapply(seq_along(k),function(i){ef_speed$EF[,i] * k[i]})
+  if(length(speed) == 1){
+    ef_scaled <- t(as.matrix(ef_scaled))
+  }
+  #ef_scaled <- sapply(seq_along(k),function(i){ef_speed$EF[,i] * k[i]})
+  
   # to units
   ef_scaled <- units::set_units(ef_scaled, 'g/km')
   ef_scaled <- data.table::as.data.table(ef_scaled)
