@@ -39,78 +39,95 @@
 #'         
 ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel', as_list = TRUE){
   
-   # pollutant = c("CO","PM10","CH4")
-   # calendar_year = "2019"
-   # model_year = c("2014","2013")
-   # speed = units::set_units(1:100,"km/h")
-   # fuel = c("Diesel","CNG")
-   # 
-  # Filter calendar and fuel----
+  # pollutant = c("CO","PM10","CH4","NOx")
+  # calendar_year = "2019"
+  # model_year = c("2014","2013","2010");model_year = c("2010")
+  # speed = units::set_units(33,"km/h")
+  # fuel = c("Diesel","CNG"); fuel = "D"
+  # 
+
+  # use specific name-----
+  tmp_fuel <- fuel
+  tmp_calendar_year <- calendar_year
+  tmp_pollutant <- pollutant
+  tmp_model_year <- model_year
   
-  temp_emfac <- usa[calendar_year %in% as.character(unique(calendar_year)) &
-                      fuel %in% unique(fuel), ]
+  # pre-filter in usa data----
+  temp_emfac <- usa[calendar_year %in% as.character(unique(tmp_calendar_year)) &
+                      fuel %in% unique(tmp_fuel) &
+                      pollutant %in% unique(tmp_pollutant) & 
+                      model_year %in% unique(tmp_model_year), ]
   
   # check units and lengths----
-  
   if(class(speed) != "units"){
     stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'")
   }
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
     stop("speed need to has 'units' in 'km/h'.")
   }
-  speed <- as.numeric(speed)
+  tmp_speed <- as.numeric(speed)
   
   # fuel
-  if(length(model_year) != length(fuel) && length(fuel) == 1){
-    fuel <- rep(fuel,length(model_year))
+  if(length(tmp_model_year) != length(tmp_fuel) && length(tmp_fuel) == 1){
+    tmp_fuel <- rep(tmp_fuel,length(tmp_model_year))
   }
   # model_year
-  if(length(model_year) != length(fuel) && length(model_year) == 1){
-    model_year <- rep(model_year,length(fuel))
+  if(length(tmp_model_year) != length(tmp_fuel) && length(tmp_model_year) == 1){
+    tmp_model_year <- rep(tmp_model_year,length(tmp_fuel))
   }
   
-  # Filter pollutant
+  # Filter by pollutant and model_year-----
+  
   ef_pol <- lapply(pollutant, function(i){   # i = pollutant[1]
-    # Filter Model Year----
-    temp_ef0 <- sapply(seq_along(model_year), function(j){   # j = 1
-      # model_year
+    
+    temp_ef0 <- sapply(seq_along(tmp_model_year), function(j){   # j = 1
+      # Filter Model Year & Pollutant & Fuel
       temp_emfac2 <- data.table::copy(temp_emfac)[pollutant %in% i & 
-                                                    model_year %in% as.character(model_year[j]) & 
-                                                    fuel %in% fuel[j], ]
-      # check condition (2)
+                                                    model_year %in% tmp_model_year[j] & 
+                                                    fuel %in% tmp_fuel[j], ]
+      # check condition
       if(dim(temp_emfac2)[1] == 0){
         stop("Emission Factor do not exist. \nPlease check `data(usa)` for valid emission factors.")
       }
       return(temp_emfac2[, ef])
     }) 
     temp_ef0 <- data.table::as.data.table(temp_ef0)
-    names(temp_ef0) <- paste(i, as.character(model_year),fuel,sep = "_")
+    names(temp_ef0) <- paste(i, as.character(tmp_model_year),tmp_fuel,sep = "_")
     return(temp_ef0)
   }) 
-ef_pol
+  
+  # aggregate EF-----
   ef_final <- do.call(cbind, ef_pol)
-
-# Filter Speed based on emission factor data.table speed interval
-temp_speed <- rep(NA, length(speed))
-temp_order <- unique(usa$upper_speed_interval)
-temp_order <- temp_order[order(temp_order, decreasing = TRUE)]
-for(t in temp_order){ # t = temp_order[1]
-  temp_speed[which(speed < t)] <- t
-}
-#temp_speed
-
-ef_final <- ef_final[as.integer(as.factor(temp_speed)), ]
-ef_final <- ef_final[, lapply(.SD, units::set_units, "g/km")]
-
-# list
-if(as_list == TRUE){
-  # local test
-  ef_final <- list("pollutant" = rep(pollutant,each = length(model_year)),
-                   "model_year" = rep(model_year,length(pollutant)),
-                   "fuel" = rep(fuel,length(pollutant)),
-                   "EF" = ef_final)
-}
-
-return(ef_final)
+  
+  # Filter Speed based on emission factor data.table speed interval-----------
+  tmp_speed2 <- rep(NA, length(tmp_speed))
+  
+  # data.table with upper_limit info
+  temp_order_dt <- data.table::data.table(
+    "limit" = temp_emfac$upper_speed_interval %>% unique() %>% as.numeric() %>% sort(decreasing = TRUE)
+    ,"id" = data.table::uniqueN(temp_emfac$upper_speed_interval):1)
+  
+  for(t in 1:nrow(temp_order_dt)){ # t = 10
+    tmp_speed2[tmp_speed <= temp_order_dt$limit[t]] <- temp_order_dt$id[t]
+  }
+  
+  # case of speed lower than upper_limit_speed
+  tmp_speed2[tmp_speed2==0] <- 1
+  
+  ef_final <- ef_final[tmp_speed2,]
+  
+  # add units
+  ef_final <- ef_final[, lapply(.SD, units::set_units, "g/km")]
+  
+  # export-----
+  
+  # as.list
+  if(as_list == TRUE){
+    ef_final <- list("pollutant" = rep(pollutant,each = length(tmp_model_year)),
+                     "model_year" = rep(model_year,length(pollutant)),
+                     "fuel" = rep(fuel,length(pollutant)),
+                     "EF" = ef_final)
+  }
+  return(ef_final)
 }
 
