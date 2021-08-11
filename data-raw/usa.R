@@ -151,7 +151,7 @@ emfac_new[calendar_year == 2010 &
 
 # 7) export-----
 break()
-usa <- data.table::copy(emfac)
+usa <- data.table::copy(emfac_new)
 usethis::use_data(usa,overwrite = TRUE)
 
 
