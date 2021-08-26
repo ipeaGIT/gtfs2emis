@@ -17,14 +17,14 @@ Imports:
     sf (>= 0.9-0),
     units,
     magrittr,
-    gtfs2gps,
-    vein
+    gtfs2gps
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
     dplyr,
     ggplot2,
-    rmarkdown
+    rmarkdown,
+    vein
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
