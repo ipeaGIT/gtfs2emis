@@ -7,21 +7,18 @@
 \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
 }
 \usage{
-ef_brazil(pollutant, veh_type, years, as_list = TRUE)
+ef_brazil(pollutant, veh_type, model_year, as_list = TRUE)
 }
 \arguments{
-\item{pollutant}{character; Pollutants: "CO", "HC", "NMHC", "CH4", "NOx", "CO2", "RCHO", "ETOH",
-"PM", "N2O", "KML", "FC", "NO2", "NO", "gD/KWH", "gCO2/KWH", "RCHO", "CO_0km", "HC_0km",
-"NMHC_0km", "NOx_0km", "NO2_0km", "NO_0km", "RCHO_0km", "ETOH_0km", "FS" (fuel sales) (g/km).
-Evaporative emissions at average temperature ranges: "D_20_35", "S_20_35", "R_20_35",
-"D_10_25", "S_10_25", "R_10_25", "D_0_15", "S_0_15" and "R_0_15" where D means diurnal (g/day),
-S hot/warm soak (g/trip) and R hot/warm running losses (g/trip).}
+\item{pollutant}{character; Pollutants: "CH4", "CO2", "PM10", "N2O", "KML",
+"FC" (Fuel Consumption), "gD/KWH", "gCO2/KWH", "CO", "HC" (Total Hydrocarbon),
+"NMHC" (Non-Methane Hydrocarbon), "NOx", "NO2", "NO", "RCHO", "ETOH",
+"FS"(Fuel Sales) and "NH3"}
 
-\item{veh_type}{character; Vehicle categories by fuel:"BUS_URBAN", "BUS_MICRO", "BUS_COACH",
-"BUS_ARTIC", "MC_G_150", "MC_G_150_500".}
+\item{veh_type}{character; Vehicle categories by fuel:"BUS_URBAN_D", "BUS_MICRO_D",
+"BUS_COACH_D" and "BUS_ARTIC_D".}
 
-\item{years}{numeric; Filter the emission factor to start from a specific base year.
-If project is 'constant' values above 2017 and below 1980 will be repeated.}
+\item{model_year}{numeric; Filter the emission factor to start from a specific base year.}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
@@ -52,12 +49,9 @@ These emission factors are not exactly the same as the report of CETESB.
 \item In this emission factors, there is also NO and NO2 based on split by published in the EMEP/EEA
 air pollutant emission inventory guidebook.
 \item Also, the emission factors were extended till 50 years of use, repeating the oldest value.
-\item CNG emission factors were expanded to other pollutants by comparison of US.EPA-AP42 emission
-factor: Section 1.4 Natural Gas Combustion.
-Range LCV diesel : 2018 - 2006. EF for 2005 and older as moving average.
 }
 }
 \examples{
-ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"),
-veh_type = "BUS_URBAN_D",years = 2015,as_list = TRUE)
+ef_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
+model_year = 2015,as_list = TRUE)
 }

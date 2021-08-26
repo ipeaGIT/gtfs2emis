@@ -1,60 +1,52 @@
 #' @title 
-#' Running exhaust emissions factors from United States (EMFAC2017 model)
+#' Running exhaust emissions factors from United States (MOVES3 model)
 #' 
 #' @description 
 #' Returns a vector or data.frame of emission factors for buses based on 
-#' values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
+#' values from the [MOVES3 Model](https://www.epa.gov/moves).
 #' Estimates expressed in units 'g/km'.
 #'
 #' @param pollutant character; Pollutants: Carbon monoxide (CO), Nitrogen oxides (NOx), 
-#'   Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 
+#'   Hydrocarbons as TGH (Total Gaseous Hydrocarbons), EC (energy consumption), 
 #'   THC (total hydrocarbon), or CH4 (methane).
 #'   Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
 #'   and particulate matters 2.5 microns or less in diameter (PM2.5),
-#'   Sulfur oxides (SOx), Carbon Dioxide (CO2),
-#'   Nitrous Oxide (N2O), and Methane (CH4).
-#' @param calendar_year numeric; Calendar Year between 2010 - 2020. Year in which the emissions
-#' inventory is estimated, in order to consider the effect of degradation.
+#'    Carbon Dioxide (CO2), and Methane (CH4).
 #' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year numeric; Model year of vehicle.
 #' @param speed units; Speed in 'km/h'; Emission factor are returned in speed intervals 
-#'  such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50",
-#'   "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h).
-# @param veh_distribution numeric; proportion of circulating fleet according to model_year.
-# It has to be the same length as model_year.
-# @param aggregate does the emission factor should be aggregated?
+#'  such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",
+#'  "27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5 - 47.5","47.5 - 52.5",
+#'  "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5", "67.5 - 72.5", ">72.5" mph (miles/h).
 #' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
 #' 
 #' @return List. Emission factors in units 'g/km' by speed and model_year.
-#' @source \url{https://arb.ca.gov/emfac/}
+#' @source \url{https://www.epa.gov/moves}
 #' @export
 #' 
 #' @examples 
-#'  ef_usa(pollutant = c("CO","PM10"),
-#'         calendar_year = 2019,
+#'  ef_usa_moves(pollutant = c("CO","PM10"),
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
 #'         fuel = "D",
 #'         as_list = TRUE)
 #'         
-ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel', as_list = TRUE){
+ef_usa_moves <- function(pollutant, model_year, speed, fuel = 'D', as_list = TRUE){
   
-  # pollutant = c("CO","PM10","CH4","NOx")
-  # calendar_year = "2019"
-  # model_year = c("2014","2013","2010");model_year = c("2010")
-  # speed = units::set_units(33,"km/h")
-  # fuel = c("Diesel","CNG"); fuel = "D"
+  #  pollutant = c("CO","PM10","CH4","NOx")
+  # # calendar_year = "2019"
+  #  model_year = c("2014","2013","2010");model_year = c("2010")
+  #  speed = units::set_units(33,"km/h")
+  #  fuel = c("D","CNG"); fuel = "D"
   # 
 
   # use specific name-----
   tmp_fuel <- fuel
-  tmp_calendar_year <- calendar_year
   tmp_pollutant <- pollutant
   tmp_model_year <- model_year
   
   # pre-filter in usa data----
-  temp_emfac <- usa[calendar_year %in% as.character(unique(tmp_calendar_year)) &
-                      fuel %in% unique(tmp_fuel) &
+  temp_moves <- usa_moves_db[fuel_type  %in% unique(tmp_fuel) &
                       pollutant %in% unique(tmp_pollutant) & 
                       model_year %in% unique(tmp_model_year), ]
   
@@ -82,14 +74,17 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel',
     
     temp_ef0 <- sapply(seq_along(tmp_model_year), function(j){   # j = 1
       # Filter Model Year & Pollutant & Fuel
-      temp_emfac2 <- data.table::copy(temp_emfac)[pollutant %in% i & 
+      temp_moves2 <- data.table::copy(temp_moves)[pollutant %in% i & 
                                                     model_year %in% tmp_model_year[j] & 
-                                                    fuel %in% tmp_fuel[j], ]
+                                                    fuel_type %in% tmp_fuel[j], ]
+      # message(paste("pollutant",i, 
+      #                  "| model_year", tmp_model_year[j],
+      #                  "| fuel_type", tmp_fuel[j]))
       # check condition
-      if(dim(temp_emfac2)[1] == 0){
-        stop("Emission Factor do not exist. \nPlease check `data(usa)` for valid emission factors.")
+      if(dim(temp_moves2)[1] == 0){
+        stop("Emission Factor do not exist. \nPlease check `data(usa_moves_db)` for valid emission factors.")
       }
-      return(temp_emfac2[, ef])
+      return(temp_moves2[, ef])
     }) 
     temp_ef0 <- data.table::as.data.table(temp_ef0)
     names(temp_ef0) <- paste(i, as.character(tmp_model_year),tmp_fuel,sep = "_")
@@ -104,8 +99,9 @@ ef_usa <- function(pollutant, calendar_year, model_year, speed, fuel = 'Diesel',
   
   # data.table with upper_limit info
   temp_order_dt <- data.table::data.table(
-    "limit" = temp_emfac$upper_speed_interval %>% unique() %>% as.numeric() %>% sort(decreasing = TRUE)
-    ,"id" = data.table::uniqueN(temp_emfac$upper_speed_interval):1)
+    "limit" = temp_moves$upper_speed_interval %>% unique() %>% 
+      as.numeric() %>% sort(decreasing = TRUE)
+    ,"id" = data.table::uniqueN(temp_moves$upper_speed_interval):1)
   
   for(t in 1:nrow(temp_order_dt)){ # t = 10
     tmp_speed2[tmp_speed <= temp_order_dt$limit[t]] <- temp_order_dt$id[t]

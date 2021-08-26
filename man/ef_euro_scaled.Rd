@@ -53,9 +53,9 @@ list. Emission factors in units 'g/km'.
 Estimates scaled emission factor for buses based on EMEP/EEA
 }
 \examples{
-temp_ef_br <- ef_brazil(pollutant = c("CO","PM","CO2","CH4","NOx"),
+temp_ef_br <- ef_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),
                         veh_type = "BUS_URBAN_D",
-                        years = 2015,
+                        model_year = 2015,
                         as_list = TRUE)
 
 temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,

@@ -57,7 +57,7 @@ ef_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR
   # euro vector----
   
   
-  temp_ef <- gtfs2emis::europe
+  temp_ef <- ef_europe_db
   
   
   # check units and lengths----
@@ -182,14 +182,14 @@ ef_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR
       
       if(nrow(temp_ef3) == 0){
         erro_msg <- paste0("No available emission factor for the following combination of parameters:\n\n",
-                           "europe[Pol %in% '",pollutant[i],
+                           "ef_europe_db[Pol %in% '",pollutant[i],
                            "' &\n Fuel %in% '",fuel[j],
                            "' &\n Segment %in% '",veh_type[j],
                            "' &\n Technology %in% '",tech[j],
                            "' &\n Euro %in% '",euro[j],
                            "' &\n Slope == ",slope[1],
                            " &\n Load == ",load[1],", ]",
-                           "\n\n Please check `data(europe)` for available data.")
+                           "\n\n Please check `data(ef_europe_db)` for available data.")
         stop(erro_msg)
       }
       

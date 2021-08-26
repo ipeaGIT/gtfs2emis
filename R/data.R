@@ -35,7 +35,10 @@
 #' 
 #' https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/"}
 #' 
-"europe" # data(europe)
+"ef_europe_db" # data(ef_europe_db)
+
+
+
 #' EMFAC
 #' Running exhaust emissions factors from EMFAC2017 model
 #'
@@ -49,7 +52,7 @@
 #'   Sulfur oxides (SOx); Carbon Dioxide (CO2); 
 #'   Nitrous Oxide (N2O) and Methane (CH4).}
 #'   \item{calendar_year}{Numeric; Calendar Year between 2010 - 2020}
-#'   \item{fuel}{Character; Type of fuel: 'Diesel','Gasoline','Natural Gas'}
+#'   \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
 #'   \item{model_year}{Model year.}
 #'   \item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50"
@@ -57,4 +60,59 @@
 #' }
 #' @source \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
 #' 
-"usa" # data(usa)
+"usa_emfac_db" # data(usa_emfac_db)
+
+
+
+
+
+#' MOVES
+#' Running exhaust emissions factors from United States (MOVES3 model)
+#' 
+#' Data.frame of emission factors for buses based on 
+#' values from the [MOVES3 Model](https://www.epa.gov/moves).
+#' Estimates expressed in units 'g/km'.
+#'
+#' @format  A data.table:
+#' \describe{
+#' \item{pollutant}{character; Pollutants: Carbon monoxide (CO), Nitrogen oxides (NOx), 
+#'   Hydrocarbons as TGH (Total Gaseous Hydrocarbons), EC (energy consumption), 
+#'   THC (total hydrocarbon), or CH4 (methane).
+#'   Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
+#'   and particulate matters 2.5 microns or less in diameter (PM2.5),
+#'    Carbon Dioxide (CO2), and Methane (CH4).}
+#' \describe{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
+#' \describe{model_year}{numeric; Model year of vehicle.}
+#' \describe{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals 
+#'  such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",
+#'  "27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5 - 47.5","47.5 - 52.5",
+#'  "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5", "67.5 - 72.5", ">72.5" mph (miles/h).}
+#'  }
+#' @source \url{https://www.epa.gov/moves}
+"usa_moves_db"
+
+
+#' CETESB
+#' Emission factor for buses in Brazil
+#' 
+#' Emission factors for buses based on
+#' estimates from the 
+#' [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
+#' and obtained via vein package.
+#' Estimates are expressed in units 'g/km'.
+#'
+#' @format  A data.table:
+#' \describe{
+#' \item{pollutant}{ character; Pollutants: "CH4", "CO2", "PM10", "N2O", "KML", 
+#' "FC" (Fuel Consumption), "gD/KWH", "gCO2/KWH", "CO", "HC" (Total Hydrocarbon), 
+#' "NMHC" (Non-Methane Hydrocarbon), "NOx", "NO2", "NO", "RCHO", "ETOH",
+#'  "FS"(Fuel Sales) and "NH3"}
+#' \item{veh_type}{character; Vehicle categories by fuel:"BUS_URBAN_D", "BUS_MICRO_D", 
+#' "BUS_COACH_D" and "BUS_ARTIC_D".}
+#' \item{model_year}{numeric; Filter the emission factor to start from a specific 
+#' base year. }
+#' \item{as_list}{logical; Returns emission factors as a list, instead of data.table
+#'  format.}
+#' }
+#'@source \url{https://cetesb.sp.gov.br/veicular/}
+"ef_brazil_db"
