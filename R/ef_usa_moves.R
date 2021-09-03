@@ -12,7 +12,9 @@
 #'   Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
 #'   and particulate matters 2.5 microns or less in diameter (PM2.5),
 #'    Carbon Dioxide (CO2), and Methane (CH4).
-#' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
+#' @param calendar_year numeric; Calendar Year between 1990 - 2030 Year in which the emissions
+#' inventory is estimated, in order to consider the effect of degradation.
+#' @param fuel_type character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year numeric; Model year of vehicle.
 #' @param speed units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",
@@ -28,10 +30,11 @@
 #'  ef_usa_moves(pollutant = c("CO","PM10"),
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
-#'         fuel = "D",
+#'         calendar_year = 2016,
+#'         fuel_type = "D",
 #'         as_list = TRUE)
 #'         
-ef_usa_moves <- function(pollutant, model_year, speed, fuel = 'D', as_list = TRUE){
+ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel_type = 'D', as_list = TRUE){
   
   #  pollutant = c("CO","PM10","CH4","NOx")
   # # calendar_year = "2019"
@@ -41,16 +44,22 @@ ef_usa_moves <- function(pollutant, model_year, speed, fuel = 'D', as_list = TRU
   # 
 
   # use specific name-----
-  tmp_fuel <- fuel
+  tmp_fuel <- fuel_type
   tmp_pollutant <- pollutant
   tmp_model_year <- model_year
-  
+  tmp_calendar_year <- calendar_year
+  temp_ef <- usa_moves_db
+    
   # pre-filter in usa data----
-  temp_moves <- usa_moves_db[fuel_type  %in% unique(tmp_fuel) &
+  temp_moves <- temp_ef[calendar_year %in% tmp_calendar_year &
+                          fuel_type  %in% unique(tmp_fuel) &
                       pollutant %in% unique(tmp_pollutant) & 
                       model_year %in% unique(tmp_model_year), ]
   
   # check units and lengths----
+  if(data.table::uniqueN(tmp_calendar_year) != 1){
+    stop("calendar_date input needs to has length one.")
+  }
   if(class(speed) != "units"){
     stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'")
   }
@@ -121,7 +130,7 @@ ef_usa_moves <- function(pollutant, model_year, speed, fuel = 'D', as_list = TRU
   if(as_list == TRUE){
     ef_final <- list("pollutant" = rep(pollutant,each = length(tmp_model_year)),
                      "model_year" = rep(model_year,length(pollutant)),
-                     "fuel" = rep(fuel,length(pollutant)),
+                     "fuel" = rep(tmp_fuel,length(pollutant)),
                      "EF" = ef_final)
   }
   return(ef_final)

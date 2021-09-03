@@ -14,72 +14,104 @@ library("data.table")
 library("ggplot2")
 
 
+# 1.2) read dictionary-----
+#setwd("L:/Proj_emission_routes/pacote/joao_gtfs2emis/gtfs2emis/")
+abas <- openxlsx::getSheetNames("data-raw/moves_cheat_sheet.xlsx")
+
+dic <- lapply(abas,function(i){
+  openxlsx::read.xlsx("data-raw/moves_cheat_sheet.xlsx"
+                      ,sheet = i) %>% data.table::setDT()
+})
+names(dic) <- abas
+
+
 # 2) connect MariaDB----
-con <- DBI::dbConnect(RMariaDB::MariaDB(),
-                      host = "localhost",
-                      db = "usa_cities_out", # your database output
-                      user = "moves",
-                      password = "moves")
+# * usa cities out ----
+# con1 <- DBI::dbConnect(RMariaDB::MariaDB(),
+#                        host = "localhost",
+#                        db = "usa_cities_out", # your database output
+#                        user = "moves",
+#                        password = "moves")
 
+# temp_dt <- DBI::dbGetQuery(con1,'
+# SELECT *
+# FROM rateperdistance
+# LIMIT 10
+# ')
+# 
+# BBI::dbGetQuery(con1,'
+# SELECT pollutantID, sourceTypeID, regClassID, fuelTypeID,
+# modelYearID, avgSpeedBinID, ratePerDistance, AVG(ratePerDistance)
+# FROM rateperdistance
+# WHERE regClassID = 1
+# WHERE sourceTypeID = 11
+# WHERE ratePerDistance > 0
+# GROUP BY MOVESRunID, pollutantID, modelYearID,
+# fuelTypeID, avgSpeedBinID, hourID
+# ')
 
-# List Tables
+# usa_cities_out <- DBI::dbGetQuery(con1,'
+# SELECT pollutantID, sourceTypeID, regClassID, fuelTypeID,
+# modelYearID, avgSpeedBinID, ratePerDistance, AVG(ratePerDistance)
+# FROM rateperdistance
+# WHERE ratePerDistance > 0
+# GROUP BY MOVESRunID, pollutantID, modelYearID,
+# fuelTypeID, avgSpeedBinID
+# ')
 
-dbListTables(con)
+# * wayne-----
+con2 <- DBI::dbConnect(RMariaDB::MariaDB(),
+                       host = "localhost",
+                       db = "wayne_november_out_all_calendar", # your database output
+                       user = "moves",
+                       password = "moves")
 
-# RateperDistance
-
-# rate_per_distance_db <- dplyr::tbl(con, "rateperdistance")
-
-# SqL run
-
-dbGetQuery(con,'
-  SELECT processID
-FROM `rateperdistance`
-WHERE processID = 1
-LIMIT 5
-')
-
-dt_copy <- DBI::dbGetQuery(con,'
-SELECT pollutantID, sourceTypeID, regClassID, fuelTypeID,
+wayne_out <- DBI::dbGetQuery(con2,'
+SELECT yearID, pollutantID, sourceTypeID, regClassID, fuelTypeID,
 modelYearID, avgSpeedBinID, ratePerDistance, AVG(ratePerDistance)
 FROM rateperdistance
-WHERE ratePerDistance > 0
-GROUP BY MOVESRunID, pollutantID, modelYearID,
+GROUP BY yearID, MOVESRunID, pollutantID, modelYearID,
 fuelTypeID, avgSpeedBinID
 ')
 
+
 # 3) copy of database-----
 
-dt <- data.table::copy(dt_copy)
+dt <- data.table::copy(wayne_out)
 data.table::setDT(dt)
 
 ## * pollutantID-----
 # ref:
 # https://github.com/USEPA/EPA_MOVES_Model/blob/master/docs/MOVES3CheatsheetOnroad.pdf
 
+dt$pollutantID %>% unique()
+dt[dic$pollutants,on = c("pollutantID" = "ID"),pollutant := i.pollutantname]
+dt[dic$pollutants,on = c("pollutantID" = "ID"),tmp_pollutant := i.short_name]
+dt <- dt[!is.na(tmp_pollutant),]
+dt[,pollutant  := NULL]
+data.table::setnames(dt,"tmp_pollutant","pollutant")
+# remove space
+unique(dt$pollutant)
+dt[,pollutant := gsub(" ","",pollutant)]
 
-dt[pollutantID == 1, pollutant := "TGH"]
-dt[pollutantID == 2, pollutant := "CO"]
-dt[pollutantID == 3, pollutant := "NOx"]
-dt[pollutantID == 5, pollutant := "CH4"]
-dt[pollutantID == 90, pollutant := "CO2"]
-dt[pollutantID == 91, pollutant := "EC"] # Total Energy Consumption
-dt[pollutantID == 100, pollutant := "PM10"]
-dt[pollutantID == 110, pollutant := "OC"] # Organic Carbon
-dt[pollutantID == 112, pollutant := "Elemental_carbon"] # Elemental Carbon
-dt[pollutantID == 115, pollutant := "Sulfate_Particulate"] # Sulfate Particulate
-dt[pollutantID == 118, pollutant := "NonECPM"] # Composite - NonECPM
+
+## * regClassID -----
+unique(dt$regClassID)
+dic$regulatory_class
+
+#dt <- dt[regClassID == 48,]
 
 ## * sourceTypeID -----
 
+dt$sourceTypeID %>% unique()
 dt[sourceTypeID == 42,  source_type := "Transit Bus"]
 
 # * fuelTypeID -----
 
 unique(dt$fuelTypeID)
-dt[fuelTypeID == 1, fuel_type := "G"]
-dt[fuelTypeID == 2, fuel_type := "D"]
-dt[fuelTypeID == 3, fuel_type := "CNG"] # Compressed Natural Gas
+dt[dic$fuel_type,on = c("fuelTypeID" = "ID"),fuel_type := i.fuelType]
+dt[fuel_type == "Gasoline",fuel_type := "G"]
+dt[fuel_type == "Diesel",fuel_type := "D"]
 
 ## * modelYearID -----
 unique(dt$modelYearID)
@@ -90,23 +122,15 @@ data.table::setnames(dt,"modelYearID","model_year")
 unique(dt$avgSpeedBinID)
 
 dt <- dt[avgSpeedBinID != 0,]
-dt[avgSpeedBinID == 1,  `:=`(lower_speed_interval = 0.0 ,upper_speed_interval = 2.5)]
-dt[avgSpeedBinID == 2,  `:=`(lower_speed_interval = 2.5 ,upper_speed_interval = 7.5)]
-dt[avgSpeedBinID == 3,  `:=`(lower_speed_interval = 7.5 ,upper_speed_interval = 12.5)]
-dt[avgSpeedBinID == 4,  `:=`(lower_speed_interval = 12.5,upper_speed_interval = 17.5)]
-dt[avgSpeedBinID == 5,  `:=`(lower_speed_interval = 17.5,upper_speed_interval = 22.5)]
-dt[avgSpeedBinID == 6,  `:=`(lower_speed_interval = 22.5,upper_speed_interval = 27.5)]
-dt[avgSpeedBinID == 7,  `:=`(lower_speed_interval = 27.5,upper_speed_interval = 32.5)]
-dt[avgSpeedBinID == 8,  `:=`(lower_speed_interval = 32.5,upper_speed_interval = 37.5)]
-dt[avgSpeedBinID == 9,  `:=`(lower_speed_interval = 37.5,upper_speed_interval = 42.5)]
-dt[avgSpeedBinID == 10, `:=`(lower_speed_interval = 42.5,upper_speed_interval = 47.5)]
-dt[avgSpeedBinID == 11, `:=`(lower_speed_interval = 47.5,upper_speed_interval = 52.5)]
-dt[avgSpeedBinID == 12, `:=`(lower_speed_interval = 52.5,upper_speed_interval = 57.5)]
-dt[avgSpeedBinID == 13, `:=`(lower_speed_interval = 57.5,upper_speed_interval = 62.5)]
-dt[avgSpeedBinID == 14, `:=`(lower_speed_interval = 62.5,upper_speed_interval = 67.5)]
-dt[avgSpeedBinID == 15, `:=`(lower_speed_interval = 67.5,upper_speed_interval = 72.5)]
-dt[avgSpeedBinID == 16, `:=`(lower_speed_interval = 72.5,upper_speed_interval = 77.5)]
+dic$speed_bin
+dt[dic$speed_bin,on = c("avgSpeedBinID" = "ID"),
+   `:=`(lower_speed_interval = i.lower_speed_limit,
+        upper_speed_interval = i.upper_speed_limit) ]
 
+dt[,
+   c("lower_speed_interval","upper_speed_interval") := 
+     lapply(.SD,as.numeric),
+   .SDcols = c("lower_speed_interval","upper_speed_interval")]
 dt[,
    c("lower_speed_interval","upper_speed_interval") := 
      lapply(.SD,units::set_units,"miles/h"),
@@ -124,7 +148,11 @@ dt[,
 
 data.table::setnames(dt,"AVG(ratePerDistance)","ef")
 dt[,ef := units::set_units(ef,"g/km")]
-dt[pollutant == "EC",ef := units::set_units(as.numeric(ef),"J/km")]
+
+## * calendar year -----
+unique(dt$yearID)
+data.table::setnames(dt,"yearID","calendar_year")
+dt <- dt[calendar_year %in% c(2015:2022),]
 
 ## * adjust columns -----
 dt[,`:=`(pollutantID = NULL,
@@ -136,27 +164,78 @@ dt[,`:=`(pollutantID = NULL,
 
 # change order of columns
 data.table::setcolorder(dt,
-                        c("source_type","fuel_type","model_year",
+                        c("fuel_type","calendar_year","model_year",
                           "pollutant","lower_speed_interval",
                           "upper_speed_interval","ef"))
 
+## * fix NA EF ----
+dt[,id_speed := .GRP,by = .(lower_speed_interval,upper_speed_interval)]
+cols <- c("fuel_type",
+          "calendar_year",
+          "pollutant",
+          "source_type",
+          "id_speed")
+dt_invalid <- data.table::copy(dt)[as.numeric(ef) == 0]
+dt_add <-  data.table::copy(dt)[as.numeric(ef) != 0][,.SD[1],by = cols]
+dt_valid <-  data.table::copy(dt)[as.numeric(ef) != 0]
+
+# update dt_invalid
+dt_invalid <- dt_invalid[dt_add,
+                         on = c("fuel_type" = "fuel_type",
+                                "calendar_year" = "calendar_year",
+                                "pollutant" = "pollutant",
+                                "source_type" = "source_type",
+                                "id_speed" = "id_speed"),
+                         ef := i.ef]
+# check nrow dt_invalid
+dt_invalid[as.numeric(ef) == 0]
+
+# remove zero EF
+dt_invalid <- dt_invalid[as.numeric(ef) != 0]
+
+# rbind dt_valid with dt_invalid
+dt_bind <- data.table::rbindlist(list(dt_valid,dt_invalid),
+                                 use.names = TRUE)
+data.table::setkeyv(x = dt_bind,
+                    cols = c("fuel_type",
+                             "calendar_year",
+                             "model_year",
+                             "pollutant",
+                             "source_type",
+                             "id_speed"))
+
+## * fix CH4 ID----
+# dt[,.N,by =.(pollutant)]
+# dt[pollutant == "CH4" & 
+#      model_year < 2007 & 
+#      fuel_type == "D",]
+# dt[pollutant == "CH4" & 
+#      model_year < 2007 & 
+#      fuel_type == "D",.N,by = model_year]
+# dt[pollutant == "CH4" & model_year == 1989,] # CNG
+# dt[pollutant == "CH4" & model_year == 1992,] # CNG, G
+# dt[pollutant == "CH4" & model_year == 2007,] # CNG, G, D
 
 # 4) plot-----
 
 # * according to speed bin----
-dt %>%
+
+dt_bind %>%
   filter(model_year == 2015) %>%
   filter(pollutant %in% c("CH4","NOx","CO2","CO","PM10")) %>%
+  filter(calendar_year == 2019) %>% 
   ggplot()+
-  geom_line(aes(x= avgSpeedBinID,y=`AVG(ratePerDistance)`,color = fuelType ))+
+  geom_line(aes(x= id_speed,y= as.numeric(ef),color = fuel_type  ))+
+  geom_point(aes(x= id_speed,y= as.numeric(ef),color = fuel_type  ))+
   facet_wrap(~pollutant,scales = "free")
 
 # * according to EF
-dt %>%
+dt_bind %>%
   filter(model_year == 2015) %>%
   filter(pollutant %in% c("CH4","NOx","CO2","CO","PM10")) %>%
   filter(as.numeric(lower_speed_interval) == 28.2) %>% 
   filter(fuel_type == "D") %>% 
+  filter(calendar_year == 2019) %>% 
   ggplot()+
   geom_bar(aes(x= source_type ,y= as.numeric(ef),
                fill = fuel_type),
@@ -165,12 +244,22 @@ dt %>%
            position = "dodge")+
   facet_wrap(~pollutant,scales = "free")
 
+# * according to year
+dt_bind %>%
+  #filter(pollutant %in% c("CH4")) %>%
+  filter(as.numeric(lower_speed_interval) == 28.2) %>%
+  filter(fuel_type != "CNG") %>% 
+  filter(calendar_year == 2019) %>% 
+  ggplot()+
+  geom_point(aes(x= model_year,y= as.numeric(ef),
+                 color = fuel_type))+
+  geom_line(aes(x= model_year,y= as.numeric(ef),
+                color = fuel_type))+
+  facet_wrap(~pollutant,scales = "free_y")
 
 # 5) export-----
-usa_moves_db <- data.table::copy(dt)
+usa_moves_db <- data.table::copy(dt_bind)
 usethis::use_data(usa_moves_db,overwrite = TRUE)
-
-
 
 
 

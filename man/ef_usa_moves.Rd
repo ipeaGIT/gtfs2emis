@@ -7,7 +7,14 @@
 \url{https://www.epa.gov/moves}
 }
 \usage{
-ef_usa_moves(pollutant, model_year, speed, fuel = "D", as_list = TRUE)
+ef_usa_moves(
+  pollutant,
+  model_year,
+  calendar_year,
+  speed,
+  fuel_type = "D",
+  as_list = TRUE
+)
 }
 \arguments{
 \item{pollutant}{character; Pollutants: Carbon monoxide (CO), Nitrogen oxides (NOx), 
@@ -19,12 +26,15 @@ and particulate matters 2.5 microns or less in diameter (PM2.5),
 
 \item{model_year}{numeric; Model year of vehicle.}
 
+\item{calendar_year}{numeric; Calendar Year between 1990 - 2030 Year in which the emissions
+inventory is estimated, in order to consider the effect of degradation.}
+
 \item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",
 "27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5 - 47.5","47.5 - 52.5",
 "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5", "67.5 - 72.5", ">72.5" mph (miles/h).}
 
-\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
+\item{fuel_type}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
@@ -40,7 +50,8 @@ Estimates expressed in units 'g/km'.
  ef_usa_moves(pollutant = c("CO","PM10"),
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
-        fuel = "D",
+        calendar_year = 2016,
+        fuel_type = "D",
         as_list = TRUE)
         
 }
