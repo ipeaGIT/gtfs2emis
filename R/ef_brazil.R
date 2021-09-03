@@ -47,8 +47,8 @@ ef_brazil <- function(pollutant, veh_type, model_year, as_list = TRUE){
   # init config
   #
    # pollutant = c("CO","PM10","CO2","CH4","NOx")
-   # veh_type = c("BUS_MICRO_D") #veh_type
-   # model_year = c(2001)
+   # veh_type = c("BUS_URBAN_D") #veh_type
+   # model_year = c(2001:2010)
   
   # check lengths----
   
@@ -59,12 +59,13 @@ ef_brazil <- function(pollutant, veh_type, model_year, as_list = TRUE){
     model_year <- rep(model_year, length(veh_type))
   }
   
+   tmp_model_year <- model_year
   # vehicle distribution----
   
   ef_temp1 <- lapply(pollutant, function(p){ # p = pollutant[1]
     ef_temp <- lapply(seq_along(model_year), function(i){# i = 1
       ef_brazil_db[pollutant == p &
-                  model_year == model_year[i],
+                  model_year == tmp_model_year[i],
                 .SD,.SDcols = veh_type[i]][[1]]
     })
     ef_temp <- do.call(cbind, ef_temp)
@@ -74,7 +75,8 @@ ef_brazil <- function(pollutant, veh_type, model_year, as_list = TRUE){
   ef_final <- do.call(cbind, ef_temp1)  %>% units::set_units("g/km")  
   
   # rename colnames
-  colnames(ef_final) <- paste0(rep(pollutant, each = length(model_year)), "_", model_year)
+  colnames(ef_final) <- paste0(rep(pollutant, each = length(model_year)), "_", 
+                               model_year)
   
   # return in a data.table/list like format----
   

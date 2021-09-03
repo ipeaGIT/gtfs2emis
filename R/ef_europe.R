@@ -148,7 +148,7 @@ ef_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR
         tech[j] = "SCR"
         message(paste0("Only 'SCR' technology associated with ", euro[j]," and pollutant ", pollutant[i]))
       }
-      if((euro[j] %in%  c("VI")) && (pollutant[i] %nin% c("CO2","FC"))){
+      if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC"))){
         tech[j] = "DPF+SCR"
         message(paste0("Only 'DPF+SCR' technology associated with ", euro[j]," and pollutant ", pollutant[i]))
       }

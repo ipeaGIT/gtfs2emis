@@ -2,10 +2,6 @@
 #' @importFrom data.table := .SD .I .GRP %like% setDT
 NULL
 
-`%nin%` = Negate(`%in%`)
-
-`%nlike%` = Negate(`%like%`)
-
 # Globals
 utils::globalVariables(c('id', '.'))
 utils::globalVariables(c('Euro', 'Fuel', 'Load', 'Pol','Pollutant','time', 'Slope', 'Segment','segment_id',
@@ -20,7 +16,7 @@ utils::globalVariables(c('year','i.den','i.s','i.pah','i.cn','i.t95','den_base',
                          'from_stop_id', 'geometry', 'i.geometry',
                          'shape_id', 'stop_sequence', 'to_stop_id'))
 # ef_cetesb
-utils::globalVariables(c("ef_brazil_db"))
+utils::globalVariables(c("ef_brazil_db","tmp_model_year"))
 # ef_moves
 utils::globalVariables(c("fuel_type","usa_moves_db"))
 # ef_emfac
