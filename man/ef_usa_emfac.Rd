@@ -10,31 +10,28 @@
 ef_usa_emfac(
   pollutant,
   calendar_year,
+  fuel = "D",
   model_year,
   speed,
-  fuel = "D",
   as_list = TRUE
 )
 }
 \arguments{
-\item{pollutant}{character; Pollutants: Carbon monoxide (CO), Nitrogen oxides (NOx), 
-Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 
-THC (total hydrocarbon), or CH4 (methane).
-Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
-and particulate matters 2.5 microns or less in diameter (PM2.5),
-Sulfur oxides (SOx), Carbon Dioxide (CO2),
-Nitrous Oxide (N2O), and Methane (CH4).}
+\item{pollutant}{character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
+CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
+ PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
+ TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
 
-\item{calendar_year}{numeric; Calendar Year between 2010 - 2020. Year in which the emissions
+\item{calendar_year}{numeric; Calendar Year between 2015 - 2022. Year in which the emissions
 inventory is estimated, in order to consider the effect of degradation.}
+
+\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
 
 \item{model_year}{numeric; Model year of vehicle.}
 
 \item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50",
  "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h).}
-
-\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }

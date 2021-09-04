@@ -12,7 +12,7 @@ A data.table:
 CO2(Carbon Dioxide), EC(Energy Consumption), HONO(Nitrous Acid), N2O(Nitrous Oxide), NH3(Ammonia ), 
 NH4(Ammonium), NO(Nitrogen Oxide), NO2(Nitrogen Dioxide), NO3(Nitrate), NOx(Oxides of Nitrogen),
  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SO2(Sulfur Dioxide), 
- THC(otal Gaseous Hydrocarbons ), TOG(Total Organic Gases) and VOC (Volatile Organic Compounds)}
+ THC(Total Gaseous Hydrocarbons ), TOG(Total Organic Gases) and VOC (Volatile Organic Compounds)}
 \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
 \item{calendar_year}{Numeric; Calendar Year between 2015 - 2022. Year in which the emissions
 inventory is estimated, in order to consider the effect of degradation.}

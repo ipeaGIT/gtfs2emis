@@ -8,13 +8,10 @@ Running exhaust emissions factors from EMFAC2017 model}
 \format{
 A data.table with 106920 rows and 7 variables:
 \describe{
-\item{pol}{Character; Pollutants: Carbon monoxide (CO); Nitrogen oxides (NOx); 
-  Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 
-  THC (total hydrocarbon), or CH4 (methane); 
-  Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
-  and particulate matters 2.5 microns or less in diameter (PM2.5);
-  Sulfur oxides (SOx); Carbon Dioxide (CO2); 
-  Nitrous Oxide (N2O) and Methane (CH4).}
+\item{pol}{Character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
+CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
+ PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
+ TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
   \item{calendar_year}{Numeric; Calendar Year between 2010 - 2020}
   \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
   \item{model_year}{Model year.}

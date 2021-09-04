@@ -6,14 +6,11 @@
 #' values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
 #' Estimates expressed in units 'g/km'.
 #'
-#' @param pollutant character; Pollutants: Carbon monoxide (CO), Nitrogen oxides (NOx), 
-#'   Hydrocarbons as TOG (total organic gases), ROG (reactive organic gases), 
-#'   THC (total hydrocarbon), or CH4 (methane).
-#'   Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
-#'   and particulate matters 2.5 microns or less in diameter (PM2.5),
-#'   Sulfur oxides (SOx), Carbon Dioxide (CO2),
-#'   Nitrous Oxide (N2O), and Methane (CH4).
-#' @param calendar_year numeric; Calendar Year between 2010 - 2020. Year in which the emissions
+#' @param pollutant character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
+#' CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
+#'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
+#'  TOG(Total Organic Gases), ROG (Reactive Organic Gases)
+#' @param calendar_year numeric; Calendar Year between 2015 - 2022. Year in which the emissions
 #' inventory is estimated, in order to consider the effect of degradation.
 #' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year numeric; Model year of vehicle.
@@ -37,7 +34,7 @@
 #'         fuel = "D",
 #'         as_list = TRUE)
 #'         
-ef_usa_emfac <- function(pollutant, calendar_year, model_year, speed, fuel = 'D', as_list = TRUE){
+ef_usa_emfac <- function(pollutant, calendar_year, fuel = 'D', model_year, speed, as_list = TRUE){
   
   # pollutant = c("CO","PM10","CH4","NOx")
   # calendar_year = "2019"
@@ -125,7 +122,7 @@ ef_usa_emfac <- function(pollutant, calendar_year, model_year, speed, fuel = 'D'
   if(as_list == TRUE){
     ef_final <- list("pollutant" = rep(pollutant,each = length(tmp_model_year)),
                      "model_year" = rep(model_year,length(pollutant)),
-                     "fuel" = rep(fuel,length(pollutant)),
+                     "fuel" = rep(tmp_fuel,length(pollutant)),
                      "EF" = ef_final)
   }
   return(ef_final)

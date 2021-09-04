@@ -6,12 +6,13 @@
 #' values from the [MOVES3 Model](https://www.epa.gov/moves).
 #' Estimates expressed in units 'g/km'.
 #'
-#' @param pollutant character; Pollutants: Carbon monoxide (CO), Nitrogen oxides (NOx), 
-#'   Hydrocarbons as TGH (Total Gaseous Hydrocarbons), EC (energy consumption), 
-#'   THC (total hydrocarbon), or CH4 (methane).
-#'   Particulate matter as particulate matters 10 microns or less in diameter (PM10), 
-#'   and particulate matters 2.5 microns or less in diameter (PM2.5),
-#'    Carbon Dioxide (CO2), and Methane (CH4).
+#' @param pollutant character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
+#' CO2(Carbon Dioxide), EC(Energy Consumption), HONO(Nitrous Acid), N2O(Nitrous Oxide),
+#'  NH3(Ammonia ), NH4(Ammonium), NO(Nitrogen Oxide), NO2(Nitrogen Dioxide),
+#'  NO3(Nitrate), NOx(Oxides of Nitrogen), PM10(Primary Exhaust PM10 - Total), 
+#'  PM25(Primary Exhaust PM2.5 - Total), SO2(Sulfur Dioxide), 
+#'  THC(Total Gaseous Hydrocarbons ), TOG(Total Organic Gases) and 
+#'  VOC (Volatile Organic Compounds)
 #' @param calendar_year numeric; Calendar Year between 1990 - 2030 Year in which the emissions
 #' inventory is estimated, in order to consider the effect of degradation.
 #' @param fuel_type character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
