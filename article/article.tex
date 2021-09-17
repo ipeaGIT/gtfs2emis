@@ -129,330 +129,249 @@ The abstract goes here. It can also be on \emph{multiple lines}.
 transferred to institution/company.}
 
 
-\introduction[Introduction]
+\section{Introduction}
 
-Introduction text goes here. You can change the name of the section if
-necessary using
-\texttt{\textbackslash{}introduction{[}modified\ heading{]}}.
+Transport emissions have been widely recognized among the leading and
+growing contributors to global emissions \citep[
+]{caiazzo_air_2013, nocera_assessing_2018}. There is also scant evidence
+of how transportation activities impact air quality in cities
+\citep{landrigan_lancet_2018}, aggravating the negative short- and
+long-term effects pollution has on children premature deaths
+\citep{currie_traffic_2009}, cardiovascular diseases
+\citep{brook_particulate_2010, turner_long-term_2016}, ischemic stroke
+\citep{wellenius_ambient_2012} and cognitive development
+\citep{chen_living_2017, fu_association_2019, shehab_effects_2019, zhang_impact_2018}.
+This has a higher impact in low and middle-income countries
+\citep{combes_fine_2019}, especially in more vulnerable groups, such as
+elderly people \citep{yap_particulate_2019} and children
+\citep{braga_health_2001, gauderman_association_2015}. Understanding the
+spatial and temporal patterns of emissions is a key factor to adopt more
+precise public policies to reduce air pollution exposure
+\citep{clark_national_2014, targino_spatial_2018}, improve the housing
+and land use planning, and subsidize public investments Particularly
+with public transport policies, extensive efforts have been made to
+quantify air pollution patterns and to understand the impact of fleet
+technology, fuel, topography, and route choices on overall levels of air
+pollution (refs).
 
-The following settings can or must be configured in the header of this
-file and are bespoke for Copernicus manuscripts:
+Most of the studies on public transportation emissions focus on
+emissions monitoring with remote sensing devices (refs), onboard
+diagnosis using PEMS (refs), vehicle counts data (refs), radar
+equipments (refs), public transport GPS data (refs), and fuel based
+estimates (top down approaches). However, due to a restriction of
+spatial application, or costly local data collection, some of these
+approaches might not be easy to scale for other cities. Other
+approaches, such as air quality analysis (refs), satellite data
+observations (refs) would represent the final state of air quality but
+ultimately do not look only at bus emissions. Studies that identify and
+map pollution in low and middle-income countries are still needed,
+particularly when easily reproduced.
 
-\begin{itemize}
-\item
-  The \texttt{journal} you are submitting to using the official
-  abbreviation. You can use the function
-  \texttt{rticles::copernicus\_journal\_abbreviations(name\ =\ \textquotesingle{}...\textquotesingle{})}
-  to search the existing journals.
-\item
-  Specific sections of the manuscript:
+Our analysis contributes to the public transport emission literature by
+developing a novel methodology that leverages a widespread open data
+format for public transport networks known as General Transit Feed
+Specification (GTFS) to estimate vehicle emissions in a high spatial and
+temporal resolution. The method is presented in a R package
+``gtfs2emis'' to allow friendly and reproducible use for different
+applications. In this paper, we present estimates on CO2, NOx, PM10, CO,
+CH4 hot exhaust emissions for 24 cities in the world, considering a
+typical business day on October 2019 --- as a baseline date. A
+comparison of the vehicle emissions rates of those transport networks is
+also presented, along with a discussion on the versatility and
+limitations of the method.
 
-  \begin{itemize}
-  \item
-    \texttt{running} with \texttt{title} and \texttt{author}
-  \item
-    \texttt{competinginterests}
-  \item
-    \texttt{copyrightstatement} (optional)
-  \item
-    \texttt{availability} (strongly recommended if any used), one of
-    \texttt{code}, \texttt{data}, or \texttt{codedata}
-  \item
-    \texttt{authorcontribution}
-  \item
-    \texttt{disclaimer}
-  \item
-    \texttt{acknowledgements}
-  \end{itemize}
-\end{itemize}
+The remainder of this paper is organized as follows. Section two
+presents a brief literature review on public transportation emissions.
+Section three describes the data and methods for the public transport
+data, emission factors databases and vehicle emissions estimates..
+Section four presents the results, looking at the overall levels of
+pollutant emissions and its spatial and temporal resolution behavior.
+Finally, section five presents the final remarks and discusses some
+environmental insights that can be drawn from the package.
 
-See the defaults and examples from the skeleton and the official
-Copernicus documentation for details.
+\section{Methods}
 
-\textbf{Please note:} Per
-\href{https://publications.copernicus.org/for_authors/manuscript_preparation.html}{their
-guidelines}, Copernicus does not support additional \LaTeX{} packages or
-new \LaTeX{} commands than those defined in their \texttt{.cls} file.
-This means that you cannot add any extra dependencies and a warning will
-be thrown if so.\\
-This extends to syntax highlighting of source code. Therefore this
-template sets the parameter \texttt{highlight} in the YAML header to
-\texttt{NULL} to deactivate Pandoc syntax highlighter. This prevent
-addition of external packages for highlighting inserted by Pandoc.
-However, it might be desirable to have syntax highlight available in
-preprints or for others reasons. Please see
-\texttt{?rmarkdown::pdf\_document} for available options to activate
-highlighting.
+\subsection{Transport model}
 
-\textbf{Important}: Always double-check with the official manuscript
-preparation guidelines at
-\url{https://publications.copernicus.org/for_authors/manuscript_preparation.html},
-especially the sections ``Technical instructions for LaTeX'' and
-``Manuscript composition''. Please contact Daniel Nüst,
-\texttt{daniel.nuest@uni-muenster.de}, with any problems.
+\subsubsection{GTFS data}
 
-\section{Content section one}
+The method used in the paper leverages a global standard format for
+public transport data known as General Transit Feed Specification
+(GTFS). The GTFS data of a given public transport system is collected in
+a ZIP file, that brings detailed geolocated information on scheduled
+services including its stops, routes, trips, stop times and calendar
+organized in a structured text file.
 
-\subsection{Subsection Heading Here}
+This format was originally created in the mid-2000s by Google and
+Portland transport authority and it has since then become adopted
+worldwide by more than 600 cities
+\citep{noauthor_openmobilitydata_nodate}. The simplicity of this data
+format and its wide adoption creates a common ground for researchers and
+practitioners across the globe to develop and share computational
+methods that can be seamlessly deployed across multiple cities to manage
+fleet allocation, plan transport services, etc. Detailed aspects of the
+GTFS contents are found in \citep{noauthor_reference_nodate}.
 
-Subsection text here.
+We expand the sample of cities with GTFS data collected directly from
+local transport authorities and from Transit Feed archives - the largest
+GTFS open data repository website. The GTFS data were pre-processed to
+filter by bus routes and to check consistencies on the required files
+(e.g.~agency, stops, routes, trips, stop times). The months of October
+and November 2019 are used as the baseline date for the emissions
+estimates, in order to avoid possible differences in public
+transportation schedules due to the COVID-19 pandemic. A summary of the
+main GTFS information is described in Table 1, together with the fleet
+data.
 
-\subsubsection{Subsubsection Heading Here}
+\subsection{GTFS2gps}
 
-Subsubsection text here.
+The process to convert GTFS files to GPS-like spatial data points is
+done for every trip of the schedule. It interpolates the space-time
+position of each vehicle in each trip considering the network distance
+and average speed between stops. It samples the timestamp of each
+vehicle every 50m.
 
-\section{Content section with citations}
+Once a GPS data format is generated from GTFS, a few adjustments on
+speed is made. Since the mean speed is estimated in a street link
+between two bus stops (e.g.~stop ``i'' and ``i+1''), the data on
+departure time of ``i'' and arrival time of ``i+1'' is necessary. If
+``i+1'' arrival time is very close or the same as the departure time of
+``i'', the speed will be very high (\textgreater100 kph) or infinite. In
+such cases, we consider the speed to be the mean speed of all the trips
+in this specific bus route. Therefore, the departure times of the GPS
+are recalculated based on the new travelled speeds. This adjustment is
+also necessary in street links without valid arrival or departure times:
+before the first bus stop of the route (where only arrival time is
+available); after the last bus stop (only departure time is available);
+and trips with invalid stop times.
 
-See the
-\href{http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html}{R
-Markdown docs for bibliographies and citations}.
+\subsection{Emission model}
 
-Copernicus supports biblatex and a sample bibliography is in file
-\texttt{sample.bib}. Read \citep{Feynman1963118}, and
-\citep[see][]{Dirac1953888}.
+\subsubsection{Emission factors}
 
-\section{Content section with R code chunks}
+Emission factors (EFs) are empirical functional relations between
+pollutant emissions and the activity that causes them (Franco et al.,
+2013). This study uses EF based on Environmental Sanitation Technology
+Company (CETESB) --- for Brazil; California Air Resources Board (CARB)
+--- for the California U.S; Motor Vehicle Emission Model (MOVES) for
+regions in U.S. outside California; European Environment Agency (EEA)
+--- for European countries. Among these sources, EMFAC, MOVES and
+EMEP/EEA have speed-dependent emission factors. For the Brazilian
+cities' estimates, the local EF is scaled to the EMEP/EEA function
+considering the average speed of the vehicle driving cycle. The
+brazilian emission factor is related to speed by the expression
 
-You should always use \texttt{echo\ =\ FALSE} on R Markdown code blocks
-as they add formatting and styling not desired by Copernicus. The hidden
-workflow results in 42.
+\begin{equation}
+EF^{scaled}_{i,j,k,l}=EF^{local}_{i,j,k,l}\frac{EF(V_i)_{j,k,l}}{EF(V_{dc})_{j,k,l}}.  
+\end{equation}
 
-You can add verbatim code snippets without extra styles by using
-\texttt{\textasciigrave{}\textasciigrave{}\textasciigrave{}} without
-additional instructions.
+where \(EF_{i,j,k,l}^{scaled}\) is the scaled emission factors for each
+street link \(i\), bus type \(j\), fuel \(k\), age \(l\),;
+\(EF_{i,j,k,l}^{local}\) is the local emission factor;
+\(EF(V_i)_{j,k,m}\) and \(EF(V_{dc})_{j,k,l}\) is the EEA emission
+factor at the speed of \(V_i\);and the driving cycle \(V_{dc}\) of
+FTP-25 (33 kph).
 
-\begin{verbatim}
-sum <- 1 + 41
-\end{verbatim}
-
-\section{Content section with list}
-
-If you want to insert a list, you must
-
-\begin{itemize}
-\item
-  leave
-\item
-  empty lines
-\item
-  between each list item
-\end{itemize}
-
-because the \texttt{\textbackslash{}tightlist} format used by R Markdown
-is not supported in the Copernicus template. Example:
-
-\begin{verbatim}
-- leave
-
-- empty lines
-
-- between each list item
-\end{verbatim}
-
-\section{Examples from the official template}
-
-\subsection{FIGURES}
-
-When figures and tables are placed at the end of the MS (article in
-one-column style), please add \clearpage between bibliography and first
-table and/or figure as well as between each table and/or figure.
-
-\subsubsection{ONE-COLUMN FIGURES}
-
-Include a 12cm width figure of Nikolaus Copernicus from
-\href{https://en.wikipedia.org/wiki/File:Nikolaus_Kopernikus.jpg}{Wikipedia}
-with caption using R Markdown.
-
-\begin{figure}
-\includegraphics[width=8.3cm]{Nikolaus_Kopernikus} \caption{one column figure}\label{fig:unnamed-chunk-2}
-\end{figure}
-
-\subsubsection{TWO-COLUMN FIGURES}
-
-You can also include a larger figure.
-
-\begin{figure}
-\includegraphics[width=12cm]{Nikolaus_Kopernikus} \caption{two column figure}\label{fig:unnamed-chunk-3}
-\end{figure}
-
-\subsection{TABLES}
-
-You can ad \LaTeX table in an R Markdown document to meet the template
-requirements.
-
-\subsubsection{ONE-COLUMN TABLE}
-
-\begin{table}[t]
-\caption{TEXT}
-\begin{tabular}{l c r}
-\tophline
-
-a & b & c \\
-\middlehline
-1 & 2 & 3 \\
-
-\bottomhline
-\end{tabular}
-\belowtable{Table Footnotes}
-\end{table}
-
-\subsubsection{TWO-COLUMN TABLE}
+The CARB's (California Air Resources Board) EMFAC (EMission FACtor)
+model estimates statewide and regional emissions inventory by
+multiplying emissions rates with vehicle activity data. The running
+exhaust emission factors are distributed according to speed bins from 5
+to 90, with 5 mph incremental. It allows modeling one season (summer,
+winter or annual average) due to temporal variations of EF due to
+meteorological conditions (temperature and relative humidity); and
+geographic area (Statewide, Air Basin, Air District, Metropolitan
+Planning Organization, Country and Sub-Area). Detailed data on emission
+factors are found in \citet{noauthor_emfac_nodate}.
 
 \begin{table*}[t]
-\caption{TEXT}
-\begin{tabular}{l c r}
-\tophline
-
-a & b & c \\
-\middlehline
-1 & 2 & 3 \\
-
-\bottomhline
+\caption{Emission factor sources, related bus categories and variables associated.}
+\begin{tabular}{ccc}
+\hline
+Source & Buses categories & Variables \\ \hline
+CETESB & Micro, Standard, Articulated & Age, Fuel, EURO stage \\
+EMFAC model & Urban Buses & Age, Fuel \\
+EMEP/EEA & Micro, Standard, Articulated & Fuel, EURO stage, technology, load, slope \\
+MOVES U.S EPA & Urban Buses & Age, Fuel \\
+\hline
 \end{tabular}
 \belowtable{Table footnotes}
 \end{table*}
 
-\subsection{MATHEMATICAL EXPRESSIONS}
+\begin{table*}[t]
+\caption{Association between model year, PROCONVE Norm and EURO stage for the brazilian fleet (adapted from ICCT).}
+\begin{tabular}{ccc}
+\hline
+PROCONVE Norm & EURO equivalent & Year range \\ \hline
+P4  & II  & 1998 - 2003 \\
+P5  & III  & 2004 - 2011 \\
+P8  & V & 2012 - 2019\\
+\hline
+\end{tabular}
+\belowtable{Table footnotes}
+\end{table*}
 
-All papers typeset by Copernicus Publications follow the math
-typesetting regulations given by the IUPAC Green Book (IUPAC:
-Quantities, Units and Symbols in Physical Chemistry, 2nd Edn., Blackwell
-Science, available at:
-http://old.iupac.org/publications/books/gbook/green\_book\_2ed.pdf,
-1993).
+\begin{table*}[t]
+\caption{Summary of all vehicle classes covered by the Tier 2 methodology}
+\begin{tabular}{ccc}
+\hline
+Urban bus category  & Euro Stage  \\ \hline
+Urban CNG buses & Euro I, Euro II, Euro III, EEV   \\
+Urban buses   &  Conventional, Euro I - Euro VI\\
+Urban Diesel Hybrid  & Euro VI  \\
+Urban biodiesel buses   & Conventional, Euro I - Euro VI\\
+\hline
+\end{tabular}
+\belowtable{Table footnotes}
+\end{table*}
 
-Physical quantities/variables are typeset in italic font (t for time, T
-for Temperature)
+European exhaust emission factors are presented in the EMEP/EEA air
+pollutant inventory guidebook, considering the COPERT 5.4 Software
+version. This study considered average load on all trips and zero slope
+rate for all studied cities. Urban Buses are presented in three main
+categories, which are Urban Buses Midi (\textless= 15 t), Standard (15 -
+18 t), Articulated (\textgreater18 t), Urban Diesel Buses Hybrid, CNG
+(Compressed Natural Gas) Buses. The speed dependent emissions factors
+for diesel urban buses have been taken from HBEFA (Handbook Emission
+Factors for Road Transport), for Euro I to Euro VI emissions standards.
+Distinct parameters of EF were considered for Euro V standard, according
+to the control technology, that can be Exhaust Gas Recirculation --- EGR
+or Selective Catalytic Reduction --- SCR. According to EMEP/EEA, it is
+estimated that 75\% of Euro V heavy-duty vehicles are equipped with SCR.
+For the category of CNG buses, it has an additional emission standard
+known as Enhanced Environmental Vehicles (EEV), since it may have
+different combustion, after-treatment technology, and are associated
+with lower PM and NOx emission rates compared with diesel buses (add
+source). Only older CNG buses are classified in EURO I, II, or III.
+Detailed aspects of hot exhaust emissions rates of Europe are found in
+the EMEP/EEA guidebook.
 
-Indices which are not defined are typeset in italic font (x, y, z, a, b,
-c)
+\subsubsection{Emission estimates}
 
-Items/objects which are defined are typeset in roman font (Car A, Car B)
-
-Descriptions/specifications which are defined by itself are typeset in
-roman font (abs, rel, ref, tot, net, ice)
-
-Abbreviations from 2 letters are typeset in roman font (RH, LAI)
-
-Vectors are identified in bold italic font using \vec{x}
-
-Matrices are identified in bold roman font
-
-Multiplication signs are typeset using the LaTeX commands
-\texttt{\textbackslash{}times} (for vector products, grids, and
-exponential notations) or \texttt{\textbackslash{}cdot}
-
-The character * should not be applied as mutliplication sign
-
-\subsection{EQUATIONS}
-
-\subsubsection{Single-row equation}
-
-Unnumbered equations (i.e.~using \texttt{\$\$} and getting inline
-preview in RStudio) are not supported by Copernicus.
+The estimates of hot exhaust emissions for each trip is given by
 
 \begin{equation}
-1 \times 1 \cdot 1 = 42
+EH_{i,j,k,l} = L_i\times EF_{i,j,k,l}
 \end{equation}
 
-\begin{equation}
-A = \pi r^2
-\end{equation}
+where \(EH_{i,j,k,l}\) is the emission for the street link \(i\),
+vehicle category \(j\), fuel \(k\) and age \(l\); \(L_i\) is the length
+of the street link \(i\)(km); \(EF_{i,j,k,l}\) is the emission factor
+(g/km). In order to evaluate emissions spatially, the overall emissions
+are allocated into a 350m resolution grid (H3 resolution from Uber).
 
-\begin{equation}
-x=\frac{2b\pm\sqrt{b^{2}-4ac}}{2c}.  
-\end{equation}
+\subsubsection{Emission post-processing}
 
-\subsubsection{Multiline equation}
+Subsubsection text here.
 
-\begin{align}
-& 3 + 5 = 8\\
-& 3 + 5 = 8\\
-& 3 + 5 = 8
-\end{align}
+\section{Estimate Curitiba's emissions using GTFS2emis model}
 
-\subsection{MATRICES}
+\subsection{Traffic data for Curitiba}
 
-\[
-\begin{matrix}
-x & y & z\\
-x & y & z\\
-x & y & z\\
-\end{matrix}
-\]
+\subsection{Emission factors}
 
-\subsection{ALGORITHM/PROGRAMMING CODE}
+\subsection{Emission estimates}
 
-If you want to use algorithms, you need to make sure yourself that the
-\LaTeX packages \texttt{algorithms} and \texttt{algorithmicx} are
-installed so that \texttt{algorithm.sty} respectively
-\texttt{algorithmic.sty} can be loaded by the Copernicus template. Both
-need to be available through your preferred \LaTeX{} distribution. With
-TinyTeX (or TeX Live), you can do so by running
-\texttt{tinytex::tlmgr\_install(c("algorithms",\ "algorithmicx"))}
-
-Copernicus staff will no accept any additional packages from your LaTeX
-source code, so please stick to these two acceptable packages. They are
-needed to use the example below
-
-\begin{algorithm}
-\caption{Algorithm Caption}
-\label{a1}
-\begin{algorithmic}
-\STATE $i\gets 10$
-\IF {$i\geq 5$} 
-        \STATE $i\gets i-1$
-\ELSE
-        \IF {$i\leq 3$}
-                \STATE $i\gets i+2$
-        \ENDIF
-\ENDIF
-\end{algorithmic}
-\end{algorithm}
-
-\subsection{CHEMICAL FORMULAS AND REACTIONS}
-
-For formulas embedded in the text, please use
-\texttt{\textbackslash{}chem\{\}}, e.g.~\chem{A \rightarrow B}.
-
-The reaction environment creates labels including the letter R,
-i.e.~(R1), (R2), etc.
-
-\begin{itemize}
-\item
-  \texttt{\textbackslash{}rightarrow} should be used for normal
-  (one-way) chemical reactions
-\item
-  \texttt{\textbackslash{}rightleftharpoons} should be used for
-  equilibria
-\item
-  \texttt{\textbackslash{}leftrightarrow} should be used for resonance
-  structures
-\end{itemize}
-
-\begin{reaction}
-A \rightarrow B \\
-\end{reaction}
-\begin{reaction}
-Coper \rightleftharpoons nicus \\
-\end{reaction}
-\begin{reaction}
-Publi \leftrightarrow cations
-\end{reaction}
-
-\subsection{PHYSICAL UNITS}
-
-Please use \texttt{\textbackslash{}unit\{\}} (allows to save the
-math/\texttt{\$} environment) and apply the exponential notation, for
-example \(3.14\,\unit{km\,h^{-1}}\) (using LaTeX mode:
-\texttt{\textbackslash{}(\ 3.14\textbackslash{},\textbackslash{}unit\{...\}\ \textbackslash{})})
-or \unit{0.872\,m\,s^{-1}} (using only
-\texttt{\textbackslash{}unit\{0.872\textbackslash{},m\textbackslash{},s\^{}\{-1\}\}}).
-
-\conclusions[Conclusions]
-
-The conclusion goes here. You can modify the section name with
-\texttt{\textbackslash{}conclusions{[}modified\ heading\ if\ necessary{]}}.
+\conclusions[Discussions and Conclusions]
 
 
 
@@ -534,7 +453,7 @@ Thanks to the rticles contributors!
 %% authors experienced with BibTeX only have to include the following two lines:
 %%
 \bibliographystyle{copernicus}
-\bibliography{sample.bib}
+\bibliography{global-pt-emission.bib}
 %%
 %% URLs and DOIs can be entered in your BibTeX file as:
 %%
