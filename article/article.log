@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.5.12)  17 SEP 2021 10:27
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.5.12)  28 SEP 2021 15:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -3393,14 +3393,388 @@ LaTeX Font Info:    Font shape `T1/phv/m/n' will be
 (Font)              scaled to size 8.54997pt on input line 126.
 [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 287.
-[3] [4] [5]
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 412.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 298.
+[4]
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 379.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-) (./article.bbl [6] [7]
+)
+Overfull \hbox (24.38623pt too wide) in paragraph at lines 413--413
+[]\T1/pcr/m/n/10 gtfs_path <- "../../../Dropbox/IPEA/gtfs2gps/data-raw/gtfs/gtf
+s_spo_sptrans_2019-10.zip"[] 
+ []
+
+[5]
+Overfull \hbox (30112.38623pt too wide) in paragraph at lines 428--428
+[]\T1/pcr/m/n/10 ## Downloading: 770 B     Downloading: 770 B     Downloading: 
+1.6 kB     Downloading: 1.6 kB     Downloading: 1.8 kB     Downloading: 1.8 kB 
+    Downloading: 1.9 kB     Downloading: 1.9 kB     Downloading: 1.9 kB     Dow
+nloading: 1.9 kB     Downloading: 2 kB     Downloading: 2 kB     Downloading: 2
+ kB     Downloading: 2 kB     Downloading: 2.1 kB     Downloading: 2.1 kB     D
+ownloading: 2.1 kB     Downloading: 2.1 kB     Downloading: 3.9 kB     Download
+ing: 3.9 kB     Downloading: 4.4 kB     Downloading: 4.4 kB     Downloading: 4.
+4 kB     Downloading: 4.4 kB     Downloading: 13 kB     Downloading: 13 kB     
+Downloading: 13 kB     Downloading: 13 kB     Downloading: 13 kB     Downloadin
+g: 13 kB     Downloading: 21 kB     Downloading: 21 kB     Downloading: 21 kB  
+   Downloading: 21 kB     Downloading: 21 kB     Downloading: 21 kB     Downloa
+ding: 29 kB     Downloading: 29 kB     Downloading: 29 kB     Downloading: 29 k
+B     Downloading: 29 kB     Downloading: 29 kB     Downloading: 37 kB     Down
+loading: 37 kB     Downloading: 37 kB     Downloading: 37 kB     Downloading: 3
+7 kB     Downloading: 37 kB     Downloading: 45 kB     Downloading: 45 kB     D
+ownloading: 45 kB     Downloading: 45 kB     Downloading: 45 kB     Downloading
+: 45 kB     Downloading: 53 kB     Downloading: 53 kB     Downloading: 53 kB   
+  Downloading: 53 kB     Downloading: 53 kB     Downloading: 53 kB     Download
+ing: 53 kB     Downloading: 53 kB     Downloading: 53 kB     Downloading: 53 kB
+     Downloading: 61 kB     Downloading: 61 kB     Downloading: 61 kB     Downl
+oading: 61 kB     Downloading: 61 kB     Downloading: 61 kB     Downloading: 61
+ kB     Downloading: 61 kB     Downloading: 69 kB     Downloading: 69 kB     Do
+wnloading: 69 kB     Downloading: 69 kB     Downloading: 69 kB     Downloading:
+ 69 kB     Downloading: 77 kB     Downloading: 77 kB     Downloading: 77 kB    
+ Downloading: 77 kB     Downloading: 77 kB     Downloading: 77 kB     Downloadi
+ng: 85 kB     Downloading: 85 kB     Downloading: 85 kB     Downloading: 85 kB 
+    Downloading: 85 kB     Downloading: 85 kB     Downloading: 85 kB     Downlo
+ading: 85 kB     Downloading: 85 kB     Downloading: 85 kB     Downloading: 94 
+kB     Downloading: 94 kB     Downloading: 94 kB     Downloading: 94 kB     Dow
+nloading: 94 kB     Downloading: 94 kB     Downloading: 100 kB     Downloading:
+ 100 kB     Downloading: 100 kB     Downloading: 100 kB     Downloading: 100 kB
+     Downloading: 100 kB     Downloading: 110 kB     Downloading: 110 kB     Do
+wnloading: 110 kB     Downloading: 110 kB     Downloading: 110 kB     Downloadi
+ng: 110 kB     Downloading: 120 kB     Downloading: 120 kB     Downloading: 120
+ kB     Downloading: 120 kB     Downloading: 120 kB     Downloading: 120 kB    
+ Downloading: 120 kB     Downloading: 120 kB     Downloading: 120 kB     Downlo
+ading: 120 kB     Downloading: 130 kB     Downloading: 130 kB     Downloading: 
+130 kB     Downloading: 130 kB     Downloading: 130 kB     Downloading: 130 kB 
+    Downloading: 130 kB     Downloading: 130 kB     Downloading: 130 kB     Dow
+nloading: 130 kB     Downloading: 130 kB     Downloading: 130 kB     Downloadin
+g: 130 kB     Downloading: 130 kB     Downloading: 130 kB     Downloading: 130 
+kB     Downloading: 140 kB     Downloading: 140 kB     Downloading: 140 kB     
+Downloading: 140 kB     Downloading: 140 kB     Downloading: 140 kB     Downloa
+ding: 150 kB     Downloading: 150 kB     Downloading: 150 kB     Downloading: 1
+50 kB     Downloading: 150 kB     Downloading: 150 kB     Downloading: 150 kB  
+   Downloading: 150 kB     Downloading: 160 kB     Downloading: 160 kB     Down
+loading: 160 kB     Downloading: 160 kB     Downloading: 160 kB     Downloading
+: 160 kB     Downloading: 170 kB     Downloading: 170 kB     Downloading: 170 k
+B     Downloading: 170 kB     Downloading: 170 kB     Downloading: 170 kB     D
+ownloading: 170 kB     Downloading: 170 kB     Downloading: 170 kB     Download
+ing: 170 kB     Downloading: 170 kB     Downloading: 170 kB     Downloading: 17
+0 kB     Downloading: 170 kB     Downloading: 170 kB     Downloading: 170 kB   
+  Downloading: 180 kB     Downloading: 180 kB     Downloading: 180 kB     Downl
+oading: 180 kB     Downloading: 180 kB     Downloading: 180 kB     Downloading:
+ 190 kB     Downloading: 190 kB     Downloading: 190 kB     Downloading: 190 kB
+     Downloading: 190 kB     Downloading: 190 kB     Downloading: 200 kB     Do
+wnloading: 200 kB     Downloading: 200 kB     Downloading: 200 kB     Downloadi
+ng: 200 kB     Downloading: 200 kB     Downloading: 210 kB     Downloading: 210
+ kB     Downloading: 210 kB     Downloading: 210 kB     Downloading: 210 kB    
+ Downloading: 210 kB     Downloading: 210 kB     Downloading: 210 kB     Downlo
+ading: 210 kB     Downloading: 210 kB     Downloading: 210 kB     Downloading: 
+210 kB     Downloading: 220 kB     Downloading: 220 kB     Downloading: 220 kB 
+    Downloading: 220 kB     Downloading: 220 kB     Downloading: 220 kB     Dow
+nloading: 220 kB     Downloading: 220 kB     Downloading: 230 kB     Downloadin
+g: 230 kB     Downloading: 230 kB     Downloading: 230 kB     Downloading: 230 
+kB     Downloading: 230 kB     Downloading: 240 kB     Downloading: 240 kB     
+Downloading: 240 kB     Downloading: 240 kB     Downloading: 240 kB     Downloa
+ding: 240 kB     Downloading: 240 kB     Downloading: 240 kB     Downloading: 2
+40 kB     Downloading: 240 kB     Downloading: 250 kB     Downloading: 250 kB  
+   Downloading: 250 kB     Downloading: 250 kB     Downloading: 250 kB     Down
+loading: 250 kB     Downloading: 260 kB     Downloading: 260 kB     Downloading
+: 260 kB     Downloading: 260 kB     Downloading: 260 kB     Downloading: 260 k
+B     Downloading: 260 kB     Downloading: 260 kB     Downloading: 260 kB     D
+ownloading: 260 kB     Downloading: 260 kB     Downloading: 260 kB     Download
+ing: 270 kB     Downloading: 270 kB     Downloading: 270 kB     Downloading: 27
+0 kB     Downloading: 270 kB     Downloading: 270 kB     Downloading: 280 kB   
+  Downloading: 280 kB     Downloading: 280 kB     Downloading: 280 kB     Downl
+oading: 280 kB     Downloading: 280 kB     Downloading: 290 kB     Downloading:
+ 290 kB     Downloading: 290 kB     Downloading: 290 kB     Downloading: 290 kB
+     Downloading: 290 kB     Downloading: 300 kB     Downloading: 300 kB     Do
+wnloading: 300 kB     Downloading: 300 kB     Downloading: 300 kB     Downloadi
+ng: 300 kB     Downloading: 300 kB     Downloading: 300 kB     Downloading: 300
+ kB     Downloading: 300 kB     Downloading: 300 kB     Downloading: 300 kB    
+ Downloading: 310 kB     Downloading: 310 kB     Downloading: 310 kB     Downlo
+ading: 310 kB     Downloading: 310 kB     Downloading: 310 kB     Downloading: 
+310 kB     Downloading: 310 kB     Downloading: 310 kB     Downloading: 310 kB 
+    Downloading: 320 kB     Downloading: 320 kB     Downloading: 320 kB     Dow
+nloading: 320 kB     Downloading: 320 kB     Downloading: 320 kB     Downloadin
+g: 330 kB     Downloading: 330 kB     Downloading: 330 kB     Downloading: 330 
+kB     Downloading: 330 kB     Downloading: 330 kB     Downloading: 340 kB     
+Downloading: 340 kB     Downloading: 340 kB     Downloading: 340 kB     Downloa
+ding: 340 kB     Downloading: 340 kB     Downloading: 340 kB     Downloading: 3
+40 kB     Downloading: 340 kB     Downloading: 340 kB     Downloading: 340 kB  
+   Downloading: 340 kB     Downloading: 340 kB     Downloading: 340 kB     Down
+loading: 340 kB     Downloading: 340 kB     Downloading: 350 kB     Downloading
+: 350 kB     Downloading: 350 kB     Downloading: 350 kB     Downloading: 350 k
+B     Downloading: 350 kB     Downloading: 360 kB     Downloading: 360 kB     D
+ownloading: 360 kB     Downloading: 360 kB     Downloading: 360 kB     Download
+ing: 360 kB     Downloading: 370 kB     Downloading: 370 kB     Downloading: 37
+0 kB     Downloading: 370 kB     Downloading: 370 kB     Downloading: 370 kB   
+  Downloading: 380 kB     Downloading: 380 kB     Downloading: 380 kB     Downl
+oading: 380 kB     Downloading: 380 kB     Downloading: 380 kB     Downloading:
+ 380 kB     Downloading: 380 kB     Downloading: 380 kB     Downloading: 380 kB
+     Downloading: 380 kB     Downloading: 380 kB     Downloading: 390 kB     Do
+wnloading: 390 kB     Downloading: 390 kB     Downloading: 390 kB     Downloadi
+ng: 390 kB     Downloading: 390 kB     Downloading: 390 kB     Downloading: 390
+ kB     Downloading: 400 kB     Downloading: 400 kB     Downloading: 400 kB    
+ Downloading: 400 kB     Downloading: 400 kB     Downloading: 400 kB     Downlo
+ading: 410 kB     Downloading: 410 kB     Downloading: 410 kB     Downloading: 
+410 kB     Downloading: 410 kB     Downloading: 410 kB     Downloading: 420 kB 
+    Downloading: 420 kB     Downloading: 420 kB     Downloading: 420 kB     Dow
+nloading: 420 kB     Downloading: 420 kB     Downloading: 420 kB     Downloadin
+g: 420 kB     Downloading: 420 kB     Downloading: 420 kB     Downloading: 430 
+kB     Downloading: 430 kB     Downloading: 430 kB     Downloading: 430 kB     
+Downloading: 430 kB     Downloading: 430 kB     Downloading: 430 kB     Downloa
+ding: 430 kB     Downloading: 430 kB     Downloading: 430 kB     Downloading: 4
+30 kB     Downloading: 430 kB     Downloading: 430 kB     Downloading: 430 kB  
+   Downloading: 430 kB     Downloading: 430 kB     Downloading: 440 kB     Down
+loading: 440 kB     Downloading: 440 kB     Downloading: 440 kB     Downloading
+: 440 kB     Downloading: 440 kB     Downloading: 450 kB     Downloading: 450 k
+B     Downloading: 450 kB     Downloading: 450 kB     Downloading: 450 kB     D
+ownloading: 450 kB     Downloading: 460 kB     Downloading: 460 kB     Download
+ing: 460 kB     Downloading: 460 kB     Downloading: 460 kB     Downloading: 46
+0 kB     Downloading: 470 kB     Downloading: 470 kB     Downloading: 470 kB   
+  Downloading: 470 kB     Downloading: 470 kB     Downloading: 470 kB     Downl
+oading: 470 kB     Downloading: 470 kB     Downloading: 470 kB     Downloading:
+ 470 kB     Downloading: 470 kB     Downloading: 470 kB     Downloading: 480 kB
+     Downloading: 480 kB     Downloading: 480 kB     Downloading: 480 kB     Do
+wnloading: 480 kB     Downloading: 480 kB     Downloading: 490 kB     Downloadi
+ng: 490 kB     Downloading: 490 kB     Downloading: 490 kB     Downloading: 490
+ kB     Downloading: 490 kB     Downloading: 500 kB     Downloading: 500 kB    
+ Downloading: 500 kB     Downloading: 500 kB     Downloading: 500 kB     Downlo
+ading: 500 kB     Downloading: 510 kB     Downloading: 510 kB     Downloading: 
+510 kB     Downloading: 510 kB     Downloading: 510 kB     Downloading: 510 kB 
+    Downloading: 510 kB     Downloading: 510 kB     Downloading: 510 kB     Dow
+nloading: 510 kB     Downloading: 510 kB     Downloading: 510 kB     Downloadin
+g: 520 kB     Downloading: 520 kB     Downloading: 520 kB     Downloading: 520 
+kB     Downloading: 520 kB     Downloading: 520 kB     Downloading: 530 kB     
+Downloading: 530 kB     Downloading: 530 kB     Downloading: 530 kB     Downloa
+ding: 530 kB     Downloading: 530 kB     Downloading: 540 kB     Downloading: 5
+40 kB     Downloading: 540 kB     Downloading: 540 kB     Downloading: 540 kB  
+   Downloading: 540 kB     Downloading: 550 kB     Downloading: 550 kB     Down
+loading: 550 kB     Downloading: 550 kB     Downloading: 550 kB     Downloading
+: 550 kB     Downloading: 550 kB     Downloading: 550 kB     Downloading: 550 k
+B     Downloading: 550 kB     Downloading: 550 kB     Downloading: 550 kB     D
+ownloading: 560 kB     Downloading: 560 kB     Downloading: 560 kB     Download
+ing: 560 kB     Downloading: 560 kB     Downloading: 560 kB     Downloading: 57
+0 kB     Downloading: 570 kB     Downloading: 570 kB     Downloading: 570 kB   
+  Downloading: 570 kB     Downloading: 570 kB     Downloading: 580 kB     Downl
+oading: 580 kB     Downloading: 580 kB     Downloading: 580 kB     Downloading:
+ 580 kB     Downloading: 580 kB     Downloading: 590 kB     Downloading: 590 kB
+     Downloading: 590 kB     Downloading: 590 kB     Downloading: 590 kB     Do
+wnloading: 590 kB     Downloading: 600 kB     Downloading: 600 kB     Downloadi
+ng: 600 kB     Downloading: 600 kB     Downloading: 600 kB     Downloading: 600
+ kB     Downloading: 600 kB     Downloading: 600 kB     Downloading: 600 kB    
+ Downloading: 600 kB     Downloading: 600 kB     Downloading: 600 kB     Downlo
+ading: 610 kB     Downloading: 610 kB     Downloading: 610 kB     Downloading: 
+610 kB     Downloading: 610 kB     Downloading: 610 kB     Downloading: 620 kB 
+    Downloading: 620 kB     Downloading: 620 kB     Downloading: 620 kB     Dow
+nloading: 620 kB     Downloading: 620 kB     Downloading: 630 kB     Downloadin
+g: 630 kB     Downloading: 630 kB     Downloading: 630 kB     Downloading: 630 
+kB     Downloading: 630 kB     Downloading: 640 kB     Downloading: 640 kB     
+Downloading: 640 kB     Downloading: 640 kB     Downloading: 640 kB     Downloa
+ding: 640 kB     Downloading: 640 kB     Downloading: 640 kB     Downloading: 6
+40 kB     Downloading: 640 kB     Downloading: 640 kB     Downloading: 640 kB  
+   Downloading: 650 kB     Downloading: 650 kB     Downloading: 650 kB     Down
+loading: 650 kB     Downloading: 650 kB     Downloading: 650 kB     Downloading
+: 660 kB     Downloading: 660 kB     Downloading: 660 kB     Downloading: 660 k
+B     Downloading: 660 kB     Downloading: 660 kB     Downloading: 670 kB     D
+ownloading: 670 kB     Downloading: 670 kB     Downloading: 670 kB     Download
+ing: 670 kB     Downloading: 670 kB     Downloading: 680 kB     Downloading: 68
+0 kB     Downloading: 680 kB     Downloading: 680 kB     Downloading: 680 kB   
+  Downloading: 680 kB     Downloading: 680 kB     Downloading: 680 kB     Downl
+oading: 680 kB     Downloading: 680 kB     Downloading: 680 kB     Downloading:
+ 680 kB     Downloading: 690 kB     Downloading: 690 kB     Downloading: 690 kB
+     Downloading: 690 kB     Downloading: 690 kB     Downloading: 690 kB     Do
+wnloading: 700 kB     Downloading: 700 kB     Downloading: 700 kB     Downloadi
+ng: 700 kB     Downloading: 700 kB     Downloading: 700 kB     Downloading: 710
+ kB     Downloading: 710 kB     Downloading: 710 kB     Downloading: 710 kB    
+ Downloading: 710 kB     Downloading: 710 kB     Downloading: 720 kB     Downlo
+ading: 720 kB     Downloading: 720 kB     Downloading: 720 kB     Downloading: 
+720 kB     Downloading: 720 kB     Downloading: 720 kB     Downloading: 720 kB 
+    Downloading: 720 kB     Downloading: 720 kB     Downloading: 720 kB     Dow
+nloading: 720 kB     Downloading: 730 kB     Downloading: 730 kB     Downloadin
+g: 730 kB     Downloading: 730 kB     Downloading: 730 kB     Downloading: 730 
+kB     Downloading: 740 kB     Downloading: 740 kB     Downloading: 740 kB     
+Downloading: 740 kB     Downloading: 740 kB     Downloading: 740 kB     Downloa
+ding: 750 kB     Downloading: 750 kB     Downloading: 750 kB     Downloading: 7
+50 kB     Downloading: 750 kB     Downloading: 750 kB     Downloading: 760 kB  
+   Downloading: 760 kB     Downloading: 760 kB     Downloading: 760 kB     Down
+loading: 760 kB     Downloading: 760 kB     Downloading: 770 kB     Downloading
+: 770 kB     Downloading: 770 kB     Downloading: 770 kB     Downloading: 770 k
+B     Downloading: 770 kB     Downloading: 770 kB     Downloading: 770 kB     D
+ownloading: 770 kB     Downloading: 770 kB     Downloading: 770 kB     Download
+ing: 770 kB     Downloading: 780 kB     Downloading: 780 kB     Downloading: 78
+0 kB     Downloading: 780 kB     Downloading: 780 kB     Downloading: 780 kB   
+  Downloading: 790 kB     Downloading: 790 kB     Downloading: 790 kB     Downl
+oading: 790 kB     Downloading: 790 kB     Downloading: 790 kB     Downloading:
+ 800 kB     Downloading: 800 kB     Downloading: 800 kB     Downloading: 800 kB
+     Downloading: 800 kB     Downloading: 800 kB     Downloading: 810 kB     Do
+wnloading: 810 kB     Downloading: 810 kB     Downloading: 810 kB     Downloadi
+ng: 810 kB     Downloading: 810 kB     Downloading: 810 kB     Downloading: 810
+ kB     Downloading: 810 kB     Downloading: 810 kB     Downloading: 810 kB    
+ Downloading: 810 kB     Downloading: 820 kB     Downloading: 820 kB     Downlo
+ading: 820 kB     Downloading: 820 kB     Downloading: 820 kB     Downloading: 
+820 kB     Downloading: 830 kB     Downloading: 830 kB     Downloading: 830 kB 
+    Downloading: 830 kB     Downloading: 830 kB     Downloading: 830 kB     Dow
+nloading: 840 kB     Downloading: 840 kB     Downloading: 840 kB     Downloadin
+g: 840 kB     Downloading: 840 kB     Downloading: 840 kB     Downloading: 850 
+kB     Downloading: 850 kB     Downloading: 850 kB     Downloading: 850 kB     
+Downloading: 850 kB     Downloading: 850 kB     Downloading: 850 kB     Downloa
+ding: 850 kB     Downloading: 850 kB     Downloading: 850 kB     Downloading: 8
+50 kB     Downloading: 850 kB     Downloading: 860 kB     Downloading: 860 kB  
+   Downloading: 860 kB     Downloading: 860 kB     Downloading: 860 kB     Down
+loading: 860 kB     Downloading: 870 kB     Downloading: 870 kB     Downloading
+: 870 kB     Downloading: 870 kB     Downloading: 870 kB     Downloading: 870 k
+B     Downloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     D
+ownloading: 880 kB     Downloading: 880 kB     Downloading: 880 kB     Download
+ing: 890 kB     Downloading: 890 kB     Downloading: 890 kB     Downloading: 89
+0 kB     Downloading: 890 kB     Downloading: 890 kB     Downloading: 900 kB   
+  Downloading: 900 kB     Downloading: 900 kB     Downloading: 900 kB     Downl
+oading: 900 kB     Downloading: 900 kB     Downloading: 900 kB     Downloading:
+ 900 kB     Downloading: 900 kB     Downloading: 900 kB     Downloading: 900 kB
+     Downloading: 900 kB     Downloading: 910 kB     Downloading: 910 kB     Do
+wnloading: 910 kB     Downloading: 910 kB     Downloading: 910 kB     Downloadi
+ng: 910 kB     Downloading: 920 kB     Downloading: 920 kB     Downloading: 920
+ kB     Downloading: 920 kB     Downloading: 920 kB     Downloading: 920 kB    
+ Downloading: 930 kB     Downloading: 930 kB     Downloading: 930 kB     Downlo
+ading: 930 kB     Downloading: 930 kB     Downloading: 930 kB     Downloading: 
+940 kB     Downloading: 940 kB     Downloading: 940 kB     Downloading: 940 kB 
+    Downloading: 940 kB     Downloading: 940 kB     Downloading: 940 kB     Dow
+nloading: 940 kB     Downloading: 940 kB     Downloading: 940 kB     Downloadin
+g: 940 kB     Downloading: 940 kB     Downloading: 950 kB     Downloading: 950 
+kB     Downloading: 950 kB     Downloading: 950 kB     Downloading: 950 kB     
+Downloading: 950 kB     Downloading: 960 kB     Downloading: 960 kB     Downloa
+ding: 960 kB     Downloading: 960 kB     Downloading: 960 kB     Downloading: 9
+60 kB     Downloading: 970 kB     Downloading: 970 kB     Downloading: 970 kB  
+   Downloading: 970 kB     Downloading: 970 kB     Downloading: 970 kB     Down
+loading: 980 kB     Downloading: 980 kB     Downloading: 980 kB     Downloading
+: 980 kB     Downloading: 980 kB     Downloading: 980 kB     Downloading: 980 k
+B     Downloading: 980 kB     Downloading: 980 kB     Downloading: 980 kB     D
+ownloading: 980 kB     Downloading: 980 kB     Downloading: 990 kB     Download
+ing: 990 kB     Downloading: 990 kB     Downloading: 990 kB     Downloading: 99
+0 kB     Downloading: 990 kB     Downloading: 1 MB     Downloading: 1 MB     Do
+wnloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 
+MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downlo
+ading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB  
+   Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloadin
+g: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     D
+ownloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1
+ MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downl
+oading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB 
+    Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloadi
+ng: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     
+Downloading: 1 MB     Downloading: 1 MB     Downloading: 1 MB     Downloading: 
+1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB   
+  Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downl
+oading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading:
+ 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB
+     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Do
+wnloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloadi
+ng: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1
+ MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB    
+ Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downlo
+ading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 
+1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB 
+    Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Dow
+nloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloadin
+g: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 
+MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     
+Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloa
+ding: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1
+.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB  
+   Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Down
+loading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading
+: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 M
+B     Downloading: 1.1 MB     Downloading: 1.1 MB     Downloading: 1.1 MB     D
+ownloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Download
+ing: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.
+2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB   
+  Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downl
+oading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading:
+ 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB
+     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Do
+wnloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloadi
+ng: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2
+ MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB    
+ Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downlo
+ading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 
+1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB 
+    Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Dow
+nloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloadin
+g: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 
+MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     
+Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloa
+ding: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1
+.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB  
+   Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Down
+loading: 1.2 MB     Downloading: 1.2 MB     Downloading: 1.2 MB     Downloading
+: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 M
+B     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     D
+ownloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Download
+ing: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.
+3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB   
+  Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downl
+oading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading:
+ 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB
+     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Do
+wnloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloadi
+ng: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3
+ MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB    
+ Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downlo
+ading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 
+1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB 
+    Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Dow
+nloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloadin
+g: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 
+MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     
+Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloa
+ding: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1
+.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB  
+   Downloading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.3 MB     Down
+loading: 1.3 MB     Downloading: 1.3 MB     Downloading: 1.4 MB     Downloading
+: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 M
+B     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     D
+ownloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Download
+ing: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.
+4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB   
+  Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downl
+oading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading:
+ 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB
+     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Do
+wnloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloadi
+ng: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4
+ MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB    
+ Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downlo
+ading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 
+1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB 
+    Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Dow
+nloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloadin
+g: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 MB     Downloading: 1.4 
+MB     Downloading: 1.4 MB[] 
+ []
+
+<article_files/figure-latex/view_gtfs_shape-1.pdf, id=119, 226.8475pt x 313.17p
+t>
+File: article_files/figure-latex/view_gtfs_shape-1.pdf Graphic file (type pdf)
+<use article_files/figure-latex/view_gtfs_shape-1.pdf>
+Package pdftex.def Info: article_files/figure-latex/view_gtfs_shape-1.pdf  used
+ on input line 446.
+(pdftex.def)             Requested size: 226.84694pt x 313.16922pt.
+[6]
+Overfull \hbox (54.38623pt too wide) in paragraph at lines 489--489
+[]\T1/pcr/m/n/10 tmp_fleet <- readr::read_rds("../../../Dropbox/IPEA/gtfs2gps/d
+ata-raw/fleet/spo/bra_spo.rds")[] 
+ []
+
+[7 <./article_files/figure-latex/view_gtfs_shape-1.pdf>]
+<article_files/figure-latex/unnamed-chunk-2-1.pdf, id=138, 457.71pt x 313.17pt>
+
+File: article_files/figure-latex/unnamed-chunk-2-1.pdf Graphic file (type pdf)
+<use article_files/figure-latex/unnamed-chunk-2-1.pdf>
+Package pdftex.def Info: article_files/figure-latex/unnamed-chunk-2-1.pdf  used
+ on input line 491.
+(pdftex.def)             Requested size: 457.7089pt x 313.16922pt.
+[8 <./article_files/figure-latex/unnamed-chunk-2-1.pdf>] [9] (./article.bbl [10
+] [11]
 Underfull \hbox (badness 1028) in paragraph at lines 125--130
 []\T1/ptm/m/n/9 Targino, A. C., Krecl, P., Danziger Filho, J. E., Se-gura, J. F
 ., and Gib-son, M. D.: Spa-tial vari-abil-ity of on-bicycle black car-
@@ -3412,22 +3786,22 @@ Underfull \hbox (badness 1242) in paragraph at lines 142--146
 emic Stroke, Archives of In-ter-nal Medicine, 172, 229--234,
  []
 
-) [8]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 476.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 476.
+) [12]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 615.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 615.
 (./article.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 476.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 476.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 476.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 615.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 615.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 615.
  ) 
 Here is how much of TeX's memory you used:
- 13136 strings out of 492982
- 167657 string characters out of 6134896
- 309068 words of memory out of 5000000
- 16423 multiletter control sequences out of 15000+600000
+ 13156 strings out of 492982
+ 168259 string characters out of 6134896
+ 388668 words of memory out of 5000000
+ 16431 multiletter control sequences out of 15000+600000
  45958 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 43i,8n,40p,576b,517s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 43i,8n,40p,26962b,517s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/
@@ -3437,10 +3811,10 @@ rw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/u
 hvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/
 texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on article.pdf (8 pages, 116106 bytes).
+Output written on article.pdf (12 pages, 3298306 bytes).
 PDF statistics:
- 211 PDF objects out of 1000 (max. 8388607)
- 190 compressed objects within 2 object streams
- 62 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 251 PDF objects out of 1000 (max. 8388607)
+ 219 compressed objects within 3 object streams
+ 71 named destinations out of 1000 (max. 500000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
 
