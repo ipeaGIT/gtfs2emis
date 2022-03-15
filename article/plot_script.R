@@ -28,6 +28,8 @@ temp_routeid <- spo_gtfs$routes[route_type == 3,route_id]
 temp_shapeids <- spo_gtfs$trips[route_id %in% unique(temp_routeid),shape_id]
 spo_gtfs <- gtfs2gps::filter_by_shape_id(gtfs_data = spo_gtfs,
                                          shape_ids = unique(temp_shapeids))
+spo_gtfs1 <- gtfs2gps::filter_by_day(gtfs_data = spo_gtfs
+                                     ,days = "monday")
 
 # generate gps
 dir.create("article/data/gps_spo/")
@@ -75,6 +77,120 @@ gpsLine_speed_fix <- lapply(seq_along(files_gps),function(i){ # i = 1
                    ,file = paste0("article/data/gps_spo_linestring/",files_gps_names[i]))
   return(NULL)
 })
+
+# 3.1) Generall statistics ----
+
+files_gps <- list.files("article/data/gps_spo_linestring/",full.names = TRUE)
+files_gps_names <- list.files("article/data/gps_spo_linestring/",full.names = FALSE)
+
+gen_stats <- lapply(seq_along(files_gps),function(i){ # i = 1
+  
+  message(paste0("Stats of Linestring file '",files_gps_names[i],"'"))
+  
+  tmp_gps <- readr::read_rds(files_gps[i])
+  data.table::setDT(tmp_gps)
+  
+  stats_dt <- data.table::data.table(
+    "shape_id" = gsub(".rds","",files_gps_names[i])
+    ,"number_trips" = data.table::uniqueN(tmp_gps$trip_id)
+    ,"number_stop_id" = data.table::uniqueN(tmp_gps$from_stop_id)
+    ,"number_stop_id_per_trip" = data.table::uniqueN(tmp_gps$from_stop_id) / data.table::uniqueN(tmp_gps$trip_id)
+    ,"Q25" = quantile(tmp_gps$speed,.25,na.rm = TRUE)
+    ,"Q50" = quantile(tmp_gps$speed,.50,na.rm = TRUE)
+    ,"Q75" = quantile(tmp_gps$speed,.75,na.rm = TRUE)
+    ,"VTK" = units::set_units(sum(tmp_gps$dist),"km")
+    ,"VTK_per_trip" = units::set_units(sum(tmp_gps$dist) / data.table::uniqueN(tmp_gps$trip_id),"km")
+    ,"total_time" = units::set_units(sum(tmp_gps$dist/tmp_gps$speed,na.rm=TRUE),"h")
+  )
+  
+  
+  return(stats_dt)
+}) %>% data.table::rbindlist()
+
+gen_stats[,total_time := as.numeric(total_time) ]
+gen_stats[,lapply(.SD,weighted.mean,VTK)
+          ,.SDcols = c("Q25","Q50","Q75","VTK_per_trip","VTK")]
+gen_stats[,lapply(.SD,weighted.mean,as.numeric(VTK))
+          ,.SDcols = c("number_trips","total_time","number_stop_id")]
+gen_stats[,lapply(.SD,sum)
+          ,.SDcols = c("number_trips","total_time","VTK")]
+gen_stats$number_stop_id %>% sum()
+
+# 3.2) Plot GTFS trips -----
+
+
+# read Tiles & Boundaries
+my_tile <- readr::read_rds("article/data/bra_spo_mapbox.rds")
+my_bound <- readr::read_rds("article/data/bra_spo_boundary.rds")
+
+# bbox tile
+xtile <- max(my_tile$x) - min(my_tile$x)
+ytile <- max(my_tile$y) - min(my_tile$y)
+ratio_tile <- ytile/xtile
+
+# list-files
+gps_lines_sf <- gtfstools::convert_shapes_to_sf(gtfs = spo_gtfs)
+stops_sf <- gtfstools::convert_stops_to_sf(gtfs = spo_gtfs)
+
+# aggregate by sum
+stops_sf <- sf::st_transform(stops_sf,3857)
+gps_lines_sf <- sf::st_transform(gps_lines_sf,3857)
+gps_lines_sf$label <- "SPTRAN's shape_ids"
+
+# plot
+map_scale <- as.numeric(sf::st_bbox(my_bound)[3]) -  
+  as.numeric(sf::st_bbox(my_bound)[1])
+plot_scale <- 10
+xlim_coord <- c( min(my_tile$x), max(my_tile$x))
+ylim_coord <- c( min(my_tile$y), max(my_tile$y))
+
+# plot spatial
+ggplot() + 
+  # add raster
+  geom_raster(data = my_tile, aes(x, y, fill = hex), alpha = 1) +
+  coord_cartesian(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
+  coord_equal() +
+  scale_fill_identity() +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  # add gps_lines_sf
+  ggnewscale::new_scale_color() +
+  geom_sf(data = gps_lines_sf,aes(color = label)
+          ,alpha = 0.75, size = 0.55,fill = NA) +
+  scale_color_manual(values = "red",name = NULL,labels = "SPTRAN's shape_ids")+
+  # add boundary
+   ggnewscale::new_scale_color() +
+   geom_sf(data = my_bound,aes(color = city_name)
+           ,linetype = "dashed",alpha = 0.5, size = 0.35,fill = NA) +
+   scale_color_manual(values = "black",name = NULL
+                      ,labels = "City \nboundary")+
+  coord_sf(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
+  # labels and theme
+  labs(title = NULL
+       , color = NULL
+       , x = NULL
+       , y = NULL) +
+  theme(legend.position = c(0.9,0.1)) + 
+  theme_minimal() + 
+  theme_void() +
+  # map itens
+  ggsn::north(data = my_bound,
+              location = "topright",symbol = 12) +
+  ggsn::scalebar(x.min = sf::st_bbox(sf::st_transform(my_bound,3857))[1] %>% as.numeric(),
+                 x.max = sf::st_bbox(sf::st_transform(my_bound,3857))[3] %>% as.numeric(),
+                 y.min = sf::st_bbox(sf::st_transform(my_bound,3857))[2] %>% as.numeric(),
+                 y.max = sf::st_bbox(sf::st_transform(my_bound,3857))[4] %>% as.numeric(),
+                 dist = plot_scale,
+                 dist_unit = "km",st.size = 3,
+                 st.bottom = FALSE, st.color = "black",
+                 transform = FALSE, model = "WGS84") 
+# save
+ggplot2::ggsave(filename = "article/data/plots/basic_sptrans.png",
+                scale = 1.0,width = 18,
+                bg = "white",
+                height = 20,units = "cm",dpi = 300)
+
+
 
 # 4) Read fleet -----
 fleet_spo <- readr::read_rds("article/data/bra_spo_fleet.rds")
