@@ -11,6 +11,8 @@ library(gtfs2gps)
 library(gtfstools)
 library(mapview)
 library(gtfs2emis)
+library(extrafont)
+library(extrafontdb)
 
 # 1) GTFS2GPS ---------
 
@@ -28,8 +30,7 @@ temp_routeid <- spo_gtfs$routes[route_type == 3,route_id]
 temp_shapeids <- spo_gtfs$trips[route_id %in% unique(temp_routeid),shape_id]
 spo_gtfs <- gtfs2gps::filter_by_shape_id(gtfs_data = spo_gtfs,
                                          shape_ids = unique(temp_shapeids))
-spo_gtfs1 <- gtfs2gps::filter_by_day(gtfs_data = spo_gtfs
-                                     ,days = "monday")
+
 
 # generate gps
 dir.create("article/data/gps_spo/")
@@ -117,7 +118,7 @@ gen_stats[,lapply(.SD,sum)
 gen_stats$number_stop_id %>% sum()
 
 # 3.2) Plot GTFS trips -----
-
+# Needs to Run Code item 1) to reproduce this section
 
 # read Tiles & Boundaries
 my_tile <- readr::read_rds("article/data/bra_spo_mapbox.rds")
@@ -144,6 +145,14 @@ plot_scale <- 10
 xlim_coord <- c( min(my_tile$x), max(my_tile$x))
 ylim_coord <- c( min(my_tile$y), max(my_tile$y))
 
+# font
+
+# Download from
+# https://www.fontsquirrel.com/fonts/latin-modern-roman
+extrafont::font_import(paths = "/home/joaobazzo/Downloads/Latin-Modern-Roman-fontfacekit/")
+extrafont::fonts()
+
+
 # plot spatial
 ggplot() + 
   # add raster
@@ -159,18 +168,17 @@ ggplot() +
           ,alpha = 0.75, size = 0.55,fill = NA) +
   scale_color_manual(values = "red",name = NULL,labels = "SPTRAN's shape_ids")+
   # add boundary
-   ggnewscale::new_scale_color() +
-   geom_sf(data = my_bound,aes(color = city_name)
-           ,linetype = "dashed",alpha = 0.5, size = 0.35,fill = NA) +
-   scale_color_manual(values = "black",name = NULL
-                      ,labels = "City \nboundary")+
+  ggnewscale::new_scale_color() +
+  geom_sf(data = my_bound,aes(color = city_name)
+          ,linetype = "dashed",alpha = 0.5, size = 0.35,fill = NA) +
+  scale_color_manual(values = "black",name = NULL
+                     ,labels = "City boundary")+
   coord_sf(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
   # labels and theme
   labs(title = NULL
        , color = NULL
        , x = NULL
        , y = NULL) +
-  theme(legend.position = c(0.9,0.1)) + 
   theme_minimal() + 
   theme_void() +
   # map itens
@@ -181,12 +189,19 @@ ggplot() +
                  y.min = sf::st_bbox(sf::st_transform(my_bound,3857))[2] %>% as.numeric(),
                  y.max = sf::st_bbox(sf::st_transform(my_bound,3857))[4] %>% as.numeric(),
                  dist = plot_scale,
+                 #text = element_text(family = "LM Roman 10"),
+                 family = "LM Roman 10",
+                 fontface = "bold",
                  dist_unit = "km",st.size = 3,
                  st.bottom = FALSE, st.color = "black",
-                 transform = FALSE, model = "WGS84") 
+                 transform = FALSE, model = "WGS84") +
+  theme(legend.position = c(0.75,0.2),
+        text = element_text(family = "LM Roman 10"),
+        legend.box.background = element_rect(fill = "white",color = "white"),
+        legend.box.margin = margin(3,3,3,3, "pt")) 
 # save
 ggplot2::ggsave(filename = "article/data/plots/basic_sptrans.png",
-                scale = 1.0,width = 18,
+                scale = 0.7,width = 18,
                 bg = "white",
                 height = 20,units = "cm",dpi = 300)
 
@@ -368,10 +383,12 @@ ggplot(data = tmpTime1) +
            stat = "identity")+
   labs(title = NULL,
        x = "Hour",
-       y = paste0("PM10 (",getUnit_graphic,")")) + 
+       y = expression(PM[10][] (g)))+
+  #y = paste0("PM10 (",getUnit_graphic,")")) + 
   viridis::scale_fill_viridis(option = "D",direction = -1)+
   theme_minimal()+
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        text = element_text(family = "LM Roman 10"))
 
 ggplot2::ggsave(filename = "article/data/plots/temporal_PM10.png",
                 scale = 1.0,bg = "white",
@@ -447,8 +464,8 @@ ggplot() +
   coord_sf(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
   # labels and theme
   labs(title = NULL
-       , subtitle = paste0(colPol[j]," emissions")
-       , fill = paste0(colPol[j]," (",getUnit_map,")")
+       , subtitle =  NULL
+       , fill =  expression(PM[10][] (g))
        , color = NULL
        , x = NULL
        , y = NULL) +
@@ -463,12 +480,18 @@ ggplot() +
                  y.min = sf::st_bbox(sf::st_transform(my_bound,3857))[2] %>% as.numeric(),
                  y.max = sf::st_bbox(sf::st_transform(my_bound,3857))[4] %>% as.numeric(),
                  dist = plot_scale,
+                 family = "LM Roman 10",
+                 fontface = "bold",
                  dist_unit = "km",st.size = 3,
                  st.bottom = FALSE, st.color = "black",
-                 transform = FALSE, model = "WGS84") 
+                 transform = FALSE, model = "WGS84") +
+  theme(legend.position = c(0.8,0.15),
+        text = element_text(family = "LM Roman 10"),
+        legend.box.background = element_rect(fill = "white",color = "white"),
+        legend.box.margin = margin(3,3,3,3, "pt")) 
 # save
 ggplot2::ggsave(filename = sprintf("article/data/plots/spatial_%s.png",colPol[j]),
-                scale = 1.0,width = 18,
+                scale = 0.7,width = 18,
                 bg = "white",
                 height = 20,units = "cm",dpi = 300)
 
@@ -520,23 +543,33 @@ my_ef_plot <- data.table::melt.data.table(data = my_ef_bind
                                           ,id.vars = "source"
                                           ,measure.vars = c("PM10_2011","CO2_2011"))
 my_ef_plot[, variable := gsub("_2011","",variable)]
+my_ef_plot[, variable_f := dplyr::recode_factor(variable
+                                                , `CO2` = "CO[2]"
+                                                , `PM10` = "PM[10]")]
 my_ef_plot[, value := as.numeric(value)]
 my_ef_plot[, label := "data source"]
 
+#labeller_status <- c(CO2 = expression(CO[2][]),
+#                     PM10 = expression(PM[10][]))
 # plot
 ggplot(data = my_ef_plot) + 
-  geom_bar(aes(y= value,x = source,fill = source),stat = "identity",position = "dodge")+
-  facet_wrap(~variable,scales = "free")+
+  geom_bar(aes(y= value,x = source,fill = source)
+           ,stat = "identity",position = "dodge")+
+  facet_wrap(~variable_f
+             ,scales = "free"
+             , label = "label_parsed") +
   labs(fill = NULL,x = NULL,y = "EF (g/km)")+
-  viridis::scale_fill_viridis(discrete = TRUE,option = "H",alpha = 0.75)+
+  viridis::scale_fill_viridis(discrete = TRUE
+                              ,option = "H",alpha = 0.75) +
   theme_light()+
   guides(fill = "none")+
   scale_y_continuous(expand = expansion(mult = 0.05)) +
   theme(axis.text.x = element_text(size = 8)
+        ,text = element_text(family = "LM Roman 10")
         ,strip.text = element_text(colour = 'black'))
 
 # save
-ggsave(filename = "article/article_files/ef_plots.png"
+ggsave(filename = "article/data/plots/ef_plots.png"
        ,width = 36,height = 20,dpi = 300,units = "cm",scale = 0.5)
 
 # 11) Plot EF @ different speeds for NOx------
@@ -593,6 +626,9 @@ my_ef_plot <- data.table::melt.data.table(data = my_ef_bind
                                           ,id.vars = "source"
                                           ,measure.vars = c("PM10_Euro_V","CO2_Euro_V"))
 my_ef_plot[, variable := gsub("_Euro_V","",variable)]
+my_ef_plot[, variable_f := dplyr::recode_factor(variable
+                                                , `CO2` = "CO[2]"
+                                                , `PM10` = "PM[10]")]
 my_ef_plot[, value := as.numeric(value)]
 my_ef_plot[, label := "data source"]
 my_ef_plot[, speed := rep(seq(10,100,10),8)]
@@ -601,19 +637,117 @@ my_ef_plot[, speed := rep(seq(10,100,10),8)]
 ggplot(data = my_ef_plot) + 
   geom_line(aes(y= value,x = speed,color = source),lwd = 0.8)+
   geom_point(aes(y= value,x = speed,color = source))+
-  facet_wrap(~variable,scales = "free",ncol = 2)+
-  labs(color = "EF source",x = "Speed (km/h)",y = "EF (g/km)")+
+  facet_wrap(~variable_f
+             ,scales = "free"
+             , label = "label_parsed") +
+  labs(color = "Source",x = "Speed (km/h)",y = "EF (g/km)")+
   viridis::scale_color_viridis(discrete = TRUE,option = "H",alpha = 1)+
   theme_light()+
   scale_y_continuous(expand = expansion(mult = 0.05)) +
   theme(axis.text.x = element_text(size = 8)
-        ,strip.text = element_text(colour = 'black'))
+        ,text = element_text(family = "LM Roman 10")
+        ,strip.text = element_text(colour = 'black')
+        ,legend.position = c(0.9,0.75))
 
 # save
 ggsave(filename = "article/data/plots/ef_speed.png",scale = 1.3,
        width = 18,height = 8,units = "cm",dpi = 300)
 
-# 12) Plot Fleet of São Paulo ----
+# 13) Plot EF by age ----
+
+# CETESB
+my_ef_br_df <- gtfs2emis::ef_brazil(pollutant = c("PM10","CO2","NOx","NMHC")
+                                    ,veh_type = "BUS_URBAN_D"
+                                    ,model_year = c(2000:2019)
+                                    ,as_list = TRUE)
+my_ef_br_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_br_df
+                                    ,emi_vars = 'EF'
+                                    ,veh_vars = c('veh_type','years')
+                                    ,pol_vars = 'pollutant')
+my_ef_br_df$source <- "CETESB"
+my_ef_br_df[,years_n := as.numeric(as.character(years))]
+my_ef_br_df[pollutant == "NMHC",pollutant := "VOC"]
+
+# EMEP/EEA
+my_ef_eu_df <- gtfs2emis::ef_europe(speed =  units::set_units(34.12,"km/h")
+                                    ,veh_type = rep("Ubus Std 15 - 18 t",6)
+                                    ,euro = c("I", "II", "III", "IV", "V", "VI")
+                                    ,pollutant = c("PM10","CO2","NOx","VOC")
+                                    ,fuel = rep("D",6)
+                                    ,tech = c("-","-","-","SCR","SCR","SCR")
+                                    ,as_list = TRUE)
+my_ef_eu_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_eu_df
+                                    ,emi_vars = 'EF'
+                                    ,veh_vars = c("veh_type","euro","fuel","tech")
+                                    ,pol_vars = 'pollutant'
+                                    ,segment_vars = c('slope','load'))
+my_ef_eu_df$source <- "EEA"
+
+# EPA / MOVES
+my_ef_moves_df <- gtfs2emis::ef_usa_moves(pollutant = c("PM10","CO2","NOx","VOC")
+                                          ,model_year = c(2000:2018)
+                                          ,calendar_year = 2019
+                                          ,speed = units::set_units(34.12,"km/h")
+                                          ,fuel_type = "D"
+                                          ,as_list = TRUE)
+names(my_ef_moves_df)
+my_ef_moves_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_moves_df
+                                       ,emi_vars = 'EF'
+                                       ,veh_vars = c('model_year','fuel')
+                                       ,pol_vars = 'pollutant')
+my_ef_moves_df$source <- "MOVES"
+my_ef_moves_df[,model_year_n := as.numeric(as.character(model_year))]
+
+# EMFAC
+my_ef_emfac_df <- gtfs2emis::ef_usa_emfac(pollutant =  c("PM10","CO2","NOx","ROG")
+                                          ,calendar_year = 2019
+                                          ,fuel = "D"
+                                          ,model_year = c(2005:2019)
+                                          ,speed = units::set_units(34.12,"km/h")
+                                          ,as_list = TRUE)
+my_ef_emfac_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_emfac_df
+                                       ,emi_vars = 'EF'
+                                       ,veh_vars = c('model_year','fuel')
+                                       ,pol_vars = 'pollutant')
+my_ef_emfac_df$source <- "EMFAC"
+my_ef_emfac_df[,model_year_n := as.numeric(as.character(model_year))]
+my_ef_emfac_df[pollutant == "ROG",pollutant := "VOC"]
+
+# rbind & process
+
+# rbind & process
+my_ef_bind <- list(my_ef_br_df,my_ef_emfac_df,my_ef_moves_df) %>% 
+  data.table::rbindlist(use.names = FALSE)
+
+
+my_ef_bind[, pollutant_f := dplyr::recode_factor(pollutant
+                                                 , `CO2` = "CO[2]"
+                                                 , `PM10` = "PM[10]"
+                                                 , `NOx` = "NO[x]"
+                                                 ,`VOC` = "VOC")]
+my_ef_bind[years_n > 2004] %>% 
+  ggplot() + 
+  geom_path(aes(y= as.numeric(EF),x = as.factor(years_n)
+                ,color = source,group = source))+
+  geom_point(aes(y= as.numeric(EF),x = as.factor(years_n)
+                 ,color = source))+
+  scale_color_manual(values = viridis::rocket(4))+
+  scale_x_discrete(breaks = c(seq(2005,2019,3),2019),
+                     labels = c(seq(2005,2019,3),2019))+
+  facet_wrap(facets = vars(pollutant_f),nrow = 2
+             ,scales = "free_y", label = "label_parsed")+
+  labs(x = "Fleet age",y = "EF (g/km)",color = "Source")+
+  theme_light()+
+  theme(axis.text.x = element_text(size = 8)
+        ,text = element_text(family = "LM Roman 10")
+        ,strip.text = element_text(colour = 'black')
+        ,legend.position = c(0.9,0.35))
+
+# save
+ggsave(filename = "article/data/plots/ef_age_plots.png"
+       ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
+
+# 14) Plot Fleet of São Paulo ----
 
 # read
 fleet_spo <- readr::read_rds("article/data/bra_spo_fleet.rds")
@@ -648,18 +782,13 @@ ggplot(data = fleet_spo[fuel == "Diesel"]) +
 ggplot(data = fleet_spo[fuel == "Diesel"]) + 
   geom_bar(aes(y= N,x = as.factor(year),fill = type_name_eu_f),stat = "identity"
            ,position = "dodge",width = 0.75)+
-  #facet_wrap(~fuel,scales = "free",ncol = 1)+
-  labs(x = "Year",fill = "Urban bus \ncategory",y = "Total number")+
+  labs(x = "Year",fill = "Urban bus category",y = "Total number of vehicles")+
   scale_fill_manual(values = viridis::turbo(n = 9,alpha = 0.85)[c(1,3,9)])+
-  #viridis::scale_fill_viridis(discrete = TRUE,option = "H",alpha = 0.85
-  #                            ,direction = -1)+
-  #viridis::scale_fill_viridis(discrete = TRUE,option = "G",alpha = 0.85
-  #                            ,direction = +1)+
   theme_light()+
-  #guides(fill = "none")+
-  #scale_y_continuous(expand = expansion(mult = 0.05)) +
   theme(axis.text.x = element_text(size = 8)
-        ,strip.text = element_text(colour = 'black'))
+        ,text = element_text(family = "LM Roman 10")
+        ,strip.text = element_text(colour = 'black')
+        ,legend.position = c(0.09,0.825))
 # save
 ggsave(filename = "article/data/plots/fleet_sp.png",scale = 1.3,
        width = 18,height = 8,units = "cm",dpi = 300)
