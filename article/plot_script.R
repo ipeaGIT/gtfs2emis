@@ -254,7 +254,10 @@ emission_estimate <- lapply(seq_along(files_gps),function(i){ # i = 1
                                , aggregate = FALSE
                                , as_list = TRUE)
   
-  # remove EF from list
+  # # add age to list
+  temp_emis$age = fleet_spo$EF
+  
+  # add EF to list
   temp_emis$EF = temp_ef$EF
   
   # cbind geometry and emisions
@@ -347,8 +350,55 @@ spatial_processing <- lapply(seq_along(files_gps),function(i){ # i = 1
   return(NULL)
 })
 
+# 8) Vehicle-age post-processing-----
 
-# 8) Plot temporal emissions ---------
+# This stage requires to run ## 4 - "Read fleet"
+dir.create("article/data/emi_age/")
+
+# list-files
+files_gps <- list.files(path = 'article/data/emissions/',full.names = TRUE)
+files_gps_names <- list.files(path = 'article/data/emissions/',full.names = FALSE)
+
+gc(reset = TRUE, full = TRUE)
+
+veh_age_processing <- lapply(seq_along(files_gps),function(i){ # i = 1
+  
+  message(paste0("Emi_age of file '",files_gps_names[i],"'"))
+  
+  # read
+  temp_emi <- readr::read_rds(files_gps[i])
+  
+  # add age of fleet
+  temp_emi$age <- rep(fleet_spo$year,uniqueN(temp_emi$pollutant))
+  #temp_emi$number_veh <- rep(fleet_spo$N,uniqueN(temp_emi$pollutant))
+  
+  # add VTK
+  temp_emi$VTK <- as.numeric(units::set_units(temp_emi$gps$dist,"km"))
+  
+  # emi_to_dt
+  temp_emi_dt <-  gtfs2emis::emi_to_dt(emi_list = temp_emi
+                                       , emi_vars = "emi"
+                                       , veh_vars = c("veh_type","euro"
+                                                      ,"fuel","tech","age")
+                                       , pol_vars = "pollutant"
+                                       , segment_vars = "VTK")
+  
+  # namePol <- unique(temp_emi_dt$pollutant)
+  data.table::setDT(temp_emi_dt)
+  # sum emissions
+  temp_emi_dt[,"total_emi" := sum(emi,na.rm = TRUE),by = c("veh_type","age","pollutant")]
+  temp_emi_dt[,"total_VTK" := sum(VTK,na.rm = TRUE),by = c("veh_type","age","pollutant")]
+  temp_emi_dt <- temp_emi_dt[,.SD[1], by = c("veh_type","age","pollutant")]
+  
+  # add VTK to vehicles
+  
+  # write
+  readr::write_rds(x = temp_emi_dt
+                   ,file = paste0("article/data/emi_age/",files_gps_names[i]),compress = 'gz')
+  return(NULL)
+})
+
+# 9) Plot temporal emissions ---------
 
 dir.create("article/data/plots/")
 
@@ -394,8 +444,97 @@ ggplot2::ggsave(filename = "article/data/plots/temporal_PM10.png",
                 scale = 1.0,bg = "white",
                 width = 18,height = 10,units = "cm",dpi = 300)
 
+# 10) Plot EF | MEF by age----------------
 
-# 9) Plot spatial emissions -----
+# list-files
+files_gps <- list.files(path = 'article/data/emi_age/',full.names = TRUE)
+files_gps_names <- list.files(path = 'article/data/emi_age/',full.names = FALSE)
+
+# read files
+tmp_my_age <- lapply(files_gps, readr::read_rds) %>% 
+  data.table::rbindlist()
+tmp_my_age[,emi := NULL]
+
+# aggregate by sum
+tmp_my_age <- tmp_my_age[
+  ,c("total_emi","total_VTK") := list(sum(total_emi),sum(total_VTK))
+  ,by =.(veh_type,age,pollutant)]
+
+tmp_my_age <- tmp_my_age[,.SD[1],by =.(veh_type,age,pollutant)]
+
+# fix/check names
+tmp_my_age[pollutant == "CO2",
+           emis := units::set_units(total_emi,"t") %>% as.numeric()]
+tmp_my_age[pollutant == "NOx"
+           ,emis := units::set_units(total_emi,"kg") %>% as.numeric()]
+tmp_my_age[pollutant == "CH4"
+           ,emis := units::set_units(total_emi,"g") %>% as.numeric()]
+tmp_my_age[pollutant == "PM10"
+           ,emis := units::set_units(total_emi,"g") %>% as.numeric()]
+
+# estimate MEF
+
+tmp_my_age[,mef := total_emi / units::set_units(total_VTK,"km")]
+
+# factors
+tmp_my_age[,age_f := factor(x = age,levels = 2008:2019)]
+tmp_my_age[, pollutant_f := dplyr::recode_factor(pollutant
+                                                 , `CO2` = "CO[2] (t)"
+                                                 , `PM10` = "PM[10] (g)"
+                                                 , `CH4` = "CH[4] (g)"
+                                                 , `NOx` = "NO[X](kg)")]
+tmp_my_age[, pollutant_meff := dplyr::recode_factor(pollutant
+                                                 , `CO2` = "CO[2]"
+                                                 , `PM10` = "PM[10]"
+                                                 , `CH4` = "CH[4]"
+                                                 , `NOx` = "NO[X]")]
+## a) Plot total_emi ----
+ggplot(data = tmp_my_age) + 
+  geom_bar(aes(y= emis,x = age_f,fill = veh_type)
+           ,stat = "identity",position = "dodge")+
+  facet_wrap(~pollutant_f
+             ,scales = "free"
+             , label = "label_parsed") +
+  labs(fill = NULL,x = "Year of fleet",y = "Emissions")+
+  scale_fill_manual(values = viridis::rocket(4))+
+  scale_x_discrete(breaks = c(seq(2008,2019,3),2019),
+                   labels = c(seq(2008,2019,3),2019))+
+  theme_light()+
+  scale_y_continuous(expand = expansion(mult = 0.05)) +
+  theme(axis.text.x = element_text(size = 8)
+        ,text = element_text(family = "LM Roman 10")
+        ,strip.text = element_text(colour = 'black')
+        ,legend.position = c(0.875,0.9))
+
+# save
+ggsave(filename = "article/data/plots/emissions_age.png"
+       ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
+
+
+## b) Plot MEF ----
+
+ggplot(data = tmp_my_age) + 
+  geom_bar(aes(y= as.numeric(mef),x = age_f,fill = veh_type)
+           ,stat = "identity",position = "dodge")+
+  facet_wrap(~pollutant_meff
+             ,scales = "free"
+             , label = "label_parsed") +
+  labs(fill = NULL,x = "Year of fleet",y = "Marginal Emission Factors (g/km)")+
+  scale_fill_manual(values = viridis::cividis(4))+
+  scale_x_discrete(breaks = c(seq(2008,2019,3),2019),
+                   labels = c(seq(2008,2019,3),2019))+
+  theme_light()+
+  scale_y_continuous(expand = expansion(mult = 0.05)) +
+  theme(axis.text.x = element_text(size = 8)
+        ,text = element_text(family = "LM Roman 10")
+        ,strip.text = element_text(colour = 'black')
+        ,legend.position = c(0.875,0.9))
+
+# save
+ggsave(filename = "article/data/plots/MEF_age.png"
+       ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
+
+# 11) Plot spatial emissions -----
 
 # read Tiles & Boundaries
 my_tile <- readr::read_rds("article/data/bra_spo_mapbox.rds")
@@ -496,7 +635,7 @@ ggplot2::ggsave(filename = sprintf("article/data/plots/spatial_%s.png",colPol[j]
                 height = 20,units = "cm",dpi = 300)
 
 
-# 10) Plot EF (@ speed = 34.12 kph) -----
+# 12) Plot EF (@ speed = 34.12 kph) -----
 
 
 # CETESB
@@ -572,7 +711,7 @@ ggplot(data = my_ef_plot) +
 ggsave(filename = "article/data/plots/ef_plots.png"
        ,width = 36,height = 20,dpi = 300,units = "cm",scale = 0.5)
 
-# 11) Plot EF @ different speeds for NOx------
+# 13) Plot EF @ different speeds for NOx------
 
 
 # CETESB
@@ -653,7 +792,7 @@ ggplot(data = my_ef_plot) +
 ggsave(filename = "article/data/plots/ef_speed.png",scale = 1.3,
        width = 18,height = 8,units = "cm",dpi = 300)
 
-# 13) Plot EF by age ----
+# 14) Plot EF by age ----
 
 # CETESB
 my_ef_br_df <- gtfs2emis::ef_brazil(pollutant = c("PM10","CO2","NOx","NMHC")
@@ -733,7 +872,7 @@ my_ef_bind[years_n > 2004] %>%
                  ,color = source))+
   scale_color_manual(values = viridis::rocket(4))+
   scale_x_discrete(breaks = c(seq(2005,2019,3),2019),
-                     labels = c(seq(2005,2019,3),2019))+
+                   labels = c(seq(2005,2019,3),2019))+
   facet_wrap(facets = vars(pollutant_f),nrow = 2
              ,scales = "free_y", label = "label_parsed")+
   labs(x = "Fleet age",y = "EF (g/km)",color = "Source")+
@@ -747,7 +886,7 @@ my_ef_bind[years_n > 2004] %>%
 ggsave(filename = "article/data/plots/ef_age_plots.png"
        ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
 
-# 14) Plot Fleet of São Paulo ----
+# 15) Plot Fleet of São Paulo ----
 
 # read
 fleet_spo <- readr::read_rds("article/data/bra_spo_fleet.rds")
@@ -792,3 +931,5 @@ ggplot(data = fleet_spo[fuel == "Diesel"]) +
 # save
 ggsave(filename = "article/data/plots/fleet_sp.png",scale = 1.3,
        width = 18,height = 8,units = "cm",dpi = 300)
+
+# End ----
