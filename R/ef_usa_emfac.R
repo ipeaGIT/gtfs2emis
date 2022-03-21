@@ -84,7 +84,7 @@ ef_usa_emfac <- function(pollutant, calendar_year, fuel = 'D', model_year, speed
                                                     fuel %in% tmp_fuel[j], ]
       # check condition
       if(dim(temp_emfac2)[1] == 0){
-        stop("Emission Factor do not exist. \nPlease check `data(usa)` for valid emission factors.")
+        stop("Emission Factor do not exist. \nPlease check `data(usa_emfac_db)` for valid emission factors.")
       }
       return(temp_emfac2[, ef])
     }) 

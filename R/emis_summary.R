@@ -150,7 +150,7 @@ emis_summary <- function(emi, emi_vars, by, time_column = NULL, pol_vars = NULL,
     tmp_dt[, time := data.table::hour(time)]
     
     # aggregate emissions and reorder
-    tmp_dt <- tmp_dt[, lapply(.SD, sum), .SDcols = !("time"),
+    tmp_dt <- tmp_dt[, lapply(.SD, sum, na.rm = TRUE), .SDcols = !("time"),
                      by =  time]
     newCols <- names(tmp_dt)[!(names(tmp_dt) %in% "time")]
     data.table::setcolorder(tmp_dt,
