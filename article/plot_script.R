@@ -2,14 +2,17 @@
 
 rm(list=ls())
 gc(reset = TRUE)
+
 library(data.table)
 library(magrittr)
 library(ggplot2)
 library(sfheaders)
+library(furrr)
 library(sf)
-library(gtfs2gps)
+library(gtfs2gps) #devtools::install_github("Joaobazzo/gtfs2gps")
 library(gtfstools)
-library(gtfs2emis)
+#library(gtfs2emis) # devtools::install(build_vignettes = FALSE,build = FALSE)
+devtools::load_all()
 library(extrafont)
 library(extrafontdb)
 
@@ -17,7 +20,7 @@ library(extrafontdb)
 ## a) Prep GTFS ----
 
 # read gtfs
-spo_gtfs <- gtfstools::read_gtfs("article/data/gtfs_spo_sptrans_2019-10.zip")
+spo_gtfs <- gtfstools::read_gtfs("../../../data-raw/gtfs/bra_spo/gtfs_spo_sptrans_2019-10.zip")
 spo_gtfs$`_transparencia_e-SIC_42374_email_05-09-19` <- NULL
 
 # convert frequency to stop_times
@@ -28,6 +31,11 @@ temp_routeid <- spo_gtfs$routes[route_type == 3,route_id]
 temp_shapeids <- spo_gtfs$trips[route_id %in% unique(temp_routeid),shape_id]
 spo_gtfs <- gtfs2gps::filter_by_shape_id(gtfs_data = spo_gtfs,
                                          shape_ids = unique(temp_shapeids))
+
+# set dirs
+getwd()
+dir.create("article")
+dir.create("article/data/")
 
 # save gtfs
 gtfs2gps::write_gtfs(spo_gtfs,"article/data/gtfs_spo_sptrans_prep.zip")
@@ -82,39 +90,46 @@ spo_gtfs$stop_times[,departure_time := data.table::as.ITime(departure_time)]
 # generate gps
 dir.create("article/data/gps_spo/")
 
+future::plan(session = "multisession",workers = 19)
+
+
 gtfs2gps::gtfs2gps(gtfs_data = spo_gtfs
                    ,snap_method = "nearest2"
                    ,spatial_resolution = 50
-                   ,parallel = FALSE
+                   ,parallel = TRUE
                    ,filepath = "article/data/gps_spo"
                    ,continue = TRUE
                    ,compress = TRUE)
 
-# 2) Adjust gps speed---------
+## c) Adjust gps speed---------
 dir.create("article/data/gps_spo_adjusted/")
 files_gps <- list.files("article/data/gps_spo/",full.names = TRUE)
 files_gps_names <- list.files("article/data/gps_spo/",full.names = FALSE)
 
-gps_speed_fix <- lapply(seq_along(files_gps),function(i){ # i =1 
+
+
+gps_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i =1 
   
-  message(paste0("adjust gps speed of file '",files_gps_names[i],"'"))
+  message(paste0("adjust gps speed of file '",files_gps_names[i],"'")) 
   
   tmp_gps <- readr::read_rds(files_gps[i])
   tmp_gps[, dist := units::set_units(dist,"m")]
   tmp_gps[, cumdist := units::set_units(cumdist,"m")]
-  tmp_gps[, cumtime := units::set_units(cumtime,"m")]
+  tmp_gps[, cumtime := units::set_units(cumtime,"s")]
   tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps)
   readr::write_rds(x = tmp_gps_fix
-                   ,file = paste0("article/data/gps_spo_adjusted/",files_gps_names[i]))
+                   ,file = paste0("article/data/gps_spo_adjusted/"
+                                  ,files_gps_names[i]),compress = "gz")
   return(NULL)
 })
 
-# 3) Gps points to Linestring ------
+## d) Gps points to Linestring ------
 dir.create("article/data/gps_spo_linestring/")
 files_gps <- list.files("article/data/gps_spo_adjusted/",full.names = TRUE)
 files_gps_names <- list.files("article/data/gps_spo_adjusted/",full.names = FALSE)
 
-gpsLine_speed_fix <- lapply(seq_along(files_gps),function(i){ # i = 1
+future::plan(strategy = "multisession",workers = 35)
+gpsLine_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
   
   message(paste0("Gps points to Linestring file '",files_gps_names[i],"'"))
   
@@ -123,39 +138,44 @@ gpsLine_speed_fix <- lapply(seq_along(files_gps),function(i){ # i = 1
   tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
   
   readr::write_rds(x = tmp_gps_fix
-                   ,file = paste0("article/data/gps_spo_linestring/",files_gps_names[i]))
+                   ,file = paste0("article/data/gps_spo_linestring/",files_gps_names[i])
+                   , compress = "gz")
   return(NULL)
-})
+},.options = furrr::furrr_options(seed = 123))
 
-# 3.1) Generall statistics ----
+## e) Generall statistics ----
 
 files_gps <- list.files("article/data/gps_spo_linestring/",full.names = TRUE)
 files_gps_names <- list.files("article/data/gps_spo_linestring/",full.names = FALSE)
 
-gen_stats <- lapply(seq_along(files_gps),function(i){ # i = 1
-  
-  message(paste0("Stats of Linestring file '",files_gps_names[i],"'"))
-  
-  tmp_gps <- readr::read_rds(files_gps[i])
-  data.table::setDT(tmp_gps)
-  
-  stats_dt <- data.table::data.table(
-    "shape_id" = gsub(".rds","",files_gps_names[i])
-    ,"number_trips" = data.table::uniqueN(tmp_gps$trip_id)
-    ,"number_stop_id" = data.table::uniqueN(tmp_gps$from_stop_id)
-    ,"number_stop_id_per_trip" = data.table::uniqueN(tmp_gps$from_stop_id) / data.table::uniqueN(tmp_gps$trip_id)
-    ,"Q25" = quantile(tmp_gps$speed,.25,na.rm = TRUE)
-    ,"Q50" = quantile(tmp_gps$speed,.50,na.rm = TRUE)
-    ,"Q75" = quantile(tmp_gps$speed,.75,na.rm = TRUE)
-    ,"VTK" = units::set_units(sum(tmp_gps$dist),"km")
-    ,"VTK_per_trip" = units::set_units(sum(tmp_gps$dist) / data.table::uniqueN(tmp_gps$trip_id),"km")
-    ,"total_time" = units::set_units(sum(tmp_gps$dist/tmp_gps$speed,na.rm=TRUE),"h")
-  )
-  
-  
-  return(stats_dt)
-}) %>% data.table::rbindlist()
+future::plan(strategy =  "multisession",workers = 29)
 
+gen_stats <- furrr::future_map(seq_along(files_gps)[1]
+                               ,function(i){ # i = 2
+                                 
+                                 #message(paste0("Stats of Linestring file '",files_gps_names[i],"'"))
+                                 
+                                 tmp_gps <- readr::read_rds(files_gps[i])
+                                 data.table::setDT(tmp_gps)
+                                 
+                                 stats_dt <- data.table::data.table(
+                                   "shape_id" = gsub(".rds","",files_gps_names[i])
+                                   ,"number_trips" = data.table::uniqueN(tmp_gps$trip_id)
+                                   ,"number_stop_id" = data.table::uniqueN(tmp_gps$from_stop_id)
+                                   ,"number_stop_id_per_trip" = data.table::uniqueN(tmp_gps$from_stop_id) / data.table::uniqueN(tmp_gps$trip_id)
+                                   ,"Q25" = quantile(tmp_gps$speed,.25,na.rm = TRUE)
+                                   ,"Q50" = quantile(tmp_gps$speed,.50,na.rm = TRUE)
+                                   ,"Q75" = quantile(tmp_gps$speed,.75,na.rm = TRUE)
+                                   ,"VTK" = units::set_units(sum(tmp_gps$dist),"km")
+                                   ,"VTK_per_trip" = units::set_units(sum(tmp_gps$dist) / data.table::uniqueN(tmp_gps$trip_id),"km")
+                                   ,"total_time" = units::set_units(sum(tmp_gps$dist/tmp_gps$speed,na.rm=TRUE),"h")
+                                 )
+                                 
+                                 
+                                 return(stats_dt)
+                               }) %>% data.table::rbindlist()
+
+gen_stats
 gen_stats[,total_time := as.numeric(total_time) ]
 gen_stats[,lapply(.SD,weighted.mean,VTK)
           ,.SDcols = c("Q25","Q50","Q75","VTK_per_trip","VTK")]
@@ -165,12 +185,16 @@ gen_stats[,lapply(.SD,sum)
           ,.SDcols = c("number_trips","total_time","VTK")]
 gen_stats$number_stop_id %>% sum()
 
-# 3.2) Plot GTFS trips -----
+
+sum(gen_stats$number_stop_id)/nrow(gen_stats)
+
+
+## f) Plot GTFS trips -----
 # Needs to Run Code item 1) to reproduce this section
 
 # read Tiles & Boundaries
-my_tile <- readr::read_rds("article/data/bra_spo_mapbox.rds")
-my_bound <- readr::read_rds("article/data/bra_spo_boundary.rds")
+my_tile <- readr::read_rds("../../../data-raw/maptiles/mapbox/bra_spo.rds")
+my_bound <- readr::read_rds("../../../data-raw/boundaries/bra_spo/bra_spo.rds")
 
 # bbox tile
 xtile <- max(my_tile$x) - min(my_tile$x)
@@ -184,6 +208,7 @@ stops_sf <- gtfstools::convert_stops_to_sf(gtfs = spo_gtfs)
 # aggregate by sum
 stops_sf <- sf::st_transform(stops_sf,3857)
 gps_lines_sf <- sf::st_transform(gps_lines_sf,3857)
+my_bound <- sf::st_transform(my_bound,3857)
 gps_lines_sf$label <- "SPTRAN's shape_ids"
 
 # plot
@@ -197,12 +222,12 @@ ylim_coord <- c( min(my_tile$y), max(my_tile$y))
 
 # Download from
 # https://www.fontsquirrel.com/fonts/latin-modern-roman
-extrafont::font_import(paths = "/home/joaobazzo/Downloads/Latin-Modern-Roman-fontfacekit/")
-extrafont::fonts()
+# extrafont::font_import(paths = "C://Users//B138750230//Downloads//Latin-Modern-Roman-fontfacekit")
+# extrafont::fonts()
 
 
 # plot spatial
-ggplot() + 
+p <- ggplot() + 
   # add raster
   geom_raster(data = my_tile, aes(x, y, fill = hex), alpha = 1) +
   coord_cartesian(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
@@ -213,12 +238,13 @@ ggplot() +
   # add gps_lines_sf
   ggnewscale::new_scale_color() +
   geom_sf(data = gps_lines_sf,aes(color = label)
-          ,alpha = 0.75, size = 0.55,fill = NA) +
-  scale_color_manual(values = "red",name = NULL,labels = "SPTRAN's shape_ids")+
+          ,alpha = 1, size = 0.25,fill = NA) +
+  scale_color_manual(values = "red",name = NULL
+                     ,labels = "SPTRAN's shape_ids")+
   # add boundary
   ggnewscale::new_scale_color() +
   geom_sf(data = my_bound,aes(color = city_name)
-          ,linetype = "dashed",alpha = 0.5, size = 0.35,fill = NA) +
+          ,linetype = "dashed",alpha = 1, size = 0.35,fill = NA) +
   scale_color_manual(values = "black",name = NULL
                      ,labels = "City boundary")+
   coord_sf(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
@@ -238,25 +264,26 @@ ggplot() +
                  y.max = sf::st_bbox(sf::st_transform(my_bound,3857))[4] %>% as.numeric(),
                  dist = plot_scale,
                  #text = element_text(family = "LM Roman 10"),
-                 family = "LM Roman 10",
+                 #family = "LM Roman 10",
                  fontface = "bold",
                  dist_unit = "km",st.size = 3,
                  st.bottom = FALSE, st.color = "black",
                  transform = FALSE, model = "WGS84") +
   theme(legend.position = c(0.75,0.2),
-        text = element_text(family = "LM Roman 10"),
+        #text = element_text(family = "LM Roman 10"),
         legend.box.background = element_rect(fill = "white",color = "white"),
         legend.box.margin = margin(3,3,3,3, "pt")) 
 # save
-ggplot2::ggsave(filename = "article/data/plots/basic_sptrans.png",
+ggplot2::ggsave(plot = p,
+                filename = "article/data/plots/basic_sptrans.png",
                 scale = 0.7,width = 18,
                 bg = "white",
                 height = 20,units = "cm",dpi = 300)
 
 
 
-# 4) Read fleet -----
-fleet_spo <- readr::read_rds("article/data/bra_spo_fleet.rds")
+# 2) Read fleet -----
+fleet_spo <- readr::read_rds("../../../data/fleet/bra_spo/bra_spo.rds")
 
 # adjust technology
 fleet_spo <- fleet_spo[fuel %in% "D",] # remove electric
@@ -265,45 +292,54 @@ fleet_spo[euro %in% "III",Technology := "-"]
 fleet_spo[,fleet_composition := N/sum(N)]
 
 
-# 5) Emission factor & Emissions -----
+# 3) Emission factor & Emissions -----
+# obs: this needs to read fleet first
+#
 
 dir.create("article/data/emissions/")
 
 # local EF
-temp_ef_br <- gtfs2emis::ef_brazil(pollutant = c("CO2","NOx","PM10","CH4"),
-                                   veh_type = fleet_spo$type_name_br,
-                                   model_year = as.numeric(fleet_spo$year),
-                                   as_list = TRUE)
+temp_ef_br <- ef_brazil(pollutant = c("CO2","NOx","PM10","CH4"),
+                        veh_type = fleet_spo$type_name_br,
+                        model_year = as.numeric(fleet_spo$year),
+                        as_list = TRUE)
 
 # list-files
 files_gps <- list.files(path = 'article/data/gps_spo_linestring/',full.names = TRUE)
 files_gps_names <- list.files(path = 'article/data/gps_spo_linestring/',full.names = FALSE)
 
+future::plan(strategy =  "multisession",workers = 35)
 
 # Emissions estimates
-emission_estimate <- lapply(seq_along(files_gps),function(i){ # i = 1
+
+emission_estimate <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
   
   message(paste0("Emissions estimates of file '",files_gps_names[i],"'"))
   
-  
+  # Read
   tmp_gps <- readr::read_rds(files_gps[i])
   # EF scaled
-  temp_ef <- base::suppressMessages(gtfs2emis::ef_euro_scaled(ef_local = temp_ef_br$EF,
-                                                              speed = tmp_gps$speed, 
-                                                              veh_type = fleet_spo$type_name_eu,
-                                                              euro = fleet_spo$euro,
-                                                              fuel = fleet_spo$fuel,
-                                                              tech = fleet_spo$Technology,
-                                                              pollutant = c("CO2","NOx","PM10","CH4")) )
-  # EMISSION estimates 
-  temp_emis <- gtfs2emis::emis(fleet_composition = fleet_spo$fleet_composition
-                               , dist = units::set_units(tmp_gps$dist,"km")
-                               , ef = temp_ef
-                               , aggregate = FALSE
-                               , as_list = TRUE)
+  data(ef_europe_db)
+  temp_ef <- base::suppressMessages(ef_euro_scaled(ef_local = units::set_units(temp_ef_br$EF,"g/km"),
+                                                   speed = units::set_units(tmp_gps$speed,"km/h"),
+                                                   veh_type = fleet_spo$type_name_eu,
+                                                   euro = fleet_spo$euro,
+                                                   fuel = fleet_spo$fuel,
+                                                   tech = fleet_spo$Technology,
+                                                   pollutant = c("CO2","NOx","PM10","CH4")) )
+  # EMISSION estimates
+  temp_emis <- emis(fleet_composition = fleet_spo$fleet_composition
+                    , dist = units::set_units(tmp_gps$dist,"km")
+                    , ef = temp_ef
+                    , aggregate = FALSE
+                    , as_list = TRUE)
   
-  # # add age to list
-  temp_emis$age = fleet_spo$EF
+  # # add fleet info
+  temp_emis$age = rep(fleet_spo$year
+                      ,data.table::uniqueN(temp_emis$pollutant))
+  temp_emis$fleet_composition <- rep(fleet_spo$fleet_composition
+                                     ,data.table::uniqueN(temp_emis$pollutant))
+  
   
   # add EF to list
   temp_emis$EF = temp_ef$EF
@@ -315,36 +351,39 @@ emission_estimate <- lapply(seq_along(files_gps),function(i){ # i = 1
                    ,file = paste0("article/data/emissions/",files_gps_names[i])
                    ,compress = "gz")
   return(NULL)
-})
+},.options = furrr::furrr_options(seed=TRUE))
+#},.options = furrr::furrr_options(seed = 123))
 
-# 6) Time processing -----
-
+# 4) Processing -----
+## a) Time processing -----
 dir.create("article/data/emi_time/")
 
 # list-files
 files_gps <- list.files(path = 'article/data/emissions/',full.names = TRUE)
 files_gps_names <- list.files(path = 'article/data/emissions/',full.names = FALSE)
 
+future::plan(strategy =  "multisession",workers = 29)
 
-time_processing <- lapply(seq_along(files_gps),function(i){ # i = 1
+time_processing <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
   
   
-  message(paste0("Emi time of file '",files_gps_names[i],"'"))
+  # message(paste0("Emi time of file '",files_gps_names[i],"'"))
   
   
   temp_emi <- readr::read_rds(files_gps[i])
   emi_post <- emis_summary(emi = temp_emi,
                            emi_vars = "emi",
                            by = "time",
-                           time_column = temp_emi$gps$timestamp,
+                           time_column = data.table::as.ITime(temp_emi$gps$timestamp),
                            pol_vars = "pollutant")
   
   readr::write_rds(x = emi_post
-                   ,file = paste0("article/data/emi_time/",files_gps_names[i]),compress = 'gz')
+                   ,file = paste0("article/data/emi_time/",files_gps_names[i])
+                   ,compress = 'gz')
   return(NULL)
-})
+},.options = furrr::furrr_options(seed=TRUE))
 
-# 7) Spatial post-processing-----
+## b) Spatial post-processing-----
 
 dir.create("article/data/emi_grid/")
 
@@ -353,20 +392,21 @@ files_gps <- list.files(path = 'article/data/emissions/',full.names = TRUE)
 files_gps_names <- list.files(path = 'article/data/emissions/',full.names = FALSE)
 
 
-temp_grid <- readr::read_rds("article/data/bra_spo_grid09.rds")
+temp_grid <- readr::read_rds("../../../data/grid/res9/bra_spo.rds")
 
-spatial_processing <- lapply(seq_along(files_gps),function(i){ # i = 1
-  
+future::plan(strategy =  "multisession",workers = 29)
+
+spatial_f <- function(i){
   gc(reset = TRUE, full = TRUE)
-  message(paste0("Emi grid of file '",files_gps_names[i],"'"))
+  #message(paste0("Emi grid of file '",files_gps_names[i],"'"))
   
   # read
   temp_emi <- readr::read_rds(files_gps[i])
   # emi_to_dt
-  temp_emi_dt <-  gtfs2emis::emi_to_dt(emi_list = temp_emi,
-                                       emi_vars = "emi",
-                                       veh_vars = c("veh_type","fuel"),
-                                       pol_vars = "pollutant")
+  temp_emi_dt <-  emi_to_dt(emi_list = temp_emi,
+                            emi_vars = "emi",
+                            veh_vars = c("veh_type","fuel"),
+                            pol_vars = "pollutant")
   namePol <- unique(temp_emi_dt$pollutant)
   # sum emissions
   temp_emi_dt <- temp_emi_dt[,lapply(.SD,sum, na.rm = TRUE),
@@ -387,20 +427,25 @@ spatial_processing <- lapply(seq_along(files_gps),function(i){ # i = 1
   
   # grid
   emi_grid <- base::suppressMessages(
-    gtfs2emis::emis_grid(data = temp_emi2,
-                         emi = namePol,
-                         grid = temp_grid)
+    emis_grid(data = temp_emi2,
+              emi = namePol, 
+              grid = temp_grid)
   )
   
   # write
   readr::write_rds(x = emi_grid
-                   ,file = paste0("article/data/emi_grid/",files_gps_names[i]),compress = 'gz')
-  return(NULL)
-})
+                   ,file = paste0("article/data/emi_grid/",files_gps_names[i])
+                   ,compress = 'gz')
+  return(NULL) 
+}
 
-# 8) Vehicle-age post-processing-----
+# 
+spatial_processing <- furrr::future_map(seq_along(files_gps)
+                                        ,spatial_f 
+                                        ,.options = furrr::furrr_options(seed=TRUE))
 
-# This stage requires to run ## 4 - "Read fleet"
+## c) Vehicle-age post-processing-----
+
 dir.create("article/data/emi_age/")
 
 # list-files
@@ -409,27 +454,25 @@ files_gps_names <- list.files(path = 'article/data/emissions/',full.names = FALS
 
 gc(reset = TRUE, full = TRUE)
 
-veh_age_processing <- lapply(seq_along(files_gps),function(i){ # i = 1
+future::plan(strategy =  "multisession",workers = 37)
+
+veh_age_processing <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
   
   message(paste0("Emi_age of file '",files_gps_names[i],"'"))
   
   # read
   temp_emi <- readr::read_rds(files_gps[i])
   
-  # add age of fleet
-  temp_emi$age <- rep(fleet_spo$year,uniqueN(temp_emi$pollutant))
-  #temp_emi$number_veh <- rep(fleet_spo$N,uniqueN(temp_emi$pollutant))
-  
   # add VTK
   temp_emi$VTK <- as.numeric(units::set_units(temp_emi$gps$dist,"km"))
   
   # emi_to_dt
-  temp_emi_dt <-  gtfs2emis::emi_to_dt(emi_list = temp_emi
-                                       , emi_vars = "emi"
-                                       , veh_vars = c("veh_type","euro"
-                                                      ,"fuel","tech","age")
-                                       , pol_vars = "pollutant"
-                                       , segment_vars = "VTK")
+  temp_emi_dt <-  emi_to_dt(emi_list = temp_emi
+                            , emi_vars = "emi"
+                            , veh_vars = c("veh_type","euro"
+                                           ,"fuel","tech","age","fleet_composition")
+                            , pol_vars = "pollutant"
+                            , segment_vars = "VTK")
   
   # namePol <- unique(temp_emi_dt$pollutant)
   data.table::setDT(temp_emi_dt)
@@ -442,12 +485,18 @@ veh_age_processing <- lapply(seq_along(files_gps),function(i){ # i = 1
   
   # write
   readr::write_rds(x = temp_emi_dt
-                   ,file = paste0("article/data/emi_age/",files_gps_names[i]),compress = 'gz')
+                   ,file = paste0("article/data/emi_age/",files_gps_names[i])
+                   ,compress = 'gz')
   return(NULL)
-})
+} ,.options = furrr::furrr_options(seed=TRUE))
 
-# 9) Plot temporal emissions ---------
+# 5) Plot ------
+## a) Temporal emissions ---------
 
+# import fonts
+# extrafont::font_import(paths = "C://Users//B138750230//Downloads//Latin-Modern-Roman-fontfacekit//web fonts/")
+
+# create folder
 dir.create("article/data/plots/")
 
 # list-files
@@ -462,6 +511,8 @@ to_compartible_units <- function(i){  #i = my_time$CO2
   if(median(pol_digits,na.rm = TRUE) >= 6){return(units::set_units(i,"t"))}
 }
 
+future::plan(strategy =  "multisession",workers = 29)
+
 tmp_my_time <- lapply(files_gps, readr::read_rds) %>% 
   data.table::rbindlist(fill = TRUE)
 
@@ -474,14 +525,14 @@ my_time <- my_time[order(time),]
 # plot time-
 tmpTime1 <- data.table::copy(my_time)[,.SD,.SDcols = c("time","PM10")]
 names(tmpTime1) <- c("time","pol")
-getUnit_graphic <- units::deparse_unit(tmpTime1$pol)
+getUnit_graphic <- units::deparse_unit(tmpTime1$pol) # kg
 
 ggplot(data = tmpTime1) + 
   geom_bar(aes(x = time, y = as.numeric(pol),fill = as.numeric(pol)),
            stat = "identity")+
   labs(title = NULL,
        x = "Hour",
-       y = expression(PM[10][] (g)))+
+       y = expression(PM[10][] (kg)))+
   #y = paste0("PM10 (",getUnit_graphic,")")) + 
   viridis::scale_fill_viridis(option = "D",direction = -1)+
   theme_minimal()+
@@ -492,7 +543,7 @@ ggplot2::ggsave(filename = "article/data/plots/temporal_PM10.png",
                 scale = 1.0,bg = "white",
                 width = 18,height = 10,units = "cm",dpi = 300)
 
-# 10) Plot EF | MEF by age----------------
+## b) Plot EF | MEF by age----------------
 
 # list-files
 files_gps <- list.files(path = 'article/data/emi_age/',full.names = TRUE)
@@ -501,14 +552,18 @@ files_gps_names <- list.files(path = 'article/data/emi_age/',full.names = FALSE)
 # read files
 tmp_my_age <- lapply(files_gps, readr::read_rds) %>% 
   data.table::rbindlist()
-tmp_my_age[,emi := NULL]
+tmp_my_age[,VTK := as.numeric(as.character(VTK))]
+tmp_my_age[,fleet_composition := as.numeric(as.character(fleet_composition))]
+tmp_my_age[,single_VTK := VTK * fleet_composition]
 
 # aggregate by sum
 tmp_my_age <- tmp_my_age[
-  ,c("total_emi","total_VTK") := list(sum(total_emi),sum(total_VTK))
+  ,c("emi","single_VTK","total_emi") := list(sum(emi),sum(single_VTK),sum(total_emi))
   ,by =.(veh_type,age,pollutant)]
 
 tmp_my_age <- tmp_my_age[,.SD[1],by =.(veh_type,age,pollutant)]
+
+
 
 # fix/check names
 tmp_my_age[pollutant == "CO2",
@@ -522,7 +577,9 @@ tmp_my_age[pollutant == "PM10"
 
 # estimate MEF
 
-tmp_my_age[,mef := total_emi / units::set_units(total_VTK,"km")]
+tmp_my_age[,mef := emi / units::set_units(single_VTK,"km")]
+tmp_my_age
+
 
 # factors
 tmp_my_age[,age_f := factor(x = age,levels = 2008:2019)]
@@ -532,11 +589,11 @@ tmp_my_age[, pollutant_f := dplyr::recode_factor(pollutant
                                                  , `CH4` = "CH[4] (g)"
                                                  , `NOx` = "NO[X](kg)")]
 tmp_my_age[, pollutant_meff := dplyr::recode_factor(pollutant
-                                                 , `CO2` = "CO[2]"
-                                                 , `PM10` = "PM[10]"
-                                                 , `CH4` = "CH[4]"
-                                                 , `NOx` = "NO[X]")]
-## a) Plot total_emi ----
+                                                    , `CO2` = "CO[2]"
+                                                    , `PM10` = "PM[10]"
+                                                    , `CH4` = "CH[4]"
+                                                    , `NOx` = "NO[X]")]
+## c) Total_emi ----
 ggplot(data = tmp_my_age) + 
   geom_bar(aes(y= emis,x = age_f,fill = veh_type)
            ,stat = "identity",position = "dodge")+
@@ -559,7 +616,7 @@ ggsave(filename = "article/data/plots/emissions_age.png"
        ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
 
 
-## b) Plot MEF ----
+## d) MEF ----
 
 ggplot(data = tmp_my_age) + 
   geom_bar(aes(y= as.numeric(mef),x = age_f,fill = veh_type)
@@ -582,11 +639,11 @@ ggplot(data = tmp_my_age) +
 ggsave(filename = "article/data/plots/MEF_age.png"
        ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
 
-# 11) Plot spatial emissions -----
+## e) Spatial emissions -----
 
 # read Tiles & Boundaries
-my_tile <- readr::read_rds("article/data/bra_spo_mapbox.rds")
-my_bound <- readr::read_rds("article/data/bra_spo_boundary.rds")
+my_tile <- readr::read_rds("../../../data-raw/maptiles/mapbox/bra_spo.rds")
+my_bound <- readr::read_rds("../../../data-raw/boundaries/bra_spo/bra_spo.rds")
 
 # bbox tile
 xtile <- max(my_tile$x) - min(my_tile$x)
@@ -627,7 +684,7 @@ xlim_coord <- c( min(my_tile$x), max(my_tile$x))
 ylim_coord <- c( min(my_tile$y), max(my_tile$y))
 
 # plot spatial
-ggplot() + 
+p <- ggplot() + 
   # add raster
   geom_raster(data = my_tile, aes(x, y, fill = hex), alpha = 1) +
   coord_cartesian(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
@@ -672,54 +729,55 @@ ggplot() +
                  dist_unit = "km",st.size = 3,
                  st.bottom = FALSE, st.color = "black",
                  transform = FALSE, model = "WGS84") +
-  theme(legend.position = c(0.8,0.15),
+  theme(legend.position = c(0.8,0.3),
         text = element_text(family = "LM Roman 10"),
         legend.box.background = element_rect(fill = "white",color = "white"),
         legend.box.margin = margin(3,3,3,3, "pt")) 
 # save
-ggplot2::ggsave(filename = sprintf("article/data/plots/spatial_%s.png",colPol[j]),
+ggplot2::ggsave(plot = p
+                ,filename = sprintf("article/data/plots/spatial_%s.png",colPol[j]),
                 scale = 0.7,width = 18,
                 bg = "white",
                 height = 20,units = "cm",dpi = 300)
 
 
-# 12) Plot EF (@ speed = 34.12 kph) -----
+## f) EF (@ speed = 34.12 kph) -----
 
 
 # CETESB
-my_ef_br_df <- gtfs2emis::ef_brazil(pollutant = c("PM10","CO2")
-                                    ,veh_type = "BUS_URBAN_D"
-                                    ,model_year = 2011
-                                    ,as_list = FALSE)
+my_ef_br_df <- ef_brazil(pollutant = c("PM10","CO2")
+                         ,veh_type = "BUS_URBAN_D"
+                         ,model_year = 2011
+                         ,as_list = FALSE)
 my_ef_br_df <- as.data.frame(my_ef_br_df)
 data.table::setDT(my_ef_br_df)[,source := "CETESB"]
 
 # EMEP/EEA
-my_ef_eu_df <- gtfs2emis::ef_europe(speed =  units::set_units(34.12,"km/h")
-                                    ,veh_type = "Ubus Std 15 - 18 t"
-                                    ,euro = "V"
-                                    ,pollutant = c("PM10","CO2")
-                                    ,fuel = "D"
-                                    ,tech = "SCR"
-                                    ,as_list = FALSE)
+my_ef_eu_df <- ef_europe(speed =  units::set_units(34.12,"km/h")
+                         ,veh_type = "Ubus Std 15 - 18 t"
+                         ,euro = "V"
+                         ,pollutant = c("PM10","CO2")
+                         ,fuel = "D"
+                         ,tech = "SCR"
+                         ,as_list = FALSE)
 my_ef_eu_df[,source := "EEA"]
 
 # EPA / MOVES
-my_ef_moves_df <- gtfs2emis::ef_usa_moves(pollutant = c("PM10","CO2")
-                                          ,model_year = 2011
-                                          ,calendar_year = 2019
-                                          ,speed = units::set_units(34.12,"km/h")
-                                          ,fuel_type = "D"
-                                          ,as_list = FALSE)
+my_ef_moves_df <- ef_usa_moves(pollutant = c("PM10","CO2")
+                               ,model_year = 2011
+                               ,calendar_year = 2019
+                               ,speed = units::set_units(34.12,"km/h")
+                               ,fuel_type = "D"
+                               ,as_list = FALSE)
 my_ef_moves_df[,source := "MOVES"]
 
 # EMFAC
-my_ef_emfac_df <- gtfs2emis::ef_usa_emfac(pollutant =  c("PM10","CO2")
-                                          ,calendar_year = 2019
-                                          ,fuel = "D"
-                                          ,model_year = 2011
-                                          ,speed = units::set_units(34.12,"km/h")
-                                          ,as_list = FALSE)
+my_ef_emfac_df <- ef_usa_emfac(pollutant =  c("PM10","CO2")
+                               ,calendar_year = 2019
+                               ,fuel = "D"
+                               ,model_year = 2011
+                               ,speed = units::set_units(34.12,"km/h")
+                               ,as_list = FALSE)
 my_ef_emfac_df[,source := "EMFAC"]
 
 # rbind & process
@@ -759,50 +817,50 @@ ggplot(data = my_ef_plot) +
 ggsave(filename = "article/data/plots/ef_plots.png"
        ,width = 36,height = 20,dpi = 300,units = "cm",scale = 0.5)
 
-# 13) Plot EF @ different speeds for NOx------
+## g) EF @ different speeds for NOx------
 
 
 # CETESB
-my_ef_br_df <- gtfs2emis::ef_brazil(pollutant = c("PM10","CO2")
-                                    ,veh_type = "BUS_URBAN_D"
-                                    ,model_year = 2011
-                                    ,as_list = FALSE)
-my_ef_br_df <- gtfs2emis::ef_euro_scaled(ef_local = my_ef_br_df,
-                                         speed =  units::set_units(seq(10,100,10),"km/h")
-                                         ,veh_type = "Ubus Std 15 - 18 t"
-                                         ,euro = "V"
-                                         ,pollutant = c("PM10","CO2")
-                                         ,fuel = "D"
-                                         ,tech = "SCR")
+my_ef_br_df <- ef_brazil(pollutant = c("PM10","CO2")
+                         ,veh_type = "BUS_URBAN_D"
+                         ,model_year = 2011
+                         ,as_list = FALSE)
+my_ef_br_df <- ef_euro_scaled(ef_local = my_ef_br_df,
+                              speed =  units::set_units(seq(10,100,10),"km/h")
+                              ,veh_type = "Ubus Std 15 - 18 t"
+                              ,euro = "V"
+                              ,pollutant = c("PM10","CO2")
+                              ,fuel = "D"
+                              ,tech = "SCR")
 my_ef_br_df <- my_ef_br_df$EF
 my_ef_br_df[,source := "CETESB"]
 
 # EMEP/EEA
-my_ef_eu_df <- gtfs2emis::ef_europe(speed =  units::set_units(seq(10,100,10),"km/h")
-                                    ,veh_type = "Ubus Std 15 - 18 t"
-                                    ,euro = "V"
-                                    ,pollutant = c("PM10","CO2")
-                                    ,fuel = "D"
-                                    ,tech = "SCR"
-                                    ,as_list = FALSE)
+my_ef_eu_df <- ef_europe(speed =  units::set_units(seq(10,100,10),"km/h")
+                         ,veh_type = "Ubus Std 15 - 18 t"
+                         ,euro = "V"
+                         ,pollutant = c("PM10","CO2")
+                         ,fuel = "D"
+                         ,tech = "SCR"
+                         ,as_list = FALSE)
 my_ef_eu_df[,source := "EEA"]
 
 # EPA / MOVES
-my_ef_moves_df <- gtfs2emis::ef_usa_moves(pollutant = c("PM10","CO2")
-                                          ,model_year = 2011
-                                          ,calendar_year = 2019
-                                          ,speed = units::set_units(seq(10,100,10),"km/h")
-                                          ,fuel_type = "D"
-                                          ,as_list = FALSE)
+my_ef_moves_df <- ef_usa_moves(pollutant = c("PM10","CO2")
+                               ,model_year = 2011
+                               ,calendar_year = 2019
+                               ,speed = units::set_units(seq(10,100,10),"km/h")
+                               ,fuel_type = "D"
+                               ,as_list = FALSE)
 my_ef_moves_df[,source := "MOVES"]
 
 # EMFAC
-my_ef_emfac_df <- gtfs2emis::ef_usa_emfac(pollutant =  c("PM10","CO2")
-                                          ,calendar_year = 2019
-                                          ,fuel = "D"
-                                          ,model_year = 2011
-                                          ,speed = units::set_units(seq(10,100,10),"km/h")
-                                          ,as_list = FALSE)
+my_ef_emfac_df <- ef_usa_emfac(pollutant =  c("PM10","CO2")
+                               ,calendar_year = 2019
+                               ,fuel = "D"
+                               ,model_year = 2011
+                               ,speed = units::set_units(seq(10,100,10),"km/h")
+                               ,as_list = FALSE)
 my_ef_emfac_df[,source := "EMFAC"]
 
 # rbind & process
@@ -840,62 +898,62 @@ ggplot(data = my_ef_plot) +
 ggsave(filename = "article/data/plots/ef_speed.png",scale = 1.3,
        width = 18,height = 8,units = "cm",dpi = 300)
 
-# 14) Plot EF by age ----
+## h) EF by age ----
 
 # CETESB
-my_ef_br_df <- gtfs2emis::ef_brazil(pollutant = c("PM10","CO2","NOx","NMHC")
-                                    ,veh_type = "BUS_URBAN_D"
-                                    ,model_year = c(2000:2019)
-                                    ,as_list = TRUE)
-my_ef_br_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_br_df
-                                    ,emi_vars = 'EF'
-                                    ,veh_vars = c('veh_type','years')
-                                    ,pol_vars = 'pollutant')
+my_ef_br_df <- ef_brazil(pollutant = c("PM10","CO2","NOx","NMHC")
+                         ,veh_type = "BUS_URBAN_D"
+                         ,model_year = c(2000:2019)
+                         ,as_list = TRUE)
+my_ef_br_df <- emi_to_dt(emi_list = my_ef_br_df
+                         ,emi_vars = 'EF'
+                         ,veh_vars = c('veh_type','years')
+                         ,pol_vars = 'pollutant')
 my_ef_br_df$source <- "CETESB"
 my_ef_br_df[,years_n := as.numeric(as.character(years))]
 my_ef_br_df[pollutant == "NMHC",pollutant := "VOC"]
 
 # EMEP/EEA
-my_ef_eu_df <- gtfs2emis::ef_europe(speed =  units::set_units(34.12,"km/h")
-                                    ,veh_type = rep("Ubus Std 15 - 18 t",6)
-                                    ,euro = c("I", "II", "III", "IV", "V", "VI")
-                                    ,pollutant = c("PM10","CO2","NOx","VOC")
-                                    ,fuel = rep("D",6)
-                                    ,tech = c("-","-","-","SCR","SCR","SCR")
-                                    ,as_list = TRUE)
-my_ef_eu_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_eu_df
-                                    ,emi_vars = 'EF'
-                                    ,veh_vars = c("veh_type","euro","fuel","tech")
-                                    ,pol_vars = 'pollutant'
-                                    ,segment_vars = c('slope','load'))
+my_ef_eu_df <- ef_europe(speed =  units::set_units(34.12,"km/h")
+                         ,veh_type = rep("Ubus Std 15 - 18 t",6)
+                         ,euro = c("I", "II", "III", "IV", "V", "VI")
+                         ,pollutant = c("PM10","CO2","NOx","VOC")
+                         ,fuel = rep("D",6)
+                         ,tech = c("-","-","-","SCR","SCR","SCR")
+                         ,as_list = TRUE)
+my_ef_eu_df <- emi_to_dt(emi_list = my_ef_eu_df
+                         ,emi_vars = 'EF'
+                         ,veh_vars = c("veh_type","euro","fuel","tech")
+                         ,pol_vars = 'pollutant'
+                         ,segment_vars = c('slope','load'))
 my_ef_eu_df$source <- "EEA"
 
 # EPA / MOVES
-my_ef_moves_df <- gtfs2emis::ef_usa_moves(pollutant = c("PM10","CO2","NOx","VOC")
-                                          ,model_year = c(2000:2018)
-                                          ,calendar_year = 2019
-                                          ,speed = units::set_units(34.12,"km/h")
-                                          ,fuel_type = "D"
-                                          ,as_list = TRUE)
+my_ef_moves_df <- ef_usa_moves(pollutant = c("PM10","CO2","NOx","VOC")
+                               ,model_year = c(2000:2018)
+                               ,calendar_year = 2019
+                               ,speed = units::set_units(34.12,"km/h")
+                               ,fuel_type = "D"
+                               ,as_list = TRUE)
 names(my_ef_moves_df)
-my_ef_moves_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_moves_df
-                                       ,emi_vars = 'EF'
-                                       ,veh_vars = c('model_year','fuel')
-                                       ,pol_vars = 'pollutant')
+my_ef_moves_df <- emi_to_dt(emi_list = my_ef_moves_df
+                            ,emi_vars = 'EF'
+                            ,veh_vars = c('model_year','fuel')
+                            ,pol_vars = 'pollutant')
 my_ef_moves_df$source <- "MOVES"
 my_ef_moves_df[,model_year_n := as.numeric(as.character(model_year))]
 
 # EMFAC
-my_ef_emfac_df <- gtfs2emis::ef_usa_emfac(pollutant =  c("PM10","CO2","NOx","ROG")
-                                          ,calendar_year = 2019
-                                          ,fuel = "D"
-                                          ,model_year = c(2005:2019)
-                                          ,speed = units::set_units(34.12,"km/h")
-                                          ,as_list = TRUE)
-my_ef_emfac_df <- gtfs2emis::emi_to_dt(emi_list = my_ef_emfac_df
-                                       ,emi_vars = 'EF'
-                                       ,veh_vars = c('model_year','fuel')
-                                       ,pol_vars = 'pollutant')
+my_ef_emfac_df <- ef_usa_emfac(pollutant =  c("PM10","CO2","NOx","ROG")
+                               ,calendar_year = 2019
+                               ,fuel = "D"
+                               ,model_year = c(2005:2019)
+                               ,speed = units::set_units(34.12,"km/h")
+                               ,as_list = TRUE)
+my_ef_emfac_df <- emi_to_dt(emi_list = my_ef_emfac_df
+                            ,emi_vars = 'EF'
+                            ,veh_vars = c('model_year','fuel')
+                            ,pol_vars = 'pollutant')
 my_ef_emfac_df$source <- "EMFAC"
 my_ef_emfac_df[,model_year_n := as.numeric(as.character(model_year))]
 my_ef_emfac_df[pollutant == "ROG",pollutant := "VOC"]
@@ -934,7 +992,7 @@ my_ef_bind[years_n > 2004] %>%
 ggsave(filename = "article/data/plots/ef_age_plots.png"
        ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
 
-# 15) Plot Fleet of São Paulo ----
+## i) Fleet of São Paulo ----
 
 # read
 fleet_spo <- readr::read_rds("article/data/bra_spo_fleet.rds")
@@ -980,4 +1038,25 @@ ggplot(data = fleet_spo[fuel == "Diesel"]) +
 ggsave(filename = "article/data/plots/fleet_sp.png",scale = 1.3,
        width = 18,height = 8,units = "cm",dpi = 300)
 
+
+# 6) Stats avg EF ----
+# list-files
+files_gps_t <- list.files(path = 'article/data/emi_age/',full.names = TRUE)
+files_gps_names_t <- list.files(path = 'article/data/emi_age/',full.names = FALSE)
+
+tmp_stats_ef <- lapply(files_gps_t, readr::read_rds) %>% 
+  data.table::rbindlist()
+
+tmp_stats_ef[,fleet_composition := as.numeric(as.character(fleet_composition))]
+tmp_stats_ef[,total_VTK := as.numeric(as.character(total_VTK))]
+tmp_stats_ef[,VTK := as.numeric(as.character(VTK))]
+tmp_stats_ef[,single_VTK := VTK * fleet_composition]
+
+tmp_stats_ef1 <- tmp_stats_ef[,lapply(.SD,sum,na.rm=TRUE)
+                              ,.SDcols = c("emi","single_VTK")
+                              , by = .(pollutant)]
+
+tmp_stats_ef1[,EF := emi / units::set_units(single_VTK,"km")] 
+tmp_stats_ef1[,EF := round(EF,3)] 
+tmp_stats_ef1
 # End ----
