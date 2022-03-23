@@ -7,5 +7,6 @@
 ^prep$
 ^figures$
 ^tests$
+^article$
 ^data-raw$
 ^.*\.Rproj$
