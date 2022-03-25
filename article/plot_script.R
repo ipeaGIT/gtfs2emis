@@ -13,9 +13,17 @@ library(gtfs2gps) #devtools::install_github("Joaobazzo/gtfs2gps")
 library(gtfstools)
 #library(gtfs2emis) # devtools::install(build_vignettes = FALSE,build = FALSE)
 devtools::load_all()
-library(extrafont)
-library(extrafontdb)
 
+# install font
+# remotes::install_version("Rttf2pt1", version = "1.3.8")
+library(extrafont) 
+library(extrafontdb) 
+library(fontcm)
+library(extrafont) 
+extrafont::font_import()
+extrafont::loadfonts(device = "win")
+extrafont::fonts()
+extrafont::font_install('fontcm')
 # 1) GTFS ---------
 ## a) Prep GTFS ----
 
@@ -190,7 +198,7 @@ sum(gen_stats$number_stop_id)/nrow(gen_stats)
 
 
 ## f) Plot GTFS trips -----
-# Needs to Run Code item 1) to reproduce this section
+# Needs to Run Code item b) to reproduce this section
 
 # read Tiles & Boundaries
 my_tile <- readr::read_rds("../../../data-raw/maptiles/mapbox/bra_spo.rds")
@@ -217,14 +225,6 @@ map_scale <- as.numeric(sf::st_bbox(my_bound)[3]) -
 plot_scale <- 10
 xlim_coord <- c( min(my_tile$x), max(my_tile$x))
 ylim_coord <- c( min(my_tile$y), max(my_tile$y))
-
-# font
-
-# Download from
-# https://www.fontsquirrel.com/fonts/latin-modern-roman
-# extrafont::font_import(paths = "C://Users//B138750230//Downloads//Latin-Modern-Roman-fontfacekit")
-# extrafont::fonts()
-
 
 # plot spatial
 p <- ggplot() + 
@@ -264,15 +264,16 @@ p <- ggplot() +
                  y.max = sf::st_bbox(sf::st_transform(my_bound,3857))[4] %>% as.numeric(),
                  dist = plot_scale,
                  #text = element_text(family = "LM Roman 10"),
-                 #family = "LM Roman 10",
-                 fontface = "bold",
+                 family = "LM Roman 10",
+                 fontface = "plain",
                  dist_unit = "km",st.size = 3,
                  st.bottom = FALSE, st.color = "black",
                  transform = FALSE, model = "WGS84") +
   theme(legend.position = c(0.75,0.2),
-        #text = element_text(family = "LM Roman 10"),
+        text = element_text(family = "LM Roman 10"),
         legend.box.background = element_rect(fill = "white",color = "white"),
         legend.box.margin = margin(3,3,3,3, "pt")) 
+p
 # save
 ggplot2::ggsave(plot = p,
                 filename = "article/data/plots/basic_sptrans.png",
@@ -725,7 +726,7 @@ p <- ggplot() +
                  y.max = sf::st_bbox(sf::st_transform(my_bound,3857))[4] %>% as.numeric(),
                  dist = plot_scale,
                  family = "LM Roman 10",
-                 fontface = "bold",
+                 fontface = "plain",
                  dist_unit = "km",st.size = 3,
                  st.bottom = FALSE, st.color = "black",
                  transform = FALSE, model = "WGS84") +
@@ -889,7 +890,7 @@ ggplot(data = my_ef_plot) +
   viridis::scale_color_viridis(discrete = TRUE,option = "H",alpha = 1)+
   theme_light()+
   scale_y_continuous(expand = expansion(mult = 0.05)) +
-  theme(axis.text.x = element_text(size = 8)
+  theme(axis.text.x = element_text(size = 9)
         ,text = element_text(family = "LM Roman 10")
         ,strip.text = element_text(colour = 'black')
         ,legend.position = c(0.9,0.75))
@@ -993,9 +994,8 @@ ggsave(filename = "article/data/plots/ef_age_plots.png"
        ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
 
 ## i) Fleet of São Paulo ----
+# item 2) Need to read fleet first
 
-# read
-fleet_spo <- readr::read_rds("article/data/bra_spo_fleet.rds")
 
 # adjust technology
 fleet_spo[fuel %in% "Elétrico",fuel := "Electric"]
@@ -1012,28 +1012,17 @@ fleet_spo[,type_name_eu_f := factor(x = type_name_eu
 
 # plot
 ggplot(data = fleet_spo[fuel == "Diesel"]) + 
-  geom_bar(aes(y= N,x = type_name_eu_f,fill = as.factor(year)),stat = "identity"
-           ,position = "dodge",width = 0.75)+
-  #facet_wrap(~fuel,scales = "free",ncol = 1)+
-  labs(fill = "Year",x = "Urban bus category",y = "Total number")+
-  viridis::scale_fill_viridis(discrete = TRUE,option = "H",alpha = 0.85
-                              ,direction = -1)+
-  theme_light()+
-  #guides(fill = "none")+
-  #scale_y_continuous(expand = expansion(mult = 0.05)) +
-  theme(axis.text.x = element_text(size = 8)
-        ,strip.text = element_text(colour = 'black'))
-# plot1
-ggplot(data = fleet_spo[fuel == "Diesel"]) + 
   geom_bar(aes(y= N,x = as.factor(year),fill = type_name_eu_f),stat = "identity"
            ,position = "dodge",width = 0.75)+
   labs(x = "Year",fill = "Urban bus category",y = "Total number of vehicles")+
   scale_fill_manual(values = viridis::turbo(n = 9,alpha = 0.85)[c(1,3,9)])+
   theme_light()+
-  theme(axis.text.x = element_text(size = 8)
+  theme(axis.text.x = element_text(size = 9)
         ,text = element_text(family = "LM Roman 10")
         ,strip.text = element_text(colour = 'black')
         ,legend.position = c(0.09,0.825))
+
+
 # save
 ggsave(filename = "article/data/plots/fleet_sp.png",scale = 1.3,
        width = 18,height = 8,units = "cm",dpi = 300)
@@ -1059,4 +1048,5 @@ tmp_stats_ef1 <- tmp_stats_ef[,lapply(.SD,sum,na.rm=TRUE)
 tmp_stats_ef1[,EF := emi / units::set_units(single_VTK,"km")] 
 tmp_stats_ef1[,EF := round(EF,3)] 
 tmp_stats_ef1
+
 # End ----
