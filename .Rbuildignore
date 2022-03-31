@@ -8,4 +8,6 @@
 ^figures$
 ^tests$
 ^data-raw$
+^article$
+^article.zip
 ^.*\.Rproj$
