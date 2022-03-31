@@ -11,7 +11,7 @@ fuel_cor(
 )
 }
 \arguments{
-\item{pollutant}{character; Pollutant classified in "CO", "VOC", "NOx" or "PM".}
+\item{pollutant}{character; Pollutant classified in "CO", "VOC", "NOx" or "PM10".}
 
 \item{euro_stage}{character; EURO period of vehicle, classified in "PRE", "I", "II",
 "III", "IV", "V" and "VI".}
