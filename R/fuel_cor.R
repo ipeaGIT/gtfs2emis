@@ -8,7 +8,7 @@
 #' Estimates are given by the ratio between correction factor of improved fuel by
 #'  the correction factor of base fuel.    
 #' 
-#' @param pollutant character; Pollutant classified in "CO", "VOC", "NOx" or "PM".
+#' @param pollutant character; Pollutant classified in "CO", "VOC", "NOx" or "PM10".
 #' @param euro_stage character; EURO period of vehicle, classified in "PRE", "I", "II",
 #' "III", "IV", "V" and "VI".
 #' @param improved_fuel numeric; Numeric vector for characteristics of an improved fuel, ordered
@@ -35,7 +35,7 @@ fuel_cor <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40,
       {1.61466 - 0.00123 * den + 0.00133 * pah - 0.00181 * cn - 0.00068 * t95},
     "NOx" = function(den, pah, cn, t95, s = 0)
       {-1.75444 + 0.00906 * den - 0.0163 * pah + 0.00493 * cn + 0.00266 * t95},
-    "PM" = function(den, pah, cn, t95, s = 0)
+    "PM10" = function(den, pah, cn, t95, s = 0)
       {(0.06959 + 0.00006 * den + 0.00065 * pah - 0.00001 * cn) * (1 - 0.0086 * (450 - s)/100)}
   )
   
