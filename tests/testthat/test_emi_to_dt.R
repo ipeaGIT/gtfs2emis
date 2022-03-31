@@ -1,6 +1,5 @@
 
-test_that("emis_grid", {
-  
+test_that("emi_to_dt", {
   # GTFS2gps filter-----
   library(data.table)
   fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
@@ -26,7 +25,7 @@ test_that("emis_grid", {
   
   
   # Ef ----
-  set.seed(1234)
+  set.seed(123)
   EF_europe <- ef_europe(pollutant = c("CO", "PM10"),
                          speed = fort_gpslines$speed,
                          veh_type = total_fleet$veh_type_euro,
@@ -56,61 +55,59 @@ test_that("emis_grid", {
   emi_usa_emfac <- emis(fleet_composition = total_fleet$fleet_composition,
                         dist = fort_gpslines$dist,
                         ef = EF_usa_emfac, 
-                        prefix = "Emfac")
+                        prefix = "Emfac"
+                        ,aggregate = FALSE)
   emi_usa_moves <- emis(fleet_composition = total_fleet$fleet_composition,
                         dist = fort_gpslines$dist,
                         ef = EF_usa_moves, 
-                        prefix = "Moves")
+                        prefix = "Moves"
+                        ,aggregate = FALSE)
   
   # EUROPE
   emi_europe <- emis(fleet_composition = total_fleet$fleet_composition,
                      dist = fort_gpslines$dist,
                      ef = EF_europe,
-                     prefix = "EU")
+                     prefix = "EU"
+                     ,aggregate = FALSE)
   
   # BRAZIL (not speed dependent emission factor)
   emi_brazil <- emis(fleet_composition = total_fleet$fleet_composition,
                      dist = fort_gpslines$dist,
                      ef = EF_brazil,
-                     prefix = "BR")
+                     prefix = "BR"
+                     ,aggregate = FALSE)
   
-  # CBIND 
-  for_emis <- cbind(fort_gpslines, emi_usa_emfac$emi)
-  for_emis <- cbind(for_emis, emi_usa_moves$emi)
-  for_emis <- cbind(for_emis, emi_europe$emi)
-  for_emis <- cbind(for_emis, emi_brazil$emi)
-  
-  
-  # Grid
-  grid_gps <- vein::make_grid(spobj = for_emis, width =  0.25 / 102.47) # 500 meters
-  for_sf <- sf::st_as_sf(for_emis)
-  
-  pol_gps <- emis_grid(data = for_sf,
-                       emi = c("Emfac_CO_total","Moves_CO_total","EU_CO_total", "BR_CO_total"),
-                       grid = grid_gps,
-                       time_class = 'all periods')
-  
-  pol_gps_hour <- emis_grid(data = for_sf,
-                            emi = c("Emfac_CO_total","Moves_CO_total","EU_CO_total", "BR_CO_total"),
-                            grid = grid_gps,
-                            time_class = 'hour',
-                            time_column = 'timestamp')
-  
-  pol_gps_hour_minute <- emis_grid(data = for_sf,
-                                   emi = c("Emfac_CO_total","Moves_CO_total","EU_CO_total","BR_CO_total"),
-                                   grid = grid_gps,
-                                   time_class = 'hour-minute',
-                                   time_column = 'timestamp')
   # Expect equal -----
-  expect_equal(nrow(pol_gps), 57)
-  expect_equal(nrow(pol_gps_hour), 60)
-  expect_equal(nrow(pol_gps_hour_minute), 94)
-  expect_equal(ncol(pol_gps), 6)
-  expect_equal(ncol(pol_gps_hour), 7)
-  expect_equal(ncol(pol_gps_hour_minute), 7)
-  expect_equal(as.numeric(sum(pol_gps$Moves_CO_total)), 26.31065,0.01)
-  expect_equal(as.numeric(sum(pol_gps_hour$Moves_CO_total)), 26.31065,0.01)
-  expect_equal(as.numeric(sum(pol_gps_hour_minute$Moves_CO_total)), 26.31065,0.01)
-  
-  
+  emi_dt_europe <- emi_to_dt(emi_list = emi_europe
+                            ,emi_vars = 'emi'
+                            ,veh_vars = c("veh_type","euro","fuel","tech")
+                            ,pol_vars = 'pollutant'
+                            ,segment_vars = c("slope","load")) 
+  emi_dt_brazil <- emi_to_dt(emi_list = emi_brazil
+                            ,emi_vars = 'emi'
+                            ,veh_vars = c("years","veh_type")
+                            ,pol_vars = 'pollutant') 
+  emi_dt_usa_emfac <- emi_to_dt(emi_list = emi_usa_emfac
+                            ,emi_vars = 'emi'
+                            ,veh_vars = c("model_year","fuel")
+                            ,pol_vars = 'pollutant') 
+  emi_dt_usa_moves <- emi_to_dt(emi_list = emi_usa_moves
+                            ,emi_vars = 'emi'
+                            ,veh_vars = c("model_year","fuel")
+                            ,pol_vars = 'pollutant') 
+
+# Expect equal-----
+expect_equal(ncol(emi_dt_europe),9) # ncol
+expect_equal(ncol(emi_dt_brazil),5) # ncol
+expect_equal(ncol(emi_dt_usa_emfac),5) # ncol
+expect_equal(ncol(emi_dt_usa_moves),5) # ncol
+expect_equal(nrow(emi_dt_europe),558) # nrow
+expect_equal(nrow(emi_dt_brazil),558) # nrow
+expect_equal(nrow(emi_dt_usa_emfac),558) # nrow
+expect_equal(nrow(emi_dt_usa_moves),558) # nrow
+expect_equal(as.numeric(sum(emi_dt_europe$emi,na.rm = TRUE)),19.78512,0.01) # sum(emi)
+expect_equal(as.numeric(sum(emi_dt_brazil$emi,na.rm = TRUE)),19598.96,0.01) # sum(emi)
+expect_equal(as.numeric(sum(emi_dt_usa_emfac$emi,na.rm = TRUE)),2.116568,0.01) # sum(emi)
+expect_equal(as.numeric(sum(emi_dt_usa_moves$emi,na.rm = TRUE)),26.5729,0.01) # sum(emi)
+
 })

@@ -1,47 +1,68 @@
 
 test_that("emis", {
-  spo <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps"))  %>%
-    gtfs2gps::filter_by_shape_id(53000:53020)
   
-  spo_gps <- gtfs2gps::gtfs2gps(spo, parallel = TRUE)
-
-  spo_gpslines <- gtfs2gps::gps_as_sflinestring(spo_gps) %>% 
-    dplyr::select(trip_id,speed, dist, departure_time)
+  # GTFS2gps filter-----
+  library(data.table)
+  fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
+                                          , package = "gtfs2gps"))  %>%
+    gtfs2gps::filter_single_trip() %>% 
+    gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
   
-  spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "km")
+  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE)
   
-  total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012,2014,2015,2017,2018,2019),
+  fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
+  
+  fort_gpslines$dist <- units::set_units(fort_gpslines$dist, "km")
+  
+  # fleet-----------
+  total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012
+                                                 ,2014,2015,2017,2018,2019),
                                         bus = c(1,61,50,1,45,18,62,27,31),
-                                        veh_type_euro = "Urban Buses Standard 15 - 18 t",
-                                        euro_stage = c("II", "IV", "IV", "V", "V", "V", "V", "V","V"))
+                                        veh_type_euro = "Ubus Std 15 - 18 t",
+                                        euro_stage = c("II", "IV", "IV", "V"
+                                                       , "V", "V", "V", "V","V"))
   
   total_fleet[,fleet_composition := bus/sum(bus)]
-
-  EF_usa <- ef_usa(pollutant = c("CO","PM10"),
-                              calendar_year = "2019",
-                              model_year = total_fleet$year,
-                              speed = spo_gpslines$speed,
-                              fuel = "Diesel")
-
-  emi_usa <- emis(fleet_composition = total_fleet$fleet_composition,
-                             dist = spo_gpslines$dist,
-                             ef = EF_usa, 
-                             prefix = "USA")
-
   
-  expect_equal(sum(emi_usa$USA_CO_total), 1012.183, 0.05)
+  # EF -----------
+  ef_emfac <- ef_usa_emfac(pollutant = c("CO","PM10"),
+                           calendar_year = "2019",
+                           model_year = total_fleet$year,
+                           speed = fort_gpslines$speed,
+                           fuel = "D")
+  ef_moves <- ef_usa_moves(pollutant = c("CO","PM10"),
+                           calendar_year = "2019",
+                           model_year = total_fleet$year,
+                           speed = fort_gpslines$speed,
+                           fuel = "D")
+  # emis ----
+  emi_emfac <- emis(fleet_composition = total_fleet$fleet_composition,
+                    dist = fort_gpslines$dist,
+                    ef = ef_emfac, 
+                    prefix = "EMFAC")
+  emi_moves <- emis(fleet_composition = total_fleet$fleet_composition,
+                    dist = fort_gpslines$dist,
+                    ef = ef_moves, 
+                    prefix = "MOVES")
   
-  spo_gpslines$dist <- units::set_units(spo_gpslines$dist, "m")
-
+  # expect_equal -----
+  expect_equal(
+    as.numeric(sum(emi_emfac$emi$EMFAC_CO_total,na.rm = TRUE))
+    , 2.061608, 0.05)
+  expect_equal(
+    as.numeric(sum(emi_moves$emi$MOVES_PM10_total,na.rm = TRUE))
+    , 0.2622532, 0.005)
+  
+  
+  # expect_error -----
   expect_error(emis(fleet_composition = total_fleet$fleet_composition,
-                    dist = spo_gpslines$dist,
-                    ef = EF_usa, 
-                    prefix = "USA"), "dist need to has 'units' in 'km'.")
-
-  spo_gpslines$dist <- as.numeric(spo_gpslines$dist)
+                    dist = units::set_units(fort_gpslines$dist, "m"),
+                    ef = ef_moves, 
+                    prefix = "MOVES"), "dist need to has 'units' in 'km'.")
+  
   
   expect_error(emis(fleet_composition = total_fleet$fleet_composition,
-                  dist = spo_gpslines$dist,
-                  ef = EF_usa, 
-                  prefix = "USA"), "dist neeeds to has class 'units' in 'km'. Please, check package 'units'")
+                    dist = as.numeric(fort_gpslines$dist),
+                    ef = ef_moves, 
+                    prefix = "EMFAC"), "dist neeeds to has class 'units' in 'km'. Please, check package 'units'")
 })
