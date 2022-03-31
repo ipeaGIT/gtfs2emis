@@ -28,33 +28,64 @@ intersection operation between emissions data in `sf linestring` format and
 grid cells. It also considers aggregation per grid cells and time.
 }
 \examples{
+# GTFS2gps filter-----
+library(data.table)
 library(magrittr)
-gps <- gtfs2gps::read_gtfs(system.file("extdata/saopaulo.zip", package = "gtfs2gps")) \%>\%
-gtfs2gps::filter_by_shape_id(c("51982")) \%>\%
-  gtfs2gps::gtfs2gps() \%>\%
-  gtfs2gps::gps_as_sflinestring() 
-  
-ef <- ef_europe(speed = gps$speed,
-                veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-                euro = c("IV","V"),
-                pollutant = c("CO2","NOx"),
-                fuel = "D" ,
-                tech =  c("SCR","EGR"),
-                slope = 0.0,
-                load = 0.5,
-                fcorr = 1,
-                as_list = TRUE)
-                
-emi <- emis(fleet_composition =  c(0.7,0.3),
-            dist = units::set_units(gps$dist,"km"),
-            ef = ef,
-            aggregate = FALSE,
-            as_list = FALSE)
-            
-data <- cbind(emi,gps) \%>\% sf::st_as_sf()
-grid <- vein::make_grid(spobj = data, width =  0.25 / 102.47) # 500 meters
-my_grid <- emis_grid(data = data,
-                     grid = grid,
-                     emi = c("CO2_Euro_IV","CO2_Euro_V","NOx_Euro_IV","NOx_Euro_V"))
+fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
+                                       , package = "gtfs2gps"))  \%>\%
+ gtfs2gps::filter_single_trip() \%>\% 
+ gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
+
+fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE)
+
+fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
+
+fort_gpslines$dist <- units::set_units(fort_gpslines$dist, "km")
+
+# fleet -----------
+total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012
+                                              ,2014,2015,2017,2018,2019),
+                                     bus = c(1,61,50,1,45,18,62,27,31),
+                                     veh_type_euro = "Ubus Std 15 - 18 t",
+                                     euro_stage = c("II", "IV", "IV", "V"
+                                                    , "V", "V", "V", "V","V"))
+total_fleet$fleet_composition <- total_fleet$bus/sum(total_fleet$bus)
+
+# Emission factor
+set.seed(1234)
+EF_europe <- ef_europe(pollutant = c("CO", "PM10"),
+                      speed = fort_gpslines$speed,
+                      veh_type = total_fleet$veh_type_euro,
+                      tech = "SCR",
+                      euro = total_fleet$euro_stage,
+                      fcorr = rnorm(9, 0.5, 0.1))
+# EUROPE
+emi_europe <- emis(fleet_composition = total_fleet$fleet_composition,
+                  dist = fort_gpslines$dist,
+                  ef = EF_europe,
+                  prefix = "EU")
+
+for_emis <- cbind(fort_gpslines, emi_europe$emi)
+
+# Grid
+grid_gps <- vein::make_grid(spobj = for_emis, width =  0.25 / 102.47) # 500 meters
+for_sf <- sf::st_as_sf(for_emis)
+
+pol_gps <- emis_grid(data = for_sf,
+                    emi = c("EU_CO_total"),
+                    grid = grid_gps,
+                    time_class = 'all periods')
+
+pol_gps_hour <- emis_grid(data = for_sf,
+                         emi = c("EU_CO_total"),
+                         grid = grid_gps,
+                         time_class = 'hour',
+                         time_column = 'timestamp')
+
+pol_gps_hour_minute <- emis_grid(data = for_sf,
+                                emi = c("EU_CO_total"),
+                                grid = grid_gps,
+                                time_class = 'hour-minute',
+                                time_column = 'timestamp')
 
 }
