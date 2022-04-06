@@ -2,7 +2,7 @@
 % Please edit documentation in R/ef_europe.R
 \name{ef_europe}
 \alias{ef_europe}
-\title{Emission factor dependent on speed by EMEP/EEA}
+\title{Emission factor dependent on speed by European Environment Agency (EMEP/EEA)}
 \usage{
 ef_europe(
   speed,
