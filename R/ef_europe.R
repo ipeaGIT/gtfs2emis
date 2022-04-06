@@ -1,5 +1,5 @@
 #' @title 
-#' Emission factor dependent on speed by EMEP/EEA
+#' Emission factor dependent on speed by European Environment Agency (EMEP/EEA)
 #' 
 #' @description 
 #' Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
