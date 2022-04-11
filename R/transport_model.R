@@ -41,45 +41,21 @@
 #' 
 #' @export
 #' @examples
-#' # Input parameters -----                           # Function            | Data Source | M / . / NA |
-#' gtfs =   gtfspath or file                          # readgtfs            |    GTFS     |  Required  |
-#' parallel = TRUE                                    # gtfs2gps            |    User     |  Required  |
-#' gps_raw_path = "article/data/gps_spo/"             # gtfs2gps            |    User     |  Required  |
-#' gps_adjust_path = "article/data/gps_spo_adjusted/" # adjust_speed        |    User     |  Required  |
-#' gps_line_path = "article/data/gps_spo_linestring/" # gps_as_sflinestring |    User     |  Required  |
-#' spatial_resolution = 50                            # gtfs2gps            |    User     |  Default   |
-#' snap_method = "nearest2"                           # gtfs2gps            |    User     |  Default   |
-#' workers = 1                                        # gtfs2gps            |    User     |  Default   |
-#' continue = FALSE                                   # gtfs2gps            |    User     |  Default   |
-#' compress = TRUE                                    # gtfs2gps            |    User     |  Default   |
-#' min_speed = 2                                      # adjust_speed        |    User     |  Default   |
-#' max_speed = 80                                     # adjust_speed        |    User     |  Default   |
-#' new_speed = NULL                                   # adjust_speed        |    User     |  Default   |
-#' clone = TRUE                                       # adjust_speed        |    User     |  Default   |
-#' crs = 4326                                         # gps_as_sflinestring |    User     |  Default   |
 transport_model <- function(gtfs
-                            ,spatial_resolution
-                            ,parallel
-                            ,gps_raw_path
-                            ,gps_adjust_path
-                            ,gps_line_path
-                            ,snap_method = "nearest2"
-                            ,workers = 1
-                            ,continue = FALSE
-                            ,compress = TRUE 
-                            ,min_speed = 2
-                            ,max_speed = 80
-                            ,new_speed = NULL 
-                            ,clone = TRUE ){
+                            ,output_path = NULL
+                            ,parallel = FALSE
+                            ,spatial_resolution = 50){
   
   
-  # Read gtfs------
+  # Read GTFS ------
   
   message("Reading GTFS")
   message("------------")
   
-  if(as.character(city_gtfs)){
-    city_gtfs <- gtfstools::read_gtfs(path = city_gtfs)
+  if(is.character(gtfs)){
+    city_gtfs <- gtfstools::read_gtfs(path = gtfs)
+  }else{
+    city_gtfs <- gtfs
   }
   
   # convert frequency to stop_times
@@ -92,35 +68,41 @@ transport_model <- function(gtfs
   city_gtfs$stop_times[,departure_time := data.table::as.ITime(departure_time)]
   
   
-  # generate gps
+  # parallel condition
   if(parallel){
-    future::plan(session = "multisession",workers = workers)
+    future::plan(session = "multisession",workers = data.table::getDTthreads() - 1)
+  }else{
+    future::plan(session = "sequential")
   }
   
   # gtfs2gps
   message("Converting GTFS to GPS-like data")
   message("------------")
   
+  gps_path <-  paste0(tempdir(), "/gps")
+  dir.create(gps_path)
+  
   gtfs2gps::gtfs2gps(gtfs_data = city_gtfs
-                     ,snap_method = snap_method
                      ,spatial_resolution = spatial_resolution
                      ,parallel = parallel
                      ,filepath = gps_path
-                     ,continue = continue
-                     ,compress = compress)
+                     ,compress = TRUE)
   
   #  Adjust gps speed---------
   
+  message("------------")
   message("Adjusting the speeds of a gps-like table")
   message("------------")
+  
+  # create new dirs
+  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust")
+  dir.create(gps_adjust_path)
+  
+  # find gps files
   files_gps <- list.files(gps_path,full.names = TRUE)
   files_gps_names <- list.files(gps_path,full.names = FALSE)
   
-  
-  
   gps_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i =1 
-    
-    #message(paste0("adjust gps speed of file '",files_gps_names[i],"'")) 
     
     tmp_gps <- readr::read_rds(files_gps[i])
     tmp_gps[, dist := units::set_units(dist,"m")]
@@ -129,7 +111,7 @@ transport_model <- function(gtfs
     tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps)
     readr::write_rds(x = tmp_gps_fix
                      ,file = paste0(gps_adjust_path
-                                    ,files_gps_names[i]),compress = "gz")
+                                    ,"/",files_gps_names[i]),compress = "gz")
     return(NULL)
   })
   
@@ -137,23 +119,33 @@ transport_model <- function(gtfs
   message("Converting a GPS-like data.table to a LineString Simple Feature (sf)")
   message("------------")
   
-  dir.create(gps_line_path)
+  # Checking
+  if(!missing(output_path)){
+      dir.create(output_path)
+  }
+
   files_gps <- list.files(gps_adjust_path,full.names = TRUE)
   files_gps_names <- list.files(gps_adjust_path,full.names = FALSE)
   
+  # Conditions
   
-  gpsLine <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
-    
-    #message(paste0("Gps points to Linestring file '",files_gps_names[i],"'"))
-    
-    tmp_gps <- readr::read_rds(files_gps[i])
-    tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
-    
-    readr::write_rds(x = tmp_gps_fix
-                     ,file = paste0(gps_line_path,files_gps_names[i])
-                     , compress = "gz")
-    return(NULL)
-  },.options = furrr::furrr_options(seed = 123))
-  
-  return(NULL)
+  if(missing(output_path)){
+    gpsLine <- furrr::future_map(seq_along(files_gps),function(i){
+      tmp_gps <- readr::read_rds(files_gps[i])
+      tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
+      return(tmp_gps_fix)
+    },.options = furrr::furrr_options(seed = 123)) %>% 
+      data.table::rbindlist()
+    return(gpsLine)
+  }else{
+    gpsLine <- furrr::future_map(seq_along(files_gps),function(i){
+      tmp_gps <- readr::read_rds(files_gps[i])
+      tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
+      
+      readr::write_rds(x = tmp_gps_fix
+                       , file = paste0(output_path,files_gps_names[i])
+                       , compress = "gz")
+      return(NULL)
+    },.options = furrr::furrr_options(seed = 123))
+  }
 }
