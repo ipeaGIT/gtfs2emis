@@ -27,7 +27,7 @@ test_that("emis_grid", {
   
   # Ef ----
   set.seed(1234)
-  EF_europe <- ef_europe(pollutant = c("CO", "PM10"),
+  EF_europe <- ef_emep_europe(pollutant = c("CO", "PM10"),
                          speed = fort_gpslines$speed,
                          veh_type = total_fleet$veh_type_euro,
                          tech = "SCR",

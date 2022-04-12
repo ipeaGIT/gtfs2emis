@@ -53,7 +53,7 @@ total_fleet$fleet_composition <- total_fleet$bus/sum(total_fleet$bus)
 
 # Emission factor
 set.seed(1234)
-EF_europe <- ef_europe(pollutant = c("CO", "PM10"),
+EF_europe <- ef_emep_europe(pollutant = c("CO", "PM10"),
                       speed = fort_gpslines$speed,
                       veh_type = total_fleet$veh_type_euro,
                       tech = "SCR",

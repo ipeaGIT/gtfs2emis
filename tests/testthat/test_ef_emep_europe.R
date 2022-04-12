@@ -24,7 +24,7 @@ test_that("emis", {
                                       bus_age = c("2010", "2011", "2012", "2013"),
                                       bus_fuel = "D")
   # gtfs2emis
-  EF_europe <- ef_europe(pollutant = c("CO", "PM10"),
+  EF_europe <- ef_emep_europe(pollutant = c("CO", "PM10"),
                          speed = fort_gpslines$speed,
                          veh_type = total_fleet$veh_type_euro,
                          tech = "SCR",
@@ -40,12 +40,12 @@ test_that("emis", {
   
 
   # Expect error
-  expect_error(ef_europe(pollutant = c("CO", "PM"),
+  expect_error(ef_emep_europe(pollutant = c("CO", "PM"),
                          speed = fort_gpslines$speed,
                          veh_type = total_fleet$veh_type_euro,
                          tech = "SCR",
                          euro = total_fleet$euro_stage))
-  expect_error(ef_europe(pollutant = c("CO", "PM"),
+  expect_error(ef_emep_europe(pollutant = c("CO", "PM"),
                          speed = 1:100,
                          veh_type = total_fleet$veh_type_euro,
                          tech = "SCR",

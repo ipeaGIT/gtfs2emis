@@ -88,7 +88,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   #
   
   euro1 <- euro
-  ef_sdc <- ef_europe(speed = units::set_units(SDC,"km/h"), 
+  ef_sdc <- ef_emep_europe(speed = units::set_units(SDC,"km/h"), 
                       veh_type = veh_type,
                       euro = euro1,
                       pollutant = pollutant,
@@ -113,7 +113,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   k <- as.numeric(ef_local)/as.numeric(ef_sdc) 
   
   # ef europe speed
-  ef_speed <- ef_europe(speed = speed, 
+  ef_speed <- ef_emep_europe(speed = speed, 
                         veh_type = veh_type,
                         fuel = fuel,
                         euro = euro1,

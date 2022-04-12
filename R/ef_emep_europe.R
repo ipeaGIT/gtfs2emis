@@ -28,13 +28,13 @@
 #' @export
 #' 
 #' @examples
-#' ef_europe( speed = units::set_units(1:100,"km/h"),
+#' ef_emep_europe( speed = units::set_units(1:100,"km/h"),
 #'            veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
 #'            euro = c("III","IV","V"),
 #'            fuel = "D",
 #'            pollutant = c("CO","PM10","CO2","CH4","NOx"),
 #'            as_list = FALSE) 
-ef_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
+ef_emep_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                       slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
   #
   # local test

@@ -30,7 +30,7 @@ ef <- ef_brazil(pollutant = c("CO2","NOx"),
                 veh_type = "BUS_URBAN_D", 
                 model_year = 2016)
 
-ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+ef <- ef_emep_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
                 veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
                 euro = c("IV","V"),
                 pollutant = c("CO2","NOx"),
