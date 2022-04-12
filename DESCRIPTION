@@ -17,7 +17,8 @@ Imports:
     sf (>= 0.9-0),
     units,
     magrittr,
-    gtfs2gps
+    gtfs2gps,
+    gtfstools
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
