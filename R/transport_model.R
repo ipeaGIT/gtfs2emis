@@ -1,47 +1,35 @@
-#' @title Urban bus transport model 
+#' @title Transport model 
 #' 
-#' @description Creates the transport model based on the input GTFS.
+#' @description Creates the transport model based on the input GTFS, and exports
+#'  in an sf_linestring format.It has four main steps: i) Process the GTFS; 
+#'  ii) Convert the data to GPS; iii) Fix speeds; iv) Convert GPS to sf_linestring
+#'   format. These steps uses the functions of gtfs2gps package 'read_gtfs',
+#'   'gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring', respectively.
 #' 
 #' @param gtfs_data  A path to a GTFS file to be converted to GPS, or a GTFS data
 #' represented as a list of data.tables.
-#' @param spatial_resolution Numeric. The spatial resolution in meters.
-#' @param gps_raw_path Character. Filepath to receive the GPS files.
-#' @param gps_adjust_path Character. Filepath to receive the GPS files with speed correction.
-#' @param gps_line_path Character. Filepath to receive the GPS files as sf_linestring.
-#' @param parallel Logical. Decides whether the function should run in parallel. Defaults is FALSE.
-#' @param snap_method The method used to snap stops to the route geometry. There
-#'        are two available methods: `nearest1` and `nearest2`. Defaults to 
-#'        `nearest2`. See `gtfs2gps::gtfs2gps()` for more info.
-#' @param workers Numeric. Number of workers available for parallel processing. 
-#' @param continue Logical. Argument that can be used only with filepath. When TRUE, it
-#'        skips processing the shape identifiers that were already saved into 
-#'        files. It is useful to continue processing a GTFS file that was stopped
-#'        for some reason. Default value is FALSE.
-#' @param compress Logical. Argument that can be used only with filepath. When TRUE, it
-#' compresses the output files by saving them using rds format. Default value is FALSE.
-#' Note that compress guarantees that the data saved will be read in the same way as it
-#' was created in R. If not compress, the txt extension requires the data to be converted
-#' from ITime to string, and therefore they need to manually converted back to ITime to 
-#' be properly handled by gtfs2gps.
-#' @param min_speed Units. Minimum speed to be considered as valid. It can be 
-#' a numeric (in km/h) or a units value able to be converted to km/h. Values
-#'  below minimum speed will be adjusted. Defaults to 2 km/h.
-#' @param max_speed Units. Maximum speed to be considered as valid. It can be a
-#'  numeric (in km/h) or a units value able to be converted to km/h. Values above 
-#'  maximum speed will be adjusted. Defaults to 80 km/h.
-#' @param new_speed Units. Speed to replace missing values as well as values outside 
-#' min_speed and max_speed range. It can be a numeric (in km/h) or a units value 
-#' able to be converted to km/h. By default, 'new_speed = NULL' and the function
-#'  considers the average speed of the entire gps data.
-#' @param clone Logical. Use a copy of the gps_data? Defaults to TRUE.
-#' @param crs Numeric. A Coordinate Reference System. The default value is 4326
-#'  (latlong WGS84).
-#' @details .........
-#' @return NULL
+#' @param output_path character. Filepath to receive the GTFS file as sf_linestring, 
+#'  returning each public transport shape_id separately by file. If 'NULL', the function 
+#'  returns the data to user. Default is 'NULL'.
+#' @param parallel logical. Decides whether the function should run in parallel. 
+#' Defaults is FALSE.
+#' @param spatial_resolution numeric. The spatial resolution in meters.
+#' @details If the user wants to process the all routes in the GTFS, we suggest using
+#' the 'output_path' argument, as the return file can be large for several vehicle routes.
+#' This function is a more friendly approach to generate the transport model for 
+#' users interested in a basic overview of the emissions. For detailed analysis,
+#' we suggest reading out vignette at <<http://www.github.com/ipeaGIT/gtfs2emis/>>.
+#' 
+#' @return sf_linestring file or NULL.
 #' 
 #' @export
 #' @examples
-transport_model <- function(gtfs
+#' gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
+#'   gtfs2gps::filter_by_shape_id(., "T2-1") %>%
+#'   gtfs2gps::filter_single_trip()
+#' 
+#' sf_line <- transport_model(gtfs = gtfs,parallel = TRUE) 
+transport_model <- function(gtfs_data
                             ,output_path = NULL
                             ,parallel = FALSE
                             ,spatial_resolution = 50){
@@ -52,10 +40,10 @@ transport_model <- function(gtfs
   message("Reading GTFS")
   message("------------")
   
-  if(is.character(gtfs)){
-    city_gtfs <- gtfstools::read_gtfs(path = gtfs)
+  if(is.character(gtfs_data)){
+    city_gtfs <- gtfstools::read_gtfs(path = gtfs_data)
   }else{
-    city_gtfs <- gtfs
+    city_gtfs <- gtfs_data
   }
   
   # convert frequency to stop_times

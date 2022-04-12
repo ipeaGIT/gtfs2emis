@@ -2,96 +2,49 @@
 % Please edit documentation in R/transport_model.R
 \name{transport_model}
 \alias{transport_model}
-\title{Urban bus transport model}
+\title{Transport model}
 \usage{
 transport_model(
   gtfs,
-  spatial_resolution,
-  parallel,
-  gps_raw_path,
-  gps_adjust_path,
-  gps_line_path,
-  snap_method = "nearest2",
-  workers = 1,
-  continue = FALSE,
-  compress = TRUE,
-  min_speed = 2,
-  max_speed = 80,
-  new_speed = NULL,
-  clone = TRUE
+  output_path = NULL,
+  parallel = FALSE,
+  spatial_resolution = 50
 )
 }
 \arguments{
-\item{spatial_resolution}{Numeric. The spatial resolution in meters.}
+\item{output_path}{character. Filepath to receive the GTFS file as sf_linestring, 
+returning each public transport shape_id separately by file. If 'NULL', the function 
+returns the data to user. Default is 'NULL'.}
 
-\item{parallel}{Logical. Decides whether the function should run in parallel. Defaults is FALSE.}
+\item{parallel}{logical. Decides whether the function should run in parallel. 
+Defaults is FALSE.}
 
-\item{gps_raw_path}{Character. Filepath to receive the GPS files.}
-
-\item{gps_adjust_path}{Character. Filepath to receive the GPS files with speed correction.}
-
-\item{gps_line_path}{Character. Filepath to receive the GPS files as sf_linestring.}
-
-\item{snap_method}{The method used to snap stops to the route geometry. There
-are two available methods: `nearest1` and `nearest2`. Defaults to 
-`nearest2`. See `gtfs2gps::gtfs2gps()` for more info.}
-
-\item{workers}{Numeric. Number of workers available for parallel processing.}
-
-\item{continue}{Logical. Argument that can be used only with filepath. When TRUE, it
-skips processing the shape identifiers that were already saved into 
-files. It is useful to continue processing a GTFS file that was stopped
-for some reason. Default value is FALSE.}
-
-\item{compress}{Logical. Argument that can be used only with filepath. When TRUE, it
-compresses the output files by saving them using rds format. Default value is FALSE.
-Note that compress guarantees that the data saved will be read in the same way as it
-was created in R. If not compress, the txt extension requires the data to be converted
-from ITime to string, and therefore they need to manually converted back to ITime to 
-be properly handled by gtfs2gps.}
-
-\item{min_speed}{Units. Minimum speed to be considered as valid. It can be 
-a numeric (in km/h) or a units value able to be converted to km/h. Values
- below minimum speed will be adjusted. Defaults to 2 km/h.}
-
-\item{max_speed}{Units. Maximum speed to be considered as valid. It can be a
-numeric (in km/h) or a units value able to be converted to km/h. Values above 
-maximum speed will be adjusted. Defaults to 80 km/h.}
-
-\item{new_speed}{Units. Speed to replace missing values as well as values outside 
-min_speed and max_speed range. It can be a numeric (in km/h) or a units value 
-able to be converted to km/h. By default, 'new_speed = NULL' and the function
- considers the average speed of the entire gps data.}
-
-\item{clone}{Logical. Use a copy of the gps_data? Defaults to TRUE.}
+\item{spatial_resolution}{numeric. The spatial resolution in meters.}
 
 \item{gtfs_data}{A path to a GTFS file to be converted to GPS, or a GTFS data
 represented as a list of data.tables.}
-
-\item{crs}{Numeric. A Coordinate Reference System. The default value is 4326
-(latlong WGS84).}
+}
+\value{
+sf_linestring file or NULL.
 }
 \description{
-Creates the transport model based on the input GTFS.
+Creates the transport model based on the input GTFS, and exports
+ in an sf_linestring format.It has four main steps: i) Process the GTFS; 
+ ii) Convert the data to GPS; iii) Fix speeds; iv) Convert GPS to sf_linestring
+  format. These steps uses the functions of gtfs2gps package 'read_gtfs',
+  'gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring', respectively.
 }
 \details{
-.........
+If the user wants to process the all routes in the GTFS, we suggest using
+the 'output_path' argument, as the return file can be large for several vehicle routes.
+This function is a more friendly approach to generate the transport model for 
+users interested in a basic overview of the emissions. For detailed analysis,
+we suggest reading out vignette at <<http://www.github.com/ipeaGIT/gtfs2emis/>>.
 }
 \examples{
-# Input parameters -----                           # Function            | Data Source | M / . / NA |
-gtfs =   gtfspath or file                          # readgtfs            |    GTFS     |  Required  |
-parallel = TRUE                                    # gtfs2gps            |    User     |  Required  |
-gps_raw_path = "article/data/gps_spo/"             # gtfs2gps            |    User     |  Required  |
-gps_adjust_path = "article/data/gps_spo_adjusted/" # adjust_speed        |    User     |  Required  |
-gps_line_path = "article/data/gps_spo_linestring/" # gps_as_sflinestring |    User     |  Required  |
-spatial_resolution = 50                            # gtfs2gps            |    User     |  Default   |
-snap_method = "nearest2"                           # gtfs2gps            |    User     |  Default   |
-workers = 1                                        # gtfs2gps            |    User     |  Default   |
-continue = FALSE                                   # gtfs2gps            |    User     |  Default   |
-compress = TRUE                                    # gtfs2gps            |    User     |  Default   |
-min_speed = 2                                      # adjust_speed        |    User     |  Default   |
-max_speed = 80                                     # adjust_speed        |    User     |  Default   |
-new_speed = NULL                                   # adjust_speed        |    User     |  Default   |
-clone = TRUE                                       # adjust_speed        |    User     |  Default   |
-crs = 4326                                         # gps_as_sflinestring |    User     |  Default   |
+gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) \%>\% 
+  gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
+  gtfs2gps::filter_single_trip()
+
+sf_line <- transport_model(gtfs = gtfs,parallel = TRUE) 
 }

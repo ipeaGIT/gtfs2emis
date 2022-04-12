@@ -5,62 +5,112 @@
 \title{Emissions model}
 \usage{
 emission_model(
-  gps_line_path,
+  gps,
   ef_data_base,
   fleet_data,
-  emis_path,
   pollutant,
+  output_path,
   parallel,
-  calendar_year,
-  is_ef_scaled
+  calendar_year
 )
 }
 \arguments{
-\item{gps_line_path}{Character; Filepath with the GPS files as sf_linestring.}
+\item{gps}{character or sf_linestring; Filepath with the GPS files in 
+sf_linestring format or an sf_linestring data.}
 
-\item{ef_data_base}{Character; Emission factor database, such as "moves_usa",
+\item{ef_data_base}{character; Emission factor database, such as "moves_usa",
 "emfac_usa", "emep_europe","cetesb_brazil".}
 
-\item{fleet_data}{Data.table. Database with fleet_data. The requires columns 
-depends on the ef_data_base source. See @details for input examples.}
+\item{fleet_data}{data.table. Database with fleet_data. The requires columns 
+depends on the 'ef_data_base' source. See @examples for input.}
 
-\item{emis_path}{Character; Filepath to export emissions.}
+\item{pollutant}{character. e.g. "CO","PM10","CO2","CH4","NOx" etc.
+See `ef_usa_moves`,`ef_usa_emfac`, `ef_brazil_cetesb` or `ef_emep_europe` 
+functions to check which pollutants are available.}
 
-\item{pollutant}{Vector; Vector of characters of pollutants. character; The available 
-pollutants depends on the ef_data_base. See `ef_usa_moves`,`ef_usa_emfac`,
-`ef_brazil_cetesb` or `ef_emep_europe` for details.}
+\item{output_path}{character. Filepath to export emissions. The function only exports 
+the emissions files when `gps` parameter is input as character. 
+If `gps` argument is a sf_linestring, the function returns the data to User.}
 
-\item{parallel}{Logical; Decides whether the function should run in parallel. 
+\item{parallel}{logical; Decides whether the function should run in parallel. 
 Defaults is FALSE.When TRUE, it will use all cores available minus one 
 using future::plan() with strategy "multisession" internally.}
 
-\item{load}{Numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
-This is required only `ef_emep_europe` is selected.}
-
-\item{as_list}{Logical; Returns emission factors as a list, instead of 
-data.table format. Default is TRUE.}
-
-\item{workers}{Numeric; Number of workers available for parallel processing.}
-
-\item{tech}{character; After treatment technology, classified in "SCR"
-(Selective Catalytic Reduction),}
+\item{calendar_year}{numeric.Year in which the emissions inventory
+is estimated. Argument only required when `ef_usa_moves`,`ef_usa_emfac` are
+selected.}
+}
+\value{
+list of variables of emissions or NULL.
 }
 \description{
-Estimate hot-exhaust emissions from the input transport model
+Estimate hot-exhaust emissions from the input transport model.
 }
 \details{
 In the fleet database..
-- Column `calendar_year`: Character; Base year of the @ef_data_base input. 
-Required only when  `ef_usa_moves` or `ef_usa_emfac` are selected.
-- Column `tech`  Character; After treatment technology, classified in "SCR" 
-(Selective Catalytic Reduction), "EGR" (Exhaust Gas Recirculation), and 
-"DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" 
-for "IV" and "V". This is required only when `ef_emep_europe` or 
-`ef_euro_scaled` are selected.
-- Column `euro`  character; Euro period of vehicle, classified in 
-"Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required 
-only when `ef_emep_europe` or `ef_euro_scaled` are selected.
-- Column `fuel` character; Fuel type, classified in "D" (Diesel)
-,"DHD" (Diesel Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity)
-, "CNG" (Compressed Natural Gas), "BD" (Biodiesel).
+- Column `calendar_year`: character; Base year of the @ef_data_base input. 
+Required only when  `usa_moves` or `usa_emfac` are selected.
+- Column `tech`: character; After treatment technology. This is required only 
+when `emep_europe` is selected. Check `ef_emep_europe` for details.
+- Column `euro`: character; Euro period of vehicle, classified in 
+"Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required only 
+when `emep_europe` is selected. Check `ef_emep_europe` for details.
+- Column `fuel`: character; Required when `ef_moves_usa`, `ef_emfac_usa` and
+ `ef_emep_europe` are selected. 
+ - Column `fleet_composition`: Numeric. Scaled composition of fleet. As several 
+ cities does not specify which vehicle runs on each route, the composition is used
+ to attribute a probability of a specific vehicle to circulate in the line. The 
+ probability sums one. Required for all emission factors selection. 
+ If the information of specific vehicle is known, user should develop the emission
+ inventory according to the vignette <<detailed_vignette_link>>.
+}
+\examples{
+ 
+
+gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) \%>\% 
+gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
+  gtfs2gps::filter_single_trip()
+
+sf_line <- transport_model(gtfs = gtfs,parallel = TRUE)
+
+fleet_data_ef_cetesb <- data.table::data.table("veh_type" = "BUS_URBAN_D"
+                                               ,"model_year" = 2010:2019
+                                               ,"fuel" = "D"
+                                               ,"fleet_composition" = rep(0.1,10))
+fleet_data_ef_moves <- data.table::data.table("veh_type" = "BUS_URBAN_D"
+                                              ,"model_year" = 2010:2019
+                                              ,"fuel" = "D"
+                                              ,"calendar_year" = 2019
+                                              ,"fleet_composition" = rep(0.1,10))
+fleet_data_ef_emfac <- data.table::data.table("veh_type" = "BUS_URBAN_D"
+                                              ,"model_year" = 2010:2019
+                                              ,"fuel" = "D"
+                                              ,"calendar_year" = 2019
+                                              ,"fleet_composition" = rep(0.1,10))
+fleet_data_ef_europe <- data.table::data.table("veh_type" = c("Ubus Midi <=15 t"
+                                                              ,"Ubus Std 15 - 18 t"
+                                                              ,"Ubus Artic >18 t")
+                                               ,"euro" = c("III","IV","V")
+                                               ,"fuel" = rep("D",3)
+                                               ,"tech" = c("-","SCR","SCR")
+                                               ,"fleet_composition" = c(0.4,0.5,0.1))
+
+sf_cetesb <- emission_model(gps = sf_line
+                          ,ef_data_base = "cetesb_brazil"
+                          ,fleet_data = fleet_data_ef_cetesb
+                          ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
+sf_emfac <- emission_model(gps = sf_line
+                          ,ef_data_base = "emfac_usa"
+                          ,fleet_data = fleet_data_ef_emfac
+                          ,pollutant = c("CO","PM10","CO2","CH4","NOx")
+                          ,calendar_year = 2019)
+sf_moves <- emission_model(gps = sf_line
+                          ,ef_data_base = "moves_usa"
+                          ,fleet_data = fleet_data_ef_moves
+                          ,pollutant = c("CO","PM10","CO2","CH4","NOx")
+                          ,calendar_year = 2019)
+sf_emep <- emission_model(gps = sf_line
+                          ,ef_data_base = "emep_europe"
+                          ,fleet_data = fleet_data_ef_europe
+                          ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
 }
