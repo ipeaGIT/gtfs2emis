@@ -66,7 +66,7 @@ when `emep_europe` is selected. Check `ef_emep_europe` for details.
 }
 \examples{
  
-
+library(magrittr)
 gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) \%>\% 
 gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
   gtfs2gps::filter_single_trip()

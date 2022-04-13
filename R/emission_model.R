@@ -41,7 +41,7 @@
 #' 
 #' @export
 #' @examples  
-#' 
+#' library(magrittr)
 #' gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
 #' gtfs2gps::filter_by_shape_id(., "T2-1") %>%
 #'   gtfs2gps::filter_single_trip()
@@ -120,8 +120,7 @@ emission_model <- function(gps
     }
   }
   if(ef_data_base == "emep_europe"){
-    if(is.null(fleet_data$speed) | is.null(fleet_data$euro)
-       | is.null(fleet_data$fleet_composition)){
+    if(is.null(fleet_data$euro)| is.null(fleet_data$fuel)|is.null(fleet_data$tech)| is.null(fleet_data$fleet_composition)){
       stop(sprintf("Arguments 'speed','euro','fleet_composition', and 'speed' input \nis required  in the 'fleet_data' for %s database"
                    ,ef_data_base))
     }

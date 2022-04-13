@@ -5,13 +5,16 @@
 \title{Transport model}
 \usage{
 transport_model(
-  gtfs,
+  gtfs_data,
   output_path = NULL,
   parallel = FALSE,
   spatial_resolution = 50
 )
 }
 \arguments{
+\item{gtfs_data}{A path to a GTFS file to be converted to GPS, or a GTFS data
+represented as a list of data.tables.}
+
 \item{output_path}{character. Filepath to receive the GTFS file as sf_linestring, 
 returning each public transport shape_id separately by file. If 'NULL', the function 
 returns the data to user. Default is 'NULL'.}
@@ -20,9 +23,6 @@ returns the data to user. Default is 'NULL'.}
 Defaults is FALSE.}
 
 \item{spatial_resolution}{numeric. The spatial resolution in meters.}
-
-\item{gtfs_data}{A path to a GTFS file to be converted to GPS, or a GTFS data
-represented as a list of data.tables.}
 }
 \value{
 sf_linestring file or NULL.
@@ -42,6 +42,7 @@ users interested in a basic overview of the emissions. For detailed analysis,
 we suggest reading out vignette at <<http://www.github.com/ipeaGIT/gtfs2emis/>>.
 }
 \examples{
+library(magrittr)
 gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) \%>\% 
   gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
   gtfs2gps::filter_single_trip()

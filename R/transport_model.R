@@ -24,6 +24,7 @@
 #' 
 #' @export
 #' @examples
+#' library(magrittr)
 #' gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
 #'   gtfs2gps::filter_by_shape_id(., "T2-1") %>%
 #'   gtfs2gps::filter_single_trip()
@@ -95,6 +96,7 @@ transport_model <- function(gtfs_data
     tmp_gps <- readr::read_rds(files_gps[i])
     tmp_gps[, dist := units::set_units(dist,"m")]
     tmp_gps[, cumdist := units::set_units(cumdist,"m")]
+    tmp_gps[, speed := units::set_units(speed,"km/h")]
     tmp_gps[, cumtime := units::set_units(cumtime,"s")]
     tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps)
     readr::write_rds(x = tmp_gps_fix
