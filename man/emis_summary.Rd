@@ -5,7 +5,7 @@
 \title{Emissions summary by aggregating results}
 \usage{
 emis_summary(
-  emi,
+  emi_list,
   emi_vars,
   by,
   time_column = NULL,
@@ -14,7 +14,7 @@ emis_summary(
 )
 }
 \arguments{
-\item{emi}{data.table; Data.table with emissions and departure_time data.}
+\item{emi_list}{data.table; Data.table with emissions and departure_time data.}
 
 \item{emi_vars}{character; Columns names of emissions information.}
 
@@ -54,11 +54,11 @@ emi <- emis(fleet_composition =  c(0.7,0.3),
             aggregate = FALSE,
             as_list = TRUE)  
 
-time_column <- data.table::as.ITime(seq(1,14400,length.out = 100))
-my_emis_summary <- emis_summary(emi = emi,
+emi$time_column <- data.table::as.ITime(seq(1,14400,length.out = 100))
+my_emis_summary <- emis_summary(emi_list = emi,
                      emi_var = "emi", 
                      by = "time",  # veh_type, time, pollutant 
-                     time_column = time_column,
+                     time_column = "time_column",
                      veh_var = "veh_type", # veh_type
                      pol_var = "pollutant") # pollutant
 }
