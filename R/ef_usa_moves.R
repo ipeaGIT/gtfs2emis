@@ -15,7 +15,7 @@
 #'  VOC (Volatile Organic Compounds)
 #' @param calendar_year numeric; Calendar Year between 1990 - 2030 Year in which the emissions
 #' inventory is estimated, in order to consider the effect of degradation.
-#' @param fuel_type character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
+#' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year numeric; Model year of vehicle.
 #' @param speed units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",
@@ -32,10 +32,10 @@
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
 #'         calendar_year = 2016,
-#'         fuel_type = "D",
+#'         fuel = "D",
 #'         as_list = TRUE)
 #'         
-ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel_type = 'D', as_list = TRUE){
+ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel = 'D', as_list = TRUE){
   
   #  pollutant = c("CO","PM10","CH4","NOx")
   # # calendar_year = "2019"
@@ -45,7 +45,7 @@ ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel_type 
   # 
 
   # use specific name-----
-  tmp_fuel <- fuel_type
+  tmp_fuel <- fuel
   tmp_pollutant <- pollutant
   tmp_model_year <- model_year
   tmp_calendar_year <- calendar_year
@@ -53,7 +53,7 @@ ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel_type 
     
   # pre-filter in usa data----
   temp_moves <- temp_ef[calendar_year %in% tmp_calendar_year &
-                          fuel_type  %in% unique(tmp_fuel) &
+                          fuel  %in% unique(tmp_fuel) &
                       pollutant %in% unique(tmp_pollutant) & 
                       model_year %in% unique(tmp_model_year), ]
   
@@ -86,10 +86,10 @@ ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel_type 
       # Filter Model Year & Pollutant & Fuel
       temp_moves2 <- data.table::copy(temp_moves)[pollutant %in% i & 
                                                     model_year %in% tmp_model_year[j] & 
-                                                    fuel_type %in% tmp_fuel[j], ]
+                                                    fuel %in% tmp_fuel[j], ]
       # message(paste("pollutant",i, 
       #                  "| model_year", tmp_model_year[j],
-      #                  "| fuel_type", tmp_fuel[j]))
+      #                  "| fuel", tmp_fuel[j]))
       # check condition
       if(dim(temp_moves2)[1] == 0){
         stop("Emission Factor do not exist. \nPlease check `data(usa_moves_db)` for valid emission factors.")

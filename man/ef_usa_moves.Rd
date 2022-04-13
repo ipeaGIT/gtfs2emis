@@ -12,7 +12,7 @@ ef_usa_moves(
   model_year,
   calendar_year,
   speed,
-  fuel_type = "D",
+  fuel = "D",
   as_list = TRUE
 )
 }
@@ -35,7 +35,7 @@ such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5
 "27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5 - 47.5","47.5 - 52.5",
 "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5", "67.5 - 72.5", ">72.5" mph (miles/h).}
 
-\item{fuel_type}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
+\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
@@ -52,7 +52,7 @@ Estimates expressed in units 'g/km'.
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
         calendar_year = 2016,
-        fuel_type = "D",
+        fuel = "D",
         as_list = TRUE)
         
 }
