@@ -21,3 +21,6 @@ utils::globalVariables(c("ef_brazil_db","tmp_model_year"))
 utils::globalVariables(c("fuel_type","usa_moves_db"))
 # ef_emfac
 utils::globalVariables(c("usa_emfac_db"))
+# emission_model / transport_model
+utils::globalVariables(c("arrival_time", "cumdist", "cumtime", "departure_time",
+                         "dist", "files_gps_names","speed"))
