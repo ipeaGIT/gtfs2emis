@@ -2,9 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
-test_joao/*
 tests_rafa/*
 figures/*
 maps/*
 Meta
-article1/
+article1/*
