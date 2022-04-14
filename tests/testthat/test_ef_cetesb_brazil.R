@@ -1,5 +1,5 @@
 
-test_that("ef_brazil", {
+test_that("ef_cetesb_brazil", {
   
   
   # GTFS2gps filter-----
@@ -27,11 +27,11 @@ test_that("ef_brazil", {
   
   # function
   
-  EF_brazil <- ef_brazil(pollutant = c("CO","CO2"),
+  EF_brazil <- ef_cetesb_brazil(pollutant = c("CO","CO2"),
                          veh_type = "BUS_URBAN_D",
                          model_year = total_fleet$year) 
   
-  EF_brazil1 <- ef_brazil(pollutant = c("CO","CO2"),
+  EF_brazil1 <- ef_cetesb_brazil(pollutant = c("CO","CO2"),
             veh_type = c("BUS_MICRO_D","BUS_URBAN_D"),
             model_year = c(2005))
   

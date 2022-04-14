@@ -39,9 +39,9 @@
 #' @source \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
 #' @export
 #' @examples 
-#' ef_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
+#' ef_cetesb_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
 #' model_year = 2015,as_list = TRUE)
-ef_brazil <- function(pollutant, veh_type, model_year, as_list = TRUE){
+ef_cetesb_brazil <- function(pollutant, veh_type, model_year, as_list = TRUE){
   
   #
   # init config

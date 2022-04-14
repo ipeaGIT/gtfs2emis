@@ -46,7 +46,7 @@ test_that("emis_grid", {
                                speed = fort_gpslines$speed,
                                fuel = "D")
   
-  EF_brazil <- ef_brazil(pollutant = c("CO", "CO2"),
+  EF_brazil <- ef_cetesb_brazil(pollutant = c("CO", "CO2"),
                          veh_type = "BUS_URBAN_D",
                          model_year = total_fleet$year) # fleet_composition
   

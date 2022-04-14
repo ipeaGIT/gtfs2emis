@@ -25,7 +25,7 @@
 #' @export
 #' 
 #' @examples 
-#' temp_ef_br <- ef_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),
+#' temp_ef_br <- ef_cetesb_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),
 #'                         veh_type = "BUS_URBAN_D",
 #'                         model_year = 2015,
 #'                         as_list = TRUE)

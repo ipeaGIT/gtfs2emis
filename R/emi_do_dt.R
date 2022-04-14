@@ -16,7 +16,7 @@
 #' @examples 
 #' set.seed(1335)
 #' dist = units::set_units(rnorm(100,0.250,0.03),"km")
-#' ef <- ef_brazil(pollutant = c("CO2","NOx"),
+#' ef <- ef_cetesb_brazil(pollutant = c("CO2","NOx"),
 #'                 veh_type = "BUS_URBAN_D", 
 #'                 model_year = 2016)
 #' 

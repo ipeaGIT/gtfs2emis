@@ -138,7 +138,7 @@ emission_model <- function(gps
   # EF ----------------
   
   if(ef_data_base == "cetesb_brazil"){
-    temp_ef <- ef_brazil(pollutant = pollutant,
+    temp_ef <- ef_cetesb_brazil(pollutant = pollutant,
                          veh_type = fleet_data$veh_type,
                          model_year = as.numeric(fleet_data$model_year),
                          as_list = TRUE)
