@@ -27,7 +27,6 @@ library(sf)
 library(units)
 library(magrittr)
 library(ggplot2)
-library(mapview)
 library(gtfs2gps)
 library(gtfs2emis)
 library(gtfstools)
@@ -87,9 +86,10 @@ The transport model functions accepts either the gtfs data and filepath of the d
 sf_line <- transport_model(gtfs = gtfs,parallel = TRUE)
 ```
 Visualizing the transport model output for `shape_id == "176-1"` of Porto Alegre (Brazil).
-```{r, message = FALSE}
+```{r, message = FALSE, fig.width=3,fig.height=3}
 head(sf_line$geometry)
-plot(sf_line$geometry)
+sf_line <- sf::st_as_sf(sf_line)
+plot(sf_line["trip_number"])
 ```
 
 **3. Fleet data**\
@@ -155,7 +155,7 @@ names(sf_emis)
 ```
 
 **5. Data post-processing**\
-As the results are generated in a long list, gtfs2emis package has several function to post-processing the results of interest. `emis_summary` summarizes the emissions according to the variable of interest, such as vehicle type `veh_type`, `pollutant` or `time`. In this last case, we have to add a `time_column` in the list as this information is not shown by the `emission_model()` function.
+As the results are generated in a long list, gtfs2emis package has several function to post-processing the results. `emis_summary` summarizes the emissions according to the variable of interest, such as vehicle type `veh_type`, `pollutant` or `time`. In this last case, we need to add a `time_column` in the list, as this information is not shown by the `emission_model()` function.
 
 ```{r, message = FALSE}
 sf_emis$time_column <- sf_emis$gps$timestamp
@@ -189,7 +189,7 @@ my_emis_summary <- emis_summary(emi_list = sf_emis,
                                 pol_var = "pollutant") 
 my_emis_summary
 ```
-Viewing results by pollutant
+Checking the results by pollutant
 ```{r, message = FALSE}
 my_emis_summary <- emis_summary(emi_list = sf_emis,
                                  emi_var = "emi", 
@@ -210,14 +210,14 @@ my_emis_dt <- emi_to_dt(emi_list = sf_emis
 head(my_emis_dt,5)
 ```
 
-To visualize emissions spatially, user should provide info about the desired grid. Here, we use `vein::make_grid()` to produce a basic grid.
+To visualize emissions spatially in a grid, user should provide info about the desired grid. An operation of intersection is done using `emis_grid()`. Here, we use `vein::make_grid()` to produce a basic grid.
 
 ```{r, message = FALSE}
 grid_gps <- vein::make_grid(spobj = sf_emis$gps, width =  0.25 / 102.47) # 500 meters
 grid_gps <- sf::st_as_sf(grid_gps)
 ```
 
-```{r, message = FALSE}
+```{r, message = FALSE, fig.width=4,fig.height=4}
 names(sf_emis$emi)
 # we add info of emissions into gps file
 sf_emis$gps <- cbind(sf_emis$gps,sf_emis$emi)
@@ -227,15 +227,172 @@ pol_grid <- emis_grid(data = sf_emis$gps,
                      grid = grid_gps,
                      time_class = 'all periods')
 plot(pol_grid["CO_Euro_IV"])
-mapview::mapview(pol_grid["CO_Euro_IV"])
-```
-
-```{r, message = FALSE}
-```
-```{r, message = FALSE}
 ```
 
 ## Detailed Usage
 
+The detailed usage of `gtfs2emis` has intermediate functions to generate the transport and emissions model. In this case, user can provide data of fleet distributed according to routes.
+
+**1. Read data**
+
+Users can provide a vehicle specific data for each shape_id
+The example below shows a situation where the vehicle characteristics is known for three shape_ids (`T2-1`,`A141-1`, `176-1`), but is unknown for `R10-2`
+
+```{r,message=FALSE}
+gtfs <- read_gtfs(system.file("extdata/poa.zip", package="gtfs2gps")) %>%
+  filter_week_days() %>%
+  filter_single_trip()
+
+gtfs$stop_times[,arrival_time := data.table::as.ITime(arrival_time)]
+gtfs$stop_times[,departure_time := data.table::as.ITime(departure_time)]
+
+gps_poa <- gtfs2gps(gtfs)
+data.table::setDT(gps_poa)
+```
+
+Here we can define different ranges of minimum and maximum allowed speeds, as well as average speed. In this case, we considered the average speed of 34 km/h.
+
+```{r}
+gps_poa_fix <- adjust_speed(gps_data = gps_poa
+                            ,min_speed = 5
+                            ,max_speed = 75
+                            ,new_speed = 34
+                            ,clone = TRUE)
+```
+To linestring
+
+```{r}
+linestring_poa <- gps_as_sflinestring(gps_poa_fix)
+```
+Checking some basic statistics of the transport model.
+```{r, fig.width=4,fig.height=6}
+data.table::setDT(linestring_poa)
+# speeds
+linestring_poa[,weighted.mean(speed,dist),by=shape_id]
+linestring_poa[,min(dist),by=shape_id]
+linestring_poa[,mean(dist),by=shape_id]
+linestring_poa[,max(dist),by=shape_id]
+# plot
+plot(sf::st_as_sf(linestring_poa)["shape_id"],lwd=3)
+
+```
+
+**2. Fleet**
+
+Users can provide a vehicle specific data for each shape_id The example below shows a situation where the  vehicle characteristics is known for three shape_ids (`T2-1`,`A141-1`, `176-1`) but is unknown for `R10-2`
+```{r}
+fleet_data_ef_europe <- data.table::data.table("veh_type" = rep(c("Ubus Midi <=15 t"
+                                                                  ,"Ubus Std 15 - 18 t"
+                                                                  ,"Ubus Artic >18 t"),2)
+                                               ,"euro" = rep(c("III","IV","V"),2)
+                                               ,"fuel" = rep("D",6)
+                                               ,"tech" = rep(c("-","SCR","SCR"),2)
+                                               ,"fleet_composition" = c(rep(1,3),0.4,0.5,0.1)
+                                               ,"shape_id" = c("T2-1","A141-1",
+                                                               "176-1",rep("R10-2",3)))
+fleet_data_ef_europe
+```
+
+ the sum of fleet composition per shape_id can be checked
+```{r}
+fleet_data_ef_europe[,sum(fleet_composition),by = shape_id]
+```
+
+**3. Visualizing the Emission factors**
+
+We use the european database of EF. We can plot the EF to check how it behaves according to `speed`, `veh_type`
+
+```{r,message = FALSE}
+ef_europe <- ef_emep_europe(speed = units::set_units(10:100,"km/h")
+                            ,veh_type = c("Ubus Midi <=15 t"
+                                          ,"Ubus Std 15 - 18 t"
+                                          ,"Ubus Artic >18 t")
+                            ,euro = c("III","IV","V")
+                            ,pollutant = c("CO2","NOx")
+                            ,fuel = rep("D",3)
+                            ,tech = c("-","SCR","SCR")
+                            ,as_list = TRUE)
+```
+We can use the `emi_to_dt()` to process EF
+```{r}
+ef_europe$speed <- units::set_units(10:100,"km/h")
+ef_europe_dt <- emi_to_dt(emi_list = ef_europe
+                          ,emi_vars = "EF"
+                          ,veh_vars = c("veh_type","fuel","euro","tech")
+                          ,pol_vars = "pollutant"
+                          ,segment_vars = "speed")
+```
+ lets use a fleet name as veh_type / euro_type
+```{r, fig.width=7,fig.height=3}
+setDT(ef_europe_dt)
+ef_europe_dt[,name_fleet := paste0(veh_type," / Euro ",euro)]
+
+# plot
+library(ggplot2)
+ggplot(ef_europe_dt) + 
+  geom_line(aes(x = speed,y = EF,color = name_fleet))+
+  labs(color = "Category / EURO")+
+  facet_wrap(~pollutant,scales = "free")
+```
+ 
+**4. Emissions estimates**
+
+As the emissions varies with shape_id and fleet, we compute emissions separately, in a loop.
+
+```{r}
+linestring_poa$shape_id %>% unique()
+```
+
+```{r, message = FALSE}
+emi_data <- lapply(unique(gps_poa$shape_id),function(i){
+  tmp_ef_euro <- ef_emep_europe(speed = linestring_poa[shape_id == i]$speed,
+                                ,veh_type = fleet_data_ef_europe[shape_id == i]$veh_type
+                                ,euro =  fleet_data_ef_europe[shape_id == i]$euro
+                                ,pollutant = c("CO2","NOx")
+                                ,fuel =  fleet_data_ef_europe[shape_id == i]$fuel
+                                ,tech =  fleet_data_ef_europe[shape_id == i]$tech
+                                ,as_list = TRUE)
+  tmp_emis <- emis(fleet_composition = fleet_data_ef_europe[shape_id == i]$fleet_composition
+                   ,dist = units::set_units(linestring_poa[shape_id == i]$dist,"km")
+                   ,ef = tmp_ef_euro
+                   ,aggregate = FALSE
+                   ,as_list = TRUE)
+  return(tmp_emis)
+})
+```
+
+**5. Emission into grid**
+
+We show here the example for `CO2` emissions
+
+```{r}
+# Create Grid
+grid_gps <- vein::make_grid(spobj = sf::st_as_sf(linestring_poa$geometry)
+                            , width =  0.25 / 102.47) # 500 meters
+grid_gps <- sf::st_as_sf(grid_gps)
+
+tmp_emis_dt <- lapply(1:length(emi_data),function(i){ # i = 3
+  tmp_emi_dt <- emi_to_dt(emi_list = emi_data[[i]]
+                          ,emi_vars = "emi"
+                          ,veh_vars = "veh_type"
+                          ,pol_vars = "pollutant")
+  tmp_gps <- cbind(linestring_poa[shape_id == unique(gps_poa$shape_id)[i]]
+                   ,tmp_emi_dt[pollutant == "CO2"])
+  tmp_gps <- sf::st_as_sf(tmp_gps)
+  tmp_emi_grid <- emis_grid(data = tmp_gps
+                            ,emi = "emi"
+                            ,grid = grid_gps)
+  return(tmp_emi_grid)
+}) %>% data.table::rbindlist()
+```
+
+Summing all emissions and plotting
+
+```{r, fig.width=4,fig.height=4}
+tmp_emis_dt <- tmp_emis_dt[,total_emi := sum(emi),by = id][,.SD[1],by=id]
+tmp_emis_dt2 <- sf::st_as_sf(tmp_emis_dt)
+
+plot(tmp_emis_dt2["emi"])
+```
 
 
