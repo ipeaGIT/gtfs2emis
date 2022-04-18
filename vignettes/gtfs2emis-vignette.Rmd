@@ -395,4 +395,8 @@ tmp_emis_dt2 <- sf::st_as_sf(tmp_emis_dt)
 plot(tmp_emis_dt2["emi"])
 ```
 
+## Credits
 
+The gtfs2gps package is developed by a team at the Institute for Applied Economic Research (Ipea) with collaboration from the National Institute for Space Research (INPE), both from Brazil. 
+If you have any suggestions or want to report an error, please visit the package GitHub page (add link).
+<!-- ## End ---- -->
