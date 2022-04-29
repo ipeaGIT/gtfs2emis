@@ -30,11 +30,11 @@ ef_emep_europe(
 \item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).}
 
-\item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
-"EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
+\item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction),
+"EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are
 no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III".}
 
-\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
+\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
 
 \item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
@@ -49,8 +49,8 @@ List. emission factors in units 'g/km' (list or a data.table).
 }
 \description{
 Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
-Function is based on values from [EMEP/EEA air pollutant emission inventory guidebook 2019](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook).
-And [2016 edition](https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/)
+Function is based on values from \href{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook}{EMEP/EEA air pollutant emission inventory guidebook 2019}.
+And \href{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/}{2016 edition}
 Estimates expressed in units 'g/km'.
 }
 \examples{

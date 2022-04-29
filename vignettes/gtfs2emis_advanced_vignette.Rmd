@@ -1,12 +1,12 @@
 ---
-title: 'Introduction to gtfs2emis'
+title: 'Advanced use of gtfs2emis'
 author: "Joao Bazzo, Rafael H. M. Pereira, Pedro R. Andrade"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-abstract: "Package `gtfs2emis` generates emission estimates for public transport networks based on GTFS data."
+abstract: "Advanced functionalities to estimate public transport emissions using the `gtfs2emis` package"
 urlcolor: blue
 vignette: |
-  %\VignetteIndexEntry{Introduction to gtfs2emis} 
+  %\VignetteIndexEntry{Advanced use of gtfs2emis} 
   %\VignetteEngine{knitr::rmarkdown} 
   \usepackage[utf8]{inputenc}
 ---
@@ -19,36 +19,40 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The package `gtfs2emis` estimates hot exhaust emissions of public transport systems based on GTFS and fleet data. This vignette introduces the main functions of the package. We will use the following packages:
-
-```{r, message = FALSE}
-library(data.table)
-library(sf)
-library(units)
-library(magrittr)
-library(ggplot2)
-library(gtfs2gps)
-library(gtfs2emis)
-library(gtfstools)
-```
+The package `gtfs2emis` helps users estimate hot exhaust emissions of public transport systems based on GTFS and fleet characteristics data. 
 
 # Installation
 
 You can install `gtfs2emis`:
 
-```{r, message = FALSE}
-# # From CRAN
-# install.packages("gtfs2emis")
-# library(gtfs2emis)
-# 
-# # or use the development version with latest features
-# utils::remove.packages('gtfs2emis')
-# devtools::install_github("ipeaGIT/gtfs2emis")
-# library(gtfs2emis)
+```{r, eval = FALSE, message = FALSE}
+# From CRAN
+install.packages("gtfs2emis")
+
+# or use the development version with latest features
+utils::remove.packages('gtfs2emis')
+devtools::install_github("ipeaGIT/gtfs2emis")
+
 ```
+
+
+This vignette introduces the main functions of the `gtfs2mies` package. We will be using the following packages:
+
+```{r, message = FALSE}
+library(gtfs2emis)
+library(gtfstools)
+library(gtfs2gps)
+library(data.table)
+library(sf)
+library(units)
+library(magrittr)
+library(ggplot2)
+```
+
+
 # Approach
 
-The package has two main usages that will ultimately depends on the user's
+The package has two main usages that will ultimately depend on the user's
 experience and on the desired output:
 
 **1. Basic usage**

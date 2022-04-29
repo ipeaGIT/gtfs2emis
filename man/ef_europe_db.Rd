@@ -7,21 +7,21 @@
 \format{
 A data table with 6431 rows and 22 variables:
 \describe{
-  \item{Category}{Buses.}
-  \item{Fuel}{ Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
+\item{Category}{Buses.}
+\item{Fuel}{ Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel). }
-  \item{Segment}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
+\item{Segment}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
 "Coaches Std <=18 t","Coaches Artic >18 t".}
-  \item{Euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
-  \item{Technology}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
-"EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
+\item{Euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
+\item{Technology}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction),
+"EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are
 no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". }
-  \item{Pol}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. }
-  \item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
-  \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
-  \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
-  \item{RF}{In \% units.}
-  \item{k}{Constante factor.}
+\item{Pol}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. }
+\item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
+\item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
+\item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
+\item{RF}{In \\% units.}
+\item{k}{Constante factor.}
 }
 }
 \source{
@@ -33,8 +33,8 @@ https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-g
 ef_europe_db
 }
 \description{
-Hot emission factors are speed dependent and are expressed in g/km. They differ by fuel, 
-vehicle class and engine technology. Several functions are 
+Hot emission factors are speed dependent and are expressed in g/km. They differ by fuel,
+vehicle class and engine technology. Several functions are
 consolidated into a single equation, given by
 }
 \details{

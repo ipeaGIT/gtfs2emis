@@ -16,15 +16,15 @@ emis_grid(data, emi, grid, time_class, time_column)
 \item{time_class}{character; Emissions can be aggregated by 'all periods' (Default),
 'hour' or 'hour-minute'.}
 
-\item{time_column}{vector; Column name of 'departure_time' information (from data input). 
+\item{time_column}{vector; Column name of 'departure_time' information (from data input).
 Only used when 'hour' or 'hour-minute' is selected.}
 }
 \value{
-An `"sf" "data.frame"` object with emissions estimates per grid cell.
+An \verb{"sf" "data.frame"} object with emissions estimates per grid cell.
 }
 \description{
-Aggregate emissions proportionally into grid cells, by performing an 
-intersection operation between emissions data in `sf linestring` format and 
+Aggregate emissions proportionally into grid cells, by performing an
+intersection operation between emissions data in \verb{sf linestring} format and
 grid cells. It also considers aggregation per grid cells and time.
 }
 \examples{

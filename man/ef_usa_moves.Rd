@@ -17,20 +17,20 @@ ef_usa_moves(
 )
 }
 \arguments{
-\item{pollutant}{character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
+\item{pollutant}{character; Pollutants: CH4(Methane), CO(Carbon Monoxide),
 CO2(Carbon Dioxide), EC(Energy Consumption), HONO(Nitrous Acid), N2O(Nitrous Oxide),
- NH3(Ammonia ), NH4(Ammonium), NO(Nitrogen Oxide), NO2(Nitrogen Dioxide),
- NO3(Nitrate), NOx(Oxides of Nitrogen), PM10(Primary Exhaust PM10 - Total), 
- PM25(Primary Exhaust PM2.5 - Total), SO2(Sulfur Dioxide), 
- THC(Total Gaseous Hydrocarbons ), TOG(Total Organic Gases) and 
- VOC (Volatile Organic Compounds)}
+NH3(Ammonia ), NH4(Ammonium), NO(Nitrogen Oxide), NO2(Nitrogen Dioxide),
+NO3(Nitrate), NOx(Oxides of Nitrogen), PM10(Primary Exhaust PM10 - Total),
+PM25(Primary Exhaust PM2.5 - Total), SO2(Sulfur Dioxide),
+THC(Total Gaseous Hydrocarbons ), TOG(Total Organic Gases) and
+VOC (Volatile Organic Compounds)}
 
 \item{model_year}{numeric; Model year of vehicle.}
 
 \item{calendar_year}{numeric; Calendar Year between 1990 - 2030 Year in which the emissions
 inventory is estimated, in order to consider the effect of degradation.}
 
-\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals 
+\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals
 such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",
 "27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5 - 47.5","47.5 - 52.5",
 "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5", "67.5 - 72.5", ">72.5" mph (miles/h).}
@@ -43,8 +43,8 @@ such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5
 List. Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
-Returns a vector or data.frame of emission factors for buses based on 
-values from the [MOVES3 Model](https://www.epa.gov/moves).
+Returns a vector or data.frame of emission factors for buses based on
+values from the \href{https://www.epa.gov/moves}{MOVES3 Model}.
 Estimates expressed in units 'g/km'.
 }
 \examples{

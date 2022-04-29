@@ -17,10 +17,10 @@ ef_usa_emfac(
 )
 }
 \arguments{
-\item{pollutant}{character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
+\item{pollutant}{character; Pollutants: CH4(Methane), CO(Carbon Monoxide),
 CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
- PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
- TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
+PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
+TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
 
 \item{calendar_year}{numeric; Calendar Year between 2015 - 2022. Year in which the emissions
 inventory is estimated, in order to consider the effect of degradation.}
@@ -29,9 +29,9 @@ inventory is estimated, in order to consider the effect of degradation.}
 
 \item{model_year}{numeric; Model year of vehicle.}
 
-\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals 
+\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals
 such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50",
- "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h).}
+"50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h).}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
@@ -39,8 +39,8 @@ such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "
 List. Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
-Returns a vector or data.frame of emission factors for buses based on 
-values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
+Returns a vector or data.frame of emission factors for buses based on
+values from the \href{https://arb.ca.gov/emfac/}{California EMission Factor model (EMFAC2017)}.
 Estimates expressed in units 'g/km'.
 }
 \examples{

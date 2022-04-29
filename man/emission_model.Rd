@@ -15,29 +15,29 @@ emission_model(
 )
 }
 \arguments{
-\item{gps}{character or sf_linestring; Filepath with the GPS files in 
+\item{gps}{character or sf_linestring; Filepath with the GPS files in
 sf_linestring format or an sf_linestring data.}
 
 \item{ef_data_base}{character; Emission factor database, such as "moves_usa",
 "emfac_usa", "emep_europe","cetesb_brazil".}
 
-\item{fleet_data}{data.table. Database with fleet_data. The requires columns 
+\item{fleet_data}{data.table. Database with fleet_data. The requires columns
 depends on the 'ef_data_base' source. See @examples for input.}
 
 \item{pollutant}{character. e.g. "CO","PM10","CO2","CH4","NOx" etc.
-See `ef_usa_moves`,`ef_usa_emfac`, `ef_brazil_cetesb` or `ef_emep_europe` 
+See \code{ef_usa_moves},\code{ef_usa_emfac}, \code{ef_brazil_cetesb} or \code{ef_emep_europe}
 functions to check which pollutants are available.}
 
-\item{output_path}{character. Filepath to export emissions. The function only exports 
-the emissions files when `gps` parameter is input as character. 
-If `gps` argument is a sf_linestring, the function returns the data to User.}
+\item{output_path}{character. Filepath to export emissions. The function only exports
+the emissions files when \code{gps} parameter is input as character.
+If \code{gps} argument is a sf_linestring, the function returns the data to User.}
 
-\item{parallel}{logical; Decides whether the function should run in parallel. 
-Defaults is FALSE.When TRUE, it will use all cores available minus one 
+\item{parallel}{logical; Decides whether the function should run in parallel.
+Defaults is FALSE.When TRUE, it will use all cores available minus one
 using future::plan() with strategy "multisession" internally.}
 
 \item{calendar_year}{numeric.Year in which the emissions inventory
-is estimated. Argument only required when `ef_usa_moves`,`ef_usa_emfac` are
+is estimated. Argument only required when \code{ef_usa_moves},\code{ef_usa_emfac} are
 selected.}
 }
 \value{
@@ -48,21 +48,23 @@ Estimate hot-exhaust emissions from the input transport model.
 }
 \details{
 In the fleet database..
-- Column `calendar_year`: character; Base year of the @ef_data_base input. 
-Required only when  `usa_moves` or `usa_emfac` are selected.
-- Column `tech`: character; After treatment technology. This is required only 
-when `emep_europe` is selected. Check `ef_emep_europe` for details.
-- Column `euro`: character; Euro period of vehicle, classified in 
-"Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required only 
-when `emep_europe` is selected. Check `ef_emep_europe` for details.
-- Column `fuel`: character; Required when `ef_moves_usa`, `ef_emfac_usa` and
- `ef_emep_europe` are selected. 
- - Column `fleet_composition`: Numeric. Scaled composition of fleet. As several 
- cities does not specify which vehicle runs on each route, the composition is used
- to attribute a probability of a specific vehicle to circulate in the line. The 
- probability sums one. Required for all emission factors selection. 
- If the information of specific vehicle is known, user should develop the emission
- inventory according to the vignette <<detailed_vignette_link>>.
+\itemize{
+\item Column \code{calendar_year}: character; Base year of the @ef_data_base input.
+Required only when  \code{usa_moves} or \code{usa_emfac} are selected.
+\item Column \code{tech}: character; After treatment technology. This is required only
+when \code{emep_europe} is selected. Check \code{ef_emep_europe} for details.
+\item Column \code{euro}: character; Euro period of vehicle, classified in
+"Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required only
+when \code{emep_europe} is selected. Check \code{ef_emep_europe} for details.
+\item Column \code{fuel}: character; Required when \code{ef_moves_usa}, \code{ef_emfac_usa} and
+\code{ef_emep_europe} are selected.
+\item Column \code{fleet_composition}: Numeric. Scaled composition of fleet. As several
+cities does not specify which vehicle runs on each route, the composition is used
+to attribute a probability of a specific vehicle to circulate in the line. The
+probability sums one. Required for all emission factors selection.
+If the information of specific vehicle is known, user should develop the emission
+inventory according to the vignette <<detailed_vignette_link>>.
+}
 }
 \examples{
  

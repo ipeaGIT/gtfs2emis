@@ -15,11 +15,11 @@ transport_model(
 \item{gtfs_data}{A path to a GTFS file to be converted to GPS, or a GTFS data
 represented as a list of data.tables.}
 
-\item{output_path}{character. Filepath to receive the GTFS file as sf_linestring, 
-returning each public transport shape_id separately by file. If 'NULL', the function 
+\item{output_path}{character. Filepath to receive the GTFS file as sf_linestring,
+returning each public transport shape_id separately by file. If 'NULL', the function
 returns the data to user. Default is 'NULL'.}
 
-\item{parallel}{logical. Decides whether the function should run in parallel. 
+\item{parallel}{logical. Decides whether the function should run in parallel.
 Defaults is FALSE.}
 
 \item{spatial_resolution}{numeric. The spatial resolution in meters.}
@@ -29,17 +29,17 @@ sf_linestring file or NULL.
 }
 \description{
 Creates the transport model based on the input GTFS, and exports
- in an sf_linestring format.It has four main steps: i) Process the GTFS; 
- ii) Convert the data to GPS; iii) Fix speeds; iv) Convert GPS to sf_linestring
-  format. These steps uses the functions of gtfs2gps package 'read_gtfs',
-  'gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring', respectively.
+in an sf_linestring format.It has four main steps: i) Process the GTFS;
+ii) Convert the data to GPS; iii) Fix speeds; iv) Convert GPS to sf_linestring
+format. These steps uses the functions of gtfs2gps package 'read_gtfs',
+'gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring', respectively.
 }
 \details{
 If the user wants to process the all routes in the GTFS, we suggest using
 the 'output_path' argument, as the return file can be large for several vehicle routes.
-This function is a more friendly approach to generate the transport model for 
+This function is a more friendly approach to generate the transport model for
 users interested in a basic overview of the emissions. For detailed analysis,
-we suggest reading out vignette at <<http://www.github.com/ipeaGIT/gtfs2emis/>>.
+we suggest reading out vignette at <\url{http://www.github.com/ipeaGIT/gtfs2emis/}>.
 }
 \examples{
 library(magrittr)

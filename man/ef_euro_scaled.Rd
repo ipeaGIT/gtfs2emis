@@ -35,10 +35,10 @@ ef_euro_scaled(
 
 \item{SDC}{numeric; Speed of the driving cycle in 'km/h'.}
 
-\item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
+\item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction),
 "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".}
 
-\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
+\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
 
 \item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}

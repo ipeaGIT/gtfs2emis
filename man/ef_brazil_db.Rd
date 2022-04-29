@@ -8,16 +8,16 @@ Emission factor for buses in Brazil}
 \format{
 A data.table:
 \describe{
-\item{pollutant}{ character; Pollutants: "CH4", "CO2", "PM10", "N2O", "KML", 
-"FC" (Fuel Consumption), "gD/KWH", "gCO2/KWH", "CO", "HC" (Total Hydrocarbon), 
+\item{pollutant}{ character; Pollutants: "CH4", "CO2", "PM10", "N2O", "KML",
+"FC" (Fuel Consumption), "gD/KWH", "gCO2/KWH", "CO", "HC" (Total Hydrocarbon),
 "NMHC" (Non-Methane Hydrocarbon), "NOx", "NO2", "NO", "RCHO", "ETOH",
- "FS"(Fuel Sales) and "NH3"}
-\item{veh_type}{character; Vehicle categories by fuel:"BUS_URBAN_D", "BUS_MICRO_D", 
+"FS"(Fuel Sales) and "NH3"}
+\item{veh_type}{character; Vehicle categories by fuel:"BUS_URBAN_D", "BUS_MICRO_D",
 "BUS_COACH_D" and "BUS_ARTIC_D".}
-\item{model_year}{numeric; Filter the emission factor to start from a specific 
+\item{model_year}{numeric; Filter the emission factor to start from a specific
 base year. }
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table
- format.}
+format.}
 }
 }
 \source{
@@ -28,8 +28,8 @@ ef_brazil_db
 }
 \description{
 Emission factors for buses based on
-estimates from the 
-[Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
+estimates from the
+\href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2017},
 and obtained via vein package.
 Estimates are expressed in units 'g/km'.
 }
