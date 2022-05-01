@@ -17,7 +17,7 @@
 #' @return An `"sf" "data.frame"` object with emissions estimates per grid cell.
 #' @export
 #' 
-#' @examples 
+#' @examples if (interactive()) {
 #'# GTFS2gps filter-----
 #'library(data.table)
 #'library(magrittr)
@@ -77,7 +77,7 @@
 #'                                 grid = grid_gps,
 #'                                 time_class = 'hour-minute',
 #'                                 time_column = 'timestamp')
-#'
+#'}
 emis_grid <- function(data, emi, grid, time_class, time_column){
   
 

@@ -26,14 +26,14 @@
 #' @source \url{https://arb.ca.gov/emfac/}
 #' @export
 #' 
-#' @examples 
+#' @examples if (interactive()) {
 #'  ef_usa_emfac(pollutant = c("CO","PM10"),
 #'         calendar_year = 2019,
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
 #'         fuel = "D",
 #'         as_list = TRUE)
-#'         
+#'}
 ef_usa_emfac <- function(pollutant, calendar_year, fuel = 'D', model_year, speed, as_list = TRUE){
   
   # pollutant = c("CO","PM10","CH4","NOx")

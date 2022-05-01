@@ -47,6 +47,7 @@ transport model. For more advanced users, we recommend reading out
 vignette at <\url{http://www.github.com/ipeaGIT/gtfs2emis/}>.
 }
 \examples{
+if (interactive()) {
 library(gtfs2emis)
 library(gtfs2gps)
 library(magrittr)
@@ -56,5 +57,5 @@ gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")
   gtfs2gps::filter_single_trip()
 
 tp_model <- transport_model(gtfs_data = gtfs, parallel = TRUE)
-
+}
 }

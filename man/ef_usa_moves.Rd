@@ -48,11 +48,12 @@ values from the \href{https://www.epa.gov/moves}{MOVES3 Model}.
 Estimates expressed in units 'g/km'.
 }
 \examples{
+if (interactive()) {
  ef_usa_moves(pollutant = c("CO","PM10"),
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
         calendar_year = 2016,
         fuel = "D",
         as_list = TRUE)
-        
+}
 }

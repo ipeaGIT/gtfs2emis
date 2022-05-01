@@ -13,7 +13,7 @@
 #' @return data.table.
 #' @export
 #' 
-#' @examples 
+#' @examples if (interactive()) {
 #' set.seed(1335)
 #' dist = units::set_units(rnorm(100,0.250,0.03),"km")
 #' ef <- ef_cetesb_brazil(pollutant = c("CO2","NOx"),
@@ -43,7 +43,7 @@
 #'                 veh_vars = c("veh_type","euro","fuel","tech"), # "veh_type"
 #'                 pol_vars = "pollutant", # pollutant
 #'                 segment_vars = c("slope","load")) # NULL
-#' 
+#'}
 emi_to_dt <- function(emi_list, emi_vars, veh_vars, pol_vars, segment_vars = NULL){
   
   #

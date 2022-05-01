@@ -35,6 +35,7 @@ units ('g'); emissions per link.
 Calculate hot exhaust emissions.
 }
 \examples{
+if (interactive()) {
 
 set.seed(1335)
 dist = units::set_units(rnorm(100,0.250,0.03),"km")
@@ -54,5 +55,5 @@ emi <- emis(fleet_composition =  c(0.7,0.3),
           ef = ef,
           aggregate = FALSE,
           as_list = TRUE)  
-            
+}     
 }

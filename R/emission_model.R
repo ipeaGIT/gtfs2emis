@@ -69,7 +69,7 @@
 #'         locally at `output_path`.
 #' 
 #' @export
-#' @examples  
+#' @examples if (interactive()) {
 #' library(gtfs2emis)
 #' library(gtfs2gps)
 #' library(magrittr)
@@ -124,6 +124,7 @@
 #'                           ,ef_data_base = "emep_europe"
 #'                           ,fleet_data = fleet_data_ef_europe
 #'                           ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
+#'}
 emission_model <- function(  gps
                            , ef_data_base
                            , fleet_data

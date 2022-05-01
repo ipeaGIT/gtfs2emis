@@ -24,7 +24,7 @@
 #' @return list. Emission factors in units 'g/km'.
 #' @export
 #' 
-#' @examples 
+#' @examples if (interactive()) {
 #' temp_ef_br <- ef_cetesb_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),
 #'                         veh_type = "BUS_URBAN_D",
 #'                         model_year = 2015,
@@ -35,7 +35,7 @@
 #'                                  veh_type = "Ubus Std 15 - 18 t",
 #'                                  euro = "IV",fuel = "D",tech="SCR",
 #'                                  pollutant = c("CO","PM10","CO2","CH4","NOx"))
-#' 
+#'} 
 ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC = 34.12,
                            tech = "SCR", slope = 0.0, 
                            load = 0.5, fcorr = 1){

@@ -27,14 +27,14 @@
 #' @source \url{https://www.epa.gov/moves}
 #' @export
 #' 
-#' @examples 
+#' @examples if (interactive()) {
 #'  ef_usa_moves(pollutant = c("CO","PM10"),
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
 #'         calendar_year = 2016,
 #'         fuel = "D",
 #'         as_list = TRUE)
-#'         
+#'}
 ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel = 'D', as_list = TRUE){
   
   #  pollutant = c("CO","PM10","CH4","NOx")

@@ -44,11 +44,12 @@ values from the \href{https://arb.ca.gov/emfac/}{California EMission Factor mode
 Estimates expressed in units 'g/km'.
 }
 \examples{
+if (interactive()) {
  ef_usa_emfac(pollutant = c("CO","PM10"),
         calendar_year = 2019,
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
         fuel = "D",
         as_list = TRUE)
-        
+}
 }

@@ -16,7 +16,7 @@
 #' @return units ('g'); emissions per link.
 #' 
 #' @export
-#' @examples
+#' @examples if (interactive()) {
 #' 
 #'set.seed(1335)
 #'dist = units::set_units(rnorm(100,0.250,0.03),"km")
@@ -36,7 +36,7 @@
 #'           ef = ef,
 #'           aggregate = FALSE,
 #'           as_list = TRUE)  
-#'             
+#'}     
 emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
   
   #

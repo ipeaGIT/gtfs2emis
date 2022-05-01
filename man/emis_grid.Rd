@@ -28,6 +28,7 @@ intersection operation between emissions data in \verb{sf linestring} format and
 grid cells. It also considers aggregation per grid cells and time.
 }
 \examples{
+if (interactive()) {
 # GTFS2gps filter-----
 library(data.table)
 library(magrittr)
@@ -87,5 +88,5 @@ pol_gps_hour_minute <- emis_grid(data = for_sf,
                                 grid = grid_gps,
                                 time_class = 'hour-minute',
                                 time_column = 'timestamp')
-
+}
 }

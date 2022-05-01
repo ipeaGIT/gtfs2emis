@@ -24,6 +24,7 @@ data.table.
 Read emissions in list format and export to data.table format.
 }
 \examples{
+if (interactive()) {
 set.seed(1335)
 dist = units::set_units(rnorm(100,0.250,0.03),"km")
 ef <- ef_cetesb_brazil(pollutant = c("CO2","NOx"),
@@ -53,5 +54,5 @@ dt <- emi_to_dt(emi_list = emi,
                 veh_vars = c("veh_type","euro","fuel","tech"), # "veh_type"
                 pol_vars = "pollutant", # pollutant
                 segment_vars = c("slope","load")) # NULL
-
+}
 }

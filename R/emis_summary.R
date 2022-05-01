@@ -16,7 +16,7 @@
 #' @return units ('g'); emissions.
 #' @export
 #' 
-#' @examples 
+#' @examples if (interactive()) {
 #' set.seed(1335)
 #' dist = units::set_units(rnorm(100,0.250,0.03),"km")
 #' ef <- ef_emep_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
@@ -44,6 +44,7 @@
 #'                      time_column = "time_column",
 #'                      veh_var = "veh_type", # veh_type
 #'                      pol_var = "pollutant") # pollutant
+#'}
 emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = NULL, veh_vars = NULL){
   
   #

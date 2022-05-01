@@ -29,7 +29,7 @@
 #' @return A `sf_linestring` object or `NULL`.
 #' 
 #' @export
-#' @examples
+#' @examples if (interactive()) {
 #' library(gtfs2emis)
 #' library(gtfs2gps)
 #' library(magrittr)
@@ -39,7 +39,7 @@
 #'   gtfs2gps::filter_single_trip()
 #' 
 #' tp_model <- transport_model(gtfs_data = gtfs, parallel = TRUE)
-#'
+#'}
 transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spatial_resolution = 50){
   
   # 666 Check inputs 

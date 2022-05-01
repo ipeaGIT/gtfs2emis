@@ -83,7 +83,7 @@ inventory according to the vignette <<detailed_vignette_link>>.
 }
 }
 \examples{
- 
+if (interactive()) {
 library(gtfs2emis)
 library(gtfs2gps)
 library(magrittr)
@@ -138,4 +138,5 @@ emi_emep <- emission_model(gps = tp_model
                           ,ef_data_base = "emep_europe"
                           ,fleet_data = fleet_data_ef_europe
                           ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
+}
 }

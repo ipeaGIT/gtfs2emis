@@ -142,6 +142,3 @@ pol_grid <- emis_grid(data = sf_emis$gps,
                      time_class = 'all periods')
 plot(pol_grid["CO_Euro_IV"])
 
-## -----------------------------------------------------------------------------
-linestring_poa$shape_id %>% unique()
-
