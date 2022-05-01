@@ -9,34 +9,31 @@ emission_model(
   ef_data_base,
   fleet_data,
   pollutant,
-  output_path,
-  parallel,
-  calendar_year
+  calendar_year = NULL,
+  parallel = TRUE,
+  output_path = NULL
 )
 }
 \arguments{
 \item{ef_data_base}{character. A  string indicating the emission factor model
 to be used. Options include \code{c("ef_usa_moves", "ef_usa_emfac", "ef_emep_europe","ef_brazil_cetesb")}.
-\link{666} nome do parametro: ef_model ?}
+\link{666} nome do parametro: ef_model ? E daí as opcoes seriam os strings de tipo "ef_brazil_cetesb"}
 
 \item{fleet_data}{data.frame. A  \code{data.frame} with information the fleet
 characteristics. The required columns depend on the
 \code{ef_data_base} parameted selected. See @examples for input.}
 
 \item{pollutant}{character vector with one or more pollutants to be estimated.
-Example: \code{c("CO","PM10", "NOx")}. Defaults to \code{c(CO2)}.
-See the documentation to check which pollutants are available
-for each emission factor model.
-\link{66666} Vale a pena setar um default, tipo co2 ?}
+Example: \code{c("CO", "CO2", "PM10", "NOx")}. See the
+documentation to check which pollutants are available for
+each emission factor model.}
 
-\item{output_path}{character. \link{666} Filepath where the function output is saved.
-The function only exports the emissions files when \code{gps}
-parameter is input as character. If \code{gps} argument is a
-sf_linestring, the function returns the data to user.
-\link{666} Esse comportamento nao faz sentido neh. O funcionamento
-do output_path nao deveria depender do input de gps. Isso deveria ser:
-\link{666} If \code{NULL} (Default), the function returns the output
-to user.}
+\item{calendar_year}{numeric. Year of reference considered to calculate the
+emissions inventory. Defaults to current year. This
+argument is only required when the \code{ef_data_base}
+parameter is one of the following: \code{c("ef_usa_moves", "ef_usa_emfac")}.
+\link{66666} Defaults to current year
+\link{66666} mudar nome do parametro pra \code{reference_year} ?}
 
 \item{parallel}{logical. Decides whether the function should run in parallel.
 Defaults is FALSE. When TRUE, it will use all cores available
@@ -46,14 +43,18 @@ before calling gtfs2gps(). In this case, do not use this
 argument.
 \link{66666} acho q o default deveria ser \code{TRUE} aqui e no gtfs2gps tmb}
 
-\item{calendar_year}{numeric. Year of reference in which the emissions
-inventory is estimated. This argument is only required
-when the \code{ef_data_base} parameter is one of the following:
-\code{c("ef_usa_moves", "ef_usa_emfac")}
-\link{66666} mudar nome do parametro pra \code{reference_year} ?}
+\item{output_path}{character. Filepath where the function output is saved.
+\link{666}  The function only exports the emissions files when \code{gps}
+parameter is input as character. If \code{gps} argument is a
+sf_linestring, the function returns the data to user.
+\link{666} Esse comportamento nao faz sentido neh. O funcionamento
+do output_path nao deveria depender do input de gps. Isso deveria ser:
+\link{666} If \code{NULL} (Default), the function returns the output
+to user.}
 }
 \value{
-list of variables of emissions or NULL.
+A \code{list} with emissions estimates or \code{NULL} with output files saved
+locally at \code{output_path}.
 }
 \description{
 Estimate hot-exhaust emissions of public transport systems. This
@@ -86,6 +87,7 @@ inventory according to the vignette <<detailed_vignette_link>>.
 library(gtfs2emis)
 library(gtfs2gps)
 library(magrittr)
+library(data.table)
 
 gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) \%>\% 
 gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
@@ -93,43 +95,46 @@ gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
 
 tp_model <- transport_model(gtfs = gtfs, parallel = TRUE)
 
-fleet_data_ef_cetesb <- data.frame("veh_type" = "BUS_URBAN_D"
-                                               ,"model_year" = 2010:2019
-                                               ,"fuel" = "D"
-                                               ,"fleet_composition" = rep(0.1,10))
-fleet_data_ef_moves <- data.frame("veh_type" = "BUS_URBAN_D"
-                                              ,"model_year" = 2010:2019
-                                              ,"fuel" = "D"
-                                              ,"calendar_year" = 2019
-                                              ,"fleet_composition" = rep(0.1,10))
-fleet_data_ef_emfac <- data.frame("veh_type" = "BUS_URBAN_D"
-                                              ,"model_year" = 2010:2019
-                                              ,"fuel" = "D"
-                                              ,"calendar_year" = 2019
-                                              ,"fleet_composition" = rep(0.1,10))
-fleet_data_ef_europe <- data.frame("veh_type" = c("Ubus Midi <=15 t"
-                                                              ,"Ubus Std 15 - 18 t"
-                                                              ,"Ubus Artic >18 t")
-                                               ,"euro" = c("III","IV","V")
-                                               ,"fuel" = rep("D",3)
-                                               ,"tech" = c("-","SCR","SCR")
-                                               ,"fleet_composition" = c(0.4,0.5,0.1))
+fleet_data_ef_cetesb <- data.frame(  veh_type = "BUS_URBAN_D"
+                                   , model_year = 2010:2019
+                                   , fuel = "D"
+                                   , fleet_composition = rep(0.1,10))
+                                               
+fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
+                                  , model_year = 2010:2019
+                                  , fuel = "D"
+                                  , calendar_year = 2019
+                                  , fleet_composition = rep(0.1,10))
+                                              
+fleet_data_ef_emfac <- data.frame(  veh_type =  "BUS_URBAN_D"
+                                  , model_year = 2010:2019
+                                  , fuel = "D"
+                                  , calendar_year = 2019
+                                  , fleet_composition = rep(0.1,10))
+                                  
+fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t" ,"Ubus Std 15 - 18 t" ,"Ubus Artic >18 t")
+                                   , euro = c("III","IV","V")
+                                   , fuel = rep("D",3)
+                                   , tech = c("-","SCR","SCR")
+                                   , fleet_composition = c(0.4,0.5,0.1))
 
-sf_cetesb <- emission_model(gps = tp_model
-                          ,ef_data_base = "cetesb_brazil"
-                          ,fleet_data = fleet_data_ef_cetesb
-                          ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
-sf_emfac <- emission_model(gps = tp_model
+emi_cetesb <- emission_model(gps = tp_model
+                            , ef_data_base = "cetesb_brazil"
+                            , fleet_data = fleet_data_ef_cetesb
+                            , pollutant = c("CO","PM10","CO2","CH4","NOx")
+                            )
+                            
+emi_emfac <- emission_model(gps = tp_model
                           ,ef_data_base = "emfac_usa"
                           ,fleet_data = fleet_data_ef_emfac
                           ,pollutant = c("CO","PM10","CO2","CH4","NOx")
                           ,calendar_year = 2019)
-sf_moves <- emission_model(gps = tp_model
+emi_moves <- emission_model(gps = tp_model
                           ,ef_data_base = "moves_usa"
                           ,fleet_data = fleet_data_ef_moves
                           ,pollutant = c("CO","PM10","CO2","CH4","NOx")
                           ,calendar_year = 2019)
-sf_emep <- emission_model(gps = tp_model
+emi_emep <- emission_model(gps = tp_model
                           ,ef_data_base = "emep_europe"
                           ,fleet_data = fleet_data_ef_europe
                           ,pollutant = c("CO","PM10","CO2","CH4","NOx"))

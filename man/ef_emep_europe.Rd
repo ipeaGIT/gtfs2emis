@@ -2,7 +2,7 @@
 % Please edit documentation in R/ef_emep_europe.R
 \name{ef_emep_europe}
 \alias{ef_emep_europe}
-\title{Emission factor dependent on speed by European Environment Agency (EMEP/EEA)}
+\title{Speed-dependent emission factor model by European Environment Agency (EMEP/EEA)}
 \usage{
 ef_emep_europe(
   speed,
@@ -49,8 +49,9 @@ List. emission factors in units 'g/km' (list or a data.table).
 }
 \description{
 Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
-Function is based on values from \href{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook}{EMEP/EEA air pollutant emission inventory guidebook 2019}.
-And \href{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/}{2016 edition}
+Function is based on values from EMEP/EEA air pollutant emission inventory
+guidebook 2019 \url{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook}.
+and 2016 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/}.
 Estimates expressed in units 'g/km'.
 }
 \examples{

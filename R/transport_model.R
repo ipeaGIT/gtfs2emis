@@ -128,7 +128,7 @@ transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spat
   
   if(missing(output_path)){
     gpsLine <- furrr::future_map(seq_along(files_gps),function(i){
-      tmp_gps <- readr::read_rds(files_gps[i])
+      tmp_gps <- readr::read_rds(files_gps[i])                      # [6666 melhor usar base:readRDS() e remover dependencia de readr]
       tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
       return(tmp_gps_fix)
     },.options = furrr::furrr_options(seed = 123)) %>% 
