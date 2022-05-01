@@ -1,14 +1,14 @@
 ---
-title: 'Advanced use of gtfs2emis'
+title: 'Introduction to gtfs2emis'
 author: "Joao Bazzo, Rafael H. M. Pereira, Pedro R. Andrade"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 abstract: "Advanced functionalities to estimate public transport emissions using the `gtfs2emis` package"
 urlcolor: blue
 vignette: |
-  %\VignetteIndexEntry{Advanced use of gtfs2emis} 
+  %\VignetteIndexEntry{Introduction to gtfs2emis} 
   %\VignetteEngine{knitr::rmarkdown} 
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}

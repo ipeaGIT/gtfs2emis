@@ -1,37 +1,65 @@
-#' @title Emissions model 
+#' @title Emission model 
 #' 
-#' @description Estimate hot-exhaust emissions from the input transport model.
+#' @description Estimate hot-exhaust emissions of public transport systems. This
+#'              function must be used together with \code{\link{transport_model}}.
 #' 
-#' @param gps character or sf_linestring; Filepath with the GPS files in 
-#' sf_linestring format or an sf_linestring data.
-#' @param ef_data_base character; Emission factor database, such as "moves_usa",
-#' "emfac_usa", "emep_europe","cetesb_brazil". 
-#' @param fleet_data data.table. Database with fleet_data. The requires columns 
-#' depends on the 'ef_data_base' source. See @examples for input.  
-#' @param output_path character. Filepath to export emissions. The function only exports 
-#' the emissions files when `gps` parameter is input as character. 
-#' If `gps` argument is a sf_linestring, the function returns the data to User.
-#' @param pollutant character. e.g. "CO","PM10","CO2","CH4","NOx" etc.
-#'  See `ef_usa_moves`,`ef_usa_emfac`, `ef_brazil_cetesb` or `ef_emep_europe` 
-#'  functions to check which pollutants are available. 
-#' @param parallel logical; Decides whether the function should run in parallel. 
-#' Defaults is FALSE.When TRUE, it will use all cores available minus one 
-#' using future::plan() with strategy "multisession" internally. 
-#' @param calendar_year numeric.Year in which the emissions inventory
-#'  is estimated. Argument only required when `ef_usa_moves`,`ef_usa_emfac` are
-#'  selected. 
-#' @details In the fleet database..
+#' 
+#' @param gps A `sf_linestring` object or a character string. The `sf_linestring` 
+#'            output from \code{\link{transport_model}, or the filepath with 
+#'            output files from \code{\link{transport_model} are saved.
+#'            [666] talvez esse parametro devesse se chamar tp_model ? pra deixar
+#'            clara a integracao com a funcao de transport model?
+#'            
+#' @param ef_data_base character. A  string indicating the emission factor model
+#'                     to be used. Options include `c("ef_usa_moves", "ef_usa_emfac", "ef_emep_europe","ef_brazil_cetesb")`.
+#'                     [666] nome do parametro: ef_model ?
+#' @param fleet_data data.frame. A  `data.frame` with information the fleet
+#'                   characteristics. The required columns depend on the 
+#'                   `ef_data_base` parameted selected. See @examples for input.  
+#' @param output_path character. [666] Filepath where the function output is saved. 
+#'                    The function only exports the emissions files when `gps` 
+#'                    parameter is input as character. If `gps` argument is a 
+#'                    sf_linestring, the function returns the data to user. 
+#'                    [666] Esse comportamento nao faz sentido neh. O funcionamento
+#'                    do output_path nao deveria depender do input de gps. Isso deveria ser:
+#'                    [666] If `NULL` (Default), the function returns the output
+#'                    to user.
+#'                    
+#' @param pollutant character vector with one or more pollutants to be estimated.
+#'                  Example: `c("CO","PM10", "NOx")`. Defaults to `c(CO2)`.
+#'                  See the documentation to check which pollutants are available
+#'                  for each emission factor model.
+#'                  [66666] Vale a pena setar um default, tipo co2 ?
+#'                  
+#' @param parallel logical. Decides whether the function should run in parallel. 
+#'                 Defaults is FALSE. When TRUE, it will use all cores available
+#'                 minus one using future::plan() with strategy "multisession" 
+#'                 internally. [Note that it is possible to create your own plan 
+#'                 before calling gtfs2gps(). In this case, do not use this 
+#'                 argument.
+#'                 [66666] acho q o default deveria ser `TRUE` aqui e no gtfs2gps tmb
+#'                 
+#' @param calendar_year numeric. Year of reference in which the emissions 
+#'                      inventory is estimated. This argument is only required 
+#'                      when the `ef_data_base` parameter is one of the following: 
+#'                      `c("ef_usa_moves", "ef_usa_emfac")`
+#'                      [66666] mudar nome do parametro pra `reference_year` ?
+#'                      
+#' @details The `fleet_data` must be a `data.frame` organized as follows: 
+#'          [6666] acho q vale a apena organizar esses details melhor
+#'          
 #' - Column `calendar_year`: character; Base year of the @ef_data_base input. 
 #' Required only when  `usa_moves` or `usa_emfac` are selected.
 #' - Column `tech`: character; After treatment technology. This is required only 
-#' when `emep_europe` is selected. Check `ef_emep_europe` for details.
+#' when `emep_europe` is selected. Check `?ef_emep_europe` for details.
 #' - Column `euro`: character; Euro period of vehicle, classified in 
 #' "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required only 
 #' when `emep_europe` is selected. Check `ef_emep_europe` for details.
 #' - Column `fuel`: character; Required when `ef_moves_usa`, `ef_emfac_usa` and
 #'  `ef_emep_europe` are selected. 
-#'  - Column `fleet_composition`: Numeric. Scaled composition of fleet. As several 
-#'  cities does not specify which vehicle runs on each route, the composition is used
+#'  - Column `fleet_composition`: Numeric. Scaled composition of fleet. In most 
+#'  cases, the user might not know which vehicles run on each specific routes.
+#'  ... the composition is used
 #'  to attribute a probability of a specific vehicle to circulate in the line. The 
 #'  probability sums one. Required for all emission factors selection. 
 #'  If the information of specific vehicle is known, user should develop the emission
@@ -41,28 +69,31 @@
 #' 
 #' @export
 #' @examples  
+#' library(gtfs2emis)
+#' library(gtfs2gps)
 #' library(magrittr)
+#' 
 #' gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
 #' gtfs2gps::filter_by_shape_id(., "T2-1") %>%
 #'   gtfs2gps::filter_single_trip()
 #' 
-#' sf_line <- transport_model(gtfs = gtfs,parallel = TRUE)
+#' tp_model <- transport_model(gtfs = gtfs, parallel = TRUE)
 #' 
-#' fleet_data_ef_cetesb <- data.table::data.table("veh_type" = "BUS_URBAN_D"
+#' fleet_data_ef_cetesb <- data.frame("veh_type" = "BUS_URBAN_D"
 #'                                                ,"model_year" = 2010:2019
 #'                                                ,"fuel" = "D"
 #'                                                ,"fleet_composition" = rep(0.1,10))
-#' fleet_data_ef_moves <- data.table::data.table("veh_type" = "BUS_URBAN_D"
+#' fleet_data_ef_moves <- data.frame("veh_type" = "BUS_URBAN_D"
 #'                                               ,"model_year" = 2010:2019
 #'                                               ,"fuel" = "D"
 #'                                               ,"calendar_year" = 2019
 #'                                               ,"fleet_composition" = rep(0.1,10))
-#' fleet_data_ef_emfac <- data.table::data.table("veh_type" = "BUS_URBAN_D"
+#' fleet_data_ef_emfac <- data.frame("veh_type" = "BUS_URBAN_D"
 #'                                               ,"model_year" = 2010:2019
 #'                                               ,"fuel" = "D"
 #'                                               ,"calendar_year" = 2019
 #'                                               ,"fleet_composition" = rep(0.1,10))
-#' fleet_data_ef_europe <- data.table::data.table("veh_type" = c("Ubus Midi <=15 t"
+#' fleet_data_ef_europe <- data.frame("veh_type" = c("Ubus Midi <=15 t"
 #'                                                               ,"Ubus Std 15 - 18 t"
 #'                                                               ,"Ubus Artic >18 t")
 #'                                                ,"euro" = c("III","IV","V")
@@ -70,31 +101,31 @@
 #'                                                ,"tech" = c("-","SCR","SCR")
 #'                                                ,"fleet_composition" = c(0.4,0.5,0.1))
 #' 
-#' sf_cetesb <- emission_model(gps = sf_line
+#' sf_cetesb <- emission_model(gps = tp_model
 #'                           ,ef_data_base = "cetesb_brazil"
 #'                           ,fleet_data = fleet_data_ef_cetesb
 #'                           ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
-#' sf_emfac <- emission_model(gps = sf_line
+#' sf_emfac <- emission_model(gps = tp_model
 #'                           ,ef_data_base = "emfac_usa"
 #'                           ,fleet_data = fleet_data_ef_emfac
 #'                           ,pollutant = c("CO","PM10","CO2","CH4","NOx")
 #'                           ,calendar_year = 2019)
-#' sf_moves <- emission_model(gps = sf_line
+#' sf_moves <- emission_model(gps = tp_model
 #'                           ,ef_data_base = "moves_usa"
 #'                           ,fleet_data = fleet_data_ef_moves
 #'                           ,pollutant = c("CO","PM10","CO2","CH4","NOx")
 #'                           ,calendar_year = 2019)
-#' sf_emep <- emission_model(gps = sf_line
+#' sf_emep <- emission_model(gps = tp_model
 #'                           ,ef_data_base = "emep_europe"
 #'                           ,fleet_data = fleet_data_ef_europe
 #'                           ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
-emission_model <- function(gps
-                           ,ef_data_base
-                           ,fleet_data
-                           ,pollutant
-                           ,output_path
-                           ,parallel
-                           ,calendar_year){
+emission_model <- function(  gps
+                           , ef_data_base
+                           , fleet_data
+                           , pollutant
+                           , output_path
+                           , parallel
+                           , calendar_year){
   # Checking inputs -----
   
   message("Checking input data")
