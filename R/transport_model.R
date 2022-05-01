@@ -30,12 +30,16 @@
 #' 
 #' @export
 #' @examples
+#' library(gtfs2emis)
+#' library(gtfs2gps)
 #' library(magrittr)
+#' 
 #' gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
 #'   gtfs2gps::filter_by_shape_id(., "T2-1") %>%
 #'   gtfs2gps::filter_single_trip()
 #' 
-#' sf_line <- transport_model(gtfs = gtfs,parallel = TRUE) 
+#' tp_model <- transport_model(gtfs_data = gtfs, parallel = TRUE)
+#'
 transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spatial_resolution = 50){
   
   # 666 Check inputs 
@@ -49,24 +53,20 @@ transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spat
   message("------------")
   
   if(is.character(gtfs_data)){
-    city_gtfs <- gtfstools::read_gtfs(path = gtfs_data)
+    city_gtfs <- gtfs2gps::read_gtfs(path = gtfs_data)
   }else{
     city_gtfs <- gtfs_data
   }
   
   # convert frequency to stop_times
-  if(gtfs2gps::test_gtfs_freq(city_gtfs) == "frequency"){
+  if (gtfs2gps::test_gtfs_freq(city_gtfs) == "frequency") {
     city_gtfs <- gtfstools::frequencies_to_stop_times(gtfs = city_gtfs)
   }
   
-  # fix times 
-  city_gtfs$stop_times[,arrival_time := data.table::as.ITime(arrival_time)]
-  city_gtfs$stop_times[,departure_time := data.table::as.ITime(departure_time)]
-  
-  
+
   # parallel condition
   if(parallel){
-    future::plan(session = "multisession",workers = data.table::getDTthreads() - 1)
+    future::plan(session = "multisession", workers = data.table::getDTthreads() - 1)
   }else{
     future::plan(session = "sequential")
   }
@@ -78,11 +78,11 @@ transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spat
   gps_path <-  paste0(tempdir(), "/gps")
   dir.create(gps_path)
   
-  gtfs2gps::gtfs2gps(gtfs_data = city_gtfs
-                     ,spatial_resolution = spatial_resolution
-                     ,parallel = parallel
-                     ,filepath = gps_path
-                     ,compress = TRUE)
+  gtfs2gps::gtfs2gps(  gtfs_data = city_gtfs
+                     , spatial_resolution = spatial_resolution
+                     , parallel = parallel
+                     , filepath = gps_path
+                     , compress = TRUE)
   
   #  Adjust gps speed---------
   
@@ -95,7 +95,7 @@ transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spat
   dir.create(gps_adjust_path)
   
   # find gps files
-  files_gps <- list.files(gps_path,full.names = TRUE)
+  files_gps <- list.files(gps_path, full.names = TRUE)
   files_gps_names <- list.files(gps_path,full.names = FALSE)
   
   gps_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i =1 

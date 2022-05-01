@@ -47,10 +47,14 @@ transport model. For more advanced users, we recommend reading out
 vignette at <\url{http://www.github.com/ipeaGIT/gtfs2emis/}>.
 }
 \examples{
+library(gtfs2emis)
+library(gtfs2gps)
 library(magrittr)
+
 gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) \%>\% 
   gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
   gtfs2gps::filter_single_trip()
 
-sf_line <- transport_model(gtfs = gtfs,parallel = TRUE) 
+tp_model <- transport_model(gtfs_data = gtfs, parallel = TRUE)
+
 }
