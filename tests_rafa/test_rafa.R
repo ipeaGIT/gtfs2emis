@@ -53,7 +53,7 @@ covr::codecov( coverage = cov, token ='xx' )
 
 
 
-
+devtools::document()
 
 ### CMD Check ----------------
 # Check package errors
