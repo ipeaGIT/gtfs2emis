@@ -115,7 +115,7 @@ emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = 
     # time - filter
     emi_list[[time_column]] <- data.table::hour(emi_list[[time_column]])
     
-    tmp_dt <- emi_to_dt(emi_list = emi_list
+    tmp_dt <- emis_to_dt(emi_list = emi_list
                         ,emi_vars = emi_vars
                         ,veh_vars = veh_vars
                         ,pol_vars = pol_vars
@@ -132,7 +132,7 @@ emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = 
   if(by == "veh_type"){
     
     tmp_dt <- data.table::copy(emi_list[[emi_vars]])
-    tmp_dt <- emi_to_dt(emi_list = emi_list
+    tmp_dt <- emis_to_dt(emi_list = emi_list
                         ,emi_vars = emi_vars
                         ,veh_vars = veh_vars
                         ,pol_vars = pol_vars)
@@ -147,7 +147,7 @@ emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = 
   if(by == "pollutant"){
     
     tmp_dt <- data.table::copy(emi_list[[emi_vars]])
-    tmp_dt <- emi_to_dt(emi_list = emi_list
+    tmp_dt <- emis_to_dt(emi_list = emi_list
                         ,emi_vars = emi_vars
                         ,veh_vars = veh_vars
                         ,pol_vars = pol_vars)

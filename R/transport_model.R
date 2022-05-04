@@ -8,6 +8,9 @@
 #'   format. These steps uses the functions of gtfs2gps package 'read_gtfs',
 #'   'gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring', respectively.
 #' 
+#' iii) Fix speeds [666] incluir parametros, min=2 max=80, med=mean
+#' 
+#' 
 #' @param gtfs_data A path to a GTFS file to be converted to GPS, or a GTFS data
 #'                  represented organized as a list of `data.tables` created 
 #'                  with `gtfs2gps::read_gtfs()`.
@@ -100,15 +103,15 @@ transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spat
   
   gps_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i =1 
     
-    tmp_gps <- readr::read_rds(files_gps[i])
+    tmp_gps <- readRDS(files_gps[i])
     tmp_gps[, dist := units::set_units(dist,"m")]
     tmp_gps[, cumdist := units::set_units(cumdist,"m")]
     tmp_gps[, speed := units::set_units(speed,"km/h")]
     tmp_gps[, cumtime := units::set_units(cumtime,"s")]
     tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps)
-    readr::write_rds(x = tmp_gps_fix
+    saveRDS(x = tmp_gps_fix
                      ,file = paste0(gps_adjust_path
-                                    ,"/",files_gps_names[i]),compress = "gz")
+                                    ,"/",files_gps_names[i]))
     return(NULL)
   })
   
@@ -128,7 +131,7 @@ transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spat
   
   if(missing(output_path)){
     gpsLine <- furrr::future_map(seq_along(files_gps),function(i){
-      tmp_gps <- readr::read_rds(files_gps[i])                      # [6666 melhor usar base:readRDS() e remover dependencia de readr]
+      tmp_gps <- readRDS(files_gps[i])
       tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
       return(tmp_gps_fix)
     },.options = furrr::furrr_options(seed = 123)) %>% 
@@ -136,12 +139,12 @@ transport_model <- function(gtfs_data, output_path = NULL, parallel = TRUE, spat
     return(gpsLine)
   }else{
     gpsLine <- furrr::future_map(seq_along(files_gps),function(i){
-      tmp_gps <- readr::read_rds(files_gps[i])
+      tmp_gps <- readRDS(files_gps[i])
       tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
       
-      readr::write_rds(x = tmp_gps_fix
+      saveRDS(x = tmp_gps_fix
                        , file = paste0(output_path,files_gps_names[i])
-                       , compress = "gz")
+                       )
       return(NULL)
     },.options = furrr::furrr_options(seed = 123))
   }

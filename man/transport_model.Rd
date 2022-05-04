@@ -37,6 +37,8 @@ It has four main steps: i) Process the GTFS;
 ii) Convert the data to a GPS-like data.table ; iii) Fix speeds; iv) Convert GPS to sf_linestring
 format. These steps uses the functions of gtfs2gps package 'read_gtfs',
 'gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring', respectively.
+
+iii) Fix speeds \link{666} incluir parametros, min=2 max=80, med=mean
 }
 \details{
 If the user wants to process the all routes in the GTFS, we suggest

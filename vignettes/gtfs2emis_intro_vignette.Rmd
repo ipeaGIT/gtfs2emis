@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 `gtfs2emis` is an R package to estimate hot exhaust emissions of public transport systems based on GTFS data. The package allows users to estimate the emission levels of several types of pollutants at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics. To estimate the emission levels from a given public transport system, users need to:
 1. Input a GTFS.zip file
-2. Input data.table with a few characteristics of the public transport fleet (such as age and fuel)
+2. Input data.frame with a few characteristics of the public transport fleet (such as age and fuel)
 3. Select an emission factor model from the models provided by the package, which currently include models from the US, Europe and Brazil.
 4. Select which pollutants should be estimated from a list with of over 15 pollutants provided by the package.
 
@@ -68,8 +68,8 @@ The `gtfs2mis` has a few core functions:
 
 - `emis_summary()` to aggregate emission estimates by time, vehicle type or road segment.
 - `emis_grid()` to spatially aggregate emission estimates using any custom spatial grid or polygons.
-- `emi_to_dt()` to convert the output of `emission_model()` from  `list` to `data.table`.
-**[666] Talvez renomear emi_to_dt() para emis_to_dt(), pra ficar como as outras funcoes de pos-processamento**
+- `emis_to_dt()` to convert the output of `emission_model()` from  `list` to `data.table`.
+
 
 # Demonstration on sample data
 
@@ -80,7 +80,7 @@ Let's load the data.
 
 ```{r, message = FALSE}
 gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>%
-        # gtfstools::filter_by_weekday(weekday ='monday') 
+         # gtfstools::filter_by_weekday(weekday ='monday') %>%
         gtfs2gps::filter_week_days() 
         # %>% gtfstools::filter_by_shape_id(shape_id = '176-1') 
 
@@ -98,7 +98,7 @@ tp_model <- transport_model(gtfs_data = gtfs, parallel = TRUE)
 
 ```
 
-Here is how the output of the transport model looks like. In essence, it's a trajectory data.table with the space-time position and speed of trips segments for each single veihcle of the public transport system.
+Here is how the output of the transport model looks like. In essence, it's a trajectory data.table with the space-time position and speed of trips segments for each single vehicle of the public transport system.
 
 
 ```{r, message = FALSE, fig.width=3, fig.height=3}
@@ -209,7 +209,7 @@ head(emi_total)
 ggplot(data=emi_total) +
   geom_col(aes(x=pollutant, y=as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
   labs(y="Total emissions (Kg)", x="Hour of the day") +
-  facet_grid(~pollutant, scales = "free") +
+  facet_wrap(~pollutant, scales = "free", nrow = 2) +
   theme_minimal()
 
 ```
@@ -256,18 +256,18 @@ head(emi_by_time) # [666] o que significa a coluna "time_column" Nao deveria se 
 ggplot(data=emi_by_time) +
   geom_col(aes(x=factor(time_column), y=as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
   labs(y="Total emissions (Kg)", x="Hour of the day") +
-  facet_grid(~pollutant, scales = "free") +
+  facet_wrap(~pollutant, scales = "free", nrow = 2) + # [6666] checar scales free
   theme_minimal()
 
 ```
 
 
-Alternatively, the user can use the `emi_to_dt()` function to convert the output of `emission_model()` from a `list` to a `data.table` format:
+Alternatively, the user can use the `emis_to_dt()` function to convert the output of `emission_model()` from a `list` to a `data.table` format:
 
 ```{r, message = FALSE}
-emi_list$time_column <- emi_list$gps$timestamp  #[666] precisa disso? não dá pra colocar isso dentro da funcao emi_to_dt() ?
+emi_list$time_column <- emi_list$gps$timestamp  #[666] precisa disso? não dá pra colocar isso dentro da funcao emis_to_dt() ?
 
-emi_dt <- emi_to_dt(emi_list = emi_list
+emi_dt <- emis_to_dt(emi_list = emi_list
                     ,emi_vars = "emi"
                     ,veh_vars = c("veh_type", "euro", "fuel")
                     ,pol_vars = "pollutant"
@@ -281,12 +281,7 @@ head(emi_dt, 5)
 
 Finally, users can analyze how public transport emissions are spatially distributed. To do this, the `emis_grid()` function helps aggregate emission estimates over any custom spatial vector data (`sf POLYGON`). In this example, we'll use a regular hexagonal grid.
 
-```{r, message = FALSE}
-# [6666] acho melhor ciar o grid usando sf, pq já é uma dependencia nossa 
-# grid <- vein::make_grid(spobj = emi_list$gps, width =  0.25 / 102.47) # 500 meters
-# grid <- sf::st_as_sf(grid)
-
-
+```{r, eval=FALSE, message = FALSE}
 # create spatial grid
 grid <- st_make_grid(st_sf(emi_list$gps), cellsize = 0.25 / 102.47, square = FALSE)
 
@@ -294,7 +289,7 @@ grid <- st_make_grid(st_sf(emi_list$gps), cellsize = 0.25 / 102.47, square = FAL
 
 
 
-```{r, message = FALSE, fig.width=4,fig.height=4}
+```{r, eval=FALSE, message = FALSE, fig.width=4,fig.height=4}
 
 # we add info of emissions into gps file
 emi_list$gps <- cbind(emi_list$gps,emi_list$emi) # isso é necessário? Não dá pra joga pra dentro da funcao? Alem disso, seria melhor fazer isso como uma operacao data.table := nao ?

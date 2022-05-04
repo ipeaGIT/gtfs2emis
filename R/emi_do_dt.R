@@ -38,13 +38,13 @@
 #'             as_list = TRUE)
 #'               
 #' # to data.table
-#' dt <- emi_to_dt(emi_list = emi,
+#' dt <- emis_to_dt(emi_list = emi,
 #'                 emi_vars = "emi", # "emi" var
 #'                 veh_vars = c("veh_type","euro","fuel","tech"), # "veh_type"
 #'                 pol_vars = "pollutant", # pollutant
 #'                 segment_vars = c("slope","load")) # NULL
 #'}
-emi_to_dt <- function(emi_list, emi_vars, veh_vars, pol_vars, segment_vars = NULL){
+emis_to_dt <- function(emi_list, emi_vars, veh_vars, pol_vars, segment_vars = NULL){
   
   #
   # init config
