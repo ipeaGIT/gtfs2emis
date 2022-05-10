@@ -5,7 +5,7 @@
 #' Read emissions in list format and export to data.table format.
 #' 
 #' @param emi_list List; Emissions list.
-#' @param emi_vars Character; Name of emissions data on 'emi_list'
+#' @param emi_vars Character; Attributes of emissions data on 'emi_list'
 #' @param veh_vars Character; Attributes of vehicle data on 'emi_list'
 #' @param pol_vars Character; Attributes of pollutants data on 'emi_list'
 #' @param segment_vars Character; Attributes of segment link data on 'emi_list'
@@ -16,11 +16,11 @@
 #' @examples if (interactive()) {
 #' set.seed(1335)
 #' dist = units::set_units(rnorm(100,0.250,0.03),"km")
-#' ef <- ef_cetesb_brazil(pollutant = c("CO2","NOx"),
+#' ef <- ef_brazil_cetesb(pollutant = c("CO2","NOx"),
 #'                 veh_type = "BUS_URBAN_D", 
 #'                 model_year = 2016)
 #' 
-#' ef <- ef_emep_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+#' ef <- ef_europe_emep(speed = units::set_units(rnorm(100,50,5),"km/h"),
 #'                 veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
 #'                 euro = c("IV","V"),
 #'                 pollutant = c("CO2","NOx"),
