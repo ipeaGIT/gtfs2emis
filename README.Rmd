@@ -22,13 +22,13 @@ knitr::opts_chunk$set(
 
 ```{r installation, message = FALSE, eval=FALSE}
 # From CRAN
-# install.packages("gtfs2emis")
-# library(gtfs2emis)
-# devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
+install.packages("gtfs2emis")
+library(gtfs2emis)
+devtools::install_github("rafapereirabr/gtfs2emis",auth_token = "94c88a642a2f62fce15e4c05cc0b6ead55ff5851")
 # or use the development version with latest features
-# utils::remove.packages('gtfs2emis')
-# devtools::install_github("ipeaGIT/gtfs2emis")
-# library(gtfs2emis)
+utils::remove.packages('gtfs2emis')
+devtools::install_github("ipeaGIT/gtfs2emis")
+library(gtfs2emis)
 ```
 
 ### Basic Usage
@@ -51,32 +51,31 @@ To illustrate the functionality, the package includes a small sample data set of
 
 ```{r sample_vignette, message = FALSE, eval=FALSE}
 # load package
-#   library(gtfs2emis)
+library(gtfs2emis)
 # 
-# # 1) Transport model
-# 
-# # Read GTFS
-#   fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
-#                                           , package = "gtfs2gps"))  %>%
-#     gtfs2gps::filter_single_trip() %>% 
-#     gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
-#   
-#  # GPS output
-#   fort_gps <- gtfs2gps::transport_model()
-#   
-#   # 2) Fleet 
-#   total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012
-#                                                  ,2014,2015,2017,2018,2019),
-#                                         bus = c(1,61,50,1,45,18,62,27,31),
-#                                         veh_type_euro = "Ubus Std 15 - 18 t",
-#                                         euro_stage = c("II", "IV", "IV", "V"
-#                                                        , "V", "V", "V", "V","V"))
-#   
-#   total_fleet[,fleet_composition := bus/sum(bus)]
-#   
-#   
-#   # 3) Emission model
-#   gtfs2emis::emission_model()
+# 1) Transport model
+# Read GTFS
+fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
+                                       , package = "gtfs2gps"))  %>%
+ gtfs2gps::filter_single_trip() %>% 
+ gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
+
+# GPS output
+fort_gps <- gtfs2gps::transport_model()
+
+# 2) Fleet 
+total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012
+                                              ,2014,2015,2017,2018,2019),
+                                     bus = c(1,61,50,1,45,18,62,27,31),
+                                     veh_type_euro = "Ubus Std 15 - 18 t",
+                                     euro_stage = c("II", "IV", "IV", "V"
+                                                    , "V", "V", "V", "V","V"))
+
+total_fleet[,fleet_composition := bus/sum(bus)]
+
+
+# 3) Emission model
+gtfs2emis::emission_model()
 ```
 
 
