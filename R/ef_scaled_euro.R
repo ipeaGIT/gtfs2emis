@@ -25,18 +25,18 @@
 #' @export
 #' 
 #' @examples if (interactive()) {
-#' temp_ef_br <- ef_cetesb_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),
+#' temp_ef_br <- ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),
 #'                         veh_type = "BUS_URBAN_D",
 #'                         model_year = 2015,
 #'                         as_list = TRUE)
 #' 
-#' temp_ef_scaled <- ef_euro_scaled(ef_local = temp_ef_br,
+#' temp_ef_scaled <- ef_scaled_euro(ef_local = temp_ef_br,
 #'                                  speed = units::set_units(1:100,"km/h"),
 #'                                  veh_type = "Ubus Std 15 - 18 t",
 #'                                  euro = "IV",fuel = "D",tech="SCR",
 #'                                  pollutant = c("CO","PM10","CO2","CH4","NOx"))
 #'} 
-ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC = 34.12,
+ef_scaled_euro <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC = 34.12,
                            tech = "SCR", slope = 0.0, 
                            load = 0.5, fcorr = 1){
   # local test
@@ -88,7 +88,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   #
   
   euro1 <- euro
-  ef_sdc <- ef_emep_europe(speed = units::set_units(SDC,"km/h"), 
+  ef_sdc <- ef_europe_emep(speed = units::set_units(SDC,"km/h"), 
                       veh_type = veh_type,
                       euro = euro1,
                       pollutant = pollutant,
@@ -113,7 +113,7 @@ ef_euro_scaled <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   k <- as.numeric(ef_local)/as.numeric(ef_sdc) 
   
   # ef europe speed
-  ef_speed <- ef_emep_europe(speed = speed, 
+  ef_speed <- ef_europe_emep(speed = speed, 
                         veh_type = veh_type,
                         fuel = fuel,
                         euro = euro1,

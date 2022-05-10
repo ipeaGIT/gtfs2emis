@@ -13,7 +13,7 @@
 #'  PM25(Primary Exhaust PM2.5 - Total), SO2(Sulfur Dioxide), 
 #'  THC(Total Gaseous Hydrocarbons ), TOG(Total Organic Gases) and 
 #'  VOC (Volatile Organic Compounds)
-#' @param calendar_year numeric; Calendar Year between 1990 - 2030 Year in which the emissions
+#' @param reference_year numeric; Year of reference, between 1990 - 2030. Year in which the emissions
 #' inventory is estimated, in order to consider the effect of degradation.
 #' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year numeric; Model year of vehicle.
@@ -31,14 +31,14 @@
 #'  ef_usa_moves(pollutant = c("CO","PM10"),
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
-#'         calendar_year = 2016,
+#'         reference_year = 2016,
 #'         fuel = "D",
 #'         as_list = TRUE)
 #'}
-ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel = 'D', as_list = TRUE){
+ef_usa_moves <- function(pollutant, model_year, reference_year, speed, fuel = 'D', as_list = TRUE){
   
   #  pollutant = c("CO","PM10","CH4","NOx")
-  # # calendar_year = "2019"
+  # # reference_year = "2019"
   #  model_year = c("2014","2013","2010");model_year = c("2010")
   #  speed = units::set_units(33,"km/h")
   #  fuel = c("D","CNG"); fuel = "D"
@@ -48,17 +48,18 @@ ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel = 'D'
   tmp_fuel <- fuel
   tmp_pollutant <- pollutant
   tmp_model_year <- model_year
-  tmp_calendar_year <- calendar_year
-  temp_ef <- usa_moves_db
+  tmp_reference_year <- reference_year
+  utils::data(ef_usa_moves_db)
+  temp_ef <- ef_usa_moves_db
     
   # pre-filter in usa data----
-  temp_moves <- temp_ef[calendar_year %in% tmp_calendar_year &
+  temp_moves <- temp_ef[reference_year %in% tmp_reference_year &
                           fuel  %in% unique(tmp_fuel) &
                       pollutant %in% unique(tmp_pollutant) & 
                       model_year %in% unique(tmp_model_year), ]
   
   # check units and lengths----
-  if(data.table::uniqueN(tmp_calendar_year) != 1){
+  if(data.table::uniqueN(tmp_reference_year) != 1){
     stop("calendar_date input needs to has length one.")
   }
   if(class(speed) != "units"){
@@ -92,7 +93,7 @@ ef_usa_moves <- function(pollutant, model_year, calendar_year, speed, fuel = 'D'
       #                  "| fuel", tmp_fuel[j]))
       # check condition
       if(dim(temp_moves2)[1] == 0){
-        stop("Emission Factor do not exist. \nPlease check `data(usa_moves_db)` for valid emission factors.")
+        stop("Emission Factor do not exist. \nPlease check `data(ef_usa_moves_db)` for valid emission factors.")
       }
       return(temp_moves2[, ef])
     }) 

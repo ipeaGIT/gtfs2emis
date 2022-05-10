@@ -9,7 +9,7 @@
 \usage{
 ef_usa_emfac(
   pollutant,
-  calendar_year,
+  reference_year,
   fuel = "D",
   model_year,
   speed,
@@ -22,7 +22,7 @@ CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
 PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
 TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
 
-\item{calendar_year}{numeric; Calendar Year between 2015 - 2022. Year in which the emissions
+\item{reference_year}{numeric; Calendar Year between 2015 - 2022. Year in which the emissions
 inventory is estimated, in order to consider the effect of degradation.}
 
 \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.}
@@ -46,7 +46,7 @@ Estimates expressed in units 'g/km'.
 \examples{
 if (interactive()) {
  ef_usa_emfac(pollutant = c("CO","PM10"),
-        calendar_year = 2019,
+        reference_year = 2019,
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
         fuel = "D",

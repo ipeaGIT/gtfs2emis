@@ -47,5 +47,5 @@ tmp_cetesb <- tmp_cetesb[!(pollutant %in% pol_to_exclude),]
 tmp_cetesb[,calendar_year := 2020]
 
 ## export-----
-ef_brazil_db <- data.table::copy(tmp_cetesb)
-usethis::use_data(ef_brazil_db,overwrite = TRUE)
+ef_brazil_cetesb_db <- data.table::copy(tmp_cetesb)
+usethis::use_data(ef_brazil_cetesb_db,overwrite = TRUE)

@@ -35,6 +35,7 @@ emep2019_raw <- openxlsx::read.xlsx(link2019,sheet = 2) %>% data.table::setDT()
 emep2019 <- data.table::copy(emep2019_raw)
 
 # overview 'Category' names
+names(emep2019)
 emep2019[,.N,by = .(Category,Fuel,Segment,Euro.Standard,Technology,Pollutant)][N>1,]
 emep2019$Category %>% unique()
 emep2019$Pollutant %>% unique()
@@ -62,6 +63,7 @@ emep2019[,Segment := stringr::str_replace_all(Segment,"Standard","Std")]
 emep2019[,Segment := stringr::str_replace_all(Segment,"Urban Biodiesel Buses","Ubus Std 15 - 18 t")]
 emep2019[,Segment := stringr::str_replace_all(Segment,"Urban CNG Buses","Ubus Std 15 - 18 t")]
 emep2019[,Segment := stringr::str_replace_all(Segment,"Ubus Diesel Hybrid","Ubus Std 15 - 18 t")]
+unique(emep2019$Segment)
 
 # simplify "Euro.Standard"
 data.table::setnames(emep2019,"Euro.Standard","Euro")
@@ -72,11 +74,13 @@ emep2019[Euro %in% "Euro 4" | Euro %in% "Euro IV", Euro := "IV"]
 emep2019[Euro %in% "Euro 3" | Euro %in% "Euro III", Euro := "III"]
 emep2019[Euro %in% "Euro 2" | Euro %in% "Euro II", Euro := "II"]
 emep2019[Euro %in% "Euro 1" | Euro %in% "Euro I", Euro := "I"]
+unique(emep2019$Euro)
 
 # simplify 'Pollutant' names
 unique(emep2019$Pollutant)
 data.table::setnames(emep2019,"Pollutant","Pol")
 emep2019[Pol %in% "PM Exhaust",Pol := "PM10"]
+unique(emep2019$Pol)
 
 # simplify 'mode'
 unique(emep2019$Mode)
@@ -86,6 +90,7 @@ emep2019[Mode %in% "", Mode := NA]
 unique(emep2019$Technology)
 emep2019[Technology %in% "", Technology := "-"]
 emep2019[is.na(Technology), Technology := "-"]
+unique(emep2019$Technology)
 
 # reduction factor
 unique(emep2019$`Reduction.Factor.[%]`)
@@ -93,18 +98,22 @@ data.table::setnames(emep2019,"Reduction.Factor.[%]","RF")
 
 # exclude extra columns
 emep2019[1]
-emep2019[,`:=`(`15` = NULL,`Bio.Reduction.Factor.[%]` = NULL,
-               `EF.[g/km].or.ECF.[MJ/km]` = NULL)]
+emep2019[,`:=`(`50` = NULL,`Bio.Reduction.Factor.[%]` = NULL,
+               `EF.[g/km].or.ECF.[MJ/km]` = NULL,
+               `EF.[g/km].or.ECF.[MJ/km].or.#/km.or.#/kWh.or.g/kWh` = NULL,
+               `X23` = NULL)]
 
 # simplify Load
 unique(emep2019$Load)
 emep2019[is.na(Load)]
 emep2019[is.na(Load), Load := 0.5]
+unique(emep2019$Load)
 
 # simplify Road.Slope
 unique(emep2019$Road.Slope)
 data.table::setnames(emep2019,"Road.Slope","Slope")
 emep2019[is.na(Slope), Slope := 0.0]
+unique(emep2019$Slope)
 
 # add Function
 emep2019[,Function := "(Alpha*Speed^2+Beta*Speed+Gamma+Delta/Speed)/(Epsilon*Speed^2+Zita*Speed+Hta)*(1-rf)*k"]
@@ -116,6 +125,7 @@ emep2019[,Thita := 0]
 emep2019[1]
 data.table::setnames(emep2019,"Max.Speed.[km/h]","Vmax")
 data.table::setnames(emep2019,"Min.Speed.[km/h]","Vmin")
+emep2019[1]
 
 # avoid duplicated EF
 ColNames <- c("Category","Fuel","Segment","Euro","Technology","Pol","Slope","Load","Vmin","Vmax")
@@ -130,6 +140,7 @@ emep2019 <- emep2019[,.SD[1],by = ColNames]
 emep2019[,Mode := NULL]
 
 
+#emep2019[Pol == "PM10" & Segment %like% "Artic",.SD[1],by = Euro]
 
 ##### EMEP 2016 ---------
 #
@@ -145,9 +156,20 @@ emep2016_raw <- openxlsx::read.xlsx(xlsxFile = paste0(a,"2016ef.xlsx"), sheet = 
 emep2016 <- data.table::copy(emep2016_raw)
 
 # simplify by 'Pollutant' and 'Category"
+emep2016[Euro.Standard == "Euro V" & Pollutant == "PM Exhaust" & Category == "Buses"] 
+
 unique(emep2016$Category)
-emep2016 <- emep2016[Pollutant %in% "FC" & Category %in% "Buses",]
+emep2016 <- list(emep2016[Pollutant %in% "FC" & Category %in% "Buses",],
+                 emep2016[Pollutant %in% "PM Exhaust" & Category %in% "Buses"
+                          & Euro.Standard == "Euro V",])
+emep2016 <- data.table::rbindlist(emep2016)
 names(emep2016)
+
+# simplify 'Pollutant' <-> 'Pol'
+emep2016$Pollutant %>% unique()
+data.table::setnames(emep2016,"Pollutant","Pol")
+emep2016[Pol %in% "PM Exhaust", Pol := "PM10"]
+emep2016$Pol %>% unique()
 
 # simplify 'Subsector' <-> 'Segment'
 unique(emep2016$Segment)
@@ -163,21 +185,24 @@ emep2016$Fuel %>% unique()
 emep2016[Fuel %in% "CNG",]
 emep2016[Fuel %in% "Diesel", Fuel := "D"]
 emep2016[Fuel %in% "Biodiesel", Fuel := "BD"]
+emep2016$Fuel %>% unique()
 
 # simplify Road.Slope
 emep2016$Road.Slope %>% unique()
 data.table::setnames(emep2016,"Road.Slope","Slope")
 emep2016[is.na(Slope),Slope := 0]
+emep2016$Slope %>% unique()
 
 # simplify Euro
 data.table::setnames(emep2016,"Euro.Standard","Euro")
 unique(emep2016$Euro)
 emep2016[Euro %like% "Euro 6" | Euro %like% "Euro VI", Euro := "VI"]
-emep2016[Euro %in% "Euro 5" | Euro %in% "Euro V", Euro := "V"]
-emep2016[Euro %in% "Euro 4" | Euro %in% "Euro IV", Euro := "IV"]
-emep2016[Euro %in% "Euro 3" | Euro %in% "Euro III", Euro := "III"]
-emep2016[Euro %in% "Euro 2" | Euro %in% "Euro II", Euro := "II"]
-emep2016[Euro %in% "Euro 1" | Euro %in% "Euro I", Euro := "I"]
+emep2016[Euro %in%   "Euro 5" | Euro %in% "Euro V", Euro := "V"]
+emep2016[Euro %in%   "Euro 4" | Euro %in% "Euro IV", Euro := "IV"]
+emep2016[Euro %in%   "Euro 3" | Euro %in% "Euro III", Euro := "III"]
+emep2016[Euro %in%   "Euro 2" | Euro %in% "Euro II", Euro := "II"]
+emep2016[Euro %in%   "Euro 1" | Euro %in% "Euro I", Euro := "I"]
+unique(emep2016$Euro)
 
 # Simplify Speed
 data.table::setnames(emep2016,c("Min.Speed.[km/h]","Max.Speed.[km/h]"),c("Vmin","Vmax"))
@@ -188,7 +213,6 @@ emep2016$Vmax %>% unique()
 names(emep2016)
 data.table::setnames(emep2016,"Reduction.Factor.[%]","RF")
 data.table::setnames(emep2016,"EF.[g/km].or.ECF.[MJ/km]","EF")
-data.table::setnames(emep2016,"Pollutant","Pol")
 
 # add function column
 emep2016[,Function := "(Alpha*Speed^2+Beta*Speed+Gamma+Delta/Speed)/(Epsilon*Speed^2+Zita*Speed+Hta)*(1-rf)*k"]
@@ -216,6 +240,7 @@ emep2016[,Mode := NULL]
 # fix Load info
 emep2016[is.na(Load),Load := 0.5]
 emep2016[is.na(Technology),Technology := "-"]
+
 # add CO2
 # rhc = 1.86 and roc = 0.0
 co2_2016 <- data.table::copy(emep2016)[Pol == "FC" & Fuel == "CNG",][,Pol := "CO2"]
@@ -234,13 +259,13 @@ emep2016_final <- data.table::rbindlist(l = list(emep2016,co2_2016))
 # download and read file
 body <- "https://www.eea.europa.eu/publications/"
 link2013 <- paste0(body,"emep-eea-guidebook-2013/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-road-transport-annex-hdv-files.zip/at_download/file")
-dir.create(path = paste0("2013ef/"))
-download.file(link2013,destfile = paste0("2013ef/2013ef.zip"))
-unzip(zipfile = paste0("2013ef/2013ef.zip"),exdir = "2013ef/")
-list.files(path = paste0("2013ef"))
+dir.create(path = paste0("test_joao/2013ef/"))
+download.file(link2013,destfile = paste0("test_joao/2013ef/2013ef.zip"))
+unzip(zipfile = paste0("test_joao/2013ef/2013ef.zip"),exdir = "test_joao/2013ef/")
+list.files(path = paste0("test_joao/2013ef"))
 
 # read and clean formula data
-filepath2013 <- "2013ef/1.A.3.b.i-iv Exhaust emissions from road transport data annex Sept2014 update.xlsx"
+filepath2013 <- "test_joao/2013ef/1.A.3.b.i-iv Exhaust emissions from road transport data annex Sept2014 update.xlsx"
 openxlsx::getSheetNames(filepath2013)
 
 bus_eq <- openxlsx::read.xlsx(filepath2013,sheet = "HDV - BUS Equations") %>% 
@@ -269,6 +294,7 @@ emep2013[Segment == "Urban Buses Midi <=15 t",Segment := "Ubus Midi <=15 t"]
 emep2013[Segment == "Urban Buses Articulated >18 t",Segment := "Ubus Artic >18 t"]
 emep2013[Segment == "Coaches Standard <=18 t",Segment := "Coaches Std <=18 t"]
 emep2013[Segment == "Coaches Articulated >18 t" ,Segment := "Coaches Artic >18 t"]
+unique(emep2013$Segment)
 
 # simplify by fuel
 emep2013[, Fuel := "D"]
@@ -279,6 +305,7 @@ data.table::setnames(emep2013,"Euro.No.","Euro")
 emep2013[,Euro := as.character(Euro)]
 emep2013[Euro == "6", Euro := "VI"]
 emep2013[Euro == "5", Euro := "V"]
+emep2013$Euro %>% unique()
 
 # simplify Technology
 emep2013$Technology %>% unique()
@@ -402,7 +429,7 @@ emep2007[,`:=`(Zita = 0, Hta = 0, Thita = 0)]
 
 # Replace NA by 0, and all parameters as numeric
 vector_pars <- c("Alpha","Beta","Gamma","Delta","Epsilon","Zita","Hta","Thita")
-function_na <- function(i){data.table::fifelse(is.na(i),0,as.numeric(i))}
+function_na <- function(i){ifelse(is.na(i),0,as.numeric(i))}
 emep2007[,(vector_pars) := lapply(.SD,function_na), .SDcols = vector_pars]
 
 # change a little bit the functions expression
@@ -495,13 +522,13 @@ emep2007_final <- data.table::rbindlist(l = list(emep2007,co2_2007))
 # has euro "V", so we will check if there are any overlaps
 unique(emep2013_final$Euro)
 unique(emep2007_final$Euro)
-emep2013_final[Euro == "V",.N,by = .(Technology,Pol)]
+emep2013_final[Euro == "V",.N,by = .(Technology,Pol,Segment)]
 # Technology Pol   N
 # 1:        EGR  FC 105
 # 2:        SCR  FC 105
 # 3:        EGR CO2 105
 # 4:        SCR CO2 105
-emep2007_final[Euro == "V",.N,by = .(Technology,Pol)]
+emep2007_final[Euro == "V",.N,by = .(Technology,Pol,Segment)]
 # Technology Pol   N
 # 1:         NA  FC 105
 # 2:         NA CO2 105
@@ -544,8 +571,7 @@ tmp_emep2016b <- emep2016b[Euro == "II" &
                              Fuel == "D"]
 tmp_emep2007b
 tmp_emep2013b
-emep2016_final[Fuel == "CNG"
-               ,]
+emep2016_final[Fuel == "CNG" ,]
 
 # speed_func(dt = tmp_emep2007b, speed = 33)
 # speed_func(dt = tmp_emep2013b, speed = 33)
@@ -556,15 +582,20 @@ emep2016_final[Fuel == "CNG"
 # we are not exporting emep2016 because it does not have correct data for
 # CO2
 #
-
+break()
 europe <- data.table::rbindlist(list(emep2019
-                                     , emep2016_final[(Pol == "FC"|Pol == "CO2") & Fuel == "CNG"]
+                                     , emep2016_final
                                      , emep2013_final
-                                     , emep2007_final),use.names = TRUE)
+                                     , emep2007_final
+                                     ),use.names = TRUE)
+europe[,GRP := .N,by = names(europe)]
+europe <- europe[GRP == 1]
+europe[,GRP := NULL]
+
 
 # export
 #
-ef_europe_db <- data.table::copy(europe)
-usethis::use_data(ef_europe_db,overwrite = TRUE)
+ef_europe_emep_db <- data.table::copy(europe)
+usethis::use_data(ef_europe_emep_db,overwrite = TRUE)
 rm(list=ls())
 

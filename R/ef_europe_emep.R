@@ -29,14 +29,14 @@
 #' @export
 #' 
 #' @examples if (interactive()) {
-#' ef_emep_europe( speed = units::set_units(1:100,"km/h"),
+#' ef_europe_emep( speed = units::set_units(1:100,"km/h"),
 #'            veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
 #'            euro = c("III","IV","V"),
 #'            fuel = "D",
 #'            pollutant = c("CO","PM10","CO2","CH4","NOx"),
 #'            as_list = FALSE) 
 #'}
-ef_emep_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
+ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                       slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
   #
   # local test
@@ -57,8 +57,8 @@ ef_emep_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   # i = j = 1
 
   # euro vector----
-  
-  temp_ef <- ef_europe_db
+  utils::data('ef_europe_emep_db') 
+  temp_ef <- ef_europe_emep_db
   
   
   # check units and lengths----
@@ -183,14 +183,14 @@ ef_emep_europe <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       
       if(nrow(temp_ef3) == 0){
         erro_msg <- paste0("No available emission factor for the following combination of parameters:\n\n",
-                           "ef_europe_db[Pol %in% '",pollutant[i],
+                           "ef_europe_emep_db[Pol %in% '",pollutant[i],
                            "' &\n Fuel %in% '",fuel[j],
                            "' &\n Segment %in% '",veh_type[j],
                            "' &\n Technology %in% '",tech[j],
                            "' &\n Euro %in% '",euro[j],
                            "' &\n Slope == ",slope[1],
                            " &\n Load == ",load[1],", ]",
-                           "\n\n Please check `data(ef_europe_db)` for available data.")
+                           "\n\n Please check `data(ef_europe_emep_db)` for available data.")
         stop(erro_msg)
       }
       

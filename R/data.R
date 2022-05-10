@@ -15,27 +15,27 @@
 #'
 #' @format A data table with 6431 rows and 22 variables:
 #' \describe{
-#'   \item{Category}{Buses.}
-#'   \item{Fuel}{ Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
+#' \item{Category}{Buses.}
+#' \item{Fuel}{ Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 #' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel). }
-#'   \item{Segment}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
+#' \item{Segment}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
 #' "Coaches Std <=18 t","Coaches Artic >18 t".}
-#'   \item{Euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
-#'   \item{Technology}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
+#' \item{Euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
+#' \item{Technology}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
 #' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
 #' no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". }
-#'   \item{Pol}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. }
-#'   \item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
-#'   \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
-#'   \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
-#'   \item{RF}{In \% units.}
-#'   \item{k}{Constante factor.}
+#' \item{Pol}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. }
+#' \item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
+#' \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
+#' \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
+#' \item{RF}{Reduction Factor; In percentage (%) units.}
+#' \item{k}{Constante factor.}
 #' }
 #' @source \url{"https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/
 #' 
 #' https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/"}
 #' 
-"ef_europe_db" # data(ef_europe_db)
+"ef_europe_emep_db" # data(ef_europe_emep_db)
 
 
 
@@ -48,20 +48,16 @@
 #' CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
 #'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
 #'  TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
-#'   \item{calendar_year}{Numeric; Calendar Year between 2010 - 2020}
-#'   \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
-#'   \item{model_year}{Model year.}
-#'   \item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
+#' \item{reference_year}{Numeric; Calendar Year between 2010 - 2020}
+#' \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
+#' \item{model_year}{Model year.}
+#' \item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
 #'  such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50"
 #'   "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h)}
 #' }
 #' @source \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
 #' 
-"usa_emfac_db" # data(usa_emfac_db)
-
-
-
-
+"ef_usa_emfac_db" # data(ef_usa_emfac_db)
 
 #' MOVES
 #' Running exhaust emissions factors from United States (MOVES3 model)
@@ -78,7 +74,7 @@
 #'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SO2(Sulfur Dioxide), 
 #'  THC(Total Gaseous Hydrocarbons ), TOG(Total Organic Gases) and VOC (Volatile Organic Compounds)}
 #' \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
-#' \item{calendar_year}{Numeric; Calendar Year between 2015 - 2022. Year in which the emissions
+#' \item{reference_year}{Numeric; Calendar Year between 2015 - 2022. Year in which the emissions
 #' inventory is estimated, in order to consider the effect of degradation.}
 #' \item{model_year}{numeric; Model year of vehicle.}
 #' \item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals 
@@ -87,7 +83,7 @@
 #'  "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5", "67.5 - 72.5", ">72.5" mph (miles/h).}
 #'  }
 #' @source \url{https://www.epa.gov/moves}
-"usa_moves_db"
+"ef_usa_moves_db"  # data(ef_usa_moves_db)
 
 
 #' CETESB
@@ -113,4 +109,4 @@
 #'  format.}
 #' }
 #'@source \url{https://cetesb.sp.gov.br/veicular/}
-"ef_brazil_db"
+"ef_brazil_cetesb_db" # data(ef_brazil_cetesb_db)

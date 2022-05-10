@@ -10,7 +10,7 @@
 ef_usa_moves(
   pollutant,
   model_year,
-  calendar_year,
+  reference_year,
   speed,
   fuel = "D",
   as_list = TRUE
@@ -27,7 +27,7 @@ VOC (Volatile Organic Compounds)}
 
 \item{model_year}{numeric; Model year of vehicle.}
 
-\item{calendar_year}{numeric; Calendar Year between 1990 - 2030 Year in which the emissions
+\item{reference_year}{numeric; Year of reference, between 1990 - 2030. Year in which the emissions
 inventory is estimated, in order to consider the effect of degradation.}
 
 \item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals
@@ -52,7 +52,7 @@ if (interactive()) {
  ef_usa_moves(pollutant = c("CO","PM10"),
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
-        calendar_year = 2016,
+        reference_year = 2016,
         fuel = "D",
         as_list = TRUE)
 }

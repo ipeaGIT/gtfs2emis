@@ -258,8 +258,8 @@ dt_bind %>%
   facet_wrap(~pollutant,scales = "free_y")
 
 # 5) export-----
-usa_moves_db <- data.table::copy(dt_bind)
-usethis::use_data(usa_moves_db,overwrite = TRUE)
+ef_usa_moves_db <- data.table::copy(dt_bind)
+usethis::use_data(ef_usa_moves_db,overwrite = TRUE)
 
 
 

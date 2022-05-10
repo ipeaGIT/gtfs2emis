@@ -10,7 +10,7 @@
 #' CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
 #'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
 #'  TOG(Total Organic Gases), ROG (Reactive Organic Gases)
-#' @param calendar_year numeric; Calendar Year between 2015 - 2022. Year in which the emissions
+#' @param reference_year numeric; Calendar Year between 2015 - 2022. Year in which the emissions
 #' inventory is estimated, in order to consider the effect of degradation.
 #' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year numeric; Model year of vehicle.
@@ -28,16 +28,16 @@
 #' 
 #' @examples if (interactive()) {
 #'  ef_usa_emfac(pollutant = c("CO","PM10"),
-#'         calendar_year = 2019,
+#'         reference_year = 2019,
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
 #'         fuel = "D",
 #'         as_list = TRUE)
 #'}
-ef_usa_emfac <- function(pollutant, calendar_year, fuel = 'D', model_year, speed, as_list = TRUE){
+ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D', model_year, speed, as_list = TRUE){
   
   # pollutant = c("CO","PM10","CH4","NOx")
-  # calendar_year = "2019"
+  # reference_year = "2019"
   # model_year = c("2014","2013","2010");model_year = c("2010")
   # speed = units::set_units(33,"km/h")
   # fuel = c("Diesel","CNG"); fuel = "D"
@@ -45,12 +45,13 @@ ef_usa_emfac <- function(pollutant, calendar_year, fuel = 'D', model_year, speed
 
   # use specific name-----
   tmp_fuel <- fuel
-  tmp_calendar_year <- calendar_year
+  tmp_reference_year <- reference_year
   tmp_pollutant <- pollutant
   tmp_model_year <- model_year
+  utils::data('ef_usa_emfac_db') 
   
   # pre-filter in usa data----
-  temp_emfac <- usa_emfac_db[calendar_year %in% as.character(unique(tmp_calendar_year)) &
+  temp_emfac <- ef_usa_emfac_db[reference_year %in% as.character(unique(tmp_reference_year)) &
                       fuel %in% unique(tmp_fuel) &
                       pollutant %in% unique(tmp_pollutant) & 
                       model_year %in% unique(tmp_model_year), ]

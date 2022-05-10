@@ -39,10 +39,10 @@
 #' @source \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
 #' @export
 #' @examples if (interactive()) {
-#' ef_cetesb_brazil(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
+#' ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
 #' model_year = 2015,as_list = TRUE)
 #' }
-ef_cetesb_brazil <- function(pollutant, veh_type, model_year, as_list = TRUE){
+ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   
   #
   # init config
@@ -62,10 +62,11 @@ ef_cetesb_brazil <- function(pollutant, veh_type, model_year, as_list = TRUE){
   
    tmp_model_year <- model_year
   # vehicle distribution----
+  utils::data(ef_brazil_cetesb_db)
   
-  ef_temp1 <- lapply(pollutant, function(p){ # p = pollutant[1]
+   ef_temp1 <- lapply(pollutant, function(p){ # p = pollutant[1]
     ef_temp <- lapply(seq_along(model_year), function(i){# i = 1
-      ef_brazil_db[pollutant == p &
+      ef_brazil_cetesb_db[pollutant == p &
                   model_year == tmp_model_year[i],
                 .SD,.SDcols = veh_type[i]][[1]]
     })

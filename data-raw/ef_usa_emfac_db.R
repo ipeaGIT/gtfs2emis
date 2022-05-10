@@ -10,7 +10,7 @@ library(vein)
 
 
 #emfac <- data.table::fread("../../Dropbox/IPEA/gtfs2gps/data-raw/emission_factors/EMFAC/EMFAC2017-ER-2011Class-Statewide2010-2011-2012-2013-2014-2015-2016-2017-2019-2020-Annual-20200512000741.csv")
-emfac <- data.table::fread("data-raw/EMFAC2017-ER-2011Class-Statewide2010-2011-2012-2013-2014-2015-2016-2017-2019-2020-Annual-20200512000741.csv")
+emfac <- data.table::fread("../../Pessoal/IPEA/gtfs2gps/data-raw/emission_factors/EMFAC/EMFAC2017-ER-2011Class-Statewide2010-2011-2012-2013-2014-2015-2016-2017-2019-2020-Annual-20200512000741.csv")
 names(emfac) <- janitor::make_clean_names(names(emfac))
 
 #
@@ -150,5 +150,5 @@ emfac_new[calendar_year == 2010 &
 
 
 # 7) export-----
-usa_emfac_db <- data.table::copy(emfac_new)
-usethis::use_data(usa_emfac_db,overwrite = TRUE)
+ef_usa_emfac_db <- data.table::copy(emfac_new)
+usethis::use_data(ef_usa_emfac_db,overwrite = TRUE)
