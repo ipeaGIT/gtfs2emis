@@ -39,7 +39,7 @@ if (interactive()) {
 
 set.seed(1335)
 dist = units::set_units(rnorm(100,0.250,0.03),"km")
-ef <- ef_emep_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
+ef <- ef_europe_emep(speed = units::set_units(rnorm(100,50,5),"km/h"),
               veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
               euro = c("IV","V"),
               pollutant = c("CO2","NOx"),

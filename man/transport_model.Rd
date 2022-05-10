@@ -7,6 +7,9 @@
 transport_model(
   gtfs_data,
   output_path = NULL,
+  min_speed = NULL,
+  max_speed = NULL,
+  new_speed = NULL,
   parallel = TRUE,
   spatial_resolution = 50
 )
@@ -21,6 +24,16 @@ that each public transport \code{shape_id} are saved separately
 in different files. If \code{NULL} (Default), the function
 returns the data to user.}
 
+\item{min_speed}{numeric (in km/h) or a speed units value. Minimum speed to be considered as valid.
+Values below minimum speed will be adjusted. Defaults to 2 km/h.}
+
+\item{max_speed}{numeric (in km/h) or a speed units value. Maximum speed to be considered as valid.
+Values above maximum speed will be adjusted. Defaults to 80 km/h.}
+
+\item{new_speed}{numeric (in km/h) or a speed units value. Speed to replace missing values as well
+as values outside min_speed and max_speed range. By default,
+'new_speed = NULL' andthe function considers the mean speed of the entire gps data.}
+
 \item{parallel}{logical. Decides whether the function should run in parallel.
 Defaults to TRUE.}
 
@@ -31,14 +44,12 @@ A \code{sf_linestring} object or \code{NULL}.
 }
 \description{
 Creates the transport model based on a GTFS data input, and exports
-in an \code{sf_linestring} format. Note that
-each public transport shape_id is saved separately in a a different file.
-It has four main steps: i) Process the GTFS;
-ii) Convert the data to a GPS-like data.table ; iii) Fix speeds; iv) Convert GPS to sf_linestring
-format. These steps uses the functions of gtfs2gps package 'read_gtfs',
-'gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring', respectively.
-
-iii) Fix speeds \link{666} incluir parametros, min=2 max=80, med=mean
+in an \code{sf_linestring} format. Note that each public transport shape_id is saved
+separately in a a different file. It has four main steps: i) Process the GTFS;
+ii) Convert the data to a GPS-like data.table ; iii) Fix speeds;
+iv) Convert GPS to sf_linestring format. These steps uses the functions of
+gtfs2gps package 'read_gtfs', gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring',
+respectively.
 }
 \details{
 If the user wants to process the all routes in the GTFS, we suggest

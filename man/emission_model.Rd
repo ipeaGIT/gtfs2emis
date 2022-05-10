@@ -5,51 +5,52 @@
 \title{Emission model}
 \usage{
 emission_model(
-  gps,
-  ef_data_base,
+  tp_model,
+  ef_model,
   fleet_data,
   pollutant,
-  calendar_year = NULL,
+  reference_year = NULL,
   parallel = TRUE,
   output_path = NULL
 )
 }
 \arguments{
-\item{ef_data_base}{character. A  string indicating the emission factor model
-to be used. Options include \code{c("ef_usa_moves", "ef_usa_emfac", "ef_emep_europe","ef_brazil_cetesb")}.
-\link{666} nome do parametro: ef_model ? E daí as opcoes seriam os strings de tipo "ef_brazil_cetesb"}
+\item{tp_model}{sf_linestring object or a character path the to sf_linestring objects.
+The \code{tp_model} is the output from \code{\link{transport_model}},
+or the path in which the output files from the \code{\link{transport_model}} are saved.}
 
-\item{fleet_data}{data.frame. A  \code{data.frame} with information the fleet
+\item{ef_model}{character. A string indicating the emission factor model
+to be used. Options include \code{ef_usa_moves}, \code{ef_usa_emfac},\code{ef_europe_emep},
+or \code{ef_brazil_cetesb}.}
+
+\item{fleet_data}{data.frame. A\code{data.frame} with information the fleet
 characteristics. The required columns depend on the
-\code{ef_data_base} parameted selected. See @examples for input.}
+\code{ef_model} parameted selected. See @examples for input.}
 
-\item{pollutant}{character vector with one or more pollutants to be estimated.
-Example: \code{c("CO", "CO2", "PM10", "NOx")}. See the
-documentation to check which pollutants are available for
-each emission factor model.}
+\item{pollutant}{character. Vector with one or more pollutants to be estimated.
+Example: \code{c("CO", "CO2", "PM10", "NOx")}. See the documentation to check which
+pollutants are available for each emission factor model (\code{ef_usa_moves}, \code{ef_usa_emfac},
+\code{ef_europe_emep}, or \code{ef_brazil_cetesb}).}
 
-\item{calendar_year}{numeric. Year of reference considered to calculate the
-emissions inventory. Defaults to current year. This
-argument is only required when the \code{ef_data_base}
-parameter is one of the following: \code{c("ef_usa_moves", "ef_usa_emfac")}.
-\link{66666} Defaults to current year
-\link{66666} mudar nome do parametro pra \code{reference_year} ?}
+\item{reference_year}{numeric. Year of reference considered to calculate the
+emissions inventory. Defaults to 2019. This
+argument is only required when the \code{ef_model}
+argument is \code{ef_usa_moves} or \code{ef_usa_emfac}.}
 
 \item{parallel}{logical. Decides whether the function should run in parallel.
-Defaults is FALSE. When TRUE, it will use all cores available
+When TRUE, it will use all cores available
 minus one using future::plan() with strategy "multisession"
-internally. [Note that it is possible to create your own plan
-before calling gtfs2gps(). In this case, do not use this
-argument.
-\link{66666} acho q o default deveria ser \code{TRUE} aqui e no gtfs2gps tmb}
+internally. Defaults is TRUE. Note that it is possible to create
+your own plan before calling this function. In this case, do not
+use this argument.}
 
 \item{output_path}{character. Filepath where the function output is saved.
-\link{666}  The function only exports the emissions files when \code{gps}
+666  The function only exports the emissions files when \code{gps}
 parameter is input as character. If \code{gps} argument is a
 sf_linestring, the function returns the data to user.
-\link{666} Esse comportamento nao faz sentido neh. O funcionamento
+666 Esse comportamento nao faz sentido neh. O funcionamento
 do output_path nao deveria depender do input de gps. Isso deveria ser:
-\link{666} If \code{NULL} (Default), the function returns the output
+666 If \code{NULL} (Default), the function returns the output
 to user.}
 }
 \value{
@@ -61,33 +62,32 @@ Estimate hot-exhaust emissions of public transport systems. This
 function must be used together with \code{\link{transport_model}}.
 }
 \details{
-The \code{fleet_data} must be a \code{data.frame} organized as follows:
-\link{6666} acho q vale a apena organizar esses details melhor
+The \code{fleet_data} must be a \code{data.frame} organized according to the desired
+\code{ef_model}. The required columns is organized as follows (see @examples for real
+data usage).
 \itemize{
-\item Column \code{calendar_year}: character; Base year of the @ef_data_base input.
-Required only when  \code{usa_moves} or \code{usa_emfac} are selected.
-\item Column \code{tech}: character; After treatment technology. This is required only
+\item \code{reference_year}: character; Base year of the @ef_model input.
+Required only when  \code{ef_usa_moves} or \verb{_efusa_emfac} are selected.
+\item \code{tech}: character; After treatment technology. This is required only
 when \code{emep_europe} is selected. Check \code{?ef_emep_europe} for details.
-\item Column \code{euro}: character; Euro period of vehicle, classified in
+\item \code{euro}: character; Euro period of vehicle, classified in
 "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required only
-when \code{emep_europe} is selected. Check \code{ef_emep_europe} for details.
-\item Column \code{fuel}: character; Required when \code{ef_moves_usa}, \code{ef_emfac_usa} and
-\code{ef_emep_europe} are selected.
-\item Column \code{fleet_composition}: Numeric. Scaled composition of fleet. In most
+when \code{ef_emep_europe} is selected. Check \code{ef_europe_emep} for details.
+\item \code{fuel}: character; Required when \code{ef_usa_moves}, \code{ef_usa_emfac} and
+\code{ef_europe_emep} are selected.
+\item \code{fleet_composition}: Numeric. Scaled composition of fleet. In most
 cases, the user might not know which vehicles run on each specific routes.
-... the composition is used
-to attribute a probability of a specific vehicle to circulate in the line. The
-probability sums one. Required for all emission factors selection.
-If the information of specific vehicle is known, user should develop the emission
-inventory according to the vignette <<detailed_vignette_link>>.
+The composition is used to attribute a probability of a specific vehicle to
+circulate in the line. The probability sums one. Required for all emission
+factors selection. If the information of specific vehicle is known, user
+should develop the emission inventory according to the vignette
+<\url{http://www.github.com/ipeaGIT/gtfs2emis/}>.
 }
 }
 \examples{
 if (interactive()) {
-library(gtfs2emis)
 library(gtfs2gps)
 library(magrittr)
-library(data.table)
 
 gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) \%>\% 
 gtfs2gps::filter_by_shape_id(., "T2-1") \%>\%
@@ -103,40 +103,40 @@ fleet_data_ef_cetesb <- data.frame(  veh_type = "BUS_URBAN_D"
 fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
                                   , model_year = 2010:2019
                                   , fuel = "D"
-                                  , calendar_year = 2019
+                                  , reference_year = 2019
                                   , fleet_composition = rep(0.1,10))
                                               
 fleet_data_ef_emfac <- data.frame(  veh_type =  "BUS_URBAN_D"
                                   , model_year = 2010:2019
                                   , fuel = "D"
-                                  , calendar_year = 2019
+                                  , reference_year = 2019
                                   , fleet_composition = rep(0.1,10))
                                   
-fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t" ,"Ubus Std 15 - 18 t" ,"Ubus Artic >18 t")
+fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t" 
+,"Ubus Std 15 - 18 t" ,"Ubus Artic >18 t")
                                    , euro = c("III","IV","V")
                                    , fuel = rep("D",3)
                                    , tech = c("-","SCR","SCR")
                                    , fleet_composition = c(0.4,0.5,0.1))
 
-emi_cetesb <- emission_model(gps = tp_model
-                            , ef_data_base = "cetesb_brazil"
+emi_cetesb <- emission_model(tp_model = tp_model
+                            , ef_model = "ef_brazil_cetesb"
                             , fleet_data = fleet_data_ef_cetesb
                             , pollutant = c("CO","PM10","CO2","CH4","NOx")
                             )
-                            
-emi_emfac <- emission_model(gps = tp_model
-                          ,ef_data_base = "emfac_usa"
-                          ,fleet_data = fleet_data_ef_emfac
-                          ,pollutant = c("CO","PM10","CO2","CH4","NOx")
-                          ,calendar_year = 2019)
-emi_moves <- emission_model(gps = tp_model
-                          ,ef_data_base = "moves_usa"
-                          ,fleet_data = fleet_data_ef_moves
-                          ,pollutant = c("CO","PM10","CO2","CH4","NOx")
-                          ,calendar_year = 2019)
-emi_emep <- emission_model(gps = tp_model
-                          ,ef_data_base = "emep_europe"
-                          ,fleet_data = fleet_data_ef_europe
-                          ,pollutant = c("CO","PM10","CO2","CH4","NOx"))
+emi_emfac <- emission_model(tp_model = tp_model
+                          , ef_model = "ef_usa_emfac"
+                          , fleet_data = fleet_data_ef_emfac
+                          , pollutant = c("CO","PM10","CO2","CH4","NOx")
+                          , reference_year = 2019)
+emi_moves <- emission_model(tp_model = tp_model
+                          , ef_model = "ef_usa_moves"
+                          , fleet_data = fleet_data_ef_moves
+                          , pollutant = c("CO","PM10","CO2","CH4","NOx")
+                          , reference_year = 2019)
+emi_emep <- emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
+                          , fleet_data = fleet_data_ef_europe
+                          , pollutant = c("CO","PM10","CO2","CH4","NOx"))
 }
 }
