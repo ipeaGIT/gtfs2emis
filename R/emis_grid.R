@@ -43,7 +43,7 @@
 #'
 #'# Emission factor
 #'set.seed(1234)
-#'EF_europe <- ef_emep_europe(pollutant = c("CO", "PM10"),
+#'EF_europe <- ef_europe_emep(pollutant = c("CO", "PM10"),
 #'                       speed = fort_gpslines$speed,
 #'                       veh_type = total_fleet$veh_type_euro,
 #'                       tech = "SCR",
@@ -58,7 +58,7 @@
 #'for_emis <- cbind(fort_gpslines, emi_europe$emi)
 #'
 #'# Grid
-#'grid_gps <- vein::make_grid(spobj = for_emis, width =  0.25 / 102.47) # 500 meters
+#'grid_gps <- sf::st_make_grid(for_emis, cellsize = 0.25 / 102.47, square = FALSE)
 #'for_sf <- sf::st_as_sf(for_emis)
 #'
 #'pol_gps <- emis_grid(data = for_sf,
