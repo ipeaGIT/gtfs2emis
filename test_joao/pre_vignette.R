@@ -12,12 +12,59 @@ devtools::install()
 library(data.table)
 library(magrittr)
 library(gtfs2gps)
-## Read data----
-gtfs <- read_gtfs(system.file("extdata/poa.zip", package="gtfs2gps")) %>%
-  filter_week_days() %>%
-  filter_by_shape_id(.,"176-1") %>% 
-  filter_single_trip()
 
+# make grid
+gtfs <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip", package = "gtfs2gps")) %>%
+  gtfs2gps::filter_single_trip() %>% 
+  gtfs2gps::gtfs2gps() %>% 
+  gtfs2gps::adjust_speed() %>% 
+  gtfs2gps::gps_as_sflinestring()
+nrow(gtfs)
+gtfs_tp <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip", package = "gtfs2gps")) %>%
+  gtfs2gps::filter_single_trip() %>% 
+  transport_model()
+nrow(gtfs_tp)
+
+setDT(gtfs)
+setDT(gtfs_tp)
+gtfs[shape_id == "R10-2"   & trip_number == 2,]
+gtfs_tp[shape_id == "R10-2"& trip_number == 2,]
+
+gtfs[,.N,by=.(shape_id)]
+gtfs_tp[,.N,by=.(shape_id)]
+gtfs[shape_id == "R10-2"   & trip_number == 2,]
+gtfs_tp[shape_id == "R10-2"& trip_number == 2,]
+identical(gtfs,gtfs_tp)
+identical(unique(gtfs$shape_id),unique(gtfs_tp$shape_id))
+identical(unique(gtfs$trip_id),unique(gtfs_tp$trip_id))
+identical(nrow(gtfs),nrow(gtfs_tp))
+
+gtfs
+gtfs_tp
+grid <- sf::st_make_grid(gtfs, cellsize = 0.25 / 102.47, square = FALSE)
+grid1 <- sf::st_make_grid(tp_model$geometry, cellsize = 0.25 / 102.47, square = FALSE)
+
+#mapview::mapview(grid1) + mapview::mapview(emi_list$tp_model$geometry)
+mapview::mapview(grid) + mapview::mapview(gtfs$geometry)
+
+class(gtfs$geometry)
+class(emi_list$tp_model$geometry)
+class(grid)
+class(grid1)
+
+## Read data----
+gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>%
+   gtfstools::filter_by_weekday(weekday ='monday') %>%
+  gtfs2gps::filter_week_days() %>% 
+  gtfstools::filter_by_shape_id(shape_id = '176-1') 
+
+
+gps <- gtfs2gps::gtfs2gps(gtfs)
+gps_fix <- gtfs2gps::adjust_speed(gps)
+#gps_fix[stop_sequence==2]
+gps_line <- gtfs2gps::gps_as_sflinestring(gps_fix)
+
+gps_line
 ## transport model----
 
 sf_line <- transport_model(gtfs = gtfs,parallel = TRUE)
