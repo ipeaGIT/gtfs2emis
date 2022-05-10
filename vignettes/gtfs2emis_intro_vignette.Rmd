@@ -47,7 +47,9 @@ devtools::install_github("ipeaGIT/gtfs2emis")
 Before we start, let's load a few packages we'll be using in this vignette:
 
 ```{r, message = FALSE}
-library(gtfs2emis)
+#library(gtfs2emis)
+devtools::document()
+devtools::load_all()
 library(gtfstools)
 library(gtfs2gps)
 library(data.table)
@@ -103,8 +105,6 @@ Here is how the output of the transport model looks like. In essence, it's a tra
 
 ```{r, message = FALSE, fig.width=3, fig.height=3}
 head(tp_model)
-
-tp_model <- sf::st_as_sf(tp_model) #[666] Essa transfomacao pra sf nao devia ser feita dentro do transport_model() ?
 plot(tp_model["speed"])
 ```
 
@@ -125,7 +125,6 @@ Now, the fleet data needs to be organized according to the data requirements of 
 |`ef_emep_europe()`      |Europe | EMEP/EEA      | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope|
 |`ef_moves_usa()`        |US     | EMFAC         | Urban Buses                  | Age, Fuel                                |
 |`ef_emfac_usa()`        |US     | MOVES U.S EPA | Urban Buses                  | Age, Fuel                                |
-** [666] acho q o nome das funcoes ficariam melhor se seguissem o padrao `ef_pais_fonte`. Tipo `ef_brazil_cetesb()`, `ef_usa_moves()`, `ef_usa_emfac()`. Isso facilita pro usuario usar a funcao de autocomplete do rstudio quando estiver escrecendo o codigo**
 
 Here are a few examples of data.frames with the fleet characteristics required by different emission factor models. Note that the table includes a column `fleet_composition`. This column tells what proportion of the fleet is represented by vehicles with each characteristic.
 
@@ -179,8 +178,9 @@ Finally, we use the `emission_model()` function to estimate hot exhaust emission
 **[666] o modelos ainda nao calcula slopes, neh? sera q vale a pena manter isso no output? Pq se sim, entao tem q ter alguma explicacao na documentacao de qual valor esta sendo utilizado**
 
 ```{r, message = FALSE}
-emi_list <- emission_model( gps = tp_model
-                          , ef_data_base = "emep_europe"
+tp_model$speed <- fifelse(as.numeric(tp_model$speed) <0,tp_model$speed*-1,tp_model$speed)
+emi_list <- emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
                           , fleet_data = fleet_data_ef_europe
                           , pollutant = c("CO","PM10","CO2","NOx")
                           )
@@ -192,37 +192,35 @@ names(emi_list)
 
 As the results are stored in a long list. For convenience, `gtfs2emis` package has a couple functions that help users post-process and analyse these results and make. The `emis_summary()` function help summarize emission estimates by either `veh_type`, `pollutant`, or `time`. Using this function, users can easily:
 
-** Calculate total emissions for each pollutant:**
+** Calculate total emissions for each vehicle:**
 
 ```{r, message = FALSE}
 # Acho q vale a pena rever o funcionamento da funcao emis_summary(). Ta parecendo pouco intuitivo e os parece q os argumentos podiam ter defaults
 
 emi_total <- emis_summary(emi_list = emi_list,
                                 emi_var = "emi",
-                                by = "pollutant",
-                                time_column = "time_column",
+                                by = "veh_type",
                                 veh_var = "veh_type",
                                 pol_var = "pollutant") 
 head(emi_total)
 
 # plot
 ggplot(data=emi_total) +
-  geom_col(aes(x=pollutant, y=as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
+  geom_col(aes(x=veh_type, y= as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
   labs(y="Total emissions (Kg)", x="Hour of the day") +
   facet_wrap(~pollutant, scales = "free", nrow = 2) +
   theme_minimal()
 
 ```
 
-**Calculate total emissions of each pollutant emitted by each vehicle type:**
+**Calculate total emissions of each pollutant emitted by each pollutant:**
 ```{r, message = FALSE}
-emi_by_veh <- emis_summary(emi_list = emi_list,
+emi_by_pol <- emis_summary(emi_list = emi_list,
                                  emi_var = "emi", 
-                                 by = "veh_type", 
-                                 time_column = "time_column",
+                                 by = "pollutant", 
                                  veh_var = "veh_type", 
                                  pol_var = "pollutant") 
-head(emi_by_veh)
+emi_by_pol
 ```
 
 
@@ -231,7 +229,6 @@ If available in `names(emi_list)`, it is possible to add extra argument about fl
 emi_by_veh <- emis_summary(emi_list = emi_list,
                                 emi_var = "emi", 
                                 by = "veh_type", 
-                                time_column = "time_column",
                                 veh_var = c("veh_type", "euro", "fuel"),
                                 pol_var = "pollutant") 
 head(emi_by_veh)
@@ -242,7 +239,7 @@ head(emi_by_veh)
 
 **Calculate total emissions of each pollutant emitted by hour of the day:**
 ```{r, message = FALSE}
-emi_list$time_column <- emi_list$gps$timestamp  #[666] precisa disso? não dá pra colocar isso dentro da funcao emis_summary() ?
+emi_list$time_column <- emi_list$tp_model$timestamp  #[666] precisa disso? não dá pra colocar isso dentro da funcao emis_summary() ?
 
 emi_by_time <- emis_summary(emi_list = emi_list,
                                 emi_var = "emi",
@@ -264,7 +261,7 @@ ggplot(data=emi_by_time) +
 
 Alternatively, the user can use the `emis_to_dt()` function to convert the output of `emission_model()` from a `list` to a `data.table` format:
 
-```{r, message = FALSE}
+```{r,eval=FALSE, message = FALSE}
 emi_list$time_column <- emi_list$gps$timestamp  #[666] precisa disso? não dá pra colocar isso dentro da funcao emis_to_dt() ?
 
 emi_dt <- emis_to_dt(emi_list = emi_list
@@ -281,10 +278,12 @@ head(emi_dt, 5)
 
 Finally, users can analyze how public transport emissions are spatially distributed. To do this, the `emis_grid()` function helps aggregate emission estimates over any custom spatial vector data (`sf POLYGON`). In this example, we'll use a regular hexagonal grid.
 
-```{r, eval=FALSE, message = FALSE}
+```{r, message = FALSE}
 # create spatial grid
-grid <- st_make_grid(st_sf(emi_list$gps), cellsize = 0.25 / 102.47, square = FALSE)
+mygrid <- sf::st_make_grid(emi_list$tp_model$geometry, cellsize = 0.25 / 102.47, square = FALSE)
+mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
 
+mapview::mapview(emis_grid$geometry) + mapview::mapview(emi_list$tp_model$geometry)
 ```
 
 
@@ -292,9 +291,10 @@ grid <- st_make_grid(st_sf(emi_list$gps), cellsize = 0.25 / 102.47, square = FAL
 ```{r, eval=FALSE, message = FALSE, fig.width=4,fig.height=4}
 
 # we add info of emissions into gps file
-emi_list$gps <- cbind(emi_list$gps,emi_list$emi) # isso é necessário? Não dá pra joga pra dentro da funcao? Alem disso, seria melhor fazer isso como uma operacao data.table := nao ?
+emi_list$tp_model <- cbind(emi_list$tp_model,emi_list$emi) # isso é necessário? Não dá pra joga pra dentro da funcao? Alem disso, seria melhor fazer isso como uma operacao data.table := nao ?
 
-emis_grid <- emis_grid(data = emi_list$gps,
+  
+emis_grid <- emis_grid(data = emi_list$tp_model,
                      emi = "CO_Euro_IV",
                      grid = grid,
                      time_class = 'all periods')
