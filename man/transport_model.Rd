@@ -11,7 +11,7 @@ transport_model(
   max_speed = NULL,
   new_speed = NULL,
   parallel = TRUE,
-  spatial_resolution = 50
+  spatial_resolution = 100
 )
 }
 \arguments{

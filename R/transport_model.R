@@ -50,7 +50,7 @@
 #'}
 transport_model <- function(gtfs_data, output_path = NULL
                             , min_speed = NULL, max_speed = NULL, new_speed = NULL
-                            , parallel = TRUE, spatial_resolution = 50
+                            , parallel = TRUE, spatial_resolution = 100
 ){
   
   # Check inputs GTFS ----
@@ -105,14 +105,17 @@ transport_model <- function(gtfs_data, output_path = NULL
   message("Converting GTFS to GPS-like data")
   message("------------")
   
-  gps_path <-  paste0(tempdir(), "/gps",runif(1))
+  gps_path <-  paste0(tempdir(),"/gps")
   suppressWarnings(dir.create(gps_path))
   
   gtfs2gps::gtfs2gps(  gtfs_data = city_gtfs
-                       , spatial_resolution = spatial_resolution
-                       , parallel = parallel
                        , filepath = gps_path
-                       , compress = TRUE)
+                       , parallel = TRUE
+                       , compress = TRUE
+                       , spatial_resolution = 100)
+  #gtfs2gps::gtfs2gps(  gtfs_data = city_gtfs
+  #                      , filepath = gps_path
+  #                     , ...)
   
   #  Adjust gps speed---------
   
@@ -121,30 +124,31 @@ transport_model <- function(gtfs_data, output_path = NULL
   message("------------")
   
   # create new dirs
-  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust",runif(1))
+  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust")
   suppressWarnings(dir.create(gps_adjust_path)) 
   
   # find gps files
   files_gps <- list.files(gps_path, full.names = TRUE)
   files_gps_names <- list.files(gps_path,full.names = FALSE)
   
-  gps_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i =1 
-    
+  gps_speed_fix <- function(i){ # i =1 
     tmp_gps <- readRDS(files_gps[i])
-    tmp_gps[, dist := units::set_units(dist,"m")]
-    tmp_gps[, cumdist := units::set_units(cumdist,"m")]
-    tmp_gps[, speed := units::set_units(speed,"km/h")]
-    tmp_gps[, cumtime := units::set_units(cumtime,"s")]
     tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps
-                                          ,min_speed = ifelse(is.null(min_speed),02,min_speed)
-                                          ,max_speed = ifelse(is.null(max_speed),80,max_speed)
-                                          ,new_speed = new_speed)
-    saveRDS(object = tmp_gps_fix
-            ,file = paste0(gps_adjust_path
-                           ,"/",files_gps_names[i]))
+                                         ,min_speed = ifelse(is.null(min_speed),02,min_speed)
+                                         ,max_speed = ifelse(is.null(max_speed),80,max_speed)
+                                         ,new_speed = new_speed)
+   saveRDS(object = tmp_gps_fix
+          ,file = paste0(gps_adjust_path
+                         ,"/",files_gps_names[i]))
     return(NULL)
-  })
-  
+  }
+  if(parallel){
+    future::plan(future::multisession)
+    #furrr::future_map(.x = seq_along(files_gps),.f = gps_speed_fix)
+    lapply(seq_along(files_gps),gps_speed_fix)
+  }else{
+    lapply(seq_along(files_gps),gps_speed_fix)
+  }
   # GPS as Sf_Linestring ------
   message("Converting a GPS-like data.table to a LineString Simple Feature (sf)")
   message("------------")
@@ -158,7 +162,7 @@ transport_model <- function(gtfs_data, output_path = NULL
   files_gps_names <- list.files(gps_adjust_path,full.names = FALSE)
   
   # function gps_as_sflinestring
-  f_gps_as_sflinestring <- function(i){
+  f_gps_as_sflinestring <- function(i){ # i = files_gps[1]
     tmp_gps <- readRDS(i)
     tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
     return(tmp_gps_fix)
@@ -176,7 +180,7 @@ transport_model <- function(gtfs_data, output_path = NULL
   # output
   if(missing(output_path)){
     gpsLine <- data.table::rbindlist(gpsLine) 
-    gpsLine <- sf::st_as_sf(gpsLine)
+    gpsLine <- sf::st_sf(gpsLine)
     return(gpsLine)
   }else{
     gpsLine <- lapply(1:length(gpsLine),function(i){
