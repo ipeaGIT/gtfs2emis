@@ -1,0 +1,226 @@
+---
+title: 'Advanced features of gtfs2emis'
+author: "Joao Bazzo, Rafael H. M. Pereira, Pedro R. Andrade"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+abstract: "Advanced functionalities to estimate public transport emissions using the `gtfs2emis` package"
+urlcolor: blue
+vignette: |
+  %\VignetteIndexEntry{Advanced features of gtfs2emis} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>")
+```
+
+# Demonstration on sample data
+
+## Detailed Usage
+
+The detailed usage of `gtfs2emis` has intermediate functions to generate the transport and emissions model. In this case, the user can provide data of fleet distributed according to routes.
+
+**1. Read data**
+
+Users can provide a vehicle specific data for each `shape_id`. The example below shows a situation where the vehicle characteristics is known for several `shape_id` 's.
+
+```{r, eval = TRUE, message = FALSE, echo = FALSE}
+devtools::load_all()
+```
+
+```{r, eval = FALSE, message = FALSE}
+# From CRAN
+install.packages("gtfs2emis")
+
+# Dev. version with latest features
+utils::remove.packages('gtfs2emis')
+devtools::install_github("ipeaGIT/gtfs2emis")
+
+```
+
+```{r, eval = TRUE, message = FALSE}
+library(gtfs2gps)
+library(data.table)
+library(devtools)
+library(sf)
+library(units)
+library(magrittr)
+library(ggplot2)
+```
+
+```{r, eval = TRUE, message=FALSE}
+gtfs_for <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip", package = "gtfs2gps")) %>%
+  gtfs2gps::filter_single_trip() 
+gtfs_for$stop_times[,arrival_time := data.table::as.ITime(arrival_time)]
+gtfs_for$stop_times[,departure_time := data.table::as.ITime(departure_time)]
+gps_for <- gtfs2gps::gtfs2gps(gtfs_for)
+data.table::setDT(gps_for)
+```
+
+We can also define different ranges of minimum and maximum allowed speeds, as well as average speed. In this case, we consider the average speed of 34 km/h.
+
+```{r, eval = TRUE}
+gps_for_fix <- adjust_speed(gps_data = gps_for
+                            ,min_speed = 5
+                            ,max_speed = 75
+                            ,new_speed = 34
+                            ,clone = TRUE)
+```
+
+To convert the output to linestring:
+
+```{r, eval = TRUE}
+linestring_for <- gps_as_sflinestring(gps_for_fix)
+```
+
+Checking some basic statistics of the transport model:
+
+```{r, eval = TRUE, fig.width=4,fig.height=6}
+data.table::setDT(linestring_for)
+# speeds
+linestring_for[,min(dist),by=shape_id]
+linestring_for[,mean(dist),by=shape_id]
+linestring_for[,max(dist),by=shape_id]
+# plot
+plot(sf::st_as_sf(linestring_for)["shape_id"],lwd=3)
+```
+
+**2. Fleet**
+
+Users can provide a vehicle specific data for each `shape_id`. The example below shows a situation where the vehicle characteristics is known for three `shape_id`s (`T2-1`,`A141-1`, `176-1`) but is unknown for `R10-2`:
+
+```{r}
+my_shp <- unique(gps_for$shape_id)
+fleet_data_ef_europe <- data.frame("veh_type" = c(rep(c("Ubus Midi <=15 t"
+                                                      ,"Ubus Std 15 - 18 t"
+                                                      ,"Ubus Artic >18 t"),12),
+                                                  rep("Ubus Artic >18 t",2))
+                                   ,"euro" = c(rep(c("III","IV","V"),12),
+                                               rep("V",2))
+                                   ,"fuel" = rep("D",38)
+                                   ,"tech" = c(rep(c("-","SCR","SCR"),12)
+                                               ,rep("SCR",2))
+                                   ,"fleet_composition" = c(rep(c(0.4,0.5,0.1),12)
+                                                            ,c(1,1))
+                                   ,"shape_id" = c(rep(my_shp[1:12],each = 3)
+                                                   ,my_shp[13:14]))
+fleet_data_ef_europe
+```
+
+The sum of fleet composition per `shape_id` can also be checked:
+
+```{r, eval = TRUE}
+setDT(fleet_data_ef_europe)[,sum(fleet_composition),by = shape_id]
+```
+
+**3. Visualizing the Emission factors**
+
+We use the european database of emission factors (EF). We can plot the EF to check how it behaves according to `speed` and `veh_type`:
+
+```{r, message = FALSE, eval = TRUE}
+ef_europe <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
+                            ,veh_type = c("Ubus Midi <=15 t"
+                                          ,"Ubus Std 15 - 18 t"
+                                          ,"Ubus Artic >18 t")
+                            ,euro = c("III", "IV", "V")
+                            ,pollutant = c("CO2", "NOx")
+                            ,fuel = rep("D", 3)
+                            ,tech = c("-", "SCR", "SCR")
+                            ,as_list = TRUE)
+```
+
+We can use the `emi_to_dt()` to process EF:
+
+```{r, eval = TRUE}
+ef_europe$speed <- units::set_units(10:100,"km/h")
+ef_europe_dt <- emis_to_dt(emi_list = ef_europe
+                          ,emi_vars = "EF"
+                          ,veh_vars = c("veh_type", "fuel", "euro", "tech")
+                          ,pol_vars = "pollutant"
+                          ,segment_vars = "speed")
+```
+
+Let us now use a fleet name defined as as veh_type / euro_type
+
+```{r, fig.width=7,fig.height=3, eval = TRUE}
+setDT(ef_europe_dt)
+ef_europe_dt[,name_fleet := paste0(veh_type, " / Euro ", euro)]
+
+# plot
+ggplot(ef_europe_dt) + 
+  geom_line(aes(x = speed,y = EF,color = name_fleet))+
+  labs(color = "Category / EURO")+
+  facet_wrap(~pollutant,scales = "free")
+```
+
+**4. Emissions estimates**
+
+As the emissions varies with `shape_id` and `fleet`, we compute emissions separately, in a loop.
+
+```{r, eval = TRUE}
+ unique(linestring_for$shape_id)
+```
+
+```{r, message = FALSE}
+emi_data <- lapply(unique(gps_for$shape_id),function(i){
+  tmp_ef_euro <- ef_europe_emep(speed = linestring_for[shape_id == i]$speed,
+                                ,veh_type = fleet_data_ef_europe[shape_id == i]$veh_type
+                                ,euro =  fleet_data_ef_europe[shape_id == i]$euro
+                                ,pollutant = c("CO2","NOx")
+                                ,fuel =  fleet_data_ef_europe[shape_id == i]$fuel
+                                ,tech =  fleet_data_ef_europe[shape_id == i]$tech
+                                ,as_list = TRUE)
+  tmp_emis <- emis(fleet_composition = fleet_data_ef_europe[shape_id == i]$fleet_composition
+                   ,dist = units::set_units(linestring_for[shape_id == i]$dist,"km")
+                   ,ef = tmp_ef_euro
+                   ,aggregate = FALSE
+                   ,as_list = TRUE)
+  return(tmp_emis)
+})
+```
+
+**5. Emission into grid**
+
+We now show the example for `CO2` emissions.
+
+```{r, message=FALSE}
+# Create Grid
+grid_gps <- sf::st_make_grid(
+  x = sf::st_bbox(linestring_for[1:nrow(linestring_for),]$geometry)
+  , cellsize = 0.25 / 102.47
+  , crs= 4329
+  , what = "polygons"
+  , square = FALSE)
+grid_gps <- sf::st_sf(id = 1:length(grid_gps),geometry = grid_gps)
+
+tmp_emis_dt <- lapply(1:length(emi_data),function(i){ # i = 3
+  tmp_emi_dt <- emis_to_dt(emi_list = emi_data[[i]]
+                          ,emi_vars = "emi"
+                          ,veh_vars = "veh_type"
+                          ,pol_vars = "pollutant")
+  tmp_gps <- cbind(linestring_for[shape_id == unique(gps_for$shape_id)[i]]
+                   ,tmp_emi_dt[pollutant == "CO2"])
+  tmp_gps <- sf::st_as_sf(tmp_gps)
+  tmp_emi_grid <- emis_grid(data = tmp_gps
+                            ,emi = "emi"
+                            ,grid = grid_gps)
+  return(tmp_emi_grid)
+}) %>% data.table::rbindlist()
+```
+
+Summing all emissions and plotting:
+
+```{r, eval = TRUE, fig.width=4,fig.height=4}
+tmp_emis_dt <- tmp_emis_dt[,total_emi := sum(emi), by = id][, .SD[1], by = id]
+tmp_emis_dt2 <- sf::st_as_sf(tmp_emis_dt)
+
+ggplot() +
+  geom_sf(data=tmp_emis_dt2, aes(fill= as.numeric(total_emi)), color=NA) +
+  scale_fill_continuous(type = "viridis")+
+  labs(fill = "CO2 (g)")+
+  theme_void()
+
+```
