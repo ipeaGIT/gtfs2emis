@@ -1,6 +1,6 @@
 ---
 title: 'Advanced features of gtfs2emis'
-author: "Joao Bazzo, Rafael H. M. Pereira, Pedro R. Andrade"
+author: "Joao P. B. Vieira, Rafael H. M. Pereira, Pedro R. Andrade"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 abstract: "Advanced functionalities to estimate public transport emissions using the `gtfs2emis` package"
@@ -47,6 +47,7 @@ library(sf)
 library(units)
 library(magrittr)
 library(ggplot2)
+library(patchwork)
 ```
 
 ```{r, eval = TRUE, message=FALSE}
@@ -218,13 +219,6 @@ emi_total <- lapply(emi_data,function(i){
 })
 emi_total <- data.table::rbindlist(emi_total)
 head(emi_total)
-
-# plot
-ggplot(data=emi_total) +
-  geom_col(aes(x=veh_type, y= as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
-  labs(y="Total emissions (Kg)", x="Hour of the day") +
-  facet_wrap(~pollutant, scales = "free", nrow = 2) +
-  theme_minimal()
 ```
 
 **Calculate total emissions by each pollutant:**
@@ -256,7 +250,7 @@ head(emi_by_veh)
 
 ```
 
-**Calculate total emissions emitted by hour of the day and pollutant:**
+**Calculate total emissions by hour and pollutant:**
 
 ```{r,fig.height=5,fig.width=8}
 emi_by_time <- lapply(emi_data,function(i){
@@ -300,7 +294,7 @@ ggplot(data=emi_dt_sum) +
 
 **5. Emission into grid**
 
-We now show the example for CO2 emissions.
+We now show the example for CO2 emissions distributed spatially. In the `emis_grid` function, user can view the total emissions in a grid, by total pollutants and by hour.
 
 ```{r, message=FALSE}
 # Create Grid
@@ -318,10 +312,12 @@ emis_dt <- lapply(emi_data,function(i){ # i = 3
                            ,veh_vars = "veh_type"
                            ,pol_vars = "pollutant")
   i$tp_model_co2 <- cbind(i$tp_model
-                   ,tmp_emi_dt[pollutant == "CO2"])
+                          ,tmp_emi_dt[pollutant == "CO2"])
   tmp_emi_grid <- emis_grid(data = sf::st_as_sf(i$tp_model_co2)
                             ,emi = "emi"
-                            ,grid = grid_gps)
+                            ,grid = grid_gps
+                            ,time_column = "timestamp"
+                            ,time_class = "hour")
   return(tmp_emi_grid)
 })
 emis_dt <- data.table::rbindlist(emis_dt)
@@ -329,17 +325,35 @@ emis_dt <- data.table::rbindlist(emis_dt)
 
 Summing all emissions and plotting:
 
-```{r, eval = TRUE, fig.width=5,fig.height=5}
+```{r, eval = TRUE, fig.width=8,fig.height=5}
 emis_dt_plot <- data.table::copy(emis_dt)
-emis_dt_plot[,("total_emi"):= sum(emi), by = id]
-emis_dt_plot <- emis_dt_plot[,.SD[1], by = id]
+emis_dt_plot[,("total_emi"):= sum(emi), by = .(id)]
+emis_dt_plot <- emis_dt_plot[,.SD[1], by = .(id)]
 emis_dt_plot <- sf::st_as_sf(emis_dt_plot)
 
-ggplot() +
+p1 <- ggplot() +
   geom_sf(data=emis_dt_plot, aes(fill= as.numeric(total_emi))
           , color=NA) +
   scale_fill_continuous(type = "viridis")+
-  labs(fill = "CO2 (g)")+
-  theme_void()
+  labs(fill = "CO2 (g)",title = "Total emissions")+
+  theme_bw()+
+  theme(axis.text = element_blank(),
+        axis.ticks.length = unit(0, "pt"))
 
+emis_dt_plot <- data.table::copy(emis_dt)
+emis_dt_plot[,("total_emi"):= sum(emi), by = .(id,timestamp)]
+emis_dt_plot <- emis_dt_plot[,.SD[1], by = .(id,timestamp)]
+emis_dt_plot <- sf::st_as_sf(emis_dt_plot)
+
+p2 <- ggplot() +
+  geom_sf(data=emis_dt_plot, aes(fill= as.numeric(total_emi))
+          , color=NA) +
+  scale_fill_continuous(type = "viridis")+
+  labs(fill = "CO2 (g)",title = "Emissions by hour")+
+  facet_wrap(~paste("Hour",timestamp))+
+  theme_bw()+
+  theme(axis.text = element_blank(),
+        axis.ticks.length = unit(0, "pt"))
+
+p1 + p2 
 ```

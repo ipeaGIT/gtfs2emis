@@ -142,7 +142,7 @@ We'll be working with a simple table on this example. For an example with detail
 Now, the fleet data needs to be organized according to the data requirements of the emission factor model the user wants to consider. For instance, if a user wants to estimate emissions based on typical European fleet, the fleet data must include certain columns with the fleet characteristics that are used in the Emep-EEA methodology: vehicle type, Euro standard, technology and fuel. To check which columns and sets of vehicle characteristics are required by a given emission factor model, the user can read the documentation of the emission factor functions:
 
 | Emission factor function | Country | Source        | Type of buses                | Other required characteristics            |
-|-------------|-------------|-------------|-------------|--------------------|
+|--------------------------|---------|---------------|------------------------------|-------------------------------------------|
 | `ef_cetesb_brazil()`     | Brazil  | CETESB        | Micro, Standard, Articulated | Age, Fuel, EURO stage                     |
 | `ef_emep_europe()`       | Europe  | EMEP/EEA      | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope |
 | `ef_moves_usa()`         | US      | EMFAC         | Urban Buses                  | Age, Fuel                                 |
