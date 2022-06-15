@@ -15,28 +15,29 @@ Description: Estimate the emission levels of public transport networks based on 
              routes, trips, time of the day or for the transport system as a whole. These outputs can be extracted 
              in different formats, supporting analysis on how emission levels vary across space, time and by fleet 
              characteristics.
-Date: 2022-04-29
 URL: https://github.com/rafapereirabr/gtfs2emis
 BugReports: https://github.com/rafapereirabr/gtfs2emis
 License: MIT + file LICENSE
-Encoding: UTF-8
 Depends:
-    R (>= 3.5)
+    R (>= 3.6)
 Imports: 
+    checkmate,
     data.table,
-    sf (>= 0.9-0),
-    units,
-    magrittr,
+    future,
     gtfs2gps,
-    furrr,
-    gtfstools
+    magrittr,
+    sf (>= 0.9-0),
+    units
 Suggests: 
-    testthat (>= 2.1.0),
-    knitr,
+    gtfstools,
     ggplot2,
+    knitr,
     rmarkdown,
+    testthat (>= 2.1.0),
     vein
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
-VignetteBuilder: knitr
 LazyData: true

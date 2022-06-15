@@ -88,12 +88,7 @@ transport_model <- function(gtfs_data, output_path = NULL
     city_gtfs <- gtfs_data
   }
   
-  # convert frequency to stop_times
-  if (gtfs2gps::test_gtfs_freq(city_gtfs) == "frequency") {
-    city_gtfs <- gtfstools::frequencies_to_stop_times(gtfs = city_gtfs)
-  }
-  
-  
+
   # parallel condition
   if(parallel){
     future::plan(session = "multisession", workers = data.table::getDTthreads() - 1)

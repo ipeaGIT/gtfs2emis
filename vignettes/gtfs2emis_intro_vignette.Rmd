@@ -2,7 +2,7 @@
 title: 'Introduction to gtfs2emis'
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-abstract: "`gtfs2emis` is an R package to estimate public transport emissions based on GTFS data. The package allows users to estimate the emission levels of several types of pollutants at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics."
+abstract: "`gtfs2emis` is an R package to estimate public transport emissions based on GTFS data. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics."
 urlcolor: blue
 vignette: >
   %\VignetteIndexEntry{Introduction to gtfs2emis} 
@@ -18,7 +18,11 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-`gtfs2emis` is an R package to estimate hot exhaust emissions of public transport systems based on GTFS data. The package allows users to estimate the emission levels of several types of pollutants at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics. To estimate the emission levels from a given public transport system, users need to:
+`gtfs2emis` is an R package to estimate hot exhaust emissions of public transport systems based on GTFS data. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics. This vignette introduces the main functions of the `gtfs2emis` package and shows a step-by-step reproducible example of how to use the package.
+
+
+
+To estimate the emission levels from a given public transport system, users need to:
 
 1.  Input a GTFS.zip file
 
@@ -28,7 +32,7 @@ knitr::opts_chunk$set(
 
 4.  Select which pollutants should be estimated from a list with of over 15 pollutants provided by the package.
 
-This vignette introduces the main functions of the `gtfs2emis` package and shows a step-by-step reproducible example of how to use the package.
+
 
 # Installation
 
@@ -48,22 +52,15 @@ devtools::install_github("ipeaGIT/gtfs2emis")
 
 Before we start, let's load a few packages we'll be using in this vignette:
 
-```{r,eval=TRUE,echo =FALSE, message = FALSE,warning=FALSE}
-library(devtools)
-devtools::load_all()
-devtools::document()
-devtools::load_all()
-```
-
 ```{r, message = FALSE}
-library(devtools)
+library(gtfs2emis)
 library(gtfstools)
-library(gtfs2gps)
 library(data.table)
 library(magrittr)
 library(ggplot2)
 library(units)
 library(sf)
+
 ```
 
 The `gtfs2mis` has a few core functions:
@@ -103,34 +100,40 @@ The basic usage is shown below, while and detailed usage is available on our sec
 
 ## Basic Usage
 
-To demonstrate how the `gtfs2emis` package works, we will be using a small sample data for the city of Fortaleza , Brazil. In this example, we'll be estimating CO2 emissions of bus services during business days.
+To demonstrate how the `gtfs2emis` package works, we will be using a small sample data for the city of Curitiba, Brazil. In this example, we'll be estimating CO2 emissions of bus services during business days.
 
 Let's load the data.
 
 ```{r, message = FALSE}
-gtfs_poa <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip", package = "gtfs2gps")) %>% 
-  gtfs2gps::filter_single_trip() 
+gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+
+gtfs_cur <- gtfstools::read_gtfs(gtfs_file)
 
 ```
 
 ## 1. Transport model
 
-The first step is to generate the transport model using the `transport_model()` function. This function converts GTFS data into a GPS-like data.table, fixing extreme or missing values of speed and transforming the output into a sf-linestring, which is the required input for emissions estimates. The user can input either a string with the file path where the a gtfs.zip file is stored, or an object of class `"gtfs" "list"`, generated with `gtfs2gps::read_gtfs()`.
+The first step is to generate the transport model using the `transport_model{gtfs2emis}` function. This function converts GTFS data into a GPS-like data.table, fixing extreme or missing values of speed and transforming the output into a `sf-linestring`, which is the required input for emissions estimates. The user can input either a string with the file path where the a `gtfs.zip` file is stored, or an object of class `"gtfs" "list"`, generated with `gtfstools::read_gtfs()`.
+
+66666 mencionar spatial resolution....
 
 ```{r, message = FALSE}
-tp_model <- transport_model(gtfs_data = gtfs_poa, parallel = TRUE)
+tp_model <- transport_model(gtfs_data = gtfs_cur,
+                            spatial_resolution = 100,
+                            parallel = TRUE)
 
+head(tp_model)
 ```
 
 Here is how the output of the transport model looks like. In essence, it's a trajectory data.table with the space-time position and speed of trips segments for each single vehicle of the public transport system.
 
 ```{r, message = FALSE, fig.width=5, fig.height=5}
-head(tp_model)
 ggplot(data=tp_model) +
   geom_sf(aes(color= as.numeric(speed))) +
   scale_color_continuous(type = "viridis")+
   labs(color = "Speed (km/h)")+
   theme_void()
+
 ```
 
 ## 2. Fleet data
@@ -241,6 +244,7 @@ emi_by_pol <- emis_summary(emi_list = emi_list,
                                  veh_var = "veh_type", 
                                  pol_var = "pollutant") 
 emi_by_pol
+
 ```
 
 If available in `names(emi_list)`, it is possible to add extra argument about fleet.
@@ -267,6 +271,7 @@ emi_by_time <- emis_summary(emi_list = emi_list,
                                 veh_var = "veh_type",
                                 pol_var = "pollutant") 
 head(emi_by_time) 
+
 # plot
 ggplot(data=emi_by_time) +
   geom_col(aes(x=factor(time_column), y=as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
