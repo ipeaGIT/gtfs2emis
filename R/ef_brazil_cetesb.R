@@ -1,18 +1,19 @@
 #' @title Emission factor for buses in Brazil
 #' 
-#' @description Returns a vector or data.frame of emission factors for buses based on
+#' @description Returns a vector or data.table of emission factors for buses based on
 #' estimates from the 
 #' [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
 #' and obtained via vein package.
 #' Estimates are expressed in units 'g/km'.
 #'
-#' @param pollutant character; Pollutants: "CH4", "CO2", "PM10", "N2O", "KML", 
-#' "FC" (Fuel Consumption), "gD/KWH", "gCO2/KWH", "CO", "HC" (Total Hydrocarbon), 
-#' "NMHC" (Non-Methane Hydrocarbon), "NOx", "NO2", "NO", "RCHO", "ETOH",
-#'  "FS"(Fuel Sales) and "NH3"
-#' @param veh_type character; Vehicle categories by fuel:"BUS_URBAN_D", "BUS_MICRO_D", 
-#' "BUS_COACH_D" and "BUS_ARTIC_D".
-#' @param model_year numeric; Filter the emission factor to start from a specific base year. 
+#' @param pollutant character; Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
+#' "NO2", "NO", "RCHO", "ETOH" "KML", "FC" (Fuel Consumption), 
+#' "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh), 
+#' "CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon), "FS"(Fuel Sales)
+#'  and "NH3".
+#' @param veh_type character; Vehicle categories by fuel: "BUS_URBAN_D" 
+#' , "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".
+#' @param model_year numeric; Vehicle model year. Supports `model_year` from 1960 to 2020.
 #' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
 #' 
 #' @return data.table; Emission factors in units 'g/km' by speed and model_year.
@@ -47,9 +48,9 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   #
   # init config
   #
-   # pollutant = c("CO","PM10","CO2","CH4","NOx")
-   # veh_type = c("BUS_URBAN_D") #veh_type
-   # model_year = c(2001:2010)
+  # pollutant = c("CO","PM10","CO2","CH4","NOx")
+  # veh_type = c("BUS_URBAN_D") #veh_type
+  # model_year = c(2001:2010)
   
   # check lengths----
   
@@ -60,15 +61,17 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
     model_year <- rep(model_year, length(veh_type))
   }
   
-   tmp_model_year <- model_year
+  tmp_model_year <- model_year
+  
   # vehicle distribution----
   utils::data(ef_brazil_cetesb_db)
   
-   ef_temp1 <- lapply(pollutant, function(p){ # p = pollutant[1]
+  ef_temp1 <- lapply(pollutant, function(p){ # p = pollutant[1]
     ef_temp <- lapply(seq_along(model_year), function(i){# i = 1
       ef_brazil_cetesb_db[pollutant == p &
-                  model_year == tmp_model_year[i],
-                .SD,.SDcols = veh_type[i]][[1]]
+                            model_year == tmp_model_year[i]
+                          ,.SD
+                          ,.SDcols = veh_type[i]][[1]]
     })
     ef_temp <- do.call(cbind, ef_temp)
     return(ef_temp)
@@ -77,17 +80,18 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   ef_final <- do.call(cbind, ef_temp1)  %>% units::set_units("g/km")  
   
   # rename colnames
-  colnames(ef_final) <- paste0(rep(pollutant, each = length(model_year)), "_", 
-                               model_year)
+  colnames(ef_final) <- paste0(rep(pollutant
+                                   , each = length(model_year)), "_"
+                               , model_year)
   
   # return in a data.table/list like format----
   
   if(as_list){
     # local test
-    ef_final <- list("pollutant" = rep(pollutant,each = length(veh_type)),
-                     "veh_type" = rep(veh_type,length(pollutant)),
-                     "years" = rep(model_year,length(pollutant)),
-                     "EF" = ef_final)
+    ef_final <- list("pollutant"   = rep(pollutant,each = length(veh_type))
+                     ,"veh_type"   = rep(veh_type,length(pollutant))
+                     ,"model_year" = rep(model_year,length(pollutant))
+                     ,"EF"         = ef_final)
   }
   
   return(ef_final)

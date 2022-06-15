@@ -2,30 +2,31 @@
 % Please edit documentation in R/emis_grid.R
 \name{emis_grid}
 \alias{emis_grid}
-\title{Street emissions into grid}
+\title{Allocate emissions into a spatial grid}
 \usage{
 emis_grid(data, emi, grid, time_class, time_column)
 }
 \arguments{
-\item{data}{data.table; Data.table with emissions and departure_time data.}
+\item{data}{Data.frame; Data.frame containing the emissions and time stamp column data.}
 
-\item{emi}{character; Columns names of emissions information.}
+\item{emi}{Character; Column names of emissions in 'data'.}
 
-\item{grid}{sf polygon; Grid cell data to allocate emissions.}
+\item{grid}{Sf polygon; Grid cell data to allocate emissions.}
 
-\item{time_class}{character; Emissions can be aggregated by 'all periods' (Default),
-'hour' or 'hour-minute'.}
+\item{time_class}{Character; type of time aggregation in 'data', which can be
+an aggregation by 'all periods' (Default), 'hour' or 'hour-minute'.}
 
-\item{time_column}{vector; Column name of 'departure_time' information (from data input).
-Only used when 'hour' or 'hour-minute' is selected.}
+\item{time_column}{Vector; Column name with time stamp information (from 'data').
+Argument required when time_class = 'hour' or 'hour-minute' is selected.}
 }
 \value{
 An \verb{"sf" "data.frame"} object with emissions estimates per grid cell.
 }
 \description{
-Aggregate emissions proportionally into grid cells, by performing an
+Aggregate emissions proportionally in an sf polygon grid, by performing an
 intersection operation between emissions data in \verb{sf linestring} format and
-grid cells. It also considers aggregation per grid cells and time.
+the input grid cells. User can also aggregate the emissions in the grid
+by time of the day.
 }
 \examples{
 if (interactive()) {

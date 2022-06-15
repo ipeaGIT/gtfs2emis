@@ -10,15 +10,16 @@
 ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 }
 \arguments{
-\item{pollutant}{character; Pollutants: "CH4", "CO2", "PM10", "N2O", "KML",
-"FC" (Fuel Consumption), "gD/KWH", "gCO2/KWH", "CO", "HC" (Total Hydrocarbon),
-"NMHC" (Non-Methane Hydrocarbon), "NOx", "NO2", "NO", "RCHO", "ETOH",
-"FS"(Fuel Sales) and "NH3"}
+\item{pollutant}{character; Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
+"NO2", "NO", "RCHO", "ETOH" "KML", "FC" (Fuel Consumption),
+"gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh),
+"CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon), "FS"(Fuel Sales)
+and "NH3".}
 
-\item{veh_type}{character; Vehicle categories by fuel:"BUS_URBAN_D", "BUS_MICRO_D",
-"BUS_COACH_D" and "BUS_ARTIC_D".}
+\item{veh_type}{character; Vehicle categories by fuel: "BUS_URBAN_D"
+, "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".}
 
-\item{model_year}{numeric; Filter the emission factor to start from a specific base year.}
+\item{model_year}{numeric; Vehicle model year. Supports \code{model_year} from 1960 to 2020.}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
@@ -26,7 +27,7 @@ ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 data.table; Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
-Returns a vector or data.frame of emission factors for buses based on
+Returns a vector or data.table of emission factors for buses based on
 estimates from the
 \href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2017},
 and obtained via vein package.

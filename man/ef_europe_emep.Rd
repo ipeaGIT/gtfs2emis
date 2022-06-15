@@ -2,7 +2,7 @@
 % Please edit documentation in R/ef_europe_emep.R
 \name{ef_europe_emep}
 \alias{ef_europe_emep}
-\title{Speed-dependent emission factor model by European Environment Agency (EMEP/EEA)}
+\title{Speed-dependent emission factor from the European Environment Agency (EMEP/EEA) model}
 \usage{
 ef_europe_emep(
   speed,
@@ -48,11 +48,31 @@ each euro standards. Default is 1.0.}
 List. emission factors in units 'g/km' (list or a data.table).
 }
 \description{
-Returns a list or data.frame of emission factors for buses based on EMEP/EEA.
-Function is based on values from EMEP/EEA air pollutant emission inventory
-guidebook 2019 \url{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook}.
-and 2016 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/}.
-Estimates expressed in units 'g/km'.
+Returns a list or data.table of emission factors for buses based on EMEP/EEA air pollutant
+emission inventory guidebooks. Estimates are expressed in units 'g/km'.
+}
+\details{
+The new convention for vehicles names are translated from the EMEP/EEA report:\tabular{ll}{
+   vehicle category \tab description \cr
+   Ubus Midi <=15 t \tab Urban Bus Midi size, Gross Vehicle Weight (GVW) <= 15 tons \cr
+   Ubus Std 15 - 18 t \tab Urban Bus Standard size, GVW between 15 - 18 tons \cr
+   Ubus Artic >18 t \tab Urban Bus Articulated size, GVW >= 18 tons \cr
+   Coaches Std <=18 t \tab Coach (inter-state) Standard size, GVW <= 18 tons \cr
+   Coaches Artic >18 t \tab Coach (inter-state) Articulated size, GVW > 18 tons \cr
+}
+
+
+The R scripts used to download and pre-process all 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
+can be accessed in the gtfs2emis GitHub repository at
+<\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>
+
+EMEP/EEA data and reports can be accessed in the following links:
+\itemize{
+\item 2019 edition \url{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook},
+\item 2016 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/},
+\item 2013 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2013/}, and
+\item 2007 edition \url{https://www.eea.europa.eu/publications/EMEPCORINAIR5/}.
+}
 }
 \examples{
 if (interactive()) {

@@ -3,9 +3,9 @@
 \docType{data}
 \name{ef_europe_emep_db}
 \alias{ef_europe_emep_db}
-\title{Emission factors from EMEP/EEA}
+\title{Emission factors from European Environment Agency — EMEP/EEA}
 \format{
-A data table with 6431 rows and 22 variables:
+A data.table with 6431 rows and 22 variables:
 \describe{
 \item{Category}{Buses.}
 \item{Fuel}{ Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
@@ -21,30 +21,39 @@ no available after treatment technology associated with euro standards "Conventi
 \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
 \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
 \item{RF}{Reduction Factor; In percentage (\%) units.}
-\item{k}{Constante factor.}
+\item{k}{Constant factor.}
 }
 }
 \source{
-\url{"https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/
-
-https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-i-1/"}
+More information can be found at
+\url{https://www.eea.europa.eu//publications/emep-eea-guidebook-2019},
+\url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/},
+\url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2013/}, and
+\url{https://www.eea.europa.eu/publications/EMEPCORINAIR5/}.
 }
 \usage{
 ef_europe_emep_db
 }
 \description{
-Hot emission factors are speed dependent and are expressed in g/km. They differ by fuel,
-vehicle class and engine technology. Several functions are
-consolidated into a single equation, given by
+Hot exhaust emission factors are speed dependent functions and are expressed in g/km.
+They differ by fuel, vehicle segment, euro standard, pollutant, and after treatment technology.
+Several functions are consolidated into equations, given by
 }
 \details{
-EF = (Alpha x V^2 + Beta x V + Gamma + Delta / V) / (Epsilon x V^2 + Zeta x V + Eta) x (1 - RF)
+EF = EF(Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, RF, Speed, Function_ID, k, fcorr),
 
-where Alpha, Beta, Gamma, Delta, Epsilon, Zera, Eta are constant parameters that depend on
-pollutant, speed, technology, and vehicle category.
+where Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta are constant parameters;
+RF is the Reduction Factor, Speed in the average speed, Function_ID is the
+formula that depends on the year of the inventory and the pollutant; k is
+a constant value, fcorr is the fuel correction factor.
 
 The emissions factors are derived from the EMEP/EEA air pollutant emission inventory guidebook
 (formerly called the EMEP CORINAIR emission inventory guidebook). The guide provides guidance on
 estimating emissions from both anthropogenic and natural emission sources.
+
+The package presents a combination of emission factors from EMEP/EEA guidelines of 2007,
+2013, 2016, and 2019, aiming to cover a greater number of pollutants and vehicle segments.
+The script used to organize the EMEP/EEA databases can be found in the repository
+<\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>.
 }
 \keyword{datasets}
