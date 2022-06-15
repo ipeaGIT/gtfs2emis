@@ -1,19 +1,19 @@
 #' @title 
-#' Street emissions into grid
+#' Allocate emissions into a spatial grid
 #'
 #' @description 
-#' Aggregate emissions proportionally into grid cells, by performing an 
+#' Aggregate emissions proportionally in an sf polygon grid, by performing an 
 #' intersection operation between emissions data in `sf linestring` format and 
-#' grid cells. It also considers aggregation per grid cells and time.
+#' the input grid cells. User can also aggregate the emissions in the grid 
+#' by time of the day.
 #'
-#' @param data data.table; Data.table with emissions and departure_time data.
-#' @param emi character; Columns names of emissions information.
-#' @param grid sf polygon; Grid cell data to allocate emissions.
-#' @param time_class character; Emissions can be aggregated by 'all periods' (Default),
-#' 'hour' or 'hour-minute'.
-#' @param time_column vector; Column name of 'departure_time' information (from data input). 
-#' Only used when 'hour' or 'hour-minute' is selected. 
-#' 
+#' @param data Data.frame; Data.frame containing the emissions and time stamp column data.
+#' @param emi Character; Column names of emissions in 'data'.
+#' @param grid Sf polygon; Grid cell data to allocate emissions.
+#' @param time_class Character; type of time aggregation in 'data', which can be 
+#' an aggregation by 'all periods' (Default), 'hour' or 'hour-minute'.
+#' @param time_column Vector; Column name with time stamp information (from 'data'). 
+#' Argument required when time_class = 'hour' or 'hour-minute' is selected.  
 #' @return An `"sf" "data.frame"` object with emissions estimates per grid cell.
 #' @export
 #' 
@@ -80,7 +80,7 @@
 #'}
 emis_grid <- function(data, emi, grid, time_class, time_column){
   
-
+  
   # Rename columns ----
   data.table::setDT(data)
   emi_input <- emi
@@ -146,37 +146,51 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
     }
     ### 'hour-minute' time stamp
     if(time_class == "hour-minute"){
-      tmp_netdata[, "time_column" := paste0(data.table::hour(get(time_column)), ":",
-                                            data.table::minute(get(time_column)))]
+      
+      tmp_netdata[
+        , "time_column" := paste0(data.table::hour(get(time_column)), ":",
+                                  data.table::minute(get(time_column)))
+      ]
+      
     } 
-    tmp_netdata <- tmp_netdata[, lapply(.SD, sum, na.rm = TRUE)
-                               , .SDcols = emi
-                               , by = .(time_column
-                                        , shape_id
-                                        , stop_sequence
-                                        , from_stop_id
-                                        , to_stop_id)]
+    
+    tmp_netdata <- tmp_netdata[
+      , lapply(.SD, sum, na.rm = TRUE)
+      , .SDcols = emi
+      , by = .(time_column
+               , shape_id
+               , stop_sequence
+               , from_stop_id
+               , to_stop_id)]
+    
   }else{
+    
     # No 'time_column' scenario 
-    tmp_netdata <- tmp_netdata[, lapply(.SD, sum, na.rm = TRUE)
-                               , .SDcols = emi
-                               , by = .(shape_id
-                                        , stop_sequence
-                                        , from_stop_id
-                                        , to_stop_id)]
+    tmp_netdata <- tmp_netdata[
+      , lapply(.SD, sum, na.rm = TRUE)
+      , .SDcols = emi
+      , by = .(shape_id
+               , stop_sequence
+               , from_stop_id
+               , to_stop_id)]
+    
   }
   
   # VII) Add geometry into 'netdata' ----
-  # 
-  tmp_netdata[netdata,on = c("shape_id"
-                             ,"stop_sequence"
-                             ,"from_stop_id"
-                             ,"to_stop_id"),geometry := i.geometry]
+  
+  tmp_netdata[netdata
+              ,on = c("shape_id"
+                      ,"stop_sequence"
+                      ,"from_stop_id"
+                      ,"to_stop_id")
+              ,geometry := i.geometry]
+  
   # 'tmp_netdata' to net
   net <- sf::st_as_sf(data.table::setDF(tmp_netdata))
   
   # Reduce grid size  -----
   # Keep only polygons that intersect with lines
+  
   intersect_index <- sf::st_intersects(grid, net,sparse = FALSE)
   intersect_index <- rowSums(intersect_index)
   intersect_index <- which(intersect_index>0)
@@ -199,27 +213,40 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
   # Aggregate by TIME-------------------
   # 
   if(!missing(time_column)){
+    
     # time_class
-    netg <- netg[, lapply(.SD, sum, na.rm = TRUE)
-                 ,.SDcols = emi,by = .(time_column, id)]
+    netg <- netg[
+      , lapply(.SD, sum, na.rm = TRUE)
+      ,.SDcols = emi
+      ,by = .(time_column, id)]
+    
   }else{
+    
     # aggregation of emissions without specified time
-    netg <- netg[, lapply(.SD, sum, na.rm = TRUE), by = .(id),.SDcols = emi]
+    netg <- netg[
+      , lapply(.SD, sum, na.rm = TRUE)
+      , by = .(id)
+      ,.SDcols = emi]
+    
   }
   
   # VI) prepare output file--------
   
-  temp_output <- netg[data.table::setDT(grid),on = "id",
-                      geometry := i.geometry] 
+  temp_output <- netg[data.table::setDT(grid)
+                      ,on = "id"
+                      ,geometry := i.geometry] 
   
   # add units
   temp_output[, (emi) := lapply(.SD, as.numeric), .SDcols = emi]
   
   for(k in 1:length(emi_units)){ # k = 1
-    temp_output[, (emi[k]) := lapply(.SD, 
-                                     units::as_units,
-                                     emi_units[k]),
-                .SDcols = emi[k]]
+    
+    temp_output[
+      , (emi[k]) := lapply(.SD, 
+                           units::as_units,
+                           emi_units[k])
+      ,.SDcols = emi[k]]
+    
   }
   
   #
@@ -229,19 +256,27 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
   
   message("Sum of gridded emissions ")
   sapply(seq_along(emi), function(l){ # l = 1
+    
     sumofgrids <- temp_output[, lapply(.SD, sum, na.rm = TRUE), .SDcols = emi[l]]
     message(paste(emi_input[l], "=", round(sumofgrids, 2), emi_units[l]))
+    
   })
   
+  
   # rename columns
-  data.table::setnames(temp_output,old = emi,new = emi_input)
+  data.table::setnames(temp_output
+                       ,old = emi
+                       ,new = emi_input)
+  
   if(missing(time_column) == FALSE){
-    data.table::setnames(temp_output,old = "time_column",new = time_column)
+    
+    data.table::setnames(temp_output,old = "time_column"
+                         ,new = time_column)
+    
   }
   
   
   # return output ------
-  #
   
   temp_output <- sf::st_as_sf(temp_output)
   
