@@ -3,26 +3,35 @@
 #' 
 #' @description 
 #' Returns a vector or data.frame of emission factors for buses based on 
-#' values from the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
-#' Estimates expressed in units 'g/km'.
-#'
-#' @param pollutant character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
-#' CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
-#'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
-#'  TOG(Total Organic Gases), ROG (Reactive Organic Gases)
-#' @param reference_year numeric; Calendar Year between 2015 - 2022. Year in which the emissions
-#' inventory is estimated, in order to consider the effect of degradation.
-#' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas). Default is 'D'.
-#' @param model_year numeric; Model year of vehicle.
-#' @param speed units; Speed in 'km/h'; Emission factor are returned in speed intervals 
-#'  such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50",
-#'   "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", ">90" mph (miles/h).
-# @param veh_distribution numeric; proportion of circulating fleet according to model_year.
-# It has to be the same length as model_year.
-# @param aggregate does the emission factor should be aggregated?
-#' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
+#' the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
+#' The model considers emission factors (EF) of urban buses in California (United States),
+#'  considering different pollutants, years of reference, model year, fuel, speed ranges,
+#' type of regions, model version, and type of season. The gtfs2emis package 
+#' currently supports EF only for "Statewide" region type, and "Annual" season. 
+#' Specific data of these variables can be download at 
+#' <<https://arb.ca.gov/emfac/emissions-inventory>>.
 #' 
-#' @return List. Emission factors in units 'g/km' by speed and model_year.
+#' The package returns the data in a data.frame format. The R script used to 
+#' organize the EMFAC database can be found in the repository
+#' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R>>.
+#'
+#' @param pollutant Character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
+#' CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
+#'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total),
+#'   SOX(Oxides of Sulfur), TOG(Total Organic Gases), ROG (Reactive Organic Gases)
+#' @param reference_year Numeric; Calendar Year between 2015 - 2022. Year in which
+#'  the emissions inventory is estimated, in order to consider the effect of degradation.
+#' @param fuel Character; Type of fuel: 'D' (Diesel),'G' (Gasoline),
+#' 'CNG' (Compressed Natural Gas). Default is 'D'.
+#' @param model_year Numeric; Model year of vehicle.
+#' @param speed Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
+#'  such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40",
+#'   "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85"
+#'   , "85-90", ">90" mph (miles/h).
+#' @param as_list logical; Returns emission factors as a list, instead of data.table format.
+#'  Default is TRUE.
+#' 
+#' @return List or data.table. Emission factors in units 'g/km' by speed and model_year.
 #' @source \url{https://arb.ca.gov/emfac/}
 #' @export
 #' 
@@ -34,7 +43,8 @@
 #'         fuel = "D",
 #'         as_list = TRUE)
 #'}
-ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D', model_year, speed, as_list = TRUE){
+ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D'
+                         , model_year, speed, as_list = TRUE){
   
   # pollutant = c("CO","PM10","CH4","NOx")
   # reference_year = "2019"
@@ -42,7 +52,7 @@ ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D', model_year, spee
   # speed = units::set_units(33,"km/h")
   # fuel = c("Diesel","CNG"); fuel = "D"
   # 
-
+  
   # use specific name-----
   tmp_fuel <- fuel
   tmp_reference_year <- reference_year
@@ -52,9 +62,9 @@ ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D', model_year, spee
   
   # pre-filter in usa data----
   temp_emfac <- ef_usa_emfac_db[reference_year %in% as.character(unique(tmp_reference_year)) &
-                      fuel %in% unique(tmp_fuel) &
-                      pollutant %in% unique(tmp_pollutant) & 
-                      model_year %in% unique(tmp_model_year), ]
+                                  fuel %in% unique(tmp_fuel) &
+                                  pollutant %in% unique(tmp_pollutant) & 
+                                  model_year %in% unique(tmp_model_year), ]
   
   # check units and lengths----
   if(class(speed) != "units"){
@@ -102,15 +112,19 @@ ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D', model_year, spee
   
   # data.table with upper_limit info
   temp_order_dt <- data.table::data.table(
-    "limit" = temp_emfac$upper_speed_interval %>% unique() %>% as.numeric() %>% sort(decreasing = TRUE)
-    ,"id" = data.table::uniqueN(temp_emfac$upper_speed_interval):1)
+    "limit" = temp_emfac$upper_speed_interval %>%
+      unique() %>% 
+      as.numeric() %>% 
+      sort(decreasing = TRUE)
+    ,"id" = data.table::uniqueN(temp_emfac$upper_speed_interval):1
+  )
   
   for(t in 1:nrow(temp_order_dt)){ # t = 10
     tmp_speed2[tmp_speed <= temp_order_dt$limit[t]] <- temp_order_dt$id[t]
   }
   
   # case of speed lower than upper_limit_speed
-  tmp_speed2[tmp_speed2==0] <- 1
+  tmp_speed2[tmp_speed2 == 0] <- 1
   
   ef_final <- ef_final[tmp_speed2,]
   
@@ -121,10 +135,12 @@ ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D', model_year, spee
   
   # as.list
   if(as_list == TRUE){
-    ef_final <- list("pollutant" = rep(pollutant,each = length(tmp_model_year)),
-                     "model_year" = rep(model_year,length(pollutant)),
-                     "fuel" = rep(tmp_fuel,length(pollutant)),
-                     "EF" = ef_final)
+    ef_final <- list(
+      "pollutant" = rep(pollutant,each = length(tmp_model_year)),
+      "model_year" = rep(model_year,length(pollutant)),
+      "fuel" = rep(tmp_fuel,length(pollutant)),
+      "EF" = ef_final
+    )
   }
   return(ef_final)
 }

@@ -3,16 +3,15 @@
 \docType{data}
 \name{ef_usa_emfac_db}
 \alias{ef_usa_emfac_db}
-\title{EMFAC
-Running exhaust emissions factors from EMFAC2017 model}
+\title{Emission factors from California Air Resources Board (EMFAC Model)}
 \format{
-A data.table with 106920 rows and 7 variables:
+A data.table with 79198 rows and 8 variables:
 \describe{
 \item{pol}{Character; Pollutants: CH4(Methane), CO(Carbon Monoxide),
 CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
 PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total), SOX(Oxides of Sulfur),
 TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
-\item{reference_year}{Numeric; Calendar Year between 2010 - 2020}
+\item{reference_year}{Numeric; Year of reference between 2010 - 2020}
 \item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),'CNG' (Compressed Natural Gas).}
 \item{model_year}{Model year.}
 \item{speed}{Units; Speed in 'km/h'; Emission factor are returned in speed intervals
@@ -21,13 +20,22 @@ such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "
 }
 }
 \source{
-\url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/road-transport-appendix-4-emission/view}
+\url{https://arb.ca.gov/emfac/emissions-inventory}
 }
 \usage{
 ef_usa_emfac_db
 }
 \description{
-EMFAC
-Running exhaust emissions factors from EMFAC2017 model
+Running exhaust emissions factors from EMFAC2017 model. The model considers
+emission factors (EF) of urban buses in California (United States), considering
+different pollutants, years of reference, model year, fuel, speed ranges,
+type of regions, model version, and type of season. The gtfs2emis package
+currently supports EF only for "Statewide" region type, and "Annual" season.
+Specific data of these variables can be download at <\url{https://arb.ca.gov/emfac/emissions-inventory}>.
+}
+\details{
+The package returns the data in a data.frame format. The R script used to organize
+the EMFAC database can be found in the repository
+<\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R}>.
 }
 \keyword{datasets}

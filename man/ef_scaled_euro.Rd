@@ -2,7 +2,7 @@
 % Please edit documentation in R/ef_scaled_euro.R
 \name{ef_scaled_euro}
 \alias{ef_scaled_euro}
-\title{Scaled emission factors from European (EMEP/EEA) methodology}
+\title{Scaled emission factors from the European Environment Agency (EMEP/EEA) model}
 \usage{
 ef_scaled_euro(
   ef_local,
@@ -11,7 +11,7 @@ ef_scaled_euro(
   euro,
   fuel,
   pollutant,
-  SDC = 34.12,
+  SDC = 19,
   tech = "SCR",
   slope = 0,
   load = 0.5,
@@ -19,27 +19,36 @@ ef_scaled_euro(
 )
 }
 \arguments{
-\item{ef_local}{units; Local emission factors, in units 'g/km'.}
+\item{ef_local}{data.frame or a list containing the emission factors data.frame;
+Local emission factors, in units 'g/km'.}
 
 \item{speed}{units; Speed in 'km/h'.}
 
-\item{veh_type}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
+\item{veh_type}{character; Bus type, classified in "Ubus Midi <=15 t",
+"Ubus Std 15 - 18 t","Ubus Artic >18 t",
 "Coaches Std <=18 t","Coaches Artic >18 t".}
 
-\item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
+\item{euro}{character; Euro period of vehicle, classified in "Conventional",
+"I", "II", "III", "IV", "V", "VI", and "EEV".}
 
-\item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
-"DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).}
+\item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD"
+(Diesel Hybrid ~ Diesel),
+"DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas),
+"BD" (Biodiesel).}
 
-\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.}
+\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC",
+"PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.}
 
-\item{SDC}{numeric; Speed of the driving cycle in 'km/h'.}
+\item{SDC}{numeric; Average speed of urban driving condition in 'km/h'. Default is 19 km/h,
+which is the average speed adopted in EMEP/EEA report.}
 
-\item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction),
-"EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".}
+\item{tech}{character; After treatment technology, classified in "SCR"
+(Selective Catalytic Reduction),
+"EGR" (Exhaust Gas Recirculation), and "DPF+SCR"
+(Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".}
 
-\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
-0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
+\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02,
+0.04 and 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
 
 \item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
 
@@ -50,19 +59,46 @@ each euro standards. Default is 1.0.}
 list. Emission factors in units 'g/km'.
 }
 \description{
-Estimates scaled emission factor for buses based on EMEP/EEA
+Scale the local emission factors with EMEP/EEA EF model, in order to make the local emission
+a function of speed.
+}
+\details{
+The scaled emission factor is related to speed by the expression
+
+EF_scaled (V) = EF_local * ( EF(V) / EF(SDC)),
+
+where EF_scaled(V) is the scaled emission factors for each street link,
+EF_local is the local emission factor, EF(V) and EF(SDC) are the EMEP/EEA
+emission factor the speed of V and the average urban driving speed 'SDC', respectively.
+
+Please note that the function reads the vector arguments in the same order
+as informed by the user. For instance, if the pollutant input is \code{c("CO","PM10")}
+input in the local emission factor function, the order needs to be the same for the
+pollutant in the \code{ef_scaled_euro} function.
+
+In the case of vehicle type, which generally changes according to the emission
+factor source, the input argument in the \code{ef_scaled_euro} needs to be consistent
+with the order adopted in the local emission factor function.
+
+For example, if the vector of local vehicle type is
+\code{c("BUS_URBAN_D","BUS_MICRO_D")}, the related vector for EMEP/EEA model needs
+to be \code{c("Ubus Std 15 - 18 t","Ubus Midi <=15 t")}. The same approach applies for
+other input arguments. See more in the examples.
 }
 \examples{
 if (interactive()) {
+
 temp_ef_br <- ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),
-                        veh_type = "BUS_URBAN_D",
-                        model_year = 2015,
+                        veh_type = c("BUS_URBAN_D","BUS_MICRO_D")
+                        model_year = c(2015,2015),
                         as_list = TRUE)
 
-temp_ef_scaled <- ef_scaled_euro(ef_local = temp_ef_br,
-                                 speed = units::set_units(1:100,"km/h"),
-                                 veh_type = "Ubus Std 15 - 18 t",
-                                 euro = "IV",fuel = "D",tech="SCR",
-                                 pollutant = c("CO","PM10","CO2","CH4","NOx"))
+temp_ef_scaled <- ef_scaled_euro(ef_local = temp_ef_br
+                                 , speed = units::set_units(1:100,"km/h")
+                                 , veh_type = c("Ubus Std 15 - 18 t","Ubus Midi <=15 t")
+                                 , euro = c("IV","IV")
+                                 , fuel = c("D","D")
+                                 , tech = c("SCR","SCR")
+                                 , pollutant = c("CO","PM10","CO2","CH4","NOx"))
 } 
 }
