@@ -9,7 +9,7 @@ emission_model(
   ef_model,
   fleet_data,
   pollutant,
-  reference_year = NULL,
+  reference_year,
   parallel = TRUE,
   output_path = NULL
 )
@@ -149,3 +149,8 @@ emi_emfac <- emission_model(tp_model = tp_model
                           , reference_year = 2019)
 }
 }
+\seealso{
+Other Core function: 
+\code{\link{transport_model}()}
+}
+\concept{Core function}

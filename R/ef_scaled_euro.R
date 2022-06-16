@@ -56,12 +56,15 @@
 #'  to be `c("Ubus Std 15 - 18 t","Ubus Midi <=15 t")`. The same approach applies for
 #'  other input arguments. See more in the examples. 
 #'   
+#' 
+#' @family Emission factor model
+#' 
 #' @export
 #' 
 #' @examples if (interactive()) {
 #' 
 #' temp_ef_br <- ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),
-#'                         veh_type = c("BUS_URBAN_D","BUS_MICRO_D")
+#'                         veh_type = c("BUS_URBAN_D","BUS_MICRO_D"),
 #'                         model_year = c(2015,2015),
 #'                         as_list = TRUE)
 #' 

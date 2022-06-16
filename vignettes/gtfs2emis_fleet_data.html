@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2022-06-16" />
+
+<title>Preparing fleet data for gtfs2emis</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Preparing fleet data for gtfs2emis</h1>
+<h4 class="date">2022-06-16</h4>
+
+
+
+<div id="introduction" class="section level1">
+<h1>1. Introduction</h1>
+<p>When using the <code>gtfs2emis</code> package to estimate the
+emission levels of a given public transport system, users are required
+to input <code>data.frame</code> with a few characteristics of the
+public transport fleet, such as age or vehicle type. This vignette
+explains how users can build these this input showing with practical
+examples for fleet data in Brazilian, European and North American
+cities.</p>
+</div>
+<div id="simple-or-detailed-fleet-data-table" class="section level1">
+<h1>2. Simple or detailed fleet data table</h1>
+<p>The first thing to have in mind, is that the fleet
+<code>data.frame</code> can be either: - A <strong>simple</strong> table
+with the overall composition of the fleet. In this case, the
+<code>gtfs2emis</code> will assume that fleet is homogeneously
+distributed across all routes; OR - A <strong>detailed</strong> table
+that (1) brings info on the characteristics of each individual vehicle
+and, (2) tells the probability (?????) with which each vehicle type is
+allocated to each transport route.</p>
+<div id="example-of-simple-fleet-table" class="section level3">
+<h3>Example of <em>simple</em> fleet table</h3>
+<p>Here is an example of a simple fleet table that tell us the
+characteritics of the urban buses of Dublin, Ireland. The <code>N</code>
+and <code>fleet_composition</code> columns tell us, respectively, the
+absolute number and the proportion of buses with each combination of the
+following characteristics: vehicle type, Euro standard, technology and
+fuel. Note that <code>sum(fleet_df$fleet_composition)</code> has to be
+equal to 1.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>simple_fleet_file <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/irl_dub/irl_dub_fleet.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;gtfs2emis&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>simple_fleet_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(simple_fleet_file)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(simple_fleet_df)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         type_name_eu euro fuel   N fleet_composition Technology</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Ubus Std 15 - 18 t  III    D  10        0.00998004          -</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Ubus Std 15 - 18 t   IV    D 296        0.29540918        SCR</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Ubus Std 15 - 18 t    V    D 148        0.14770459        SCR</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Ubus Std 15 - 18 t   VI    D 548        0.54690619    DPF+SCR</span></span></code></pre></div>
+</div>
+<div id="example-of-detailed-fleet-table" class="section level3">
+<h3>Example of <em>detailed</em> fleet table</h3>
+<p>This other table illustrates how a detailed fleet data table looks
+like, using the example of city of of Curitiba, Brazil. Here, the
+<code>N</code> column also tells us the absolute number of of buses with
+each combination of vehicle characteristics. However, note that this
+table brings a <code>shape_id</code> column. This columns indicates
+which specific vehicles should be allocated to run on predefined
+<code>shape_id</code>s of the GTFS data. For example, it allows users to
+assign articulated buses to specific routes in the transport
+network.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>detailed_fleet_file <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/bra_cur/bra_cur_fleet.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;gtfs2emis&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>detailed_fleet_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(detailed_fleet_file)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(detailed_fleet_df)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   year euro shape_id type_name_br       type_name_eu total fuel</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 2006  III     1849  BUS_URBAN_D Ubus Std 15 - 18 t     2    D</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2011  III     1849  BUS_URBAN_D Ubus Std 15 - 18 t     4    D</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 2018    V     1733  BUS_MICRO_D   Ubus Midi &lt;=15 t     1    D</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 2011  III     1735  BUS_URBAN_D Ubus Std 15 - 18 t     3    D</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 2018    V     1735  BUS_MICRO_D   Ubus Midi &lt;=15 t     2    D</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 2008  III     1735  BUS_MICRO_D   Ubus Midi &lt;=15 t     2    D</span></span></code></pre></div>
+</div>
+</div>
+<div id="fleet-characteristics-vary-by-emission-factor-model" class="section level1">
+<h1>3. Fleet characteristics vary by emission factor model</h1>
+<p>Please note that the columns in your fleet data table should differ
+depending on the data requirements of the emission factor model the user
+wants to consider. For example, the emission factor models for US cities
+(EMFAC2017 and MOVES3), developed by CARB and EPA, only require
+information on the type of bus, the fuel used and age of the vehicle.
+Meanwhile, the EMEP model developed by the European Environment Agency
+require much more info, including: vehicle type, Euro standard,
+technology and fuel. It also allow users to consider the passenger load
+and slope of streets.</p>
+<p>To check which columns and sets of vehicle characteristics are
+required by each emission factor model, the user can read the
+documentation of the emission factor functions listed in the table
+below:</p>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="7%" />
+<col width="12%" />
+<col width="24%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Emission factor function</th>
+<th>Country</th>
+<th>Source</th>
+<th>Type of buses</th>
+<th>Other required characteristics</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ef_brazil_cetesb()</code></td>
+<td>Brazil</td>
+<td>CETESB</td>
+<td>Micro, Standard, Articulated</td>
+<td>Age, Fuel, EURO stage</td>
+</tr>
+<tr class="even">
+<td><code>ef_europe_emep()</code></td>
+<td>Europe</td>
+<td>EMEP/EEA</td>
+<td>Micro, Standard, Articulated</td>
+<td>Fuel, EURO stage, technology, load, slope</td>
+</tr>
+<tr class="odd">
+<td><code>ef_usa_moves()</code></td>
+<td>US</td>
+<td>EMFAC2017/CARB</td>
+<td>Urban Buses</td>
+<td>Age, Fuel</td>
+</tr>
+<tr class="even">
+<td><code>ef_usa_emfac()</code></td>
+<td>US</td>
+<td>MOVES3/EPA</td>
+<td>Urban Buses</td>
+<td>Age, Fuel</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="examples-of-fleet-data-tables" class="section level1">
+<h1>4. Examples of fleet data tables</h1>
+<p>Now here are a few examples of <code>data.frames</code> with the
+fleet characteristics required by different emission factor models. Note
+that these examples are built as a simple fleet table that includes the
+<code>fleet_composition</code>, indicating what proportion of the fleet
+is represented by vehicles with each characteristics.</p>
+<div id="brazil-environmental-company-of-são-paulo-cetesb" class="section level2">
+<h2>4.1 Brazil: Environmental Company of São Paulo (CETESB):</h2>
+<p>Based on the <a href="https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/">2017
+data</a> from the emission factor model of CETESB.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_cetesb <span class="ot">&lt;-</span> <span class="fu">data.frame</span>( <span class="at">veh_type =</span> <span class="fu">c</span>(<span class="st">&quot;BUS_MICRO_D&quot;</span>, <span class="st">&quot;BUS_URBAN_D&quot;</span>, <span class="st">&quot;BUS_ARTIC_D&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">model_year =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2012</span>, <span class="dv">2018</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">fuel =</span> <span class="fu">rep</span>(<span class="st">&quot;D&quot;</span>, <span class="dv">3</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">fleet_composition =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.4</span>, <span class="fl">0.2</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_cetesb</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      veh_type model_year fuel fleet_composition</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 BUS_MICRO_D       2010    D               0.4</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 BUS_URBAN_D       2012    D               0.4</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 BUS_ARTIC_D       2018    D               0.2</span></span></code></pre></div>
+</div>
+<div id="europe-emep---european-environment-agency-eea" class="section level2">
+<h2>4.2 Europe: EMEP - European Environment Agency (EEA)</h2>
+<p>Based on the European Monitoring and Evaluation Programme (<a href="https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep">EMEP</a>),
+developed by EEA.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_europe <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(  <span class="at">veh_type =</span> <span class="fu">c</span>(<span class="st">&quot;Ubus Midi &lt;=15 t&quot;</span>,<span class="st">&quot;Ubus Std 15 - 18 t&quot;</span> ,<span class="st">&quot;Ubus Artic &gt;18 t&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                                   , <span class="at">euro =</span> <span class="fu">c</span>(<span class="st">&quot;III&quot;</span>,<span class="st">&quot;IV&quot;</span>,<span class="st">&quot;V&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                                   , <span class="at">fuel =</span> <span class="fu">rep</span>(<span class="st">&quot;D&quot;</span>,<span class="dv">3</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                                   , <span class="at">tech =</span> <span class="fu">c</span>(<span class="st">&quot;-&quot;</span>,<span class="st">&quot;SCR&quot;</span>,<span class="st">&quot;SCR&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                                   , <span class="at">fleet_composition =</span> <span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.1</span>)) <span class="co">#</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_europe</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             veh_type euro fuel tech fleet_composition</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1   Ubus Midi &lt;=15 t  III    D    -               0.4</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Ubus Std 15 - 18 t   IV    D  SCR               0.5</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3   Ubus Artic &gt;18 t    V    D  SCR               0.1</span></span></code></pre></div>
+</div>
+<div id="united-states-emfac2017---california-air-resources-board-carb" class="section level2">
+<h2>4.3 United States: EMFAC2017 - California Air Resources Board
+(CARB)</h2>
+<p>Based on the California EMission Factor model (<a href="https://arb.ca.gov/emfac/">EMFAC2017</a>), developed by CARB.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_emfac <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(  <span class="at">veh_type =</span> <span class="st">&quot;BUS_URBAN_D&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">model_year =</span> <span class="dv">2011</span><span class="sc">:</span><span class="dv">2015</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">fuel =</span> <span class="st">&quot;D&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">calendar_year =</span> <span class="dv">2019</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">fleet_composition =</span> <span class="fu">rep</span>(<span class="fl">0.2</span>,<span class="dv">5</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_emfac</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      veh_type model_year fuel calendar_year fleet_composition</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 BUS_URBAN_D       2011    D          2019               0.2</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 BUS_URBAN_D       2012    D          2019               0.2</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 BUS_URBAN_D       2013    D          2019               0.2</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 BUS_URBAN_D       2014    D          2019               0.2</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 BUS_URBAN_D       2015    D          2019               0.2</span></span></code></pre></div>
+</div>
+<div id="united-states-moves3---environmental-protection-agency-epa" class="section level2">
+<h2>4.4 United States: MOVES3 - Environmental Protection Agency
+(EPA)</h2>
+<p>Based on the Motor Vehicle Emission Simulator (<a href="https://www.epa.gov/moves">MOVES3 Model</a>), developed by
+EPA.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_moves <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(  <span class="at">veh_type =</span> <span class="st">&quot;BUS_URBAN_D&quot;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">model_year =</span> <span class="dv">2011</span><span class="sc">:</span><span class="dv">2015</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">fuel =</span> <span class="st">&quot;D&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">calendar_year =</span> <span class="dv">2016</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                                  , <span class="at">fleet_composition =</span> <span class="fu">rep</span>(<span class="fl">0.2</span>,<span class="dv">5</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>fleet_data_ef_moves</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      veh_type model_year fuel calendar_year fleet_composition</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 BUS_URBAN_D       2011    D          2016               0.2</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 BUS_URBAN_D       2012    D          2016               0.2</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 BUS_URBAN_D       2013    D          2016               0.2</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 BUS_URBAN_D       2014    D          2016               0.2</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 BUS_URBAN_D       2015    D          2016               0.2</span></span></code></pre></div>
+</div>
+<div id="credits" class="section level2">
+<h2>Credits</h2>
+<p>The <code>gtfs2gps</code> package is developed by a team at the
+Institute for Applied Economic Research (Ipea) with collaboration from
+the National Institute for Space Research (INPE), both from Brazil. If
+you have any suggestions or want to report an error, please visit the
+package GitHub page (<a href="https://github.com/rafapereirabr/gtfs2emis">link</a>).</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

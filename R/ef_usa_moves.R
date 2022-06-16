@@ -29,6 +29,9 @@
 #' @details 
 #' User can view the pre-processed database in `data(ef_usa_moves_db)` function.
 #' @source \url{https://www.epa.gov/moves}
+#' 
+#' @family Emission factor model
+#' 
 #' @export
 #' 
 #' @examples if (interactive()) {

@@ -1,57 +1,77 @@
-#' @title Transport model 
+#' @title 
+#' Transport model 
 #' 
-#' @description Creates the transport model based on a GTFS data input, and exports
-#'  in an `sf_linestring` format. Note that each public transport shape_id is saved 
-#'  separately in a a different file. It has four main steps: i) Process the GTFS; 
-#'  ii) Convert the data to a GPS-like data.table ; iii) Fix speeds; 
-#'  iv) Convert GPS to sf_linestring format. These steps uses the functions of 
-#'  gtfs2gps package 'read_gtfs', gtfs2gps', 'adjust_speed', and 'gps_as_sflinestring',
-#'   respectively.
-#' 
+#' @description
+#'  This function converts a public transport data set in GTFS format into a 
+#'  GPS-like table with the space-time positions and speeds of public transport 
+#'  vehicles. The function also allow users to set the spatial resolution of the
+#'  output and to adjust the speed of public transport vehicles given a 
+#'  `min_speed` and `max_speed` range.
 #' 
 #' @param gtfs_data A path to a GTFS file to be converted to GPS, or a GTFS data
 #'                  represented organized as a list of `data.tables` created 
-#'                  with `gtfs2gps::read_gtfs()`.
-#' @param output_path character. Filepath where the output will be saved. Note 
-#'                    that each public transport `shape_id` are saved separately 
-#'                    in different files. If `NULL` (Default), the function 
+#'                  with `gtfstools::read_gtfs()`.
 #'                    returns the data to user.  
-#' @param min_speed numeric (in km/h) or a speed units value. Minimum speed to be considered as valid. 
-#'                  Values below minimum speed will be adjusted. Defaults to 2 km/h.
-#' @param max_speed numeric (in km/h) or a speed units value. Maximum speed to be considered as valid. 
-#'                  Values above maximum speed will be adjusted. Defaults to 80 km/h.
-#' @param new_speed numeric (in km/h) or a speed units value. Speed to replace missing values as well 
-#'                  as values outside min_speed and max_speed range. By default, 
-#'                  'new_speed = NULL' andthe function considers the mean speed of the entire gps data.
+#' @param min_speed numeric (in km/h) or a speed units value. Minimum speed to 
+#'                  be considered as valid. Values below minimum speed will be 
+#'                  updated according to the `new_speed` parameter, which can 
+#'                  affect the arrival and  departure times of vehicles at 
+#'                  transit stops. Defaults to 2 km/h.
+#' @param max_speed numeric (in km/h) or a speed units value. Maximum speed to be 
+#'                  considered as valid. Values above maximum speed will be 
+#'                  updated according to the `new_speed` parameter, which can 
+#'                  affect the arrival and  departure times of vehicles at 
+#'                  transit stops. Defaults to 80  km/h.
+#' @param new_speed numeric (in km/h) or a speed units value. Speed value used to
+#'                  replace the speeds that fall outside the `min_speed` and 
+#'                  `max_speed` range or which are missing from the GTFS input. 
+#'                  When `new_speed = NULL` (Default), the function uses the
+#'                  average speed of the entire GTFS data feed.
 #' @param parallel logical. Decides whether the function should run in parallel. 
-#'                 Defaults to TRUE.
-#' @param spatial_resolution numeric. The spatial resolution in meters.
+#'                 Defaults to `TRUE`.
+#' @param spatial_resolution The spatial resolution in meters. Defaults to 100m.
+#'                   The function only creates points in order to guarantee that 
+#'                   the minimum distance between two consecutive points will be 
+#'                   at most the `spatial_resolution` value. If a given GTFS 
+#'                   shape_id has two consecutive points with a distance lower 
+#'                   than the spatial resolution, the algorithm will not remove 
+#'                   such points. 
+#' @param output_path character. A directory path. If passed the output will be 
+#'                    saved in the `output_path` dir. Note that that the output 
+#'                    of each public transport `shape_id` is saved separately 
+#'                    in different file. If `NULL` (Default), the function 
+#'                    returns the output. Setting an `output_path` is 
+#'                    recommended when user wants to process all routes of a 
+#'                    large public transport system because the output of the 
+#'                    function can be significantly large.
+#'                    
+#' @return A `data.table sf_linestring` object or `NULL`.
 #' 
-#' @details If the user wants to process the all routes in the GTFS, we suggest 
-#'          using the `output_path` argument because the output of the function
-#'          can be significantly large for public transport networks with many
-#'          routes. This function is a more friendly approach to generate the
-#'          transport model. For more advanced users, we recommend reading out
-#'          vignette at <<http://www.github.com/ipeaGIT/gtfs2emis/>>.
-#' 
-#' @return A `sf_linestring` object or `NULL`.
-#' 
+#' @family Core function
 #' @export
+#' 
 #' @examples if (interactive()) {
 #' library(gtfs2emis)
-#' library(gtfs2gps)
-#' library(magrittr)
+#' library(gtfstools)
 #' 
-#' gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
-#'   gtfs2gps::filter_by_shape_id(., "T2-1") %>%
-#'   gtfs2gps::filter_single_trip()
+#' # read GTFS
+#' gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+#' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 
-#' tp_model <- transport_model(gtfs_data = gtfs, parallel = TRUE)
+#' # keep a single trip_id to speed up this example
+#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439181")
+#'   
+#' # run transport model
+#' tp_model <- transport_model(gtfs_data = gtfs_small,
+#'                              parallel = TRUE)
 #'}
-transport_model <- function(gtfs_data, output_path = NULL
-                            , min_speed = NULL, max_speed = NULL, new_speed = NULL
-                            , parallel = TRUE, spatial_resolution = 100
-){
+transport_model <- function(gtfs_data,
+                            min_speed = 2, 
+                            max_speed = NULL, 
+                            new_speed = NULL, 
+                            parallel = TRUE, 
+                            spatial_resolution = 300,
+                            output_path = NULL){
   
   # Check inputs GTFS ----
   

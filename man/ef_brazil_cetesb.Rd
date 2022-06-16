@@ -58,3 +58,11 @@ ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_UR
 model_year = 2015,as_list = TRUE)
 }
 }
+\seealso{
+Other Emission factor model: 
+\code{\link{ef_europe_emep}()},
+\code{\link{ef_scaled_euro}()},
+\code{\link{ef_usa_emfac}()},
+\code{\link{ef_usa_moves}()}
+}
+\concept{Emission factor model}

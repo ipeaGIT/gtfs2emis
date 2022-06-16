@@ -53,9 +53,10 @@
 #'  factors selection. If the information of specific vehicle is known, user 
 #'  should develop the emission inventory according to the vignette 
 #'  <<http://www.github.com/ipeaGIT/gtfs2emis/>>.
+#'  
 #' @return A `list` with emissions estimates or `NULL` with output files saved 
 #'         locally at `output_path`.
-#' 
+#' @family Core function
 #' @export
 #' @examples if (interactive()) {
 #' library(gtfs2emis)
@@ -124,7 +125,7 @@ emission_model <- function(  tp_model
                              , ef_model
                              , fleet_data
                              , pollutant
-                             , reference_year = NULL
+                             , reference_year
                              , parallel = TRUE
                              , output_path = NULL){
   # A) Checking inputs -----
@@ -141,8 +142,8 @@ emission_model <- function(  tp_model
   if (ef_model == "ef_cetesb_brazil") {
     if(is.null(fleet_data$veh_type) | is.null(fleet_data$model_year)
        | is.null(fleet_data$fleet_composition)){
-      stop("Arguments 'veh_type','fleet_composition', and 'model_year' input is 
-           required in the 'fleet_data' for ef_cetesb_brazil database")
+      stop("fleet_data input must have the columns c('veh_type',
+           'fleet_composition', 'model_year') when ef_model == 'ef_cetesb_brazil'")
     }
   }
   if (ef_model == "ef_usa_emfac" | ef_model == "ef_usa_moves") {
@@ -152,16 +153,16 @@ emission_model <- function(  tp_model
     }
     if(is.null(fleet_data$veh_type) | is.null(fleet_data$model_year)
        | is.null(fleet_data$fleet_composition)){
-      stop(sprintf("Arguments 'veh_type','fleet_composition', and 'model_year'
-                   input \nis required  in the 'fleet_data' for %s database")
+      stop(sprintf("fleet_data input must have the columns c('veh_type', 
+                   'fleet_composition', 'model_year') when ef_model == %s")
            ,ef_model)
     }
   }
   if (ef_model == "ef_europe_emep") {
-    if(is.null(fleet_data$euro)| is.null(fleet_data$fuel)|
-       is.null(fleet_data$tech)| is.null(fleet_data$fleet_composition)){
-      stop("Arguments 'speed','euro','fleet_composition', and 'speed' input 
-           is required  in the 'fleet_data' for ef_europe_emep database")
+    if(is.null(fleet_data$euro) | is.null(fleet_data$fuel)|
+       is.null(fleet_data$tech) | is.null(fleet_data$fleet_composition)){
+      stop("fleet_data input must have the columns c('speed','euro', 
+           'fleet_composition', 'speed') when  input ef_model == ef_europe_emep")
     }
   }
   

@@ -1,11 +1,10 @@
 ---
-title: 'Introduction to gtfs2emis'
+title: 'Advanced features of gtfs2emis'
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-abstract: "`gtfs2emis` is an R package to estimate public transport emissions using data in the General Transit Feed Specification (GTFS) format. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics."
 urlcolor: blue
 vignette: >
-  %\VignetteIndexEntry{Introduction to gtfs2emis} 
+  %\VignetteIndexEntry{Advanced features of gtfs2emis} 
   %\VignetteEngine{knitr::rmarkdown} 
   \usepackage[utf8]{inputenc}
 ---
@@ -18,37 +17,21 @@ knitr::opts_chunk$set(
 
 # 1. Introduction
 
-`gtfs2emis` is an R package to estimate hot exhaust emissions of public transport systems using data in the General Transit Feed Specification (GTFS) format. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics. This vignette introduces the main functions of the `gtfs2emis` package and shows a step-by-step reproducible example of how to use the package.
+`gtfs2emis` is an R package to estimate hot exhaust emissions of public transport systems using data in the General Transit Feed Specification (GTFS) format. As mentioned in the [introductory vignette](add_link), `gtfs2emis` has two core functions: `transport_model()` and `emission_model()`. However, there are several advanced features that can be used to conduct a more sophisticated and rigorous emission model of public transport systems. This vignette demonstrates some of these advanced features in a step-by-step reproducible example.
 
 
-# 2. Installation
-
-One can install `gtfs2emis` from CRAN (recommended) or the development version from Github:
-
-```{r, eval = FALSE, message = FALSE}
-# From CRAN
-install.packages("gtfs2emis")
-
-# Dev. version with latest features
-utils::remove.packages('gtfs2emis')
-devtools::install_github("ipeaGIT/gtfs2emis")
-
-```
+In this vignette, we will be using a small sample data for the city of Curitiba, Brazil. In this example, we'll be estimating `CO2` and `PM10` emissions of bus services on business days.
 
 
-# 3. Data requirements
 
-To estimate the emission levels from a given public transport system, users need to:
-
-1.  Input a `GTFS.zip` file
-2.  Input `data.frame` with a few characteristics of the public transport fleet (such as age and fuel)
-3.  Select an emission factor model from the models provided by the package, which currently includes models from the US, Europe and Brazil.
-4.  Select which pollutants should be estimated from a list with of over 15 pollutants provided by the package.
+# fleet
+# adjust speed 
 
 
 
 
-# 4. Package overview
+
+
 
 Before we start, let's load a few packages we'll be using in this vignette:
 
@@ -66,7 +49,7 @@ library(sf)
 
 The `gtfs2mis` package two core functions:
 
-1. `transport_model()`. This function converts GTFS data into a GPS-like `data.table` with the space-time positions and speeds of public transport vehicles.
+1. `transport_model()`. This functions converts GTFS data into a GPS-like `data.table` with the space-time positions and speeds of public transport vehicles.
 2. `emission_model()`. This function estimates hot-exhaust emissions based on four inputs:     
     a) the result from the `transport_model()`;
     b) a `string` indicating which emission factor model should be considered;

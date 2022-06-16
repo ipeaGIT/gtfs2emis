@@ -23,6 +23,7 @@ Depends:
 Imports: 
     checkmate,
     data.table,
+    furrr,
     future,
     gtfs2gps,
     magrittr,
@@ -32,6 +33,7 @@ Suggests:
     gtfstools,
     ggplot2,
     knitr,
+    progressr,
     rmarkdown,
     testthat (>= 2.1.0),
     vein

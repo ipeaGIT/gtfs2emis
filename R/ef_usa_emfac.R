@@ -33,6 +33,9 @@
 #' 
 #' @return List or data.table. Emission factors in units 'g/km' by speed and model_year.
 #' @source \url{https://arb.ca.gov/emfac/}
+#' 
+#' @family Emission factor model
+#' 
 #' @export
 #' 
 #' @examples if (interactive()) {

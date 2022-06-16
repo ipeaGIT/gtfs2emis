@@ -38,6 +38,9 @@
 #' 2) Also, the emission factors were extended till 50 years of use, repeating the oldest value.
 #' @md
 #' @source \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
+#' 
+#' @family Emission factor model
+#' 
 #' @export
 #' @examples if (interactive()) {
 #' ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",

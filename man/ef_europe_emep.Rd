@@ -84,3 +84,11 @@ ef_europe_emep( speed = units::set_units(1:100,"km/h"),
            as_list = FALSE) 
 }
 }
+\seealso{
+Other Emission factor model: 
+\code{\link{ef_brazil_cetesb}()},
+\code{\link{ef_scaled_euro}()},
+\code{\link{ef_usa_emfac}()},
+\code{\link{ef_usa_moves}()}
+}
+\concept{Emission factor model}

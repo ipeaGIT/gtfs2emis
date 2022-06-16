@@ -89,7 +89,7 @@ other input arguments. See more in the examples.
 if (interactive()) {
 
 temp_ef_br <- ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),
-                        veh_type = c("BUS_URBAN_D","BUS_MICRO_D")
+                        veh_type = c("BUS_URBAN_D","BUS_MICRO_D"),
                         model_year = c(2015,2015),
                         as_list = TRUE)
 
@@ -102,3 +102,11 @@ temp_ef_scaled <- ef_scaled_euro(ef_local = temp_ef_br
                                  , pollutant = c("CO","PM10","CO2","CH4","NOx"))
 } 
 }
+\seealso{
+Other Emission factor model: 
+\code{\link{ef_brazil_cetesb}()},
+\code{\link{ef_europe_emep}()},
+\code{\link{ef_usa_emfac}()},
+\code{\link{ef_usa_moves}()}
+}
+\concept{Emission factor model}

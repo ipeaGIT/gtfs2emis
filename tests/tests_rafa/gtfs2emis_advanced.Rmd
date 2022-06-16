@@ -16,27 +16,11 @@ knitr::opts_chunk$set(
   comment = "#>")
 ```
 
-# Demonstration on sample data
 
-## Detailed Usage
 
-The detailed usage of `gtfs2emis` has intermediate functions to generate the transport and emissions model. In this case, the user can provide data of fleet distributed by routes. The example below shows a situation where the vehicle characteristics is known for several `shape_id` 's.
 
-**1. Read data**
 
-```{r, eval = FALSE, message = FALSE, echo = FALSE}
-devtools::load_all()
-```
 
-```{r, eval = FALSE, message = FALSE}
-# From CRAN
-install.packages("gtfs2emis")
-
-# Dev. version with latest features
-utils::remove.packages('gtfs2emis')
-devtools::install_github("ipeaGIT/gtfs2emis")
-
-```
 
 ```{r, eval = FALSE, message = FALSE}
 library(gtfs2gps)

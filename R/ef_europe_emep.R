@@ -44,6 +44,9 @@
 #'  - 2016 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/},
 #'  - 2013 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2013/}, and
 #'  - 2007 edition \url{https://www.eea.europa.eu/publications/EMEPCORINAIR5/}.
+#' 
+#' @family Emission factor model
+#' 
 #' @export
 #' 
 #' @examples if (interactive()) {
