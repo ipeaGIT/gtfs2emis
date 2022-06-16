@@ -1,0 +1,334 @@
+---
+title: 'Introduction to gtfs2emis'
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+abstract: "`gtfs2emis` is an R package to estimate public transport emissions using data in the General Transit Feed Specification (GTFS) format. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics."
+urlcolor: blue
+vignette: >
+  %\VignetteIndexEntry{Introduction to gtfs2emis} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>")
+```
+
+# 1. Introduction
+
+`gtfs2emis` is an R package to estimate hot exhaust emissions of public transport systems using data in the General Transit Feed Specification (GTFS) format. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics. This vignette introduces the main functions of the `gtfs2emis` package and shows a step-by-step reproducible example of how to use the package.
+
+
+# 2. Installation
+
+One can install `gtfs2emis` from CRAN (recommended) or the development version from Github:
+
+```{r, eval = FALSE, message = FALSE}
+# From CRAN
+install.packages("gtfs2emis")
+
+# Dev. version with latest features
+utils::remove.packages('gtfs2emis')
+devtools::install_github("ipeaGIT/gtfs2emis")
+
+```
+
+
+# 3. Data requirements
+
+To estimate the emission levels from a given public transport system, users need to:
+
+1.  Input a `GTFS.zip` file
+2.  Input `data.frame` with a few characteristics of the public transport fleet (such as age and fuel)
+3.  Select an emission factor model from the models provided by the package, which currently includes models from the US, Europe and Brazil.
+4.  Select which pollutants should be estimated from a list with of over 15 pollutants provided by the package.
+
+
+
+
+# 4. Package overview
+
+Before we start, let's load a few packages we'll be using in this vignette:
+
+```{r, message = FALSE}
+library(gtfs2emis)
+library(gtfstools)
+library(data.table)
+library(magrittr)
+library(ggplot2)
+library(units)
+library(sf)
+
+```
+
+The `gtfs2mis` package two core functions:
+
+1. `transport_model()`. This functions converts GTFS data into a GPS-like `data.table` with the space-time positions and speeds of public transport vehicles.
+2. `emission_model()`. This function estimates hot-exhaust emissions based on three inputs:     
+    a) the result from the `transport_model()`;
+    b) a `string`indicating which emission model should be considered; and
+    c) a `data.frame` with info on fleet characteristics passed by the user. 
+    The function returns a `list` with the estimated amount of each pollutant emitted by public transport vehicles.
+
+
+The help users analyze the output from `emission_model()`, the `gtfs2emis`package has few functions:
+
+3. `emis_summary()` to aggregate emission estimates by time of the day, vehicle type or road segment.
+4. `emis_grid()` to spatially aggregate emission estimates using any custom spatial grid or polygons.
+5. `emis_to_dt()` to convert the output of `emission_model()` from `list` to `data.table`.
+    
+    
+
+
+# Approach
+
+The package has two main usages that will ultimately depend on the user's experience and on the desired output:
+
+**1. Basic usage**
+
+-   Emissions inventory is straightforward, making it more friendly for new users;
+-   It is divided into `transport_model()` and `emissions_model()` functions;
+-   In the `emissions_model()` the user specifies the source of emission factors;
+-   It uses several default approaches for hot exhaust emissions inventory;
+-   It considers the fleet to be homogeneously distributed across the vehicle routes.
+
+**2. Detailed usage**
+
+-   It uses step-by-step functions to produce the transport and emissions model: User can specific any correction on speed distribution over routes;
+-   It allocates specific vehicles into predefined routes, e.g. articulated buses into specific shape_id's;
+-   It adjusts emissions factors (fuel correction, scaling non-speed dependent emission factors with Environmental European Agency (EMEP-EEA) emissions factors, checking emission factors before using in the inventory).
+
+The basic usage is shown below, while and detailed usage is available on our second vignette [adc_link](link).
+
+# 5. Demonstration on sample data
+
+## Basic Usage
+
+To demonstrate how the `gtfs2emis` package works, we will be using a small sample data for the city of Curitiba, Brazil. In this example, we'll be estimating CO2 emissions of bus services during business days.
+
+Let's load the data.
+
+```{r, message = FALSE}
+gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+
+gtfs_cur <- gtfstools::read_gtfs(gtfs_file)
+
+```
+
+## 1. Transport model
+
+The first step is to generate the transport model using the `transport_model{gtfs2emis}` function. This function converts GTFS data into a GPS-like data.table, fixing extreme or missing values of speed and transforming the output into a `sf-linestring`, which is the required input for emissions estimates. The user can input either a string with the file path where the a `gtfs.zip` file is stored, or an object of class `"gtfs" "list"`, generated with `gtfstools::read_gtfs()`.
+
+66666 mencionar spatial resolution....
+
+```{r, message = FALSE}
+tp_model <- transport_model(gtfs_data = gtfs_cur,
+                            spatial_resolution = 100,
+                            parallel = TRUE)
+
+head(tp_model)
+```
+
+Here is how the output of the transport model looks like. In essence, it's a trajectory data.table with the space-time position and speed of trips segments for each single vehicle of the public transport system.
+
+```{r, message = FALSE, fig.width=5, fig.height=5}
+ggplot(data=tp_model) +
+  geom_sf(aes(color= as.numeric(speed))) +
+  scale_color_continuous(type = "viridis")+
+  labs(color = "Speed (km/h)")+
+  theme_void()
+
+```
+
+## 2. Fleet data
+
+The next step is to prepare a `data.frame` with some characteristics of the public transport fleet. This can be either: - A detailed table that (1) brings info on the characteristics of each vehicle and, (2) tells the probability with which each vehicle type is allocated to each transport route. - A simple table with the overall composition of the fleet. In this case, the `gtfs2emis` will assume that fleet is homogeneously distributed across all routes.
+
+We'll be working with a simple table on this example. For an example with detailed data, see the advanced use vignette of the package.
+
+Now, the fleet data needs to be organized according to the data requirements of the emission factor model the user wants to consider. For instance, if a user wants to estimate emissions based on typical European fleet, the fleet data must include certain columns with the fleet characteristics that are used in the Emep-EEA methodology: vehicle type, Euro standard, technology and fuel. To check which columns and sets of vehicle characteristics are required by a given emission factor model, the user can read the documentation of the emission factor functions:
+
+| Emission factor function | Country | Source        | Type of buses                | Other required characteristics            |
+|--------------------------|---------|---------------|------------------------------|-------------------------------------------|
+| `ef_cetesb_brazil()`     | Brazil  | CETESB        | Micro, Standard, Articulated | Age, Fuel, EURO stage                     |
+| `ef_emep_europe()`       | Europe  | EMEP/EEA      | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope |
+| `ef_moves_usa()`         | US      | EMFAC         | Urban Buses                  | Age, Fuel                                 |
+| `ef_emfac_usa()`         | US      | MOVES U.S EPA | Urban Buses                  | Age, Fuel                                 |
+
+Here are a few examples of data.frames with the fleet characteristics required by different emission factor models. Note that the table includes a column `fleet_composition`. This column tells what proportion of the fleet is represented by vehicles with each characteristic.
+
+**Europe: EMEP/EEA**
+
+```{r, message = FALSE}
+fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t" ,"Ubus Artic >18 t")
+                                   , euro = c("III","IV","V")
+                                   , fuel = rep("D",3)
+                                   , tech = c("-","SCR","SCR")
+                                   , fleet_composition = c(0.4,0.5,0.1)) #
+fleet_data_ef_europe
+```
+
+**United States: EMFAC - California Air Resources Board**
+
+```{r, message = FALSE}
+fleet_data_ef_emfac <- data.frame(  veh_type = "BUS_URBAN_D"
+                                  , model_year = 2011:2015
+                                  , fuel = "D"
+                                  , calendar_year = 2019
+                                  , fleet_composition = rep(0.2,5))
+fleet_data_ef_emfac
+```
+
+United States: Motor Vehicle Emission Simulator (MOVES) from Environmental Protection Agency:
+
+```{r, message = FALSE}
+fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
+                                  , model_year = 2011:2015
+                                  , fuel = "D"
+                                  , calendar_year = 2016
+                                  , fleet_composition = rep(0.2,5))
+fleet_data_ef_moves
+```
+
+Brazil: Environmental Company of São Paulo (CETESB):
+
+```{r, message = FALSE}
+fleet_data_ef_cetesb <- data.frame( veh_type = c("BUS_MICRO_D", "BUS_URBAN_D", "BUS_ARTIC_D")
+                                  , model_year = c(2010, 2012, 2018)
+                                  , fuel = rep("D", 3)
+                                  , fleet_composition = c(0.4, 0.4, 0.2))
+fleet_data_ef_cetesb
+```
+
+## 3. Emission model
+
+Finally, we use the `emission_model()` function to estimate hot exhaust emissions of our public transport system. Here, the user needs to pass the results from `transport_model()`, some fleet data as described above, and select which emission factor model and pollutants should be considered. The `emission_model()` generates a list with several files vectors and data.frames with emission estimates, storing information such as vehicle variables (`fuel`, `age`, `tech`, `euro`, `fleet_composition`), travel variables (`slope`, `load`, `gps`) or pollution (`EF`, `emi`). [666] acho q aqui o texto pode ficar mais claro
+
+[666] o modelos ainda nao calcula slopes, neh? sera q vale a pena manter isso no output? Pq se sim, entao tem q ter alguma explicacao na documentacao de qual valor esta sendo utilizado\*\*
+
+```{r, message = FALSE}
+# tp_model$speed <- fifelse(as.numeric(tp_model$speed) <0,tp_model$speed*-1,tp_model$speed)
+emi_list <- emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
+                          , fleet_data = fleet_data_ef_europe
+                          , pollutant = c("CO","PM10","CO2","NOx")
+                          )
+class(emi_list)
+names(emi_list)
+```
+
+## 4. Analyzing the data
+
+As the results are stored in a long list. For convenience, `gtfs2emis` package has a couple functions that help users post-process and analyse these results and make. The `emis_summary()` function help summarize emission estimates by either `veh_type`, `pollutant`, or `time`. Using this function, users can easily:
+
+**Calculate total emissions for each vehicle**:
+
+```{r,fig.height=5,fig.width=8}
+emi_total <- emis_summary(emi_list = emi_list,
+                                emi_var = "emi",
+                                by = "veh_type",
+                                veh_var = "veh_type",
+                                pol_var = "pollutant") 
+head(emi_total)
+
+# plot
+ggplot(data=emi_total) +
+  geom_col(aes(x=veh_type, y= as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
+  labs(y="Total emissions (Kg)", x="Hour of the day") +
+  facet_wrap(~pollutant, scales = "free", nrow = 2) +
+  theme_minimal()
+```
+
+**Calculate total emissions of each pollutant emitted by each pollutant:**
+
+```{r, message = FALSE}
+emi_by_pol <- emis_summary(emi_list = emi_list,
+                                 emi_var = "emi", 
+                                 by = "pollutant", 
+                                 veh_var = "veh_type", 
+                                 pol_var = "pollutant") 
+emi_by_pol
+
+```
+
+If available in `names(emi_list)`, it is possible to add extra argument about fleet.
+
+```{r, message = FALSE}
+emi_by_veh <- emis_summary(emi_list = emi_list,
+                                emi_var = "emi", 
+                                by = "veh_type", 
+                                veh_var = c("veh_type", "euro", "fuel"),
+                                pol_var = "pollutant") 
+head(emi_by_veh)
+
+```
+
+**Calculate total emissions of each pollutant emitted by hour of the day:**
+
+```{r,fig.height=5,fig.width=8}
+emi_list$time_column <- emi_list$tp_model$timestamp  
+
+emi_by_time <- emis_summary(emi_list = emi_list,
+                                emi_var = "emi",
+                                by = "time",
+                                time_column = "time_column",
+                                veh_var = "veh_type",
+                                pol_var = "pollutant") 
+head(emi_by_time) 
+
+# plot
+ggplot(data=emi_by_time) +
+  geom_col(aes(x=factor(time_column), y=as.numeric(emi/1000), fill=pollutant), color=NA, show.legend = FALSE) +
+  labs(y="Total emissions (Kg)", x="Hour of the day") +
+  facet_wrap(~pollutant, scales = "free", nrow = 2) + 
+  theme_minimal()
+
+```
+
+Alternatively, the user can use the `emis_to_dt()` function to convert the output of `emission_model()` from a `list` to a `data.table` format:
+
+```{r,eval = TRUE}
+emi_dt <- emis_to_dt(emi_list = emi_list
+                    ,emi_vars = "emi"
+                    ,veh_vars = c("veh_type", "euro", "fuel")
+                    ,pol_vars = "pollutant")
+
+head(emi_dt, 5) 
+
+```
+
+Finally, users can analyze how public transport emissions are spatially distributed. To do this, the `emis_grid()` function helps aggregate emission estimates over any custom spatial vector data (`sf POLYGON`). In this example, we'll use a regular hexagonal grid.
+
+```{r, message = FALSE}
+# create spatial grid
+mygrid <- sf::st_make_grid(
+  x = sf::st_bbox(emi_list$tp_model[1:nrow(emi_list$tp_model),]$geometry)
+  , cellsize = 0.25 / 102.47
+  , crs= 4329
+  , what = "polygons"
+  , square = FALSE)
+mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
+
+```
+
+```{r, eval=TRUE, fig.width=5,fig.height=5}
+# we add info of emissions into gps file
+emi_list$tp_model <- cbind(emi_list$tp_model,emi_list$emi) 
+emis_grid <- emis_grid(data = emi_list$tp_model,
+                     emi = "CO_Euro_IV",
+                     grid = mygrid,
+                     time_class = 'all periods')
+ggplot() +
+  geom_sf(data=emis_grid, aes(fill= as.numeric(CO_Euro_IV)), color=NA) +
+  scale_fill_continuous(type = "viridis")+
+  labs(fill = "CO (g)")+
+  theme_void()
+
+
+```
+
+## Credits
+
+The `gtfs2gps` package is developed by a team at the Institute for Applied Economic Research (Ipea) with collaboration from the National Institute for Space Research (INPE), both from Brazil. If you have any suggestions or want to report an error, please visit the package GitHub page ([link](https://github.com/rafapereirabr/gtfs2emis)).

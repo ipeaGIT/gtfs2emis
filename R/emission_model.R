@@ -58,58 +58,67 @@
 #' 
 #' @export
 #' @examples if (interactive()) {
+#' library(gtfs2emis)
 #' library(gtfs2gps)
 #' library(magrittr)
 #' 
-#' gtfs <- gtfs2gps::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
-#' gtfs2gps::filter_by_shape_id(., "T2-1") %>%
+#' gtfs <- gtfstools::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
+#' gtfstools::filter_by_shape_id(., "T2-1") %>%
 #'   gtfs2gps::filter_single_trip()
 #' 
 #' tp_model <- transport_model(gtfs = gtfs, parallel = TRUE)
 #' 
+#' 
+#' # Example using Brazilian emission model and fleet
 #' fleet_data_ef_cetesb <- data.frame(  veh_type = "BUS_URBAN_D"
 #'                                    , model_year = 2010:2019
 #'                                    , fuel = "D"
 #'                                    , fleet_composition = rep(0.1,10))
-#'                                                
-#' fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
-#'                                   , model_year = 2010:2019
-#'                                   , fuel = "D"
-#'                                   , reference_year = 2019
-#'                                   , fleet_composition = rep(0.1,10))
-#'                                               
-#' fleet_data_ef_emfac <- data.frame(  veh_type =  "BUS_URBAN_D"
-#'                                   , model_year = 2010:2019
-#'                                   , fuel = "D"
-#'                                   , reference_year = 2019
-#'                                   , fleet_composition = rep(0.1,10))
-#'                                   
+#'                                    
+#' emi_cetesb <- emission_model(tp_model = tp_model
+#'                             , ef_model = "ef_brazil_cetesb"
+#'                             , fleet_data = fleet_data_ef_cetesb
+#'                             , pollutant = c("CO","PM10","CO2","CH4","NOx"))
+#'                             
+#' # Example using European emission model and fleet
+#' 
 #' fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t" 
 #' ,"Ubus Std 15 - 18 t" ,"Ubus Artic >18 t")
 #'                                    , euro = c("III","IV","V")
 #'                                    , fuel = rep("D",3)
 #'                                    , tech = c("-","SCR","SCR")
 #'                                    , fleet_composition = c(0.4,0.5,0.1))
-#' 
-#' emi_cetesb <- emission_model(tp_model = tp_model
-#'                             , ef_model = "ef_brazil_cetesb"
-#'                             , fleet_data = fleet_data_ef_cetesb
-#'                             , pollutant = c("CO","PM10","CO2","CH4","NOx")
-#'                             )
-#' emi_emfac <- emission_model(tp_model = tp_model
-#'                           , ef_model = "ef_usa_emfac"
-#'                           , fleet_data = fleet_data_ef_emfac
-#'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
-#'                           , reference_year = 2019)
+#'                                    
+#' emi_emep <- emission_model(tp_model = tp_model
+#'                           , ef_model = "ef_europe_emep"
+#'                           , fleet_data = fleet_data_ef_europe
+#'                           , pollutant = c("CO","PM10","CO2","CH4","NOx"))
+#'                           
+#'                           
+#' # Example using US emission model and fleet
+#' fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
+#'                                   , model_year = 2010:2019
+#'                                   , fuel = "D"
+#'                                   , reference_year = 2019
+#'                                   , fleet_composition = rep(0.1,10))
+#'                                   
+#' fleet_data_ef_emfac <- data.frame(  veh_type =  "BUS_URBAN_D"
+#'                                   , model_year = 2010:2019
+#'                                   , fuel = "D"
+#'                                   , reference_year = 2019
+#'                                   , fleet_composition = rep(0.1,10))
+#'                                   
 #' emi_moves <- emission_model(tp_model = tp_model
 #'                           , ef_model = "ef_usa_moves"
 #'                           , fleet_data = fleet_data_ef_moves
 #'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
 #'                           , reference_year = 2019)
-#' emi_emep <- emission_model(tp_model = tp_model
-#'                           , ef_model = "ef_europe_emep"
-#'                           , fleet_data = fleet_data_ef_europe
-#'                           , pollutant = c("CO","PM10","CO2","CH4","NOx"))
+#'                           
+#' emi_emfac <- emission_model(tp_model = tp_model
+#'                           , ef_model = "ef_usa_emfac"
+#'                           , fleet_data = fleet_data_ef_emfac
+#'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
+#'                           , reference_year = 2019)
 #'}
 emission_model <- function(  tp_model
                              , ef_model
