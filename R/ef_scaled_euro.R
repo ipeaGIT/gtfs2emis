@@ -87,23 +87,25 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   # pollutant = c("CO","PM10")
   # SDC = 34.12; tech = rep("SCR",10); slope = 0.0; load = 0.5; fcorr = 1;
   
+  
+  checkmate::assert_class(pollutant, 'character')
   #
   # check dimensions
   #
   
-  if(class(ef_local) == "list"){
+  if (class(ef_local) == "list") {
     ef_local <- ef_local$EF
   }
-  if(length(veh_type) == 1){
-    veh_type <- rep(veh_type,length(euro))
+  if (length(veh_type) == 1) {
+    veh_type <- rep(veh_type, length(euro))
   }
-  if(length(veh_type) != length(euro)) {
+  if (length(veh_type) != length(euro)) {
     stop("'euro' and 'veh_type' need to have the same length.")
   }
-  if(length(fuel) == 1){
+  if (length(fuel) == 1) {
     fuel <- rep(fuel,length(euro))
   }
-  if(length(fuel) != length(euro)) {
+  if (length(fuel) != length(euro)) {
     stop("'fuel' and 'veh_type' need to have the same length.")
   }
   
@@ -112,7 +114,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   #
   
   lapply(seq_along(ef_local), function(i){ # i = 1
-    if(class(ef_local) != "units"){
+    if (class(ef_local) != "units") {
       stop("ef neeeds to has class 'units' in 'g/km'. Please, check package 'units'")
     }
     if(units(ef_local[[i]])$numerator != "g" | units(ef_local[[i]])$denominator != "km"){
@@ -125,7 +127,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC
   #
   
   euro1 <- euro
-  ef_sdc <- ef_europe_emep(speed = units::set_units(SDC,"km/h"), 
+  ef_sdc <- ef_europe_emep(speed = units::set_units(SDC, "km/h"), 
                       veh_type = veh_type,
                       euro = euro1,
                       pollutant = pollutant,
