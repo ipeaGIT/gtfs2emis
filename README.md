@@ -117,10 +117,10 @@ Currently the `gtfs2emis` package provides a computational method to estimate ru
      - [EMEP/EEA](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep): European Monitoring and Evaluation Programme, developed by the European Environment Agency (EEA).
 * United States
      - [EMFAC2017/CARB](https://arb.ca.gov/emfac/): California Emission Factor model, developed by the California Air Resources Board (CARB).
-     - [MOVES3/EPA](https://arb.ca.gov/emfac/): Vehicle Emission Simulator, developed by the Environmental Protection Agency (EPA).
+     - [MOVES3/EPA](https://www.epa.gov/moves): Vehicle Emission Simulator, developed by the Environmental Protection Agency (EPA).
 
 
-### List of pollutants availabel in emission factor model
+#### List of pollutants available by emission factor model
 
 | Source        | Pollutants                                                                                                                        |
 |---------------|-----------------------------------------------------------------------------------------------------------------------------------|
@@ -130,20 +130,20 @@ Currently the `gtfs2emis` package provides a computational method to estimate ru
 | MOVES3/EPA | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG and VOC                                       |
 
 
-### Fleet characteristics required by each emission factor model
+#### Fleet characteristics required by each emission factor model
 
-| Source        | Buses                        | Categories Variables                      |
-|---------------|------------------------------|-------------------------------------------|
-| CETESB        | Micro, Standard, Articulated | Age, Fuel, EURO stage                     |
-| EMFAC2017/CARB   | Urban Buses                  | Age, Fuel                                 |
-| EMEP/EAA      | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope |
-| MOVES3/EPA | Urban Buses                  | Age, Fuel                                 |
-
-
+| Source        | Buses                        | Characteristics                              |
+|---------------|------------------------------|----------------------------------------------|
+| CETESB        | Micro, Standard, Articulated | Age, Fuel, EURO stantard                     |
+| EMEP/EAA      | Micro, Standard, Articulated | Fuel, EURO stantard, technology, load, slope |
+| EMFAC2017/CARB| Urban Buses                  | Age, Fuel                                    |
+| MOVES3/EPA    | Urban Buses                  | Age, Fuel                                    |
 
 
 
-## **Related packages**
+
+
+## Related packages
 
 There several others transport emissions models available for different purposes (see below). As of today, `gtfs2emis` is the only method with the capability to estimate emissions of public transport systems using GTFS data.
 
