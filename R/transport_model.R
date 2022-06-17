@@ -27,8 +27,11 @@
 #'                  `max_speed` range or which are missing from the GTFS input. 
 #'                  When `new_speed = NULL` (Default), the function uses the
 #'                  average speed of the entire GTFS data feed.
-#' @param parallel logical. Decides whether the function should run in parallel. 
-#'                 Defaults to `TRUE`.
+#' @param parallel Decides whether the function should run in parallel. Defaults 
+#'                 is FALSE. When `TRUE`, it will use all cores available minus 
+#'                 one using `future::plan()` with strategy "multisession" 
+#'                 internally.
+#'                 
 #' @param spatial_resolution The spatial resolution in meters. Defaults to 100m.
 #'                   The function only creates points in order to guarantee that 
 #'                   the minimum distance between two consecutive points will be 
@@ -69,7 +72,7 @@ transport_model <- function(gtfs_data,
                             min_speed = 2, 
                             max_speed = NULL, 
                             new_speed = NULL, 
-                            parallel = TRUE, 
+                            parallel = FALSE, 
                             spatial_resolution = 300,
                             output_path = NULL){
   

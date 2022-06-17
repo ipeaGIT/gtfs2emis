@@ -9,7 +9,7 @@ transport_model(
   min_speed = 2,
   max_speed = NULL,
   new_speed = NULL,
-  parallel = TRUE,
+  parallel = FALSE,
   spatial_resolution = 300,
   output_path = NULL
 )
@@ -38,8 +38,10 @@ replace the speeds that fall outside the \code{min_speed} and
 When \code{new_speed = NULL} (Default), the function uses the
 average speed of the entire GTFS data feed.}
 
-\item{parallel}{logical. Decides whether the function should run in parallel.
-Defaults to \code{TRUE}.}
+\item{parallel}{Decides whether the function should run in parallel. Defaults
+is FALSE. When \code{TRUE}, it will use all cores available minus
+one using \code{future::plan()} with strategy "multisession"
+internally.}
 
 \item{spatial_resolution}{The spatial resolution in meters. Defaults to 100m.
 The function only creates points in order to guarantee that
