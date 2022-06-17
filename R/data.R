@@ -34,7 +34,7 @@
 #' \item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
 #' \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
 #' \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
-#' \item{RF}{Reduction Factor; In percentage (%) units.}
+#' \item{RF}{Reduction Factor; In percentage (\%) units.}
 #' \item{k}{Constant factor.}
 #' }
 #' @source More information can be found at 

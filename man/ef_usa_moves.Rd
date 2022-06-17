@@ -3,9 +3,6 @@
 \name{ef_usa_moves}
 \alias{ef_usa_moves}
 \title{Running exhaust emissions factors from United States (MOVES3 model)}
-\source{
-\url{https://www.epa.gov/moves}
-}
 \usage{
 ef_usa_moves(
   pollutant,
