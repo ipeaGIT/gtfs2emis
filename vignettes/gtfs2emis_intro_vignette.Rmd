@@ -74,7 +74,7 @@ The `gtfs2mis` package two core functions:
     d) a `data.frame` with info on fleet characteristics passed by the user. 
     The function returns a `list` with the estimated amount of each pollutant emitted by public transport vehicles.
 
-The help users analyze the output from `emission_model()`, the `gtfs2emis`package has few functions:
+To  help users analyze the output from `emission_model()`, the `gtfs2emis` package has few functions:
 
 3. `emis_summary()` to aggregate emission estimates by time of the day, vehicle type or road segment.
 4. `emis_grid()` to spatially aggregate emission estimates using any custom spatial grid or polygons.

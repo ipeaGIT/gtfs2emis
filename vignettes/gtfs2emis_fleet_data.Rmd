@@ -100,7 +100,7 @@ fleet_data_ef_europe
 
 ## 4.3 United States: EMFAC2017 - California Air Resources Board (CARB)
 
-Based on the California EMission Factor model ([EMFAC2017](https://arb.ca.gov/emfac/)), developed by CARB.
+Based on the California Emission Factor model ([EMFAC2017](https://arb.ca.gov/emfac/)), developed by CARB.
 
 ```{r, message = FALSE}
 fleet_data_ef_emfac <- data.frame(  veh_type = "BUS_URBAN_D"
