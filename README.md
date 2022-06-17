@@ -1,5 +1,4 @@
-
-# gtfs2emis: Generating estimates of public transport emissions from GTFS data
+# gtfs2emis: Generating estimates of public transport emissions from GTFS data <img align="right" src="man/figures/logo.png" alt="logo" width="180">
 
 [![R-CMD-check](https://github.com/rafapereirabr/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/rafapereirabr/gtfs2emis/actions)
 [![Lifecycle:
@@ -8,16 +7,12 @@
 coverage](https://codecov.io/gh/rafapereirabr/gtfs2emis/branch/main/graph/badge.svg)](https://app.codecov.io/gh/rafapereirabr/gtfs2emis?branch=main)
 
 
-
 **gtfs2emis** is an R package to estimate the emission levels of public
-transport networks based on GTFS data. The package combines two
-**inputs**: I) geolocated time tables of public transport services
-organized in GTFS format; and II) information on fleet characteristics
-such as fleet age, technology, fuel, euro stage, speed etc. As it
-stands, it estimates several pollutants (see table below) at high
+transport networks based on GTFS data. The package requires two main inputs: i) public transport data in the GTFS standard format; and ii) some basic information on fleet characteristics such as fleet age, technology, fuel and Euro stage. As it
+stands, the the package estimates several pollutants (see table below) at high
 spatial and temporal resolutions. Pollution levels can be calculated for
 specific transport routes, trips, time of the day or for the transport
-system as a whole. These **outputs** can be extracted in different
+system as a whole. The output with emission estimates can be extracted in different
 formats, supporting analysis on how emission levels vary across space,
 time and by fleet characteristics.
 
