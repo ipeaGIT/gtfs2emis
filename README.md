@@ -53,7 +53,7 @@ To help users analyze the output from `emission_model()`, the `gtfs2emis` packag
 
 ## Demonstration on sample data
 
-See a detailed demonstration of r5r in this [intro Vignette](add_link). To illustrate functionality, the package includes small sample data sets of the public transport and fleet of Curitiba (Brazil), Detroit (USA) and Dublin (Ireland). Estimating the emissions of a given public transport system using `gtfs2emis` can be done three simple steps, as follows.
+See a detailed demonstration of `gtfs2emis` in this [intro Vignette](add_link). To illustrate functionality, the package includes small sample data sets of the public transport and fleet of Curitiba (Brazil), Detroit (USA) and Dublin (Ireland). Estimating the emissions of a given public transport system using `gtfs2emis` can be done three simple steps, as follows.
 
 ### 1. Run transport model
 
