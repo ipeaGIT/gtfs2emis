@@ -148,8 +148,8 @@ emission_model <- function(  tp_model
   }
   if (ef_model == "ef_usa_emfac" | ef_model == "ef_usa_moves") {
     if (is.null(reference_year)) { 
-      reference_year <- 2019
-      message("Argument `reference_year` considered `2019` (Default value).")
+      reference_year <- 2020
+      message("Argument `reference_year` considered `2020` (Default value).")
     }
     if(is.null(fleet_data$veh_type) | is.null(fleet_data$model_year)
        | is.null(fleet_data$fleet_composition)){
