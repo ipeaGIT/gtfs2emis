@@ -76,6 +76,14 @@ transport_model <- function(gtfs_data,
                             spatial_resolution = 300,
                             output_path = NULL){
   
+  #gtfs_data = gtfs
+  #min_speed = 2
+  #max_speed = NULL
+  #new_speed = NULL
+  #parallel = FALSE
+  #spatial_resolution = 30
+  #output_path = NULL
+  
   # Check inputs GTFS ----
   
   message("Checking inputs")
@@ -111,7 +119,7 @@ transport_model <- function(gtfs_data,
     city_gtfs <- gtfs_data
   }
   
-
+  
   # parallel condition
   if(parallel){
     future::plan(session = "multisession", workers = data.table::getDTthreads() - 1)
@@ -152,18 +160,20 @@ transport_model <- function(gtfs_data,
   gps_speed_fix <- function(i){ # i =1 
     tmp_gps <- readRDS(files_gps[i])
     tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps
-                                         ,min_speed = ifelse(is.null(min_speed),02,min_speed)
-                                         ,max_speed = ifelse(is.null(max_speed),80,max_speed)
-                                         ,new_speed = new_speed)
-   saveRDS(object = tmp_gps_fix
-          ,file = paste0(gps_adjust_path
-                         ,"/",files_gps_names[i]))
+                                          ,min_speed = ifelse(is.null(min_speed),02,min_speed)
+                                          ,max_speed = ifelse(is.null(max_speed),80,max_speed)
+                                          ,new_speed = new_speed)
+    saveRDS(object = tmp_gps_fix
+            ,file = paste0(gps_adjust_path
+                           ,"/",files_gps_names[i]))
     return(NULL)
   }
   if(parallel){
     future::plan(future::multisession)
-    #furrr::future_map(.x = seq_along(files_gps),.f = gps_speed_fix)
-    lapply(seq_along(files_gps),gps_speed_fix)
+    furrr::future_map(.x = seq_along(files_gps)
+                      ,.f = gps_speed_fix
+                      ,.options = furrr::furrr_options(seed = 123)) 
+    #lapply(seq_along(files_gps),gps_speed_fix)
   }else{
     lapply(seq_along(files_gps),gps_speed_fix)
   }
@@ -202,7 +212,7 @@ transport_model <- function(gtfs_data,
     return(gpsLine)
   }else{
     gpsLine <- lapply(1:length(gpsLine),function(i){
-      saveRDS(object =  sf::st_as_sf(gpsLine[[i]])
+      saveRDS(object =  sf::st_sf(gpsLine[[i]])
               , file = paste0(output_path,files_gps_names[i]))
       return(NULL)
     })
