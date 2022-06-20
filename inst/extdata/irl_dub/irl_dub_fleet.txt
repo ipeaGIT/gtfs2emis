@@ -1,4 +1,4 @@
-type_name_eu,euro,fuel,N,fleet_composition,tech
+veh_type,euro,fuel,N,fleet_composition,tech
 Ubus Std 15 - 18 t,III,D,10,0.00998003992015968,-
 Ubus Std 15 - 18 t,IV,D,296,0.295409181636727,SCR
 Ubus Std 15 - 18 t,V,D,148,0.147704590818363,SCR

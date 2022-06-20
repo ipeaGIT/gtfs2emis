@@ -1,4 +1,4 @@
-year,euro,shape_id,type_name_br,type_name_eu,total,fuel
+year,euro,shape_id,type_name_br,veh_type,total,fuel
 2006,III,1849,BUS_URBAN_D,Ubus Std 15 - 18 t,2,D
 2011,III,1849,BUS_URBAN_D,Ubus Std 15 - 18 t,4,D
 2018,V,1733,BUS_MICRO_D,Ubus Midi <=15 t,1,D
