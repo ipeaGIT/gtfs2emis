@@ -147,12 +147,12 @@ Currently the `gtfs2emis` package provides a computational method to estimate ru
 
 There several others transport emissions models available for different purposes (see below). As of today, `gtfs2emis` is the only method with the capability to estimate emissions of public transport systems using GTFS data.
 
--   [vein](https://github.com/atmoschem/vein) Bottom-up and top-down
+-   R: [vein](https://github.com/atmoschem/vein) Bottom-up and top-down
     inventory using GPS data.
--   [EmissV](https://github.com/atmoschem/emissv) Top-down inventory.
--   [Yeti](https://github.com/twollnik/YETI) (It seems abandon).
--   [PythonEmissData](https://github.com/adelgadop/PythonEmissData)
+-   R: [EmissV](https://github.com/atmoschem/emissv) Top-down inventory.
+-   Python: [PythonEmissData](https://github.com/adelgadop/PythonEmissData)
     Jupyter notebook to estimate simple top-down emissions.
+-   Python: [mobair](https://github.com/matteoboh/mobility_emissions) bottom-up model using GPS data.
 
 ## **Future enhancements**
 

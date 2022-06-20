@@ -5,7 +5,7 @@
 #' Returns a vector or data.frame of emission factors for urban buses based on 
 #' values from the [MOVES3 Model](https://www.epa.gov/moves).
 #' Estimates expressed in units 'g/km'. 
-#'
+#' 
 #' @param pollutant character; Pollutants: CH4 (Methane), CO (Carbon Monoxide), 
 #' CO2 (Carbon Dioxide), EC (Energy Consumption), HONO (Nitrous Acid), N2O (Nitrous Oxide),
 #'  NH3 (Ammonia ), NH4 (Ammonium), NO (Nitrogen Oxide), NO2 (Nitrogen Dioxide),
@@ -26,9 +26,9 @@
 #' instead of data.table format. Default is TRUE.
 #' 
 #' @return List. Emission factors in units 'g/km' by speed and model_year.
+#' 
 #' @details 
 #' User can view the pre-processed database in `data(ef_usa_moves_db)` function.
-#' @source \url{https://www.epa.gov/moves}
 #' 
 #' @family Emission factor model
 #' 
