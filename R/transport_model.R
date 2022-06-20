@@ -31,7 +31,6 @@
 #'                 is FALSE. When `TRUE`, it will use all cores available minus 
 #'                 one using `future::plan()` with strategy "multisession" 
 #'                 internally.
-#'                 
 #' @param spatial_resolution The spatial resolution in meters. Defaults to 100m.
 #'                   The function only creates points in order to guarantee that 
 #'                   the minimum distance between two consecutive points will be 
@@ -47,7 +46,12 @@
 #'                    recommended when user wants to process all routes of a 
 #'                    large public transport system because the output of the 
 #'                    function can be significantly large.
-#'                    
+#' @details If the user wants to process the all routes in the GTFS, we suggest 
+#'          using the `output_path` argument as the output can be significantly
+#'           large for public transport networks with many routes. 
+#'           This function is a more friendly approach to generate the transport 
+#'           model. For more advanced users, we recommend reading out
+#'          vignette at <<http://www.github.com/ipeaGIT/gtfs2emis/>>.                    
 #' @return A `data.table sf_linestring` object or `NULL`.
 #' 
 #' @family Core function
@@ -193,6 +197,7 @@ transport_model <- function(gtfs_data,
   f_gps_as_sflinestring <- function(i){ # i = files_gps[1]
     tmp_gps <- readRDS(i)
     tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
+    tmp_gps_fix$dist <- units::set_units(tmp_gps_fix$dist, "km")
     return(tmp_gps_fix)
   }
   

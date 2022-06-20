@@ -70,6 +70,14 @@ vehicles. The function also allow users to set the spatial resolution of the
 output and to adjust the speed of public transport vehicles given a
 \code{min_speed} and \code{max_speed} range.
 }
+\details{
+If the user wants to process the all routes in the GTFS, we suggest
+using the \code{output_path} argument as the output can be significantly
+large for public transport networks with many routes.
+This function is a more friendly approach to generate the transport
+model. For more advanced users, we recommend reading out
+vignette at <\url{http://www.github.com/ipeaGIT/gtfs2emis/}>.
+}
 \examples{
 if (interactive()) {
 library(gtfs2emis)
