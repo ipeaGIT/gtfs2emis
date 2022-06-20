@@ -6,47 +6,111 @@
 #' function allows one to aggregate emissions by time of the day, vehicle type 
 #' or road segment (spatial).
 #'
-#' @param emi_list data.table; Data.table with emissions and departure_time data.
-#' @param emi_vars character; Columns names of emissions information.
-#' @param by character; Emissions can be aggregated by 'time', 'age', 'veh_type' and 'pollutant'
-#' @param time_column vector; Vector containing time_column. 
-#' @param veh_vars vector; Vector containing variables of vehicle type.
-#' @param pol_vars vector; Vector containing variables of pollutant. 
-#'  Only used when 'hour' or 'hour-minute' is selected. 
+#' @param emi_list List; Emission or emission factor list.
+#' @param by Character; Emissions can be aggregated by 'time', 'veh_type', 
+#' 'segment_vars', or simply 'pollutant' (Default). 
+#' @param emi_vars Character; Names of 'emi_list' object attributed to emissions. 
+#' Default is 'emi'.
+#' @param veh_vars Character; Names of 'emi_list' object attributed to vehicle
+#'  characteristics. Default is 'veh_type'.
+#' @param pol_vars Character; Names of 'emi_list' object attributed to pollutants.
+#'  Default is 'pollutant'
+#' @param segment_vars Character; Names of 'emi_list' object attributed to the
+#' road segments. Default is NULL.
+#' @param time_column vector; Required if `by = 'time'` is selected.
+#' Column name with time stamp information provided in 'segment_vars' object of 
+#' 'emi_list'. 
 #'  
-#' @return units ('g'); emissions.
+#' @return data.table with pollutants units ('g') aggregated by time, vehicle type,
+#' or road segment.
 #' @export
 #' 
 #' @examples if (interactive()) {
-#' set.seed(1335)
-#' dist = units::set_units(rnorm(100,0.250,0.03),"km")
-#' ef <- ef_europe_emep(speed = units::set_units(rnorm(100,50,5),"km/h"),
-#'                 veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-#'                 euro = c("IV","V"),
-#'                 pollutant = c("CO2","NOx"),
-#'                 fuel = "D" ,
-#'                 tech =  c("SCR","EGR"),
-#'                 slope = 0.0,
-#'                 load = 0.5,
-#'                 fcorr = 1,
-#'                 as_list = TRUE)
+#' library(data.table)
+#' library(magrittr)
+#' library(gtfstools)
+#' gtfs_file <- system.file("extdata/irl_dub/irl_dub_gtfs.zip", package = "gtfs2emis")
+#' gtfs <- gtfstools::read_gtfs(gtfs_file)
+#' # Keep single trip
+#' gtfs <- gtfstools::filter_by_trip_id(gtfs
+#'                                      , trip_id = c('619.3.60-40-d12-1.224.O'
+#'                                                    ,"10812.1.60-13-d12-1.26.I"))
+#' # Transport model
+#'   tp_model <- transport_model(gtfs_data = gtfs,
+#'                               spatial_resolution = 100,
+#'                               parallel = TRUE)
 #' 
-#' emi <- emis(fleet_composition =  c(0.7,0.3),
-#'             dist = dist,
-#'             ef = ef,
-#'             aggregate = FALSE,
-#'             as_list = TRUE)  
+#' # emission model
 #' 
-#' emi$time_column <- data.table::as.ITime(seq(1,14400,length.out = 100))
-#
-#' my_emis_summary <- emis_summary(emi_list = emi,
-#'                      emi_var = "emi", 
-#'                      by = "time",  # veh_type, time, pollutant 
-#'                      time_column = "time_column",
-#'                      veh_var = "veh_type", # veh_type
-#'                      pol_var = "pollutant") # pollutant
+#' fleet_df <- read.csv(system.file("extdata/irl_dub/irl_dub_fleet.txt"
+#'                                  , package = "gtfs2emis"))
+#' 
+#' emi_list <- emission_model(tp_model = tp_model
+#'                            , ef_model = "ef_europe_emep"
+#'                            , fleet_data = fleet_df
+#'                            , pollutant = c("CO2","PM10"))
+#' # by 'pollutant'
+#' emis_summary(emi_list) 
+#' # by 'veh_type'
+#' emis_summary(emi_list
+#'              , by = "veh_type")
+#' emis_summary(emi_list
+#'              , by = "veh_type"
+#'              , veh_vars = c("euro"))
+#' emis_summary(emi_list
+#'              , by = "veh_type"
+#'              , veh_vars = c("fuel"))
+#' emis_summary(emi_list
+#'              , by = "veh_type"
+#'              , veh_vars = c("veh_type","euro","tech","fuel"))
+#' # by 'time'
+#' emis_summary(emi_list
+#'              , by = "time"
+#'              , segment_vars = "tp_model"
+#'              , time_column = "timestamp") # emi_list$tp_model$timestamp
+#' 
 #'}
-emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = NULL, veh_vars = NULL){
+emis_summary <- function(emi_list, by = "pollutant", emi_vars = 'emi'
+                         , veh_vars = "veh_type", pol_vars = "pollutant"
+                         , segment_vars = NULL, time_column = NULL){
+  
+  # fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
+  #                                         , package = "gtfs2gps"))  %>%
+  #   gtfs2gps::filter_single_trip() %>% 
+  #   gtfs2gps::filter_by_shape_id("shape804-I") %>% 
+  #   gtfs2gps::gtfs2gps() %>% 
+  #   gtfs2gps::adjust_speed() %>% 
+  #   gtfs2gps::gps_as_sflinestring()
+  # 
+  # fort
+  # ef <- ef_europe_emep(speed = fort$speed,
+  #                      veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
+  #                      euro = c("IV","V"),
+  #                      pollutant = c("CO2","NOx"),
+  #                      fuel = "D" ,
+  #                      tech =  c("SCR","EGR"),
+  #                      slope = 0.0,
+  #                      load = 0.5,
+  #                      fcorr = 1,
+  #                      as_list = TRUE)
+  # 
+  # emi <- emis(fleet_composition =  c(0.7,0.3),
+  #             dist = units::set_units(fort$dist,"km"),
+  #             ef = ef,
+  #             aggregate = FALSE,
+  #             as_list = TRUE)  
+  # 
+  # emi$gps <- fort
+  # names(emi)
+  # 
+  # emi_list = emi
+  # by = "time"; by = "pollutant"; by = "veh_type"
+  # emi_vars = "emi"
+  # veh_vars = "veh_type"
+  # pol_vars = "pollutant"
+  #segment_vars = "gps"
+  #time_column = "timestamp"
+  
   
   #
   # check list condition -----
@@ -56,33 +120,42 @@ emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = 
     stop("'emi_list' input needs to have a list format.")
   }
   
-  #
   # check consistencies----
-  #
   
   if(by != "time" & by != "pollutant"  & by != "veh_type"){
     stop("'by' argument needs to be 'time', 'veh_type' or 'pollutant' type")
   }
   if(by == "time"){
-    if(missing(time_column)){
-      stop("'time_column' argument is required when by = 'time' is assigned")
+    if(missing(segment_vars)){
+      stop("'segment_vars' argument is needed when by = 'time' is assigned")
     }
-    if(length(emi_list[[time_column]]) != nrow(emi_list[[emi_vars]])){
+    if(missing(time_column)){
+      stop("'time_column' argument is needed when by = 'time' is assigned")
+    }
+    if(!(time_column %in% names(emi_list[[segment_vars]]))){
+      stop(sprintf("'%s' argument is needed in '%s' data"
+                   ,time_column,segment_vars))
+    }
+    if(length(emi_list[[segment_vars]][[time_column]]) != nrow(emi_list[[emi_vars]])){
       stop("'emi_vars' columns needs to have the same length of 'time_column'")
     }
-    if(missing(emi_vars) | missing(pol_vars)){
+    if(is.null(emi_vars) | is.null(pol_vars)){
       stop("'emi_vars' or 'pol_vars' are missing for 'time' post processing")
     }
   }
   if(by == "pollutant"){
-    if(missing(pol_vars)){
+    if(is.null(pol_vars)){
       stop("pol_vars are missing for 'pollutant' post processing")
     }
+    segment_vars <- NULL
   }
   if(by == "veh_type"){
-    if(missing(veh_vars) | missing(pol_vars)){
-      stop("pol_vars are missing for 'pollutant' post processing")
-    }
+    lapply(veh_vars,function(i){
+      if(is.null(i) | is.null(pol_vars)){
+        stop("'veh_vars' or 'pol_vars' are missing for 'vehicle type' post processing")
+      }
+    })
+    segment_vars <- NULL
   }
   
   #
@@ -93,7 +166,8 @@ emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = 
     if(class(emi_list[[emi_vars]][[i]]) != "units"){
       stop("emi neeeds to has class 'units'. Please, check package 'units'")
     }
-    if(units(emi_list[[emi_vars]][[i]])$numerator != "g" & units(emi_list[[emi_vars]][[i]])$numerator != "kg"){
+    if(units(emi_list[[emi_vars]][[i]])$numerator != "g" & 
+       units(emi_list[[emi_vars]][[i]])$numerator != "kg"){
       stop("emi needs to has 'units' in 'g' or 'kg'.")
     }
   })
@@ -102,71 +176,41 @@ emis_summary <- function(emi_list, emi_vars, by, time_column = NULL, pol_vars = 
   # get units-----
   #
   
-  myunits <- sapply(X = seq_along(emi_list[[emi_vars]]),
-                    FUN = function(i){ 
-                      units::deparse_unit( emi_list[[emi_vars]][[i]] )
-                      }
-                    )
+  myunits <- sapply(seq_along(emi_list[[emi_vars]]),function(i){
+    units::deparse_unit(emi_list[[emi_vars]][[i]])
+  }) %>% unique()
   
-  myunits <- unique(myunits)
+  #  aggregate --------
   
-  #
-  # aggregate by TIME------
-  #
-  
-  if(by == "time"){
-    
-    tmp_dt <- data.table::copy(emi_list[[emi_vars]])
-    
-    # time - filter
-    emi_list[[time_column]] <- data.table::hour(emi_list[[time_column]])
-    
-    tmp_dt <- emis_to_dt(emi_list = emi_list
-                        ,emi_vars = emi_vars
-                        ,veh_vars = veh_vars
-                        ,pol_vars = pol_vars
-                        ,segment_vars = time_column)
-    
-    tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
-                     ,by = c(time_column,pol_vars)
-                     ,.SDcols = c(emi_vars)]
-    
+  # variables to use
+  if(by == "time")  {
+    my_var <- sprintf("%s_hour",time_column)
+    emi_list[[my_var]] <- data.table::hour(
+      emi_list[[segment_vars]][[time_column]]
+    ) 
   }
+  if(by == "veh_type")  my_var <- veh_vars 
   
-  #
-  # aggregate by 'veh_type' -----------
-  #
-  if(by == "veh_type"){
-    
-    tmp_dt <- data.table::copy(emi_list[[emi_vars]])
-    
-    tmp_dt <- emis_to_dt(emi_list = emi_list
-                        ,emi_vars = emi_vars
-                        ,veh_vars = veh_vars
-                        ,pol_vars = pol_vars)
-    
-    tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
-                     ,by = c(veh_vars,pol_vars)
-                     ,.SDcols = c(emi_vars)]
-  }
   
-  #
-  #  aggregate by 'pollutant' --------
-  #
+  # to DT
+  tmp_dt <- emis_to_dt(emi_list = emi_list
+                       , emi_vars = emi_vars
+                       , veh_vars = veh_vars
+                       , pol_vars = pol_vars
+                       , segment_vars =  if(by == "time"){my_var}else{NULL}
+  )
+  
+  # perform sum
   if(by == "pollutant"){
-    
-    tmp_dt <- data.table::copy(emi_list[[emi_vars]])
-    
-    tmp_dt <- emis_to_dt(emi_list = emi_list
-                        ,emi_vars = emi_vars
-                        ,veh_vars = veh_vars
-                        ,pol_vars = pol_vars)
-    
     tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
                      ,by = c(pol_vars)
                      ,.SDcols = c(emi_vars)]
-    
+  }else{
+    tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
+                     ,by = c(my_var,pol_vars)
+                     ,.SDcols = c(emi_vars)]
   }
+  
   
   return(tmp_dt)
 }
