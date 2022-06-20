@@ -8,7 +8,7 @@
 A data.table with 6431 rows and 22 variables:
 \describe{
 \item{Category}{Buses.}
-\item{Fuel}{ Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
+\item{Fuel}{Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel). }
 \item{Segment}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
 "Coaches Std <=18 t","Coaches Artic >18 t".}
@@ -20,7 +20,7 @@ no available after treatment technology associated with euro standards "Conventi
 \item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
 \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
 \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}
-\item{RF}{Reduction Factor; In percentage (\\%) units.}
+\item{RF}{Reduction Factor; In percentage (\%) units.}
 \item{k}{Constant factor.}
 }
 }
