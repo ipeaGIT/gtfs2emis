@@ -76,13 +76,21 @@ emep2019[Euro %in% "Euro 2" | Euro %in% "Euro II", Euro := "II"]
 emep2019[Euro %in% "Euro 1" | Euro %in% "Euro I", Euro := "I"]
 unique(emep2019$Euro)
 
+# simplify 'Units' names
+# emep2019[Pollutant %like% "g/Kwh",units := "g/Kwh"]
+# emep2019[Pollutant %like% "#/Kwh",units := "#/Kwh"]
+# emep2019[is.na(units),units := "g/km"]
+
 # simplify 'Pollutant' names
 unique(emep2019$Pollutant)
 data.table::setnames(emep2019,"Pollutant","Pol")
 emep2019[Pol %in% "PM Exhaust",Pol := "PM10"]
+emep2019[Pol %in% "PM Exhaust [g/kWh]",Pol := "PM10"]
 unique(emep2019$Pol)
 
-# simplify 'mode'
+# remove PM10 Euro VI and V (there are better data on EMEP2016)
+emep2019 <- emep2019[!(Pol == "PM10" & Euro %in% c("V","VI")),]
+# adjust "Mode"
 unique(emep2019$Mode)
 emep2019[Mode %in% "", Mode := NA]
 
@@ -99,7 +107,6 @@ data.table::setnames(emep2019,"Reduction.Factor.[%]","RF")
 # exclude extra columns
 emep2019[1]
 emep2019[,`:=`(`50` = NULL,`Bio.Reduction.Factor.[%]` = NULL,
-               `EF.[g/km].or.ECF.[MJ/km]` = NULL,
                `EF.[g/km].or.ECF.[MJ/km].or.#/km.or.#/kWh.or.g/kWh` = NULL,
                `X23` = NULL)]
 
@@ -156,12 +163,10 @@ emep2016_raw <- openxlsx::read.xlsx(xlsxFile = paste0(a,"2016ef.xlsx"), sheet = 
 emep2016 <- data.table::copy(emep2016_raw)
 
 # simplify by 'Pollutant' and 'Category"
-emep2016[Euro.Standard == "Euro V" & Pollutant == "PM Exhaust" & Category == "Buses"] 
-
 unique(emep2016$Category)
 emep2016 <- list(emep2016[Pollutant %in% "FC" & Category %in% "Buses",],
                  emep2016[Pollutant %in% "PM Exhaust" & Category %in% "Buses"
-                          & Euro.Standard == "Euro V",])
+                          & Euro.Standard %in% c("Euro V","Euro VI"),])
 emep2016 <- data.table::rbindlist(emep2016)
 names(emep2016)
 
@@ -179,6 +184,7 @@ emep2016[,Segment := stringr::str_replace_all(Segment,"Standard","Std")]
 emep2016[,Segment := stringr::str_replace_all(Segment,"Urban Biodiesel Buses","Ubus Std 15 - 18 t")]
 emep2016[,Segment := stringr::str_replace_all(Segment,"Urban CNG Buses","Ubus Std 15 - 18 t")]
 emep2016[,Segment := stringr::str_replace_all(Segment,"Ubus Diesel Hybrid","Ubus Std 15 - 18 t")]
+unique(emep2016$Segment)
 
 # simplify by fuel
 emep2016$Fuel %>% unique()
