@@ -157,19 +157,19 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       
       if(euro[j] %in%  c("Conventional","I","II","III")){
         tech[j] = "-"
-        message(paste0("no technology associated with ", euro[j]))
+        message(sprintf("no technology associated with %s", euro[j]))
       }
       if(euro[j] %in%  c("IV") && (pollutant[i] == "CO2" | pollutant[i] == "FC") ){
         tech[j] = "-"
-        message(paste0("no technology associated with ", euro[j]," and pollutant ", pollutant[i]))
+        message(sprintf("no technology associated with %s and pollutant %s", euro[j],pollutant[i]))
       }
       if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("CO2","FC"))){
         tech[j] = "SCR"
-        message(paste0("Only 'SCR' technology associated with ", euro[j]," and pollutant ", pollutant[i]))
+        message(sprintf("Only 'SCR' technology associated with Euro %s and pollutant %s", euro[j],pollutant[i]))
       }
       if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC"))){
         tech[j] = "DPF+SCR"
-        message(paste0("Only 'DPF+SCR' technology associated with ", euro[j]," and pollutant ", pollutant[i]))
+        message(sprintf("Only 'DPF+SCR' technology associated with Euro %s and pollutant %s", euro[j], pollutant[i]))
       }
       
       # fix load and slope
