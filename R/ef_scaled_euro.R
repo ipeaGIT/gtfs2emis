@@ -15,16 +15,15 @@
 #' "I", "II", "III", "IV", "V", "VI", and "EEV".
 #' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC",
 #' "PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. 
-#' @param SDC numeric; Average speed of urban driving condition in 'km/h'. Default is 19 km/h, 
-#' which is the average speed adopted in EMEP/EEA report.
 #' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" 
-#' (Diesel Hybrid ~ Diesel),
-#' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), 
-#' "BD" (Biodiesel). 
+#' (Diesel Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity),
+#'  "CNG" (Compressed Natural Gas), "BD" (Biodiesel). Default is "D". 
 #' @param tech character; After treatment technology, classified in "SCR" 
 #' (Selective Catalytic Reduction), 
 #' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" 
 #' (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".
+#' @param SDC numeric; Average speed of urban driving condition in 'km/h'. Default is 19 km/h, 
+#' which is the average speed adopted in EMEP/EEA report.
 #' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02,
 #'  0.04 and 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
@@ -76,8 +75,8 @@
 #'                                  , tech = c("SCR","SCR")
 #'                                  , pollutant = c("CO","PM10","CO2","CH4","NOx"))
 #'} 
-ef_scaled_euro <- function(ef_local, speed, veh_type, euro, fuel, pollutant, SDC = 19,
-                           tech = "SCR", slope = 0.0, 
+ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D", 
+                           tech = "SCR", SDC = 19, slope = 0.0, 
                            load = 0.5, fcorr = 1){
   # local test
   # ef_local = ef_brazil(pollutant = c("CO","PM"),

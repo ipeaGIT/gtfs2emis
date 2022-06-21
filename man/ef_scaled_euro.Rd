@@ -9,10 +9,10 @@ ef_scaled_euro(
   speed,
   veh_type,
   euro,
-  fuel,
   pollutant,
-  SDC = 19,
+  fuel = "D",
   tech = "SCR",
+  SDC = 19,
   slope = 0,
   load = 0.5,
   fcorr = 1
@@ -31,21 +31,20 @@ Local emission factors, in units 'g/km'.}
 \item{euro}{character; Euro period of vehicle, classified in "Conventional",
 "I", "II", "III", "IV", "V", "VI", and "EEV".}
 
-\item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD"
-(Diesel Hybrid ~ Diesel),
-"DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas),
-"BD" (Biodiesel).}
-
 \item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC",
 "PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.}
 
-\item{SDC}{numeric; Average speed of urban driving condition in 'km/h'. Default is 19 km/h,
-which is the average speed adopted in EMEP/EEA report.}
+\item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD"
+(Diesel Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity),
+"CNG" (Compressed Natural Gas), "BD" (Biodiesel). Default is "D".}
 
 \item{tech}{character; After treatment technology, classified in "SCR"
 (Selective Catalytic Reduction),
 "EGR" (Exhaust Gas Recirculation), and "DPF+SCR"
 (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".}
+
+\item{SDC}{numeric; Average speed of urban driving condition in 'km/h'. Default is 19 km/h,
+which is the average speed adopted in EMEP/EEA report.}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02,
 0.04 and 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
