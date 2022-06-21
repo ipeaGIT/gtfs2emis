@@ -190,7 +190,7 @@ emission_model <- function(  tp_model
     }
     
   }
-  ### Sflinestring input file----
+  ### iv) Sflinestring input file----
   if (!is.character(tp_model)) {
     
     # Columns that should exist 
@@ -209,9 +209,7 @@ emission_model <- function(  tp_model
   
   
   # B) EF function ---------------- 
-  message("Emissions estimates")
-  message(". . . . . . . . . .")
-  
+
   # Generate EF cetesb_brazil before the loop
   # to avoid multiple runs in the loop
   if(ef_model == "cetesb_brazil"){

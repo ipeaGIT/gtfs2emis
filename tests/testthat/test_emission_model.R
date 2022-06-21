@@ -32,13 +32,29 @@ test_that("adequately raises errors", {
   expect_error(default_tester(tp_model = 'banana'))
   expect_error(default_tester(tp_model = NULL))
   
-  # invalid pollutant
-  expect_error(default_tester(pollutant = 'banana'))
-  expect_error(default_tester(pollutant = NULL))
+  # invalid ef_model
+  expect_error(default_tester(ef_model = 'banana'))
+  expect_error(default_tester(ef_model = NULL))
   
   # invalid fleet_data
   expect_error(default_tester(fleet_data = 'banana'))
   expect_error(default_tester(fleet_data = NULL))
+
+  temp_fleet <- fleet_data_ef_moves
+  temp_fleet$veh_type <- NULL
+  expect_error(default_tester(ef_model = "ef_usa_moves",
+                              fleet_data=temp_fleet))
+  
+  temp_fleet <- fleet_data_ef_cetesb
+  temp_fleet$veh_type <- NULL
+  expect_error(default_tester(ef_model = "ef_bra_cetesb",
+                              fleet_data=temp_fleet))
+  
+
+  # invalid pollutant
+  expect_error(default_tester(pollutant = 'banana'))
+  expect_error(default_tester(pollutant = NULL))
+  
   
   # invalid parallel
   expect_error(default_tester(parallel = 'banana'))
