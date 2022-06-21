@@ -3,22 +3,8 @@ test_that("ef_brazil_cetesb", {
   
   
   library(data.table)
-  library(gtfs2gps)
   library(magrittr)
-  library(gtfstools)
-  
-  fort <- gtfstools::read_gtfs(system.file("extdata/fortaleza.zip"
-                                          , package = "gtfs2gps"))  %>%
-    gtfs2gps::filter_single_trip() %>% 
-    gtfstools::filter_by_shape_id(c("shape804-I", "shape806-I"))
-  
-  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE) %>% 
-    gtfs2gps::adjust_speed()
-  
-  fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
-  
-  fort_gpslines$dist <- units::set_units(fort_gpslines$dist, "km")
-  
+ 
   # fleet
   total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012
                                                  ,2014,2015,2017,2018,2019),
@@ -32,12 +18,10 @@ test_that("ef_brazil_cetesb", {
   # function
   
   EF_brazil <- ef_brazil_cetesb(pollutant = c("CO","CO2"),
-                         veh_type = "BUS_URBAN_D",
-                         model_year = total_fleet$year) 
+                                veh_type = "BUS_URBAN_D",
+                                model_year = total_fleet$year) 
   
-  EF_brazil1 <- ef_brazil_cetesb(pollutant = c("CO","CO2"),
-            veh_type = c("BUS_MICRO_D","BUS_URBAN_D"),
-            model_year = c(2005))
+
   
   # Expect equal tests -------
   expect_equal(length(EF_brazil), 4)
@@ -48,14 +32,37 @@ test_that("ef_brazil_cetesb", {
   expect_equal(class(EF_brazil$EF), "units")
   
   expect_equal(as.numeric(sum(EF_brazil$EF,na.rm = TRUE)), 12042.3,0.1)
-  expect_equal(length(EF_brazil1$veh_type), 4)
+  
+  
   # Expect error tests -------
   
-  expect_error(EF_brazil <- ef_brazil_cetesb(pollutant = c("CO","CO2","P1"),
+  expect_error( ef_brazil_cetesb(pollutant = c("CO","CO2"),
                                       veh_type = "BUS_MICRO_D",
-                                      model_year = total_fleet$year)
-               ,NULL)
-  
-  
+                                      model_year = "2010")
+               ,regexp = "'model_year' argument should be a numeric value."
+               ,fixed = TRUE)
+  expect_error( ef_brazil_cetesb(pollutant = c("CO","CO2"),
+                                 veh_type = "BUS_MICRO_Daa",
+                                 model_year = "2010")
+                ,regexp = paste0("Vehicle type 'BUS_MICRO_Daa' not found in CETESB Emission factor database:\n",
+                       "Please check available data in `data(ef_brazil_cetesb_db)`.")
+                ,fixed = TRUE)
+  expect_error( ef_brazil_cetesb(pollutant = c("CO","CO21"),
+                                 veh_type = "BUS_MICRO_D",
+                                 model_year = 2010)
+                ,regexp = paste0("Pollutant 'CO21' not found in CETESB Emission factor database:\n",
+                       "Please check available data in `data(ef_brazil_cetesb_db)`.")
+                ,fixed = TRUE)
+  expect_error( ef_brazil_cetesb(pollutant = c("CO","CO2"),
+                                 veh_type = rep("BUS_MICRO_D",3),
+                                 model_year = rep(2010,2))
+                ,regexp = paste0("Arguments 'model_year' and 'veh_type' should have the same length.")
+                ,fixed = TRUE)
+  expect_error( ef_brazil_cetesb(pollutant = c("CO","CO2"),
+                                 veh_type = "BUS_MICRO_D",
+                                 model_year = 2050)
+                ,regexp = paste0("'model_year' argument should be between 1960 - 2020:\n"
+                        ,"Please check available data in `data(ef_brazil_cetesb_db)`.")
+                ,fixed = TRUE)
   
   })

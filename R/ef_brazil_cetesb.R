@@ -51,24 +51,62 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   #
   # init config
   #
-  # pollutant = c("CO","PM10","CO2","CH4","NOx")
-  # veh_type = c("BUS_URBAN_D") #veh_type
-  # model_year = c(2001:2010)
+  #pollutant = c("CO","PM10","CO2","CH4","NOx")
+  #veh_type = c("BUS_URBAN_D") #veh_type
+  #model_year = c(2001:2010)
+  # vehicle distribution----
+  utils::data(ef_brazil_cetesb_db)
   
-  # check lengths----
+  # check inputs----
   
+  # pollutant
+  lapply(pollutant,function(i){
+    if(!(i %in% unique(ef_brazil_cetesb_db$pollutant))){
+      stop(
+        paste0("Pollutant '",i,"' not found in CETESB Emission factor database:\n",
+               "Please check available data in `data(ef_brazil_cetesb_db)`.")
+      )
+    }
+  })
+  
+  # veh_type
+  lapply(veh_type,function(i){
+    if(!(i %in% c('BUS_URBAN_D', 'BUS_MICRO_D', 'BUS_COACH_D', 'BUS_ARTIC_D'))){
+      stop(
+        paste0("Vehicle type '",i,"' not found in CETESB Emission factor database:\n"
+               ,"Please check available data in `data(ef_brazil_cetesb_db)`.")
+      )
+    }
+  })
+  
+  # model_year
+  lapply(model_year,function(i){
+    if(!is.numeric(i)){
+      stop(
+       "'model_year' argument should be a numeric value."
+      )
+    }
+    if(!(i %in% 1960:2020)){
+      stop(
+        paste0("'model_year' argument should be between 1960 - 2020:\n", 
+               "Please check available data in `data(ef_brazil_cetesb_db)`.")
+      )
+    }
+  })
+  
+  # model_year and veh_type
   if(length(model_year) != length(veh_type) && length(veh_type) == 1){
     veh_type <- rep(veh_type, length(model_year))
   }
   if(length(model_year) != length(veh_type) && length(model_year) == 1){
     model_year <- rep(model_year, length(veh_type))
   }
+  if(length(model_year) != length(veh_type)){
+    stop("Arguments 'model_year' and 'veh_type' should have the same length.")
+  }
   
+  # loop through database
   tmp_model_year <- model_year
-  
-  # vehicle distribution----
-  utils::data(ef_brazil_cetesb_db)
-  
   ef_temp1 <- lapply(pollutant, function(p){ # p = pollutant[1]
     ef_temp <- lapply(seq_along(model_year), function(i){# i = 1
       ef_brazil_cetesb_db[pollutant == p &
@@ -80,23 +118,31 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
     return(ef_temp)
   })
   
-  ef_final <- do.call(cbind, ef_temp1)
-  ef_final <- units::set_units(ef_final,"g/km")  
+  ef_final_dt <- do.call(cbind, ef_temp1)
+  ef_final_dt <- units::set_units(ef_final_dt,"g/km")  
   # rename colnames
-  colnames(ef_final) <- paste0(rep(pollutant
-                                   , each = length(model_year)), "_"
-                               , model_year)
+  colnames(ef_final_dt) <- paste0(rep(pollutant
+                                      , each = length(model_year)), "_"
+                                  , model_year)
   
   # return in a data.table/list like format----
   
-  if(as_list){
-    # local test
-    ef_final <- list("pollutant"   = rep(pollutant,each = length(veh_type))
-                     ,"veh_type"   = rep(veh_type,length(pollutant))
-                     ,"model_year" = rep(model_year,length(pollutant))
-                     ,"EF"         = ef_final)
+  # export list
+  ef_final <- list("pollutant"   = rep(pollutant,each = length(veh_type))
+                   ,"veh_type"   = rep(veh_type,length(pollutant))
+                   ,"model_year" = rep(model_year,length(pollutant))
+                   ,"EF"         = ef_final_dt)
+  
+  # export DT
+  if(!as_list){
+    #ef_final1 <- emis_to_dt(emi_list = ef_final
+    #                       ,emi_vars = "EF"
+    #                       ,veh_vars = "veh_type"
+    #                       ,pol_vars = "pollutant")
+    return(ef_final_dt)
+  }else{
+    
+    # return function
+    return(ef_final)
   }
-  
-  return(ef_final)
-  
 }
