@@ -243,12 +243,13 @@ ggplot(data = emi_by_veh) +
 ```{r, fig.height=5, fig.width=8}
 emi_by_time <- emis_summary(emi_list = emi_list,
                                 by = "time",
-                                time_column = "time_column") 
+                                time_column = "timestamp",
+                                segment_vars = "tp_model") 
 head(emi_by_time) 
 
 # plot
 ggplot(data = emi_by_time) +
-  geom_col(aes(x = factor(time_column), y = as.numeric(emi/1000), fill = pollutant),
+  geom_col(aes(x = factor(timestamp_hour), y = as.numeric(emi/1000), fill = pollutant),
            color=NA, show.legend = FALSE) +
   labs(y="Total emissions (Kg)", x="Hour of the day") +
   facet_wrap(~pollutant, scales = "free", nrow = 2) + 
