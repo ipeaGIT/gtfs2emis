@@ -82,8 +82,8 @@ Sys.setenv(NOT_CRAN = "true")
 
 
 # each function separately
-covr::function_coverage(fun=pkg::fun, test_file("tests/testthat/test-fun.R"))
-
+a <- covr::function_coverage(fun=gtfs2emis::emission_model, test_file("tests/testthat/test_emission_model.R"))
+a
 
 # nocov start
 

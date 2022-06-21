@@ -129,9 +129,14 @@ emission_model <- function(  tp_model
                              , parallel = TRUE
                              , output_path = NULL){
   # A) Checking inputs -----
-  message("Checking inputs")
-  message(". . . . . . . . ")
   
+  checkmate::assert_data_frame(fleet_data, null.ok = FALSE)
+  checkmate::assert_vector(pollutant, null.ok = FALSE)
+  checkmate::assert_logical(parallel, null.ok = FALSE)
+  checkmate::assert_string(output_path, null.ok = TRUE)
+  checkmate::assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
+  checkmate::assert_class(tp_model, classes = c("sf", "data.table", "data.frame"))
+    
   ## i) EF model ----
   if (!(ef_model %in% c("ef_brazil_cetesb","ef_usa_emfac","ef_usa_moves","ef_europe_emep"))) {
     stop("'ef_model' has to me one of the following 'ef_brazil_cetesb',\n'ef_usa_emfac'
@@ -194,11 +199,12 @@ emission_model <- function(  tp_model
       stop("Columns 'speed', 'dist', 'cumdist' and 'cumtime' should exist in the tp_model file.")
     }
     # checa output (tem que ser rds)
-    if(!missing(output_path)){
-      if(!(output_path %like% ".rds")){
+    if (!is.null(output_path)) {
+      if (!(output_path %like% ".rds")) {
         stop("User should provide a valid output_filepath in '.rds' format.")
       }
     }
+    
   } 
   
   

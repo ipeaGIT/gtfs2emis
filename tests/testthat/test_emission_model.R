@@ -7,16 +7,16 @@ default_tester <- function(tp_model = tp_model_bra,
                            fleet_data = fleet_data_ef_moves,
                            pollutant = c("CO","PM10","CO2"),
                            reference_year = 2019,
-                           parallel = TRUE,
-                           output_path = NULL) {
+                           output_path = NULL,
+                           parallel = TRUE) {
 
   results <- gtfs2emis::emission_model(tp_model = tp_model,
                                        ef_model = ef_model,
                                        fleet_data = fleet_data,
                                        pollutant = pollutant,
                                        reference_year = reference_year,
-                                       parallel = parallel,
-                                       output_path = output_path
+                                        output_path = output_path,
+                                       parallel = parallel
                                        )
   return(results)
 }
@@ -28,8 +28,33 @@ default_tester <- function(tp_model = tp_model_bra,
 
 test_that("adequately raises errors", {
 
-expect_error()
-}
+  # invalid tp_model
+  expect_error(default_tester(tp_model = 'banana'))
+  expect_error(default_tester(tp_model = NULL))
+  
+  # invalid pollutant
+  expect_error(default_tester(pollutant = 'banana'))
+  expect_error(default_tester(pollutant = NULL))
+  
+  # invalid fleet_data
+  expect_error(default_tester(fleet_data = 'banana'))
+  expect_error(default_tester(fleet_data = NULL))
+  
+  # invalid parallel
+  expect_error(default_tester(parallel = 'banana'))
+  expect_error(default_tester(parallel = 123))
+  expect_error(default_tester(parallel = NULL))
+  
+  # invalid reference_year
+  expect_error(default_tester(reference_year = 'banana'))
+  expect_error(default_tester(reference_year = 123))
+  
+  # invalid output_path
+  expect_error(default_tester(output_path = 'banana'))
+  expect_error(default_tester(output_path = 123))
+  
+  
+})
 
 
 # adequate behavior ------------------------------------------------------
