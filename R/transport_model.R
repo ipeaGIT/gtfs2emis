@@ -74,10 +74,10 @@
 #'}
 transport_model <- function(gtfs_data,
                             min_speed = 2, 
-                            max_speed = NULL, 
+                            max_speed = 80, 
                             new_speed = NULL, 
                             parallel = FALSE, 
-                            spatial_resolution = 300,
+                            spatial_resolution = 100,
                             output_path = NULL){
   
   #gtfs_data = gtfs
@@ -164,8 +164,8 @@ transport_model <- function(gtfs_data,
   gps_speed_fix <- function(i){ # i =1 
     tmp_gps <- readRDS(files_gps[i])
     tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps
-                                          ,min_speed = ifelse(is.null(min_speed),02,min_speed)
-                                          ,max_speed = ifelse(is.null(max_speed),80,max_speed)
+                                          ,min_speed = min_speed
+                                          ,max_speed = max_speed
                                           ,new_speed = new_speed)
     saveRDS(object = tmp_gps_fix
             ,file = paste0(gps_adjust_path

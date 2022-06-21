@@ -7,10 +7,10 @@
 transport_model(
   gtfs_data,
   min_speed = 2,
-  max_speed = NULL,
+  max_speed = 80,
   new_speed = NULL,
   parallel = FALSE,
-  spatial_resolution = 300,
+  spatial_resolution = 100,
   output_path = NULL
 )
 }
