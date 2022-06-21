@@ -2,12 +2,16 @@
 test_that("ef_usa_emfac", {
   # GTFS2gps filter
   library(data.table)
-  fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
+  library(gtfs2gps)
+  library(magrittr)
+  library(gtfstools)
+  fort <- gtfstools::read_gtfs(system.file("extdata/fortaleza.zip"
                                           , package = "gtfs2gps"))  %>%
     gtfs2gps::filter_single_trip() %>% 
-    gtfs2gps::filter_by_shape_id(c("shape804-I"))
+    gtfstools::filter_by_shape_id(c("shape804-I"))
   
-  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE)
+  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE) %>% 
+    gtfs2gps::adjust_speed()
   
   fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
   
@@ -22,17 +26,18 @@ test_that("ef_usa_emfac", {
   
   # function
   EF_usa <- ef_usa_emfac(pollutant = c("CO","PM10"),
-                              calendar_year = "2019",
+                              reference_year = "2019",
                               model_year = total_fleet$year,
                               speed = fort_gpslines$speed,
                               fuel = "D")
 
   # Expect equal----
-  expect_equal(as.numeric(sum(EF_usa$EF,na.rm = TRUE)), 17.29529, 0.01)
+  expect_equal(names(EF_usa),c("pollutant","model_year","fuel","EF" ))
+  expect_equal(as.numeric(sum(EF_usa$EF,na.rm = TRUE)), 19.45502, 0.01)
 
   # Expect error----
   expect_error(ef_usa_emfac(pollutant = c("CO","PM10"),
-                      calendar_year = "2019",
+                            reference_year = "2019",
                       model_year = total_fleet$year,
                       speed = as.numeric(fort_gpslines$speed),
                       fuel = "D"),

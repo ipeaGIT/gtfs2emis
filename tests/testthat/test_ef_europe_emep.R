@@ -1,12 +1,17 @@
 
-test_that("emis", {
+test_that("ef_europe_emep", {
   # GTFS2gps filter
-  fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
+  library(data.table)
+  library(gtfs2gps)
+  library(magrittr)
+  library(gtfstools)
+  fort <- gtfstools::read_gtfs(system.file("extdata/fortaleza.zip"
                                           , package = "gtfs2gps"))  %>%
     gtfs2gps::filter_single_trip() %>% 
-    gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
+    gtfstools::filter_by_shape_id(c("shape804-I", "shape806-I"))
   
-  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE)
+  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE) %>% 
+    gtfs2gps::adjust_speed()
   
   fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
   
@@ -24,7 +29,7 @@ test_that("emis", {
                                       bus_age = c("2010", "2011", "2012", "2013"),
                                       bus_fuel = "D")
   # gtfs2emis
-  EF_europe <- ef_emep_europe(pollutant = c("CO", "PM10"),
+  EF_europe <- ef_europe_emep(pollutant = c("CO", "PM10"),
                          speed = fort_gpslines$speed,
                          veh_type = total_fleet$veh_type_euro,
                          tech = "SCR",
@@ -40,7 +45,7 @@ test_that("emis", {
   
 
   # Expect error
-  expect_error(ef_emep_europe(pollutant = c("CO", "PM"),
+  expect_error(ef_europe_emep(pollutant = c("CO", "PM"),
                          speed = fort_gpslines$speed,
                          veh_type = total_fleet$veh_type_euro,
                          tech = "SCR",

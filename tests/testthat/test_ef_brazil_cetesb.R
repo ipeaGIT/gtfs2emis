@@ -1,15 +1,19 @@
 
-test_that("ef_cetesb_brazil", {
+test_that("ef_brazil_cetesb", {
   
   
-  # GTFS2gps filter-----
   library(data.table)
-  fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
+  library(gtfs2gps)
+  library(magrittr)
+  library(gtfstools)
+  
+  fort <- gtfstools::read_gtfs(system.file("extdata/fortaleza.zip"
                                           , package = "gtfs2gps"))  %>%
     gtfs2gps::filter_single_trip() %>% 
-    gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
+    gtfstools::filter_by_shape_id(c("shape804-I", "shape806-I"))
   
-  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE)
+  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE) %>% 
+    gtfs2gps::adjust_speed()
   
   fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
   
@@ -27,11 +31,11 @@ test_that("ef_cetesb_brazil", {
   
   # function
   
-  EF_brazil <- ef_cetesb_brazil(pollutant = c("CO","CO2"),
+  EF_brazil <- ef_brazil_cetesb(pollutant = c("CO","CO2"),
                          veh_type = "BUS_URBAN_D",
                          model_year = total_fleet$year) 
   
-  EF_brazil1 <- ef_cetesb_brazil(pollutant = c("CO","CO2"),
+  EF_brazil1 <- ef_brazil_cetesb(pollutant = c("CO","CO2"),
             veh_type = c("BUS_MICRO_D","BUS_URBAN_D"),
             model_year = c(2005))
   
@@ -39,7 +43,7 @@ test_that("ef_cetesb_brazil", {
   expect_equal(length(EF_brazil), 4)
   expect_equal(length(EF_brazil$pollutant), 18)
   expect_equal(length(EF_brazil$veh_type), 18)
-  expect_equal(length(EF_brazil$years), 18)
+  expect_equal(length(EF_brazil$model_year), 18)
   expect_equal(units::deparse_unit(EF_brazil$EF), "g km-1")
   expect_equal(class(EF_brazil$EF), "units")
   
@@ -47,9 +51,10 @@ test_that("ef_cetesb_brazil", {
   expect_equal(length(EF_brazil1$veh_type), 4)
   # Expect error tests -------
   
-  expect_error(EF_brazil <- ef_brazil(pollutant = c("CO","CO2","P1"),
+  expect_error(EF_brazil <- ef_brazil_cetesb(pollutant = c("CO","CO2","P1"),
                                       veh_type = "BUS_MICRO_D",
-                                      model_year = total_fleet$year),NULL)
+                                      model_year = total_fleet$year)
+               ,NULL)
   
   
   

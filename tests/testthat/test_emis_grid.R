@@ -3,12 +3,18 @@ test_that("emis_grid", {
   
   # GTFS2gps filter-----
   library(data.table)
-  fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
-                                          , package = "gtfs2gps"))  %>%
-    gtfs2gps::filter_single_trip() %>% 
-    gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
+  library(gtfs2gps)
+  library(gtfstools)
+  library(magrittr)
   
-  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE)
+  gtfs_file <- system.file("extdata/fortaleza.zip", package = "gtfs2gps")
+  
+  fort <- gtfstools::read_gtfs(gtfs_file)  %>%
+    gtfs2gps::filter_single_trip() %>% 
+    gtfstools::filter_by_shape_id(c("shape804-I", "shape806-I"))
+  
+  fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE) %>% 
+    gtfs2gps::adjust_speed()
   
   fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
   
@@ -27,7 +33,7 @@ test_that("emis_grid", {
   
   # Ef ----
   set.seed(1234)
-  EF_europe <- ef_emep_europe(pollutant = c("CO", "PM10"),
+  EF_europe <- ef_europe_emep(pollutant = c("CO", "PM10"),
                          speed = fort_gpslines$speed,
                          veh_type = total_fleet$veh_type_euro,
                          tech = "SCR",
@@ -35,18 +41,18 @@ test_that("emis_grid", {
                          fcorr = rnorm(9, 0.5, 0.1))
   
   EF_usa_emfac <- ef_usa_emfac(pollutant = c("CO", "PM10"),
-                               calendar_year = "2019",
+                               reference_year = "2019",
                                model_year = total_fleet$year,
                                speed = fort_gpslines$speed,
                                fuel = "D")
   
   EF_usa_moves <- ef_usa_moves(pollutant = c("CO", "PM10"),
-                               calendar_year = "2019",
+                               reference_year = "2019",
                                model_year = total_fleet$year,
                                speed = fort_gpslines$speed,
                                fuel = "D")
   
-  EF_brazil <- ef_cetesb_brazil(pollutant = c("CO", "CO2"),
+  EF_brazil <- ef_brazil_cetesb(pollutant = c("CO", "CO2"),
                          veh_type = "BUS_URBAN_D",
                          model_year = total_fleet$year) # fleet_composition
   
@@ -82,7 +88,12 @@ test_that("emis_grid", {
   
   
   # Grid
-  grid_gps <- vein::make_grid(spobj = for_emis, width =  0.25 / 102.47) # 500 meters
+  grid_gps <- sf::st_make_grid(for_emis
+                               , cellsize = 0.25 / 102.47
+                               , square = FALSE
+                               ) 
+  grid_gps <- sf::st_sf(id = 1:length(grid_gps)
+                        , geometry = grid_gps)
   for_sf <- sf::st_as_sf(for_emis)
   
   pol_gps <- emis_grid(data = for_sf,
@@ -102,15 +113,15 @@ test_that("emis_grid", {
                                    time_class = 'hour-minute',
                                    time_column = 'timestamp')
   # Expect equal -----
-  expect_equal(nrow(pol_gps), 57)
+  expect_equal(nrow(pol_gps), 58)
   expect_equal(nrow(pol_gps_hour), 60)
-  expect_equal(nrow(pol_gps_hour_minute), 94)
+  expect_equal(nrow(pol_gps_hour_minute), 96)
   expect_equal(ncol(pol_gps), 6)
   expect_equal(ncol(pol_gps_hour), 7)
   expect_equal(ncol(pol_gps_hour_minute), 7)
-  expect_equal(as.numeric(sum(pol_gps$Moves_CO_total)), 26.31065,0.01)
-  expect_equal(as.numeric(sum(pol_gps_hour$Moves_CO_total)), 26.31065,0.01)
-  expect_equal(as.numeric(sum(pol_gps_hour_minute$Moves_CO_total)), 26.31065,0.01)
+  expect_equal(as.numeric(sum(pol_gps$Moves_CO_total)), 436.9472,0.01)
+  expect_equal(as.numeric(sum(pol_gps_hour$Moves_CO_total)), 436.9472,0.01)
+  expect_equal(as.numeric(sum(pol_gps_hour_minute$Moves_CO_total)), 436.9472,0.01)
   
   
 })

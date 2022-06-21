@@ -6,8 +6,7 @@ test_that("emis_summary", {
   library(gtfstools)
   gtfs_file <- system.file("extdata/irl_dub/irl_dub_gtfs.zip", package = "gtfs2emis")
   gtfs <- gtfstools::read_gtfs(gtfs_file) %>% 
-    gtfstools::filter_by_trip_id(.
-                                 , trip_id = c('619.3.60-40-d12-1.224.O'))
+    gtfstools::filter_by_trip_id(., trip_id = c('619.3.60-40-d12-1.224.O'))
   
   # Transport model
   tranp_model <- transport_model(gtfs_data = gtfs,
@@ -43,12 +42,12 @@ test_that("emis_summary", {
   expect_equal(ncol(summary_time),3) # ncol
   expect_equal(ncol(summary_veh),3) # ncol
   expect_equal(ncol(summary_pol),2) # ncol
-  expect_equal(nrow(summary_time),10) # nrow
+  expect_equal(nrow(summary_time),4) # nrow
   expect_equal(nrow(summary_veh),2) # nrow
   expect_equal(nrow(summary_pol),2) # nrow
-  expect_equal(as.numeric(sum(summary_time$emi)),63985.96,0.01) # sum(emi)
-  expect_equal(as.numeric(sum(summary_veh$emi)),63985.96,0.01) # sum(emi)
-  expect_equal(as.numeric(sum(summary_pol$emi)),63985.96,0.01) # sum(emi)
+  expect_equal(as.numeric(sum(summary_time$emi)),30883.18,0.01) # sum(emi)
+  expect_equal(as.numeric(sum(summary_veh$emi)),30883.18,0.01) # sum(emi)
+  expect_equal(as.numeric(sum(summary_pol$emi)),30883.18,0.01) # sum(emi)
   
 })
 
