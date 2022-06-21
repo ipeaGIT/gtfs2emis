@@ -1,9 +1,9 @@
 ^\.Rproj\.user$
-^LICENSE\.md$
 ^README\.Rmd$
 ^data-raw$
 ^test_joao$
 ^tests_rafa$
+^\.github$
 ^prep$
 ^figures$
 ^tests$
@@ -12,3 +12,5 @@
 ^article$
 ^article.zip
 ^.*\.Rproj$
+^cran-comments\.md$
+^CRAN-RELEASE$

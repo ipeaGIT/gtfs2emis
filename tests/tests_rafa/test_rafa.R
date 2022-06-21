@@ -72,9 +72,13 @@ ggplot() +
 
 gtfstools::write_gtfs(gtfs_cut, 'gtfs_cut.zip')
 
-##### Coverage ------------------------
 
- Sys.setenv(NOT_CRAN = "true")
+
+
+##### Coverage ------------------------
+library(covr)
+library(testthat)
+Sys.setenv(NOT_CRAN = "true")
 
 
 # each function separately

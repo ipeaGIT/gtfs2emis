@@ -8,3 +8,5 @@ Meta
 article1/*
 2013ef/
 sysdata.rds
+vignettes/*.html
+vignettes/*.R
