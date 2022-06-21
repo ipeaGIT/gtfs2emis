@@ -57,7 +57,6 @@ library(gtfs2emis)
 library(gtfstools)
 library(progressr)
 library(data.table)
-library(magrittr)
 library(ggplot2)
 library(units)
 library(sf)
@@ -85,7 +84,6 @@ To  help users analyze the output from `emission_model()`, the `gtfs2emis` packa
 # 5. Demonstration on sample data
 
 In this introductory vignette, we show a very simple case study using default parameters of the `gtfs2emis` package and where we assume that fleet characteristics are homogeneously distributed across the public transport routes. [For advanced users, we have written another vignette](add_link) that demonstrates how `gtfs2emis` allows one to allocate specific vehicles into predefined routes, fix speeds and boarding times in the transport model, and adjust emissions factors. We have also written a separate vignette to help users build the `data.frame` with information on [fleet characteristics](add_link).
-
 
 To demonstrate how the `gtfs2emis` package works, we will be using a small sample data for the city of Dublin, Ireland. In this example, we'll be estimating `CO2` and `PM10` emissions of bus services on business days.
 
@@ -195,71 +193,57 @@ head(emi_dt)
 ```
 
 
-Alternatively, the `emis_summary()` function helps users summarize emission estimates, aggregating emissions by either `veh_type`, `pollutant`, or `time`:
+Alternatively, the `emis_summary()` function helps users summarize emission estimates, aggregating emissions by pollutant, time of the day, vehicle type or road segment (spatial).
 
-## 6.1 Total emissions by vehicle type
+
+## 6.1 Total emissions by pollutant type
+
+
+```{r, message = FALSE}
+emi_by_pol <- emis_summary(emi_list = emi_list,
+                                 emi_var = "emi", 
+                                 by = "pollutant") 
+emi_by_pol
+
+```
+
+
+## 6.2 Total emissions by vehicle type
 
 The `emis_summary()` function help users summarize emission estimates by either `veh_type`, `pollutant`, or `time`. Using this function, users can easily:
 
 
 ```{r, fig.height=5, fig.width=8}
-emi_total <- emis_summary(emi_list = emi_list,
-                          emi_var = "emi",
+emi_by_veh <- emis_summary(emi_list = emi_list,
+                          by = "veh_type") 
+head(emi_by_veh)
+```
+
+It is also possible to summarize emission estimates by other vehicle characteristics AND pollutant.
+
+```{r, message = FALSE}
+emi_by_veh <- emis_summary(emi_list = emi_list,
                           by = "veh_type",
-                          veh_var = "veh_type",
-                          pol_var = "pollutant") 
-head(emi_total)
+                          veh_vars = c("veh_type","euro")) 
+head(emi_by_veh)
 
 # plot
-ggplot(data = emi_total) +
-  geom_col(aes(x = veh_type, y = as.numeric(emi/1000), fill = pollutant), 
+ggplot(data = emi_by_veh) +
+  geom_col(aes(x = euro, y = as.numeric(emi/1000), fill = pollutant), 
            color=NA, show.legend = FALSE) +
-  labs(y="Total emissions (Kg)", x="vehicle type") +
+  labs(y="Total emissions (Kg)", x="Euro standard") +
   facet_wrap(~pollutant, scales = "free", nrow = 2) +
   theme_minimal()
 
 ```
 
 
-
-## 6.2 Total emissions by pollutant type
-
-
-```{r, message = FALSE}
-emi_by_pol <- emis_summary(emi_list = emi_list,
-                                 emi_var = "emi", 
-                                 by = "pollutant", 
-                                 veh_var = "veh_type", 
-                                 pol_var = "pollutant") 
-emi_by_pol
-
-```
-
-
-It is also possible to summarize emission estimates by other vehicle characteristics AND pollutant type.
-
-```{r, message = FALSE}
-emi_by_veh <- emis_summary(emi_list = emi_list,
-                                emi_var = "emi", 
-                                by = "veh_type", 
-                                veh_var = c("veh_type", "euro", "fuel"),
-                                pol_var = "pollutant")
-
-head(emi_by_veh)
-```
-
-
 ## 6.3 Total emissions by time of the day
 
 ```{r, fig.height=5, fig.width=8}
-emi_list$time_column <- emi_list$tp_model$timestamp  #### ja nao podia ser feito dentro da funcao?
-
 emi_by_time <- emis_summary(emi_list = emi_list,
-                                emi_var = "emi",
                                 by = "time",
-                                time_column = "time_column",
-                                veh_var = "veh_type",
-                                pol_var = "pollutant") 
+                                time_column = "time_column") 
 head(emi_by_time) 
 
 # plot

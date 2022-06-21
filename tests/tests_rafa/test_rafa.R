@@ -107,6 +107,10 @@ Sys.setenv(NOT_CRAN = "true")
 devtools::check(pkg = ".",  cran = FALSE, env_vars = c(NOT_CRAN = "true"))
 
 
+emis_summary(emi_list = emi_list,
+             by = "segment_vars",
+             segment_vars = "tp_model") 
+
 
 # CRAN
 Sys.setenv(NOT_CRAN = "false")
