@@ -188,7 +188,8 @@ emis_summary <- function(emi_list,
   
   myunits <- sapply(seq_along(emi_list[[emi_vars]]),function(i){
     units::deparse_unit(emi_list[[emi_vars]][[i]])
-  }) %>% unique()
+  }) 
+  myunits <- unique(myunits)
   
   #  aggregate --------
   

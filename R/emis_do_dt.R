@@ -181,10 +181,12 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
     })
     if(!is.null(segment_vars)){
       tmp_dt <- do.call(c, list(tmp_dt, emi_list[segment_vars]))
-      tmp_dt <- do.call(cbind,tmp_dt) %>% data.table::as.data.table()
+      tmp_dt <- do.call(cbind,tmp_dt)
+      tmp_dt <- data.table::as.data.table(tmp_dt)
       names(tmp_dt) <- c(all_vars,segment_vars)
     }else{
-      tmp_dt <- do.call(cbind,tmp_dt) %>% data.table::as.data.table()
+      tmp_dt <- do.call(cbind,tmp_dt)
+      tmp_dt <- data.table::as.data.table(tmp_dt)
       names(tmp_dt) <- all_vars
     }
     
@@ -198,7 +200,8 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
     if(!is.null(pol_vars))      tmp_dt[,(pol_vars) := lapply(.SD, as.character), .SDcols = pol_vars]
     
     return(tmp_dt)
-  }) %>% data.table::rbindlist()
+  }) 
+  dt <- data.table::rbindlist(dt)
   
   # add units back ----
   

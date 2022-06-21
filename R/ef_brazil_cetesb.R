@@ -80,8 +80,8 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
     return(ef_temp)
   })
   
-  ef_final <- do.call(cbind, ef_temp1)  %>% units::set_units("g/km")  
-  
+  ef_final <- do.call(cbind, ef_temp1)
+  ef_final <- units::set_units(ef_final,"g/km")  
   # rename colnames
   colnames(ef_final) <- paste0(rep(pollutant
                                    , each = length(model_year)), "_"

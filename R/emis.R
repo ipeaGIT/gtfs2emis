@@ -104,8 +104,8 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, a
     # verify how many pollutants 'ef' data has based on names(ef)
     m <- regexpr(pattern = "\\_", text = colnames(ef), fixed = FALSE)
     # get unique pollutants
-    single_pol <- sapply(regmatches(x = colnames(ef), m = m, invert = TRUE), function(i){i[[1]]}) %>% 
-      unique()
+    single_pol <- sapply(regmatches(x = colnames(ef), m = m, invert = TRUE), function(i){i[[1]]})
+    single_pol <- unique(single_pol)
   }
   
   # match 'veh' size based on different pollutant----
@@ -119,7 +119,8 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, a
     return(temp_emis)
   })
   
-  emi <- do.call(cbind, emi) %>% data.table::as.data.table()
+  emi <- do.call(cbind, emi) 
+  emi <- data.table::as.data.table(emi)
   colnames(emi) <- colnames(tmpEf)
   
   #

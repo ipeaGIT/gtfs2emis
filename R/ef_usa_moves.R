@@ -116,9 +116,11 @@ ef_usa_moves <- function(pollutant, model_year, reference_year, speed, fuel = 'D
   tmp_speed2 <- rep(NA, length(tmp_speed))
   
   # data.table with upper_limit info
+  tmp_limit <-  unique(temp_moves$upper_speed_interval) 
+  tmp_limit <-  sort(as.numeric(tmp_limit),decreasing = TRUE)
+  
   temp_order_dt <- data.table::data.table(
-    "limit" = temp_moves$upper_speed_interval %>% unique() %>% 
-      as.numeric() %>% sort(decreasing = TRUE)
+    "limit" = tmp_limit
     ,"id" = data.table::uniqueN(temp_moves$upper_speed_interval):1)
   
   for(t in 1:nrow(temp_order_dt)){ # t = 10

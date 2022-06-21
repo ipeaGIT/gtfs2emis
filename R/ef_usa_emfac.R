@@ -115,10 +115,10 @@ ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D'
   
   # data.table with upper_limit info
   temp_order_dt <- data.table::data.table(
-    "limit" = temp_emfac$upper_speed_interval %>%
-      unique() %>% 
-      as.numeric() %>% 
-      sort(decreasing = TRUE)
+    "limit" =  
+      sort(as.numeric(unique(
+        temp_emfac$upper_speed_interval)
+      ), decreasing = TRUE)
     ,"id" = data.table::uniqueN(temp_emfac$upper_speed_interval):1
   )
   

@@ -185,7 +185,8 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                      Slope %in% slope[k] & 
                      Load == load[k], ]
           
-        }) %>% data.table::rbindlist()
+        }) 
+        temp_ef3 <- data.table::rbindlist(temp_ef3)
       }else{
         temp_ef3 <- temp_ef[ Pol %in% pollutant[i] &  
                                Fuel %in% fuel[j] & 
@@ -239,7 +240,8 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                               , Function_ID = temp_ef3$Function_ID[k]
                               , k = temp_ef3$k[k]
                               , fcorr = fcorr[j])
-        }) %>% data.table::rbindlist()
+        }) 
+        eq_output <- data.table::rbindlist(eq_output)
         
       }else{
         
@@ -269,9 +271,9 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
     # do not aggregate EF
     #
     
-    temp_ef3 <- do.call(cbind, temp_ef2) %>% 
-      units::set_units('g/km') %>% 
-      data.table::as.data.table()
+    temp_ef3 <- do.call(cbind, temp_ef2) 
+    temp_ef3 <- units::set_units(temp_ef3,'g/km') 
+    temp_ef3 <- data.table::as.data.table(temp_ef3)
     
     names(temp_ef3) <- sprintf("%s_Euro_%s",pollutant[i],rep(euro))
     return(temp_ef3)
