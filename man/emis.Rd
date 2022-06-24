@@ -15,7 +15,7 @@ emis(
 }
 \arguments{
 \item{fleet_composition}{vector; Fleet composition, which is a distribution
-of fleet based on frequency. If there is only one.}
+of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.}
 
 \item{dist}{units ('km'); Length of each link in km.}
 
