@@ -7,34 +7,21 @@
 emis_summary(
   emi_list,
   by = "pollutant",
-  emi_vars = "emi",
   veh_vars = "veh_type",
-  pol_vars = "pollutant",
-  segment_vars = NULL,
-  time_column = NULL
+  segment_vars = NULL
 )
 }
 \arguments{
 \item{emi_list}{List; Emission or emission factor list.}
 
-\item{by}{Character; Emissions can be aggregated by 'time', 'veh_type',
-'segment_vars', or simply 'pollutant' (Default).}
+\item{by}{Character; Emissions can be aggregated by 'time', 'vehicle',
+or simply 'pollutant' (Default).}
 
-\item{emi_vars}{Character; Names of 'emi_list' object attributed to emissions.
-Default is 'emi'.}
-
-\item{veh_vars}{Character; Names of 'emi_list' object attributed to vehicle
+\item{veh_vars}{Character; data.frame names of 'emi_list' attributed to vehicle
 characteristics. Default is 'veh_type'.}
 
-\item{pol_vars}{Character; Names of 'emi_list' object attributed to pollutants.
-Default is 'pollutant'}
-
-\item{segment_vars}{Character; Names of 'emi_list' object attributed to the
+\item{segment_vars}{Character; data.frame names of 'emi_list' object attributed to the
 road segments. Default is NULL.}
-
-\item{time_column}{vector; Required if \code{by = 'time'} is selected.
-Column name with time stamp information provided in 'segment_vars'
-object of emi_list'.}
 }
 \value{
 \code{data.table} with pollutants units ('g') aggregated by time, vehicle
@@ -42,7 +29,7 @@ type, or road segment.
 }
 \description{
 Summarize emissions estimates, aggregating emissions by pollutant, time of the
-day, vehicle type or road segment (spatial).
+day, vehicle.
 }
 \examples{
 if (interactive()) {
@@ -73,28 +60,27 @@ emi_list <- emission_model(tp_model = tp_model
                            , pollutant = c("CO2","PM10"))
 
 # Aggregate total emissions by 'pollutant'
-emis_summary(emi_list, by = "pollutant") 
+emis_summary(emi_list) 
 
 # by vehicle type
-emis_summary(emi_list, by = "veh_type")
+emis_summary(emi_list, by = "vehicle")
              
 emis_summary(emi_list
-             , by = "veh_type"
+             , by = "vehicle"
              , veh_vars = c("euro"))
 
 emis_summary(emi_list
-             , by = "veh_type"
+             , by = "vehicle"
              , veh_vars = c("fuel"))
 
 emis_summary(emi_list
-             , by = "veh_type"
+             , by = "vehicle"
              , veh_vars = c("veh_type","euro","tech","fuel"))
              
 # by time of the day
 emis_summary(emi_list
              , by = "time"
-             , segment_vars = "tp_model"
-             , time_column = "timestamp") # emi_list$tp_model$timestamp
+             , segment_vars = "slope") 
 
 }
 }
