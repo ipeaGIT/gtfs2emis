@@ -20,7 +20,7 @@
 #'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total),
 #'   SOX(Oxides of Sulfur), TOG(Total Organic Gases), ROG (Reactive Organic Gases)
 #' @param reference_year Numeric; Calendar Year between 2015 - 2022. Year in which
-#'  the emissions inventory is estimated, in order to consider the effect of degradation.
+#'  the emissions inventory is estimated. Default is 2020.
 #' @param fuel Character; Type of fuel: 'D' (Diesel),'G' (Gasoline),
 #' 'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year Numeric; Model year of vehicle.
@@ -46,7 +46,7 @@
 #'         fuel = "D",
 #'         as_list = TRUE)
 #'}
-ef_usa_emfac <- function(pollutant, reference_year, fuel = 'D'
+ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
                          , model_year, speed, as_list = TRUE){
   
   # pollutant = c("CO","PM10","CH4","NOx")
