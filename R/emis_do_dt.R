@@ -8,13 +8,13 @@
 #' vehicle type or road segment (spatial).
 #' 
 #' @param emi_list List; Emissions list.
-#' @param emi_vars Character; Names of 'emi_list' object attributed to emissions or 
+#' @param emi_vars Character; data.frame names of 'emi_list' object attributed to emissions or 
 #' emission factors. Default is 'emi'.
-#' @param veh_vars Character; Names of 'emi_list' object attributed to vehicle
+#' @param veh_vars Character; data.frame names of 'emi_list' object attributed to vehicle
 #'  characteristics. Default is 'veh_type'.
-#' @param pol_vars Character; Names of 'emi_list' object attributed to pollutants.
+#' @param pol_vars Character; data.frame names of 'emi_list' object attributed to pollutants.
 #'  Default is 'pollutant'.
-#' @param segment_vars Character; Names of 'emi_list' object attributed to the
+#' @param segment_vars Character; data.frame names of 'emi_list' object attributed to the
 #' road segments. Default is NULL.
 #' 
 #' @return data.table.
@@ -84,42 +84,40 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   # init config
   #
   # 
-  # set.seed(1335)
-  # dist = units::set_units(rnorm(100,0.250,0.03),"km")
-  # ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
-  #                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
-  #                 euro = c("IV","V"),
-  #                 pollutant = c("CO2","NOx"),
-  #                 fuel = "Diesel" ,
-  #                 tech =  c("SCR","EGR"),
-  #                 slope = 0.0,
-  #                 load = 0.5,
-  #                 fcorr = 1,
-  #                 as.list = TRUE)
-  # emi_list <- emis(fleet_composition =  c(0.7,0.3),
-  #             dist = dist,
-  #             ef = ef,
-  #             aggregate = FALSE,
-  #             as_list = TRUE)
-  # 
-  # names(emi_list)
-  # emi_vars = "emi"
-  # veh_vars = c("veh_type","euro","fuel","tech")
-  # pol_vars = "pollutant"
-  # segment_vars = NULL #c("slope","load")
+  #set.seed(1335)
+  #dist = units::set_units(rnorm(100,0.250,0.03),"km")
+  #ef <- ef_europe_emep(speed = units::set_units(rnorm(100,50,5),"km/h"),
+  #                veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
+  #                euro = c("IV","V"),
+  #                pollutant = c("CO2","NOx"),
+  #                fuel = "D" ,
+  #                tech =  c("SCR","EGR")
+  #                )
+  #emi_list <- emis(fleet_composition =  c(0.7,0.3),
+  #            dist = dist,
+  #            ef = ef,
+  #            aggregate = FALSE,
+  #            as_list = TRUE)
+  #
+  #names(emi_list)
+  #emi_vars = "emi"
+  #veh_vars = c("veh_type","euro","fuel","tech")
+  #pol_vars = "pollutant"
+  #segment_vars = NULL #c("slope","load")
+  
   # 
   #
   # check list condition -----
   #
   
   if(class(emi_list) != "list"){
-    stop("'emi_list' input needs to have a list format.")
+    stop("Invalid class: 'emi_list' input needs to have a list format.")
   }
   
   # check consistencies----
   lapply(emi_vars, function(i){
     if(!(i %in% names(emi_list))){
-      sprintf("emi_vars '%s' argument not found. Please inform a valid 'emi_vars' input."
+      sprintf("Invalid input: emi_vars '%s' argument not found. Please inform a valid 'emi_vars' input."
               ,i)
       stop()
     }
@@ -127,7 +125,7 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   
   lapply(veh_vars, function(i){
     if(!(i %in% names(emi_list))){
-      sprintf("veh_vars '%s' argument not found. Please inform a valid 'veh_vars' input."
+      sprintf("Invalid input:  veh_vars '%s' argument not found. Please inform a valid 'veh_vars' input."
               ,i)
       stop()
     }
@@ -135,7 +133,7 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   
   lapply(pol_vars, function(i){
     if(!(i %in% names(emi_list))){
-      sprintf("pol_vars '%s' argument not found. Please inform a valid 'pol_vars' input."
+      sprintf("Invalid input: pol_vars '%s' argument not found. Please inform a valid 'pol_vars' input."
               ,i)
       stop()
     }
@@ -144,7 +142,7 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   lapply(segment_vars, function(i){
     if(!is.null(i)){
       if(!(i %in% names(emi_list))){
-        sprintf("segment_vars '%s' argument not found. Please inform a valid 'segment_vars' input."
+        sprintf("Invalid input: segment_vars '%s' argument not found. Please inform a valid 'segment_vars' input."
                 ,i)
         stop()
       }
@@ -165,20 +163,20 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   if(length(unique(myunits)) == 1){
     myunits <- myunits[1]
   }else{
-    message("units are not the same for emissions columns")
-    stop()
+    stop("Invalid units: units are not the same for emissions columns")
   }
   
   #
   # merge------
   #
   
-  dt <- lapply(1:length(emi_list[[pol_vars]]),function(i){ # i = 1
+  dt <- lapply(1:length(emi_list[[pol_vars]]),function(i){ # i = 3
     
     # add vars
-    tmp_dt <- lapply(seq_along(all_vars),function(j){ # j = 1;i = 1
-      emi_list[[all_vars[[j]]]][[i]]
+    tmp_dt <- lapply(all_vars,function(j){ # j = 3;i = 3
+      emi_list[[j]][[i]]
     })
+    
     if(!is.null(segment_vars)){
       tmp_dt <- do.call(c, list(tmp_dt, emi_list[segment_vars]))
       tmp_dt <- do.call(cbind,tmp_dt)
@@ -198,7 +196,6 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
     if(!is.null(veh_vars))      tmp_dt[,(veh_vars) := lapply(.SD, as.factor), .SDcols = veh_vars]
     if(!is.null(segment_vars))  tmp_dt[,(segment_vars) := lapply(.SD, as.numeric), .SDcols = segment_vars]
     if(!is.null(pol_vars))      tmp_dt[,(pol_vars) := lapply(.SD, as.character), .SDcols = pol_vars]
-    
     return(tmp_dt)
   }) 
   dt <- data.table::rbindlist(dt)

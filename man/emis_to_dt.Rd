@@ -15,16 +15,16 @@ emis_to_dt(
 \arguments{
 \item{emi_list}{List; Emissions list.}
 
-\item{emi_vars}{Character; Names of 'emi_list' object attributed to emissions or
+\item{emi_vars}{Character; data.frame names of 'emi_list' object attributed to emissions or
 emission factors. Default is 'emi'.}
 
-\item{veh_vars}{Character; Names of 'emi_list' object attributed to vehicle
+\item{veh_vars}{Character; data.frame names of 'emi_list' object attributed to vehicle
 characteristics. Default is 'veh_type'.}
 
-\item{pol_vars}{Character; Names of 'emi_list' object attributed to pollutants.
+\item{pol_vars}{Character; data.frame names of 'emi_list' object attributed to pollutants.
 Default is 'pollutant'.}
 
-\item{segment_vars}{Character; Names of 'emi_list' object attributed to the
+\item{segment_vars}{Character; data.frame names of 'emi_list' object attributed to the
 road segments. Default is NULL.}
 }
 \value{
