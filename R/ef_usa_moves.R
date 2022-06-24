@@ -14,7 +14,7 @@
 #'  THC (Total Gaseous Hydrocarbons ), TOG (Total Organic Gases) and 
 #'  VOC (Volatile Organic Compounds)
 #' @param reference_year numeric; Year of reference, between 2015 - 2022.
-#'  Year in which the emissions inventory is estimated.
+#'  Year in which the emissions inventory is estimated. Default is 2020.
 #' @param fuel character; Type of fuel: 'D' (Diesel),'G' (Gasoline),
 #' 'CNG' (Compressed Natural Gas). Default is 'D'.
 #' @param model_year numeric; Model year of vehicle.
@@ -42,7 +42,7 @@
 #'         fuel = "D",
 #'         as_list = TRUE)
 #'}
-ef_usa_moves <- function(pollutant, model_year, reference_year, speed, fuel = 'D', as_list = TRUE){
+ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fuel = 'D', as_list = TRUE){
   
   #  pollutant = c("CO","PM10","CH4","NOx")
   # # reference_year = "2019"

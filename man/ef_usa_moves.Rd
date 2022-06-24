@@ -7,7 +7,7 @@
 ef_usa_moves(
   pollutant,
   model_year,
-  reference_year,
+  reference_year = 2020,
   speed,
   fuel = "D",
   as_list = TRUE
@@ -25,7 +25,7 @@ VOC (Volatile Organic Compounds)}
 \item{model_year}{numeric; Model year of vehicle.}
 
 \item{reference_year}{numeric; Year of reference, between 2015 - 2022.
-Year in which the emissions inventory is estimated.}
+Year in which the emissions inventory is estimated. Default is 2020.}
 
 \item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals
 such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",

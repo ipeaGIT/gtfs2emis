@@ -9,7 +9,7 @@
 \usage{
 ef_usa_emfac(
   pollutant,
-  reference_year,
+  reference_year = 2020,
   fuel = "D",
   model_year,
   speed,
@@ -23,7 +23,7 @@ PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total),
 SOX(Oxides of Sulfur), TOG(Total Organic Gases), ROG (Reactive Organic Gases)}
 
 \item{reference_year}{Numeric; Calendar Year between 2015 - 2022. Year in which
-the emissions inventory is estimated, in order to consider the effect of degradation.}
+the emissions inventory is estimated. Default is 2020.}
 
 \item{fuel}{Character; Type of fuel: 'D' (Diesel),'G' (Gasoline),
 'CNG' (Compressed Natural Gas). Default is 'D'.}
