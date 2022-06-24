@@ -4,7 +4,7 @@ context("emission_model")
 
 default_tester <- function(tp_model = tp_model_bra,
                            ef_model = "ef_usa_moves",
-                           fleet_data = fleet_data_ef_moves,
+                           fleet_data = fleet_data_usa,
                            pollutant = c("CO","PM10","CO2"),
                            reference_year = 2019,
                            output_path = NULL,
@@ -40,15 +40,15 @@ test_that("adequately raises errors", {
   expect_error(default_tester(fleet_data = 'banana'))
   expect_error(default_tester(fleet_data = NULL))
 
-  temp_fleet <- fleet_data_ef_moves
+  temp_fleet <- fleet_data_usa
   temp_fleet$veh_type <- NULL
   expect_error(default_tester(ef_model = "ef_usa_moves",
                               fleet_data=temp_fleet))
   
-  temp_fleet <- fleet_data_ef_cetesb
+  temp_fleet <- fleet_data_cetesb
   temp_fleet$veh_type <- NULL
-  expect_error(default_tester(ef_model = "ef_bra_cetesb",
-                              fleet_data=temp_fleet))
+  expect_error(default_tester(ef_model = "ef_brazil_cetesb",
+                              fleet_data = temp_fleet))
   
 
   # invalid pollutant
@@ -81,7 +81,7 @@ test_that("output is correct", {
   # Europe EMEP
   expect_is( default_tester(tp_model = tp_model_irl, 
                             ef_model = "ef_europe_emep", 
-                            fleet_data = fleet_data_ef_europe), 'list')
+                            fleet_data = fleet_data_europe), 'list')
   
   
   # default_tester(tp_model = tp_model_bra, 
@@ -91,12 +91,12 @@ test_that("output is correct", {
   # USA MOVES
   expect_is( default_tester(tp_model = tp_model_usa, 
                             ef_model = "ef_usa_moves", 
-                            fleet_data = fleet_data_ef_moves), 'list')
+                            fleet_data = fleet_data_usa), 'list')
   
   # USA EMFAC
   expect_is( default_tester(tp_model = tp_model_usa, 
                             ef_model = "ef_usa_emfac", 
-                            fleet_data = fleet_data_ef_emfac), 'list')
+                            fleet_data = fleet_data_usa), 'list')
   
   })
 
