@@ -29,7 +29,7 @@ data.table; Emission factors in units 'g/km' by speed and model_year.
 \description{
 Returns a vector or data.table of emission factors for buses based on
 estimates from the
-\href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2017},
+\href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2019},
 and obtained via vein package.
 Estimates are expressed in units 'g/km'.
 }

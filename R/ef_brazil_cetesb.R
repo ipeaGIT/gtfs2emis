@@ -2,7 +2,7 @@
 #' 
 #' @description Returns a vector or data.table of emission factors for buses based on
 #' estimates from the 
-#' [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
+#' [Environment Company of Sao Paulo, Brazil (CETESB) 2019](https://cetesb.sp.gov.br/veicular/),
 #' and obtained via vein package.
 #' Estimates are expressed in units 'g/km'.
 #'
