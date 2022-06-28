@@ -14,7 +14,7 @@ test_that("ef_europe_emep", {
   expect_equal(length(EF_europe$veh_type), 6)
   expect_equal(length(EF_europe$euro), 6)
   expect_equal(units::deparse_unit(EF_europe$EF$CO_Euro_II), "g km-1")
-  expect_equal(sum(EF_europe$EF,na.rm = TRUE), 13202.03,0.1)
+  expect_equal(sum(EF_europe$EF,na.rm = TRUE), 1188.842,0.1)
   
   
   # Expect error

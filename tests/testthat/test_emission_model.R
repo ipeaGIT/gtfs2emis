@@ -9,15 +9,15 @@ default_tester <- function(tp_model = tp_model_bra,
                            reference_year = 2019,
                            output_path = NULL,
                            parallel = TRUE) {
-
+  
   results <- gtfs2emis::emission_model(tp_model = tp_model,
                                        ef_model = ef_model,
                                        fleet_data = fleet_data,
                                        pollutant = pollutant,
                                        reference_year = reference_year,
-                                        output_path = output_path,
+                                       output_path = output_path,
                                        parallel = parallel
-                                       )
+  )
   return(results)
 }
 
@@ -27,7 +27,7 @@ default_tester <- function(tp_model = tp_model_bra,
 
 
 test_that("adequately raises errors", {
-
+  
   # invalid tp_model
   expect_error(default_tester(tp_model = 'banana'))
   expect_error(default_tester(tp_model = NULL))
@@ -39,7 +39,7 @@ test_that("adequately raises errors", {
   # invalid fleet_data
   expect_error(default_tester(fleet_data = 'banana'))
   expect_error(default_tester(fleet_data = NULL))
-
+  
   temp_fleet <- fleet_data_usa
   temp_fleet$veh_type <- NULL
   expect_error(default_tester(ef_model = "ef_usa_moves",
@@ -50,7 +50,7 @@ test_that("adequately raises errors", {
   expect_error(default_tester(ef_model = "ef_brazil_cetesb",
                               fleet_data = temp_fleet))
   
-
+  
   # invalid pollutant
   expect_error(default_tester(pollutant = 'banana'))
   expect_error(default_tester(pollutant = NULL))
@@ -77,27 +77,39 @@ test_that("adequately raises errors", {
 
 
 test_that("output is correct", {
-
-  # Europe EMEP
+  
+  # tp_model 
   expect_is( default_tester(tp_model = tp_model_irl, 
                             ef_model = "ef_europe_emep", 
                             fleet_data = fleet_data_europe), 'list')
   
-  
-  # default_tester(tp_model = tp_model_bra, 
-  #                ef_model = "ef_brazil_cetesb", 
-  #                fleet_data = fleet_data_ef_cetesb)
-  
-  # USA MOVES
-  expect_is( default_tester(tp_model = tp_model_usa, 
-                            ef_model = "ef_usa_moves", 
-                            fleet_data = fleet_data_usa), 'list')
-  
-  # USA EMFAC
-  expect_is( default_tester(tp_model = tp_model_usa, 
-                            ef_model = "ef_usa_emfac", 
-                            fleet_data = fleet_data_usa), 'list')
-  
-  })
 
+  # tp_model detailed---------------
   
+  # tp_model
+  irl_shapeids <- c("60-747-d12-1.113.O", "60-77A-d12-1.168.O", "60-77A-d12-1.169.I")
+  gtfs_irl2 <- gtfstools::filter_by_shape_id(gtfs_irl_raw
+                                             , shape_id = irl_shapeids)
+  tp_model_irl2 <- transport_model(gtfs = gtfs_irl2, parallel = TRUE)
+  
+  # fleet
+  fleet_data_europe2 <- fleet_data_europe 
+  fleet_data_europe2$shape_id <- irl_shapeids
+  
+  # loop
+  tmp_emis_detailed <- lapply(irl_shapeids,function(i){ # i = irl_shapeids[2]
+    emi_list <- default_tester(
+      tp_model = tp_model_irl2[tp_model_irl2$shape_id == i,]
+      ,ef_model = "ef_europe_emep"
+      ,fleet_data = fleet_data_europe2[fleet_data_europe2$shape_id == i,]
+    )
+  })
+  
+  # checkings
+  expect_equal(length(tmp_emis_detailed),3)
+  for(i in 1:3) expect_is(tmp_emis_detailed[[i]] , 'list') 
+  for(i in 1:3) expect_equal(length(tmp_emis_detailed[[i]]),11)
+
+})
+
+
