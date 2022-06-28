@@ -56,26 +56,79 @@ ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
   # fuel = c("Diesel","CNG"); fuel = "D"
   # 
   
-  # use specific name-----
+  # Use specific name-----
   tmp_fuel <- fuel
   tmp_reference_year <- reference_year
   tmp_pollutant <- pollutant
   tmp_model_year <- model_year
   utils::data('ef_usa_emfac_db') 
   
-  # pre-filter in usa data----
+  # Checkings -----
+  # pollutant
+  lapply(pollutant,function(i){
+    if(!(i %in% unique(ef_usa_emfac_db$pollutant))){
+      stop(
+        paste0("Invalid input: pollutant '",i,"' argument not found.\n", 
+               "Please check available data in `data(ef_usa_emfac_db)`.")
+      )
+    }
+  })
+  # reference_year
+  if(!is.numeric(reference_year)){
+    stop(
+      "Invalid input: 'reference_year' argument should be a numeric value."
+    )
+  }
+  if(length(reference_year) != 1){
+    stop(
+      "Invalid input: only one 'reference_year' is accepted."
+    )
+  }
+  if(!(reference_year %in% 2010:2020)){
+    stop(
+      paste0("Invalid input: 'reference_year' argument should be between 2010 - 2020:\n", 
+             "Please check available data in `data(ef_usa_emfac_db)`.")
+    )
+  }
+  # fuel
+  lapply(fuel,function(i){
+    if(!(i %in% c("D","CNG","G"))){
+      stop(
+        paste0("Invalid input: fuel '",i,"' argument not found.\n"
+               ,"Please check `utils::data('ef_usa_emfac_db')` for a valid 'fuel' input.")
+      )
+    }
+  })
+  # model_year
+  lapply(model_year,function(i){
+    if(!(i %in% 1982:2020)){
+      stop(
+        paste0("Invalid input: model_year '",i,"' argument not found.\n"
+               ,"Please check `utils::data('ef_usa_emfac_db')` for a valid 'model_year' input.")
+      )
+    }
+  })
+  # check units and lengths
+  if(class(speed) != "units"){
+    stop(paste0("Invalid 'speed' argument: 'speed' needs to have class 'units' in 'km/h'.\n"
+                ,"Please, check package 'units'"))
+  }
+  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
+    stop("Invalid 'speed' argument: 'speed' needs to have 'units' in 'km/h'.")
+  }
+  if(sum(speed <= units::set_units(0,"km/h")) > 0){
+    stop("Invalid 'speed' argument: 'speed' argument should be greater than 0 km/h.")
+  }
+  if(sum(speed > units::set_units(113,"km/h")) > 0){
+    stop("Invalid 'speed' argument: 'speed' argument should be smaller than 113 km/h.")
+  }
+    # Pre-filter in usa data----
   temp_emfac <- ef_usa_emfac_db[reference_year %in% as.character(unique(tmp_reference_year)) &
                                   fuel %in% unique(tmp_fuel) &
                                   pollutant %in% unique(tmp_pollutant) & 
                                   model_year %in% unique(tmp_model_year), ]
   
-  # check units and lengths----
-  if(class(speed) != "units"){
-    stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'")
-  }
-  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
-    stop("speed need to has 'units' in 'km/h'.")
-  }
+
   tmp_speed <- as.numeric(speed)
   
   # fuel
@@ -98,7 +151,8 @@ ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
                                                     fuel %in% tmp_fuel[j], ]
       # check condition
       if(dim(temp_emfac2)[1] == 0){
-        stop("Emission Factor do not exist. \nPlease check `data(usa_emfac_db)` for valid emission factors.")
+        stop(paste0("Invalid inputs: Emission Factor do not exist.\n"
+                    ,"Please check `data(ef_usa_emfac_db)` for valid emission factors."))
       }
       return(temp_emfac2[, ef])
     }) 
@@ -107,7 +161,7 @@ ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
     return(temp_ef0)
   }) 
   
-  # aggregate EF-----
+  # Aggregate EF-----
   ef_final <- do.call(cbind, ef_pol)
   
   # Filter Speed based on emission factor data.table speed interval-----------

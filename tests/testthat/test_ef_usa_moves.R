@@ -2,30 +2,73 @@
 test_that("ef_usa_moves", {
   
   EF_usa <- ef_usa_moves(pollutant = c("CO","PM10"),
-                         reference_year = "2019",
+                         reference_year = 2019,
                          model_year = fleet_data_usa$model_year,
-                         speed = tp_model_usa$speed,
+                         speed = tp_model_irl$speed,
                          fuel = "D")
   
   # Expect equal----
   expect_equal(names(EF_usa),c("pollutant" ,"model_year","fuel","EF"))
-  expect_equal(as.numeric(sum(EF_usa$EF,na.rm = TRUE)), 510909.7, 0.01)
+  expect_equal(as.numeric(sum(EF_usa$EF,na.rm = TRUE)), 43671.76, 0.1)
   
   # Expect error----
+  
+  # speed as.numeric
   expect_error(
     object = ef_usa_moves(pollutant = c("CO","PM10"),
                           model_year = fleet_data_usa$year,
-                          speed = as.numeric(tp_model_usa$speed),
+                          speed = as.numeric(tp_model_irl$speed),
                           fuel = "D")
-    , regexp = "speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'"
   )
-  
+  # speed out or range
   expect_error(
     object = ef_usa_moves(pollutant = c("CO","PM10"),
                           reference_year = 2020,
                           model_year = fleet_data_usa$year,
-                          speed = as.numeric(tp_model_usa$speed),
+                          speed = units::set_units(800,"km/h"),
+                          fuel = "D"))
+  expect_error(
+    object = ef_usa_moves(pollutant = c("CO","PM10"),
+                          reference_year = 2020,
+                          model_year = fleet_data_usa$year,
+                          speed = units::set_units(0,"km/h"),
+                          fuel = "D"))
+  # reference_year - as.numeric
+  expect_error(
+    object = ef_usa_moves(pollutant = c("CO","PM10"),
+                          model_year = fleet_data_usa$year,
+                          reference_year = "2015",
+                          speed = as.numeric(tp_model_irl$speed),
                           fuel = "D")
-    , regexp = "speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'"
+  )
+  # reference_year out of range
+  expect_error(
+    object = ef_usa_moves(pollutant = c("CO","PM10"),
+                          model_year = fleet_data_usa$year,
+                          reference_year = 2080,
+                          speed = as.numeric(tp_model_irl$speed),
+                          fuel = "D")
+  )
+  # reference_year duplicated
+  expect_error(
+    object = ef_usa_moves(pollutant = c("CO","PM10"),
+                          reference_year = c(2019,2019),
+                          model_year = fleet_data_usa$year,
+                          speed = as.numeric(tp_model_irl$speed),
+                          fuel = "D")
+  )
+  # pollutant wrong
+  expect_error(
+    object = ef_usa_moves(pollutant = c("banana"),
+                          model_year = fleet_data_usa$year,
+                          speed = as.numeric(tp_model_irl$speed),
+                          fuel = "D")
+  )
+  # wrong fuel
+  expect_error(
+    object = ef_usa_moves(pollutant = c("CO","PM10"),
+                          model_year = fleet_data_usa$year,
+                          speed = as.numeric(tp_model_irl$speed),
+                          fuel = "banana")
   )
 })

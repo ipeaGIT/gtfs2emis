@@ -44,11 +44,11 @@
 #'}
 ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fuel = 'D', as_list = TRUE){
   
-  #  pollutant = c("CO","PM10","CH4","NOx")
-  # # reference_year = "2019"
-  #  model_year = c("2014","2013","2010");model_year = c("2010")
-  #  speed = units::set_units(33,"km/h")
-  #  fuel = c("D","CNG"); fuel = "D"
+  # pollutant = c("CO","PM10","CH4","NOx")
+  #  reference_year = 2020
+  # model_year = c("2014","2013","2010");model_year = c("2010")
+  # speed = units::set_units(33,"km/h")
+  # fuel = c("D","CNG"); fuel = "D"
   # 
 
   # use specific name-----
@@ -58,7 +58,65 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   tmp_reference_year <- reference_year
   utils::data(ef_usa_moves_db)
   temp_ef <- ef_usa_moves_db
-    
+  # Checkings -----
+  # pollutant
+  lapply(pollutant,function(i){
+    if(!(i %in% unique(ef_usa_moves_db$pollutant))){
+      stop(
+        paste0("Invalid input: pollutant '",i,"' argument not found.\n", 
+               "Please check available data in `data(ef_usa_moves_db)`.")
+      )
+    }
+  })
+  # reference_year
+  if(!is.numeric(reference_year)){
+    stop(
+      "Invalid input: 'reference_year' argument should be a numeric value."
+    )
+  }
+  if(length(reference_year) != 1){
+    stop(
+      "Invalid input: only one 'reference_year' is accepted."
+    )
+  }
+  if(!(reference_year %in% 2010:2020)){
+    stop(
+      paste0("Invalid input: 'reference_year' argument should be between 2010 - 2020:\n", 
+             "Please check available data in `data(ef_usa_moves_db)`.")
+    )
+  }
+  # fuel
+  lapply(fuel,function(i){
+    if(!(i %in% c("D","CNG","G"))){
+      stop(
+        paste0("Invalid input: fuel '",i,"' argument not found.\n"
+               ,"Please check `utils::data('ef_usa_moves_db')` for a valid 'fuel' input.")
+      )
+    }
+  })
+  # model_year
+  lapply(model_year,function(i){
+    if(!(i %in% 1989:2022)){
+      stop(
+        paste0("Invalid input: model_year '",i,"' argument not found.\n"
+               ,"Please check `utils::data('ef_usa_moves_db')` for a valid 'model_year' input.")
+      )
+    }
+  })
+  # check units and lengths
+  if(class(speed) != "units"){
+    stop(paste0("Invalid 'speed' argument: 'speed' needs to have class 'units' in 'km/h'.\n"
+                ,"Please, check package 'units'"))
+  }
+  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
+    stop("Invalid 'speed' argument: 'speed' needs to have 'units' in 'km/h'.")
+  }
+  if(sum(speed <= units::set_units(0,"km/h")) > 0){
+    stop("Invalid 'speed' argument: 'speed' argument should be greater than 0 km/h.")
+  }
+  if(sum(speed > units::set_units(120.7,"km/h")) > 0){
+    stop("Invalid 'speed' argument: 'speed' argument should be smaller than 120.7 km/h.")
+  }  
   # pre-filter in usa data----
   temp_moves <- temp_ef[reference_year %in% tmp_reference_year &
                           fuel  %in% unique(tmp_fuel) &
@@ -100,7 +158,8 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
       #                  "| fuel", tmp_fuel[j]))
       # check condition
       if(dim(temp_moves2)[1] == 0){
-        stop("Emission Factor do not exist. \nPlease check `data(ef_usa_moves_db)` for valid emission factors.")
+        stop(paste0("Invalid inputs: Emission Factor do not exist.\n"
+                    ,"Please check `data(ef_usa_moves_db)` for valid emission factors."))
       }
       return(temp_moves2[, ef])
     }) 
