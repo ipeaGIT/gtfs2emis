@@ -64,10 +64,10 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, a
   
   
   if(class(dist) != "units"){
-    stop("dist neeeds to has class 'units' in 'km'. Please, check package 'units'")
+    stop("Invalid 'dist' argument: 'dist' neeeds to have class 'units' in 'km'. Please, check package 'units'.")
   }
   if(units(dist)$numerator != "km"){
-    stop("dist need to has 'units' in 'km'.")
+    stop("Invalid 'dist' argument: 'units' should be in 'km'.")
   }
   
   # ef----
@@ -86,10 +86,10 @@ emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, a
   # units
   lapply(seq_along(tmpEf), function(i){ # i = 1
     if(class(tmpEf[[i]]) != "units"){
-      stop("ef neeeds to has class 'units' in 'g/km'. Please, check package 'units'")
+      stop("Invalid 'ef' argument: 'ef' needs to have class 'units' in 'g/km'. Please, check package 'units'")
     }
     if(units(tmpEf[[i]])$numerator != "g" | units(tmpEf[[i]])$denominator != "km"){
-      stop("ef need to has 'units' in 'g/km'.")
+      stop("Invalid 'ef' argument: 'ef' needs to have 'units' in 'g/km'.")
     }
     # check 'tmpEf' length with veh
     if(length(tmpEf[[i]]) != 1 & length(tmpEf[[i]]) != length(dist)){
