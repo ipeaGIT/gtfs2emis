@@ -85,7 +85,7 @@ fleet_file <- system.file("extdata/irl_dub/irl_dub_fleet.txt", package = "gtfs2e
 fleet_df <- read.csv(fleet_file)
 head(fleet_df)
 
->       type_name_eu euro fuel   N fleet_composition    tech
+>           veh_type euro fuel   N fleet_composition    tech
 > Ubus Std 15 - 18 t  III    D  10             0.009       -
 > Ubus Std 15 - 18 t   IV    D 296             0.295     SCR
 > Ubus Std 15 - 18 t    V    D 148             0.147     SCR
@@ -152,6 +152,7 @@ There several others transport emissions models available for different purposes
 -   R: [EmissV](https://github.com/atmoschem/emissv) Top-down inventory.
 -   Python: [PythonEmissData](https://github.com/adelgadop/PythonEmissData)
     Jupyter notebook to estimate simple top-down emissions.
+-   Python: [YETI](https://github.com/twollnik/YETI) YETI - Yet Another Emissions From Traffic Inventory
 -   Python: [mobair](https://github.com/matteoboh/mobility_emissions) bottom-up model using GPS data.
 
 ## **Future enhancements**
