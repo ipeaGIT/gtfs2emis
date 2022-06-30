@@ -26,7 +26,7 @@
 #'        (the default), the function uses the average speed of the entire GTFS 
 #'        data feed.
 #' @param parallel Decides whether the function should run in parallel. Defaults 
-#'        to `FALSE`. When `TRUE`, it will use all cores available minus one 
+#'        to `TRUE`. When `TRUE`, it will use all cores available minus one 
 #'        using `future::plan()` with strategy "multisession" internally.
 #' @param spatial_resolution The spatial resolution in meters. Defaults to `100`.
 #'        The function only creates points in order to guarantee that the 
@@ -63,10 +63,10 @@
 #'                              parallel = TRUE)
 #'}
 transport_model <- function(gtfs_data,
-                            min_speed = 2, 
+                            min_speed = 2,
                             max_speed = 80, 
-                            new_speed = NULL, 
-                            parallel = FALSE, 
+                            new_speed = NULL,
+                            parallel = TRUE,
                             spatial_resolution = 100,
                             output_path = NULL){
   
@@ -88,27 +88,24 @@ transport_model <- function(gtfs_data,
   }
   
   # speed
-  if(!missing(min_speed) & !is.numeric(min_speed)){
-    stop("'min_speed' should be a numeric input.")
-  }
-  if(!missing(max_speed) & !is.numeric(max_speed)){
-    stop("'max_speed' should be a numeric input.")
-  }
-  if(!missing(new_speed) & !is.numeric(new_speed)){
-    stop("'new_speed' should be a numeric input.")
-  }
+  checkmate::assert_numeric(min_speed, lower = 2, finite = TRUE, null.ok = TRUE)  
+  checkmate::assert_numeric(max_speed, lower = 3, finite = TRUE, null.ok = TRUE)  
+  checkmate::assert_numeric(new_speed, lower = 1, finite = TRUE, null.ok = TRUE)
+  checkmate::assert_true(min_speed < max_speed)
   
   
   # Read GTFS ------------
   
-  if(is.character(gtfs_data)){
-    city_gtfs <- gtfs2gps::read_gtfs(path = gtfs_data)
+  if (is.character(gtfs_data)) {
+    city_gtfs <- gtfstools::read_gtfs(path = gtfs_data)
   }else{
     city_gtfs <- gtfs_data
   }
   
   
   # parallel condition
+  checkmate::assert_logical(parallel)  
+  
   if(parallel){
     future::plan(session = "multisession", workers = data.table::getDTthreads() - 1)
   }else{
@@ -120,15 +117,14 @@ transport_model <- function(gtfs_data,
   gps_path <-  paste0(tempdir(),"/gps")
   suppressWarnings(dir.create(gps_path))
   
-  gtfs2gps::gtfs2gps(  gtfs_data = city_gtfs
-                       , filepath = gps_path
-                       , parallel = TRUE
-                       , compress = TRUE
-                       , spatial_resolution = 100)
-  #gtfs2gps::gtfs2gps(  gtfs_data = city_gtfs
-  #                      , filepath = gps_path
-  #                     , ...)
+  gtfs2gps::gtfs2gps( gtfs_data = city_gtfs
+                     , filepath = gps_path
+                     , parallel = parallel
+                     , compress = TRUE
+                     , spatial_resolution = spatial_resolution)
+
   
+    
   #  Adjusting the speeds of a gps-like table ---------
   
 
@@ -160,11 +156,12 @@ transport_model <- function(gtfs_data,
   }else{
     lapply(seq_along(files_gps),gps_speed_fix)
   }
+  
   # GPS as Sf_Linestring ------
   # Converting a GPS-like data.table to a LineString Simple Feature (sf)
   
   # Checking
-  if(!missing(output_path)){
+  if (! is.null(output_path)) {
     dir.create(output_path)
   }
   
@@ -174,29 +171,33 @@ transport_model <- function(gtfs_data,
   # function gps_as_sflinestring
   f_gps_as_sflinestring <- function(i){ # i = files_gps[1]
     tmp_gps <- readRDS(i)
+    tmp_gps[, dist := units::set_units(dist, "km") ]
     tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
-    tmp_gps_fix$dist <- units::set_units(tmp_gps_fix$dist, "km")
     return(tmp_gps_fix)
   }
   
   # Return conditions ----
-  # parallel
   if(parallel){
     gpsLine <- furrr::future_map(files_gps
                                  ,f_gps_as_sflinestring
-                                 ,.options = furrr::furrr_options(seed = 123)) 
+                                 ,.options = furrr::furrr_options(seed = 123)) # why ???
   }else{
     gpsLine <- lapply(files_gps,f_gps_as_sflinestring) 
   }
+  
+  
   # output
   if(missing(output_path)){
     gpsLine <- data.table::rbindlist(gpsLine) 
-    gpsLine <- sf::st_sf(gpsLine, crs = 4326)
+    suppressWarnings( gpsLine <- sf::st_sf(gpsLine, crs = 4326) )
+    class(gpsLine) <- c("sf", "data.frame")
     return(gpsLine)
   }else{
     gpsLine <- lapply(1:length(gpsLine),function(i){
-      saveRDS(object =  sf::st_sf(gpsLine[[i]], crs = 4326)
-              , file = paste0(output_path,files_gps_names[i]))
+      temp <- sf::st_sf(gpsLine[[i]], crs = 4326)
+      class(temp) <- c("sf", "data.frame")
+      saveRDS(object =  temp, 
+              file = paste0(output_path,files_gps_names[i]))
       return(NULL)
     })
   }

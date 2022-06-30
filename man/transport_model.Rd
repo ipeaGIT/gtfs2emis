@@ -9,7 +9,7 @@ transport_model(
   min_speed = 2,
   max_speed = 80,
   new_speed = NULL,
-  parallel = FALSE,
+  parallel = TRUE,
   spatial_resolution = 100,
   output_path = NULL
 )
@@ -37,7 +37,7 @@ range or which are missing from the GTFS input. When \code{new_speed = NULL}
 data feed.}
 
 \item{parallel}{Decides whether the function should run in parallel. Defaults
-to \code{FALSE}. When \code{TRUE}, it will use all cores available minus one
+to \code{TRUE}. When \code{TRUE}, it will use all cores available minus one
 using \code{future::plan()} with strategy "multisession" internally.}
 
 \item{spatial_resolution}{The spatial resolution in meters. Defaults to \code{100}.

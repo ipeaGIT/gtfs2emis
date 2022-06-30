@@ -10,3 +10,4 @@ article1/*
 sysdata.rds
 vignettes/*.html
 vignettes/*.R
+vignettes/*.pdf

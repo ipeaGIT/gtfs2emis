@@ -221,7 +221,7 @@ head(emi_by_veh)
 
 It is also possible to summarize emission estimates by other vehicle characteristics AND pollutant.
 
-```{r, message = FALSE}
+```{r, message = FALSE, fig.width=5, fig.height=6}
 emi_by_veh <- emis_summary(emi_list = emi_list,
                           by = "vehicle",
                           veh_vars = c("veh_type","euro")) 
@@ -240,7 +240,7 @@ ggplot(data = emi_by_veh) +
 
 ## 6.3 Total emissions by time of the day
 
-```{r, fig.height=5, fig.width=8}
+```{r, fig.width=5, fig.height=6}
 emi_by_time <- emis_summary(emi_list = emi_list,
                                 by = "time",
                                 segment_vars = "tp_model") 
@@ -266,7 +266,7 @@ Finally, users can analyze how public transport emissions are spatially distribu
 
 Let's create a regular hexagonal grid for this example.
 
-```{r, message = FALSE}
+```{r, message = FALSE, fig.width=5, fig.height=5}
 # create spatial grid
 mygrid <- sf::st_make_grid(
   x = sf::st_bbox(emi_list$tp_model$geometry)
@@ -281,11 +281,11 @@ plot(mygrid)
 
 ```{r, eval=TRUE, message=FALSE, fig.width=5, fig.height=5}
 # we add info of emissions into gps file
-emi_list$tp_model <- cbind(emi_list$tp_model, emi_list$emi) #### ja nao podia ser feito dentro da funcao?
+emi_list$tp_model <- cbind(emi_list$tp_model, emi_list$emi) #### ja nao podia ser feito dentro da funcao ???
 
 
 mygrid_emi <- emis_grid(data = emi_list$tp_model,
-                        emi = "CO2_Euro_III",    #### TOdo CO2 e Todo PM10 ?
+                        emi = "CO2_Euro_III",    #### TOdo CO2 e Todo PM10 ????
                         grid = mygrid,
                         time_class = 'all periods')
 

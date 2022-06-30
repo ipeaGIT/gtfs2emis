@@ -135,7 +135,7 @@ emission_model <- function(  tp_model
   checkmate::assert_logical(parallel, null.ok = FALSE)
   checkmate::assert_string(output_path, null.ok = TRUE)
   checkmate::assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
-  checkmate::assert_class(tp_model, classes = c("sf", "data.table", "data.frame"))
+  checkmate::assert_class(tp_model, classes = c("sf", "data.frame"))
     
   ## i) EF model ----
   if (!(ef_model %in% c("ef_brazil_cetesb","ef_usa_emfac","ef_usa_moves","ef_europe_emep"))) {
@@ -233,6 +233,7 @@ emission_model <- function(  tp_model
       }
       
       # fix units
+      data.table::setDT(tp_model)
       tp_model[,speed := units::set_units(speed,"km/h")]
       tp_model[, dist := units::set_units(dist,"m")]
       tp_model[, cumdist := units::set_units(cumdist,"m")]
