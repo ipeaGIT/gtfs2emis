@@ -8,50 +8,40 @@
 #'  output and to adjust the speed of public transport vehicles given a 
 #'  `min_speed` and `max_speed` range.
 #' 
-#' @param gtfs_data A path to a GTFS file to be converted to GPS, or a GTFS data
-#'                  represented organized as a list of `data.tables` created 
-#'                  with `gtfstools::read_gtfs()`.
-#'                    returns the data to user.  
+#' @param gtfs_data A path to a GTFS file or a GTFS data organized as a list of 
+#'        `data.tables` created with `gtfstools::read_gtfs()`.
 #' @param min_speed numeric (in km/h) or a speed units value. Minimum speed to 
-#'                  be considered as valid. Values below minimum speed will be 
-#'                  updated according to the `new_speed` parameter, which can 
-#'                  affect the arrival and  departure times of vehicles at 
-#'                  transit stops. Defaults to 2 km/h.
-#' @param max_speed numeric (in km/h) or a speed units value. Maximum speed to be 
-#'                  considered as valid. Values above maximum speed will be 
-#'                  updated according to the `new_speed` parameter, which can 
-#'                  affect the arrival and  departure times of vehicles at 
-#'                  transit stops. Defaults to 80  km/h.
-#' @param new_speed numeric (in km/h) or a speed units value. Speed value used to
-#'                  replace the speeds that fall outside the `min_speed` and 
-#'                  `max_speed` range or which are missing from the GTFS input. 
-#'                  When `new_speed = NULL` (Default), the function uses the
-#'                  average speed of the entire GTFS data feed.
+#'        be considered as valid. Values below minimum speed will be updated 
+#'        according to the `new_speed` parameter, which can affect the arrival 
+#'        and  departure times of vehicles at  transit stops. Defaults to `2` 
+#'        km/h.
+#' @param max_speed numeric (in km/h) or a speed units value. Maximum speed to 
+#'        be considered as valid. Values above maximum speed will be  updated 
+#'        according to the `new_speed` parameter, which can affect the arrival 
+#'        and departure times of vehicles at transit stops. Defaults to `80` 
+#'        km/h.
+#' @param new_speed numeric (in km/h) or a speed units value. Speed value used 
+#'        to replace the speeds that fall outside the `min_speed` and `max_speed` 
+#'        range or which are missing from the GTFS input. When `new_speed = NULL` 
+#'        (the default), the function uses the average speed of the entire GTFS 
+#'        data feed.
 #' @param parallel Decides whether the function should run in parallel. Defaults 
-#'                 is FALSE. When `TRUE`, it will use all cores available minus 
-#'                 one using `future::plan()` with strategy "multisession" 
-#'                 internally.
-#' @param spatial_resolution The spatial resolution in meters. Defaults to 100m.
-#'                   The function only creates points in order to guarantee that 
-#'                   the minimum distance between two consecutive points will be 
-#'                   at most the `spatial_resolution` value. If a given GTFS 
-#'                   shape_id has two consecutive points with a distance lower 
-#'                   than the spatial resolution, the algorithm will not remove 
-#'                   such points. 
-#' @param output_path character. A directory path. If passed the output will be 
-#'                    saved in the `output_path` dir. Note that that the output 
-#'                    of each public transport `shape_id` is saved separately 
-#'                    in different file. If `NULL` (Default), the function 
-#'                    returns the output. Setting an `output_path` is 
-#'                    recommended when user wants to process all routes of a 
-#'                    large public transport system because the output of the 
-#'                    function can be significantly large.
-#' @details If the user wants to process the all routes in the GTFS, we suggest 
-#'          using the `output_path` argument as the output can be significantly
-#'           large for public transport networks with many routes. 
-#'           This function is a more friendly approach to generate the transport 
-#'           model. For more advanced users, we recommend reading out
-#'          vignette at <<http://www.github.com/ipeaGIT/gtfs2emis/>>.                    
+#'        to `FALSE`. When `TRUE`, it will use all cores available minus one 
+#'        using `future::plan()` with strategy "multisession" internally.
+#' @param spatial_resolution The spatial resolution in meters. Defaults to `100`.
+#'        The function only creates points in order to guarantee that the 
+#'        minimum distance between two consecutive points will be at most the 
+#'        `spatial_resolution` value. If a given GTFS shape_id has two 
+#'        consecutive points with a distance smaller than the spatial resolution, 
+#'        the algorithm will not remove such points. 
+#' @param output_path character. A directory path. If `NULL` (Default), the 
+#'        function returns the output. If the user passes a valid `passed`, the 
+#'        output will be saved in the `output_path` dir. Note that that the 
+#'        output of each public transport `shape_id` is saved separately in 
+#'        different files. Setting an `output_path` is recommended when working
+#'        with large public transport system because the output of the function 
+#'        can be significantly large.
+#'        
 #' @return A `data.table sf_linestring` object or `NULL`.
 #' 
 #' @family Core function
@@ -172,7 +162,6 @@ transport_model <- function(gtfs_data,
   }
   # GPS as Sf_Linestring ------
   # Converting a GPS-like data.table to a LineString Simple Feature (sf)
-  
   
   # Checking
   if(!missing(output_path)){

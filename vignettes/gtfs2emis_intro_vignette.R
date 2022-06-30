@@ -75,11 +75,64 @@ emi_list <- emission_model(tp_model = tp_model,
 names(emi_list)
 
 ## ----eval = TRUE--------------------------------------------------------------
-emi_dt <- emis_to_dt(emi_list = emi_list
-                    ,emi_vars = "emi"
-                    ,veh_vars = c("veh_type", "euro", "fuel")
-                    ,pol_vars = "pollutant")
+emi_dt <- emis_to_dt(emi_list = emi_list,
+                     veh_vars = c("veh_type", "euro", "fuel"),
+                     pol_vars = "pollutant"
+                     )
 
 head(emi_dt) 
 
+
+## ---- message = FALSE---------------------------------------------------------
+emi_by_pol <- emis_summary(emi_list = emi_list,
+                                 by = "pollutant") 
+emi_by_pol
+
+
+## ---- fig.height=5, fig.width=8-----------------------------------------------
+emi_by_veh <- emis_summary(emi_list = emi_list,
+                          by = "vehicle") 
+head(emi_by_veh)
+
+## ---- message = FALSE---------------------------------------------------------
+emi_by_veh <- emis_summary(emi_list = emi_list,
+                          by = "vehicle",
+                          veh_vars = c("veh_type","euro")) 
+head(emi_by_veh)
+
+# plot
+ggplot(data = emi_by_veh) +
+  geom_col(aes(x = euro, y = as.numeric(emi/1000), fill = pollutant), 
+           color=NA, show.legend = FALSE) +
+  labs(y="Total emissions (Kg)", x="Euro standard") +
+  facet_wrap(~pollutant, scales = "free", nrow = 2) +
+  theme_minimal()
+
+
+## ---- fig.height=5, fig.width=8-----------------------------------------------
+emi_by_time <- emis_summary(emi_list = emi_list,
+                                by = "time",
+                                segment_vars = "tp_model") 
+head(emi_by_time) 
+
+# plot
+ggplot(data = emi_by_time) +
+  geom_col(aes(x = factor(timestamp_hour), y = as.numeric(emi/1000), fill = pollutant),
+           color=NA, show.legend = FALSE) +
+  labs(y="Total emissions (Kg)", x="Hour of the day") +
+  facet_wrap(~pollutant, scales = "free", nrow = 2) + 
+  theme_minimal()
+
+
+## ---- message = FALSE---------------------------------------------------------
+# create spatial grid
+mygrid <- sf::st_make_grid(
+  x = sf::st_bbox(emi_list$tp_model$geometry)
+  , cellsize = 0.25 / 200
+  , crs= 4329
+  , what = "polygons"
+  , square = FALSE)
+
+mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
+plot(mygrid)
 
