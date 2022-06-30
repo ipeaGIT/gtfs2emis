@@ -217,7 +217,7 @@ emission_model <- function(  tp_model
 
   # Generate EF cetesb_brazil before the loop
   # to avoid multiple runs in the loop
-  if(ef_model == "cetesb_brazil"){
+  if(ef_model == "ef_brazil_cetesb"){
     temp_ef <- ef_brazil_cetesb(pollutant = pollutant,
                                 veh_type = fleet_data$veh_type,
                                 model_year = as.numeric(fleet_data$model_year),
