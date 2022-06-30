@@ -87,9 +87,10 @@ test_that("output is correct", {
   # tp_model detailed---------------
   
   # tp_model
-  irl_shapeids <- c("60-747-d12-1.113.O", "60-77A-d12-1.168.O", "60-77A-d12-1.169.I")
-  gtfs_irl2 <- gtfstools::filter_by_shape_id(gtfs_irl_raw
-                                             , shape_id = irl_shapeids)
+  irl_shapeids <- c("60-42-b12-1.250.I", "60-42-d12-1.249.O", "60-43-d12-1.252.I")
+  gtfs_irl2 <- gtfstools::filter_by_shape_id(gtfs_irl_raw, 
+                                             shape_id = irl_shapeids)
+  
   tp_model_irl2 <- transport_model(gtfs = gtfs_irl2, parallel = TRUE)
   
   # fleet
@@ -105,7 +106,7 @@ test_that("output is correct", {
     )
   })
   
-  # checkings
+  # checks
   expect_equal(length(tmp_emis_detailed),3)
   for(i in 1:3) expect_is(tmp_emis_detailed[[i]] , 'list') 
   for(i in 1:3) expect_equal(length(tmp_emis_detailed[[i]]),11)

@@ -2,6 +2,7 @@
 
 library(sf)
 library(gtfstools)
+library(data.table)
 library(ggplot2)
 library(sfheaders)
 library(mapview)
@@ -106,10 +107,11 @@ if(!is.null(gtfs$transfers)){
   gtfs$transfers <- NULL
 }
 
-# reduce trips by 50%
+# reduce trips by 10%
+set.seed(42)
 object.size(gtfs)
 all_trip_ids <- unique(gtfs$trips$trip_id) |> unique()
-new_trip_ids <- sample(all_trip_ids, size = length(all_trip_ids) * 0.5, replace = FALSE)
+new_trip_ids <- sample(all_trip_ids, size = length(all_trip_ids) * 0.10, replace = FALSE)
 
 gtfs$trips <- subset(gtfs$trips, trip_id %in% new_trip_ids)
 gtfs$routes <- subset(gtfs$routes, route_id %in% gtfs$trips$route_id)
@@ -121,7 +123,7 @@ object.size(gtfs)
 gtfstools::write_gtfs(gtfs, path = basename(gtfs_file) )
 
 # check output
-t <- read_gtfs(basename(gtfs_file) )
+t <- read_gtfs( basename(gtfs_file) )
 gtfstools::convert_stops_to_sf(t) |> plot()
 gtfstools::convert_shapes_to_sf(t) |> plot()
 

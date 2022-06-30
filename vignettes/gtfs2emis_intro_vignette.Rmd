@@ -103,11 +103,11 @@ gtfs <- gtfstools::read_gtfs(gtfs_file)
 
 # Keep Monday services GTFS
 gtfs <- gtfstools::filter_by_weekday(gtfs, 
-                                         weekday = c('saturday', 'sunday'), 
-                                         keep = FALSE)
+                                     weekday = c('saturday', 'sunday'), 
+                                     keep = FALSE)
 
-# 66666666666 REMOVER
-gtfs <- gtfstools::filter_by_trip_id(gtfs, trip_id = '619.3.60-40-d12-1.224.O')
+
+gtfs <- gtfstools::filter_by_trip_id(gtfs, trip_id =  "238.2.60-118-b12-1.59.I" )
 
 ```
 
@@ -120,6 +120,8 @@ Now let's generate the transport model. This is the most time consuming part. If
 progressr::with_progress( 
   
   tp_model <- transport_model(gtfs_data = gtfs,
+                              min_speed = 2,
+                              max_speed = 80,
                               spatial_resolution = 100,
                               parallel = TRUE) 
   )
@@ -271,20 +273,24 @@ Let's create a regular hexagonal grid for this example.
 mygrid <- sf::st_make_grid(
   x = sf::st_bbox(emi_list$tp_model$geometry)
   , cellsize = 0.25 / 200
-  , crs= 4329
+  , crs= 4326
   , what = "polygons"
   , square = FALSE)
 
 mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
-plot(mygrid)
+
+ ggplot() + 
+   geom_sf(data=mygrid) +
+   theme_void()
 ```
 
-```{r, eval=TRUE, message=FALSE, fig.width=5, fig.height=5}
+
+```{r, eval=FALSE, message=FALSE, fig.width=5, fig.height=5}
 # we add info of emissions into gps file
 emi_list$tp_model <- cbind(emi_list$tp_model, emi_list$emi) #### ja nao podia ser feito dentro da funcao ???
 
 
-mygrid_emi <- emis_grid(data = emi_list$tp_model,
+mygrid_emi <- emis_grid(data = emi_list,
                         emi = "CO2_Euro_III",    #### TOdo CO2 e Todo PM10 ????
                         grid = mygrid,
                         time_class = 'all periods')

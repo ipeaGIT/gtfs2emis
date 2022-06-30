@@ -7,8 +7,7 @@ library(gtfstools)
 # GTFS
 gtfs_irl_raw <- system.file("extdata/irl_dub/irl_dub_gtfs.zip", package = "gtfs2emis")
 gtfs_irl_raw <- gtfstools::read_gtfs(gtfs_irl_raw)
-gtfs_irl_raw <- gtfstools::filter_by_time_of_day(gtfs_irl_raw, from = '08:00:00',to = '08:30:00')
-gtfs_irl <- gtfstools::filter_by_shape_id(gtfs_irl_raw, shape_id = "60-747-d12-1.113.O")
+gtfs_irl <- gtfstools::filter_by_shape_id(gtfs_irl_raw, shape_id = "60-123-b12-1.72.O")
 
 # transport model
 tp_model_irl <- transport_model(gtfs = gtfs_irl, parallel = TRUE)

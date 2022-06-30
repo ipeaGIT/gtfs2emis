@@ -56,11 +56,15 @@
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 
 #' # keep a single trip_id to speed up this example
-#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439181")
+#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
 #'   
 #' # run transport model
 #' tp_model <- transport_model(gtfs_data = gtfs_small,
-#'                              parallel = TRUE)
+#'                             min_speed = 2,
+#'                             max_speed = 80,
+#'                             new_speed = 20,
+#'                             spatial_resolution = 100,
+#'                             parallel = FALSE)
 #'}
 transport_model <- function(gtfs_data,
                             min_speed = 2,

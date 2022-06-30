@@ -1,76 +1,38 @@
-library(sf)
-library(data.table)
-library(magrittr)
-library(roxygen2)
-library(devtools)
-library(usethis)
-library(profvis)
-library(dplyr)
-library(mapview)
-library(covr)
-library(testthat)
-library(ggplot2)
-library(checkmate)
-library(geobr)
-library(tictoc)
-library(mapview)
-mapviewOptions(platform = 'leafgl')
-
-
 library(gtfs2emis)
-library(gtfs2gps)
 library(gtfstools)
+library(data.table)
+library(sf)
+library(ggplot2)
+library(progressr)
 
 
 
-##### CUT GTFS curitiba ------------------------
-
-data_path <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
-data_path <- "R:/Dropbox/bases_de_dados/GTFS/Curitiba/gtfs_curitiba_muni_20191002.zip"
-
-# read GTFS
-gtfs <- gtfstools::read_gtfs(data_path)
-
-# filter time of the day
-gtfs_cut <- gtfstools::filter_by_time_of_day(gtfs,from = '07:00:00', '19:00:00')
-
-object.size(gtfs)
-object.size(gtfs_cut)
-
-
-shapes <- gtfstools::convert_shapes_to_sf(gtfs)
-stops <- gtfstools::convert_stops_to_sf(gtfs)
-mapview(stops)
-
-center <- subset(stops, stop_id == 26337)
-
-buff <- sf::st_buffer(x = center, dist = set_units(3.5, km) )
+##### test ------------------------
 
 
 
 
 
-# mapview(center) + buff
+# run transport model
+test <- function(gtfs_file){
+  
+gtfs <- gtfstools::read_gtfs(gtfs_file) 
+tp_model <- transport_model(gtfs_data = gtfs,
+                           min_speed = 2,
+                           max_speed = 80,
+                           new_speed = 20,
+                           spatial_resolution = 100,
+                           parallel = FALSE)
+}
 
-ggplot() +
-  geom_sf(data=buff, fill='gray', alpha=.3) +
-  geom_sf(data=shapes, color='green') + 
-  geom_sf(data=center, color='red') 
+cur <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+det <- system.file("extdata/usa_det/usa_det_gtfs.zip", package = "gtfs2emis")
+dub <- system.file("extdata/irl_dub/irl_dub_gtfs.zip", package = "gtfs2emis")
 
+a <- system.time( x <- test(gtfs_file = cur ) )
+b <- system.time( y <- test(gtfs_file = det ) )
+c <- system.time( z <- test(gtfs_file = dub ) )
 
-sf_use_s2(FALSE)
-gtfs_cut <- gtfstools::filter_by_sf(gtfs = gtfs,
-                                   geom = buff,
-                                   spatial_operation = sf::st_crop )
-
-shapes_cut <- gtfstools::convert_shapes_to_sf(gtfs_cut)
-
-ggplot() +
-  geom_sf(data=buff, fill='gray', alpha=.3) +
-  geom_sf(data=shapes_cut, color='green') + 
-  geom_sf(data=center, color='red') 
-
-gtfstools::write_gtfs(gtfs_cut, 'gtfs_cut.zip')
 
 
 

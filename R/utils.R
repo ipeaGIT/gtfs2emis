@@ -1,4 +1,3 @@
-#' @importFrom magrittr %>%
 #' @importFrom data.table := .SD .I .GRP %like% setDT
 NULL
 

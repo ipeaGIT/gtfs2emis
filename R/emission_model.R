@@ -67,12 +67,15 @@
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 
 #' # keep a single trip_id to speed up this example
-#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439181")
+#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
 #'   
 #' # run transport model
 #' tp_model <- transport_model(gtfs_data = gtfs_small,
-#'                              parallel = FALSE)
-#' 
+#'                             min_speed = 2,
+#'                             max_speed = 80,
+#'                             new_speed = 20,
+#'                             spatial_resolution = 100,
+#'                             parallel = FALSE)
 #' 
 #' # Example using Brazilian emission model and fleet
 #' fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
@@ -278,7 +281,7 @@ emission_model <- function(  tp_model
     
     
     # iii) Emissions -----
-    temp_emis <- emis(fleet_composition = fleet_data$fleet_composition
+    temp_emis <- multiply_ef(fleet_composition = fleet_data$fleet_composition
                       , dist = units::set_units(tp_model$dist, "km") 
                       , ef = temp_ef
                       , aggregate = FALSE

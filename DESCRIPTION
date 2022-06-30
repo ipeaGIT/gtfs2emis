@@ -29,7 +29,6 @@ Imports:
     furrr,
     future,
     gtfs2gps,
-    magrittr,
     sf (>= 0.9-0),
     units
 Suggests: 

@@ -1,8 +1,9 @@
 #' @title 
-#' Estimate hot exhaust emissions 
+#' Multiply emission factors by distances 
 #'
 #' @description 
-#' Calculate hot exhaust emissions.
+#' Calculate hot exhaust emissions by multipling emission factors by distances 
+#' weighted by fleet composition profile.
 #'
 #' @param fleet_composition vector; Fleet composition, which is a distribution 
 #'        of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.
@@ -31,13 +32,13 @@
 #'               fcorr = 1,
 #'               as_list = TRUE)
 #'
-#'emi <- emis(fleet_composition =  c(0.7,0.3),
-#'           dist = dist,
-#'           ef = ef,
-#'           aggregate = FALSE,
-#'           as_list = TRUE)  
+#'emi <- multiply_ef(fleet_composition =  c(0.7,0.3),
+#'                   dist = dist,
+#'                   ef = ef,
+#'                   aggregate = FALSE,
+#'                   as_list = TRUE)  
 #'}     
-emis <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
+multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
   
   #
   # init---

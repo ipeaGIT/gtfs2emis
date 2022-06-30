@@ -72,12 +72,9 @@ mygrid <- sf::st_make_grid(
 mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
 
 
-# we add info of emissions into gps file
-emi_list$tp_model <- cbind(emi_list$tp_model, emi_list$emi) #### ja nao podia ser feito dentro da funcao ???
-
-mygrid_emi <- emis_grid(data = emi_list$tp_model,
-                        emi = "CO2_Euro_III",
-                        grid = mygrid,
-                        time_class = 'all periods')
+#
+# mygrid_emi <- emis_grid(data = emi_list$tp_model,
+#                         grid = mygrid,
+#                         time_resolution = 'day')
 }
 }
