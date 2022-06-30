@@ -30,64 +30,54 @@ by time of the day.
 }
 \examples{
 if (interactive()) {
-# GTFS2gps filter-----
-library(data.table)
-library(magrittr)
-fort <- gtfs2gps::read_gtfs(system.file("extdata/fortaleza.zip"
-                                       , package = "gtfs2gps"))  \%>\%
- gtfs2gps::filter_single_trip() \%>\% 
- gtfs2gps::filter_by_shape_id(c("shape804-I", "shape806-I"))
+library(gtfs2emis)
+library(gtfstools)
 
-fort_gps <- gtfs2gps::gtfs2gps(fort, parallel = TRUE)
+# read GTFS, and keep a single trip_id to speed up this example
+gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+gtfs <- gtfstools::read_gtfs(gtfs_file) 
+gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439186")
+  
+# run transport model
+tp_model <- transport_model(gtfs_data = gtfs_small,
+                            min_speed = 2,
+                            max_speed = 80,
+                            new_speed = 20,
+                            spatial_resolution = 100,
+                            parallel = FALSE)
 
-fort_gpslines <- gtfs2gps::gps_as_sflinestring(fort_gps)
+# Fleet data, using Brazilian emission model and fleet
+fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
+                                   model_year = 2010:2019,
+                                   fuel = "D",
+                                   fleet_composition = rep(0.1,10)
+                                   )
+# Emission model
+emi_list <- emission_model(
+                tp_model = tp_model,
+                ef_model = "ef_brazil_cetesb",
+                fleet_data = fleet_data_ef_cetesb,
+                pollutant = c("CO","PM10","CO2","CH4","NOx")
+                )
 
-fort_gpslines$dist <- units::set_units(fort_gpslines$dist, "km")
+# create spatial grid
+mygrid <- sf::st_make_grid(
+  x = sf::st_bbox(emi_list$tp_model$geometry)
+  , cellsize = 0.25 / 200
+  , crs= 4329
+  , what = "polygons"
+  , square = FALSE
+  )
+  
+mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
 
-# fleet -----------
-total_fleet <- data.table::data.table(year = c(2005,2010,2011,2012
-                                              ,2014,2015,2017,2018,2019),
-                                     bus = c(1,61,50,1,45,18,62,27,31),
-                                     veh_type_euro = "Ubus Std 15 - 18 t",
-                                     euro_stage = c("II", "IV", "IV", "V"
-                                                    , "V", "V", "V", "V","V"))
-total_fleet$fleet_composition <- total_fleet$bus/sum(total_fleet$bus)
 
-# Emission factor
-set.seed(1234)
-EF_europe <- ef_europe_emep(pollutant = c("CO", "PM10"),
-                      speed = fort_gpslines$speed,
-                      veh_type = total_fleet$veh_type_euro,
-                      tech = "SCR",
-                      euro = total_fleet$euro_stage,
-                      fcorr = rnorm(9, 0.5, 0.1))
-# EUROPE
-emi_europe <- emis(fleet_composition = total_fleet$fleet_composition,
-                  dist = fort_gpslines$dist,
-                  ef = EF_europe,
-                  prefix = "EU")
+# we add info of emissions into gps file
+emi_list$tp_model <- cbind(emi_list$tp_model, emi_list$emi) #### ja nao podia ser feito dentro da funcao ???
 
-for_emis <- cbind(fort_gpslines, emi_europe$emi)
-
-# Grid
-grid_gps <- sf::st_make_grid(for_emis, cellsize = 0.25 / 102.47, square = FALSE)
-for_sf <- sf::st_as_sf(for_emis)
-
-pol_gps <- emis_grid(data = for_sf,
-                    emi = c("EU_CO_total"),
-                    grid = grid_gps,
-                    time_class = 'all periods')
-
-pol_gps_hour <- emis_grid(data = for_sf,
-                         emi = c("EU_CO_total"),
-                         grid = grid_gps,
-                         time_class = 'hour',
-                         time_column = 'timestamp')
-
-pol_gps_hour_minute <- emis_grid(data = for_sf,
-                                emi = c("EU_CO_total"),
-                                grid = grid_gps,
-                                time_class = 'hour-minute',
-                                time_column = 'timestamp')
+mygrid_emi <- emis_grid(data = emi_list$tp_model,
+                        emi = "CO2_Euro_III",
+                        grid = mygrid,
+                        time_class = 'all periods')
 }
 }
