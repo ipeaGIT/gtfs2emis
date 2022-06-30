@@ -60,31 +60,39 @@
 #' @export
 #' @examples if (interactive()) {
 #' library(gtfs2emis)
-#' library(gtfs2gps)
-#' library(magrittr)
+#' library(gtfstools)
 #' 
-#' gtfs <- gtfstools::read_gtfs(system.file("extdata/poa.zip", package = "gtfs2gps")) %>% 
-#' gtfstools::filter_by_shape_id(., "T2-1") %>%
-#'   gtfs2gps::filter_single_trip()
+#' # read GTFS
+#' gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+#' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 
-#' tp_model <- transport_model(gtfs = gtfs, parallel = TRUE)
+#' # keep a single trip_id to speed up this example
+#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439181")
+#'   
+#' # run transport model
+#' tp_model <- transport_model(gtfs_data = gtfs_small,
+#'                              parallel = FALSE)
 #' 
 #' 
 #' # Example using Brazilian emission model and fleet
-#' fleet_data_ef_cetesb <- data.frame(  veh_type = "BUS_URBAN_D"
-#'                                    , model_year = 2010:2019
-#'                                    , fuel = "D"
-#'                                    , fleet_composition = rep(0.1,10))
+#' fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
+#'                                    model_year = 2010:2019,
+#'                                    fuel = "D",
+#'                                    fleet_composition = rep(0.1,10)
+#'                                    )
 #'                                    
-#' emi_cetesb <- emission_model(tp_model = tp_model
-#'                             , ef_model = "ef_brazil_cetesb"
-#'                             , fleet_data = fleet_data_ef_cetesb
-#'                             , pollutant = c("CO","PM10","CO2","CH4","NOx"))
+#' emi_cetesb <- emission_model(
+#'                 tp_model = tp_model,
+#'                 ef_model = "ef_brazil_cetesb",
+#'                 fleet_data = fleet_data_ef_cetesb,
+#'                 pollutant = c("CO","PM10","CO2","CH4","NOx")
+#'                 )
 #'                             
 #' # Example using European emission model and fleet
 #' 
-#' fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t" 
-#' ,"Ubus Std 15 - 18 t" ,"Ubus Artic >18 t")
+#' fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t",
+#'                                                   "Ubus Std 15 - 18 t",
+#'                                                   "Ubus Artic >18 t")
 #'                                    , euro = c("III","IV","V")
 #'                                    , fuel = rep("D",3)
 #'                                    , tech = c("-","SCR","SCR")
