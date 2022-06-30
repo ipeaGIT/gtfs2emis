@@ -167,11 +167,12 @@ In the final step, we use the `emission_model{gtfs2emis}` function to estimate h
 [BAZZO 666] acho q essa ultima frase texto pode ficar mais clara.
 
 ```{r, message = FALSE}
-emi_list <- emission_model(tp_model = tp_model
-                          , ef_model = "ef_europe_emep"
-                          , fleet_data = fleet_df
-                          , pollutant = c("CO2","PM10")
-                          )
+emi_list <- emission_model(tp_model = tp_model,
+                           ef_model = "ef_europe_emep",
+                           fleet_data = fleet_df,
+                           pollutant = c("CO2","PM10"),
+                           reference_year = 2020
+                           )
 
 names(emi_list)
 ```
@@ -183,10 +184,10 @@ names(emi_list)
 Sometimes, working with data stored in a long list can be tricky. For convenience, `gtfs2emis` package has a few functions to users analyze the these results and make. For example, you can use the `emis_to_dt()` function to convert the output of `emission_model()` from a `list` to a `data.table` format:
 
 ```{r,eval = TRUE}
-emi_dt <- emis_to_dt(emi_list = emi_list
-                    ,emi_vars = "emi"
-                    ,veh_vars = c("veh_type", "euro", "fuel")
-                    ,pol_vars = "pollutant")
+emi_dt <- emis_to_dt(emi_list = emi_list,
+                     veh_vars = c("veh_type", "euro", "fuel"),
+                     pol_vars = "pollutant"
+                     )
 
 head(emi_dt) 
 
@@ -201,7 +202,6 @@ Alternatively, the `emis_summary()` function helps users summarize emission esti
 
 ```{r, message = FALSE}
 emi_by_pol <- emis_summary(emi_list = emi_list,
-                                 emi_var = "emi", 
                                  by = "pollutant") 
 emi_by_pol
 
@@ -215,7 +215,7 @@ The `emis_summary()` function help users summarize emission estimates by either 
 
 ```{r, fig.height=5, fig.width=8}
 emi_by_veh <- emis_summary(emi_list = emi_list,
-                          by = "veh_type") 
+                          by = "vehicle") 
 head(emi_by_veh)
 ```
 
@@ -223,7 +223,7 @@ It is also possible to summarize emission estimates by other vehicle characteris
 
 ```{r, message = FALSE}
 emi_by_veh <- emis_summary(emi_list = emi_list,
-                          by = "veh_type",
+                          by = "vehicle",
                           veh_vars = c("veh_type","euro")) 
 head(emi_by_veh)
 
@@ -243,7 +243,6 @@ ggplot(data = emi_by_veh) +
 ```{r, fig.height=5, fig.width=8}
 emi_by_time <- emis_summary(emi_list = emi_list,
                                 by = "time",
-                                time_column = "timestamp",
                                 segment_vars = "tp_model") 
 head(emi_by_time) 
 

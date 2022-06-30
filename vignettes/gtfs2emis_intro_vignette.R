@@ -17,7 +17,6 @@ library(gtfs2emis)
 library(gtfstools)
 library(progressr)
 library(data.table)
-library(magrittr)
 library(ggplot2)
 library(units)
 library(sf)
@@ -63,5 +62,24 @@ fleet_file <- system.file("extdata/irl_dub/irl_dub_fleet.txt", package = "gtfs2e
 
 fleet_df <- read.csv(fleet_file)
 head(fleet_df)
+
+
+## ---- message = FALSE---------------------------------------------------------
+emi_list <- emission_model(tp_model = tp_model,
+                           ef_model = "ef_europe_emep",
+                           fleet_data = fleet_df,
+                           pollutant = c("CO2","PM10"),
+                           reference_year = 2020
+                           )
+
+names(emi_list)
+
+## ----eval = TRUE--------------------------------------------------------------
+emi_dt <- emis_to_dt(emi_list = emi_list
+                    ,emi_vars = "emi"
+                    ,veh_vars = c("veh_type", "euro", "fuel")
+                    ,pol_vars = "pollutant")
+
+head(emi_dt) 
 
 

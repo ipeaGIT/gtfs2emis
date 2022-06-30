@@ -90,9 +90,6 @@ transport_model <- function(gtfs_data,
   
   # Check inputs GTFS ----
   
-  message("Checking inputs")
-  message("---------------")
-  
   # output_path
   if(!is.null(output_path)){
     if(!is.character(output_path)){
@@ -112,10 +109,7 @@ transport_model <- function(gtfs_data,
   }
   
   
-  # Read GTFS
-  
-  message("Reading GTFS")
-  message("------------")
+  # Read GTFS ------------
   
   if(is.character(gtfs_data)){
     city_gtfs <- gtfs2gps::read_gtfs(path = gtfs_data)
@@ -131,10 +125,8 @@ transport_model <- function(gtfs_data,
     future::plan(session = "sequential")
   }
   
-  # gtfs2gps
-  message("Converting GTFS to GPS-like data")
-  message("------------")
-  
+  # gtfs2gps ------------
+
   gps_path <-  paste0(tempdir(),"/gps")
   suppressWarnings(dir.create(gps_path))
   
@@ -147,12 +139,9 @@ transport_model <- function(gtfs_data,
   #                      , filepath = gps_path
   #                     , ...)
   
-  #  Adjust gps speed---------
+  #  Adjusting the speeds of a gps-like table ---------
   
-  message("------------")
-  message("Adjusting the speeds of a gps-like table")
-  message("------------")
-  
+
   # create new dirs
   gps_adjust_path <-  paste0(tempdir(), "/gps_adjust")
   suppressWarnings(dir.create(gps_adjust_path)) 
@@ -182,8 +171,8 @@ transport_model <- function(gtfs_data,
     lapply(seq_along(files_gps),gps_speed_fix)
   }
   # GPS as Sf_Linestring ------
-  message("Converting a GPS-like data.table to a LineString Simple Feature (sf)")
-  message("------------")
+  # Converting a GPS-like data.table to a LineString Simple Feature (sf)
+  
   
   # Checking
   if(!missing(output_path)){
@@ -213,11 +202,11 @@ transport_model <- function(gtfs_data,
   # output
   if(missing(output_path)){
     gpsLine <- data.table::rbindlist(gpsLine) 
-    gpsLine <- sf::st_sf(gpsLine)
+    gpsLine <- sf::st_sf(gpsLine, crs = 4326)
     return(gpsLine)
   }else{
     gpsLine <- lapply(1:length(gpsLine),function(i){
-      saveRDS(object =  sf::st_sf(gpsLine[[i]])
+      saveRDS(object =  sf::st_sf(gpsLine[[i]], crs = 4326)
               , file = paste0(output_path,files_gps_names[i]))
       return(NULL)
     })

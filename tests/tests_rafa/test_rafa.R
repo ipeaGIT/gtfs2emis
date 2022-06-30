@@ -107,9 +107,10 @@ devtools::document()
 # Check package errors
 
 # LOCAL
+tictoc::tic()
 Sys.setenv(NOT_CRAN = "true")
 devtools::check(pkg = ".",  cran = FALSE, env_vars = c(NOT_CRAN = "true"))
-
+tictoc::toc()
 
 
 

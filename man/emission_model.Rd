@@ -9,7 +9,7 @@ emission_model(
   ef_model,
   fleet_data,
   pollutant,
-  reference_year,
+  reference_year = 2020,
   parallel = TRUE,
   output_path = NULL
 )
@@ -33,7 +33,7 @@ pollutants are available for each emission factor model (\code{ef_usa_moves}, \c
 \code{ef_europe_emep}, or \code{ef_brazil_cetesb}).}
 
 \item{reference_year}{numeric. Year of reference considered to calculate the
-emissions inventory. Defaults to 2019. This
+emissions inventory. Defaults to \code{2020}. This
 argument is only required when the \code{ef_model}
 argument is \code{ef_usa_moves} or \code{ef_usa_emfac}.}
 
@@ -127,26 +127,26 @@ emi_emep <- emission_model(tp_model = tp_model
 fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
                                   , model_year = 2010:2019
                                   , fuel = "D"
-                                  , reference_year = 2019
+                                  , reference_year = 2020
                                   , fleet_composition = rep(0.1,10))
                                   
 fleet_data_ef_emfac <- data.frame(  veh_type =  "BUS_URBAN_D"
                                   , model_year = 2010:2019
                                   , fuel = "D"
-                                  , reference_year = 2019
+                                  , reference_year = 2020
                                   , fleet_composition = rep(0.1,10))
                                   
 emi_moves <- emission_model(tp_model = tp_model
                           , ef_model = "ef_usa_moves"
                           , fleet_data = fleet_data_ef_moves
                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
-                          , reference_year = 2019)
+                          , reference_year = 2020)
                           
 emi_emfac <- emission_model(tp_model = tp_model
                           , ef_model = "ef_usa_emfac"
                           , fleet_data = fleet_data_ef_emfac
                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
-                          , reference_year = 2019)
+                          , reference_year = 2020)
 }
 }
 \seealso{

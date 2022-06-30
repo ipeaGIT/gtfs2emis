@@ -17,7 +17,7 @@
 #' pollutants are available for each emission factor model (`ef_usa_moves`, `ef_usa_emfac`,
 #' `ef_europe_emep`, or `ef_brazil_cetesb`).
 #' @param reference_year numeric. Year of reference considered to calculate the
-#'                      emissions inventory. Defaults to 2019. This 
+#'                      emissions inventory. Defaults to `2020`. This 
 #'                      argument is only required when the `ef_model` 
 #'                      argument is `ef_usa_moves` or `ef_usa_emfac`.
 #' @param parallel logical. Decides whether the function should run in parallel. 
@@ -100,32 +100,32 @@
 #' fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
 #'                                   , model_year = 2010:2019
 #'                                   , fuel = "D"
-#'                                   , reference_year = 2019
+#'                                   , reference_year = 2020
 #'                                   , fleet_composition = rep(0.1,10))
 #'                                   
 #' fleet_data_ef_emfac <- data.frame(  veh_type =  "BUS_URBAN_D"
 #'                                   , model_year = 2010:2019
 #'                                   , fuel = "D"
-#'                                   , reference_year = 2019
+#'                                   , reference_year = 2020
 #'                                   , fleet_composition = rep(0.1,10))
 #'                                   
 #' emi_moves <- emission_model(tp_model = tp_model
 #'                           , ef_model = "ef_usa_moves"
 #'                           , fleet_data = fleet_data_ef_moves
 #'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
-#'                           , reference_year = 2019)
+#'                           , reference_year = 2020)
 #'                           
 #' emi_emfac <- emission_model(tp_model = tp_model
 #'                           , ef_model = "ef_usa_emfac"
 #'                           , fleet_data = fleet_data_ef_emfac
 #'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
-#'                           , reference_year = 2019)
+#'                           , reference_year = 2020)
 #'}
 emission_model <- function(  tp_model
                              , ef_model
                              , fleet_data
                              , pollutant
-                             , reference_year
+                             , reference_year = 2020
                              , parallel = TRUE
                              , output_path = NULL){
   # A) Checking inputs -----
@@ -152,10 +152,7 @@ emission_model <- function(  tp_model
     }
   }
   if (ef_model == "ef_usa_emfac" | ef_model == "ef_usa_moves") {
-    if (is.null(reference_year)) { 
-      reference_year <- 2020
-      message("Argument `reference_year` considered `2020` (Default value).")
-    }
+
     if(is.null(fleet_data$veh_type) | is.null(fleet_data$model_year)
        | is.null(fleet_data$fleet_composition)){
       stop(sprintf("fleet_data input must have the columns c('veh_type', 
