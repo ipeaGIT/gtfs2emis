@@ -4,20 +4,28 @@
 \alias{emis_grid}
 \title{Allocate emissions into a spatial grid}
 \usage{
-emis_grid(data, emi, grid, time_class, time_column)
+emis_grid(
+  emi_list,
+  grid,
+  time_resolution = "day",
+  quiet = TRUE,
+  aggregate = FALSE
+)
 }
 \arguments{
-\item{data}{Data.frame; Data.frame containing the emissions and time stamp column data.}
-
-\item{emi}{Character; Column names of emissions in 'data'.}
+\item{emi_list}{list; A list containing the data of emissions 'emi' ("data.frame" class)
+and the transport model 'tp_model' ("sf" "data.frame" classes).}
 
 \item{grid}{Sf polygon; Grid cell data to allocate emissions.}
 
-\item{time_class}{Character; type of time aggregation in 'data', which can be
-an aggregation by 'all periods' (Default), 'hour' or 'hour-minute'.}
+\item{time_resolution}{Character; Time resolution in which the emissions is
+aggregated. Options are 'hour', 'minute', or 'day (Default).}
 
-\item{time_column}{Vector; Column name with time stamp information (from 'data').
-Argument required when time_class = 'hour' or 'hour-minute' is selected.}
+\item{quiet}{Logical; User can print the total emissions before and after the
+intersection operation in order to check if the gridded emissions were estimated
+correctly. Default is 'TRUE'.}
+
+\item{aggregate}{Logical; Aggregate emissions by pollutant. Default is FALSE.}
 }
 \value{
 An \verb{"sf" "data.frame"} object with emissions estimates per grid cell.
@@ -61,20 +69,19 @@ emi_list <- emission_model(
                 )
 
 # create spatial grid
-mygrid <- sf::st_make_grid(
-  x = sf::st_bbox(emi_list$tp_model$geometry)
+grid <- sf::st_make_grid(
+  x = emi_list$tp_model
   , cellsize = 0.25 / 200
   , crs= 4329
   , what = "polygons"
   , square = FALSE
   )
   
-mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
 
+emi_grid <- emis_grid( emi_list,grid,'day')
 
-#
-# mygrid_emi <- emis_grid(data = emi_list$tp_model,
-#                         grid = mygrid,
-#                         time_resolution = 'day')
+plot(grid)
+plot(emi_grid["PM10_2010"],add = TRUE)
+plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
 }
 }

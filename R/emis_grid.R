@@ -7,13 +7,15 @@
 #' the input grid cells. User can also aggregate the emissions in the grid 
 #' by time of the day.
 #'
-#' @param data Data.frame; Data.frame containing the emissions and time stamp column data.
-#' @param emi Character; Column names of emissions in 'data'.
+#' @param emi_list list; A list containing the data of emissions 'emi' ("data.frame" class)
+#'  and the transport model 'tp_model' ("sf" "data.frame" classes). 
 #' @param grid Sf polygon; Grid cell data to allocate emissions.
-#' @param time_class Character; type of time aggregation in 'data', which can be 
-#' an aggregation by 'all periods' (Default), 'hour' or 'hour-minute'.
-#' @param time_column Vector; Column name with time stamp information (from 'data'). 
-#' Argument required when time_class = 'hour' or 'hour-minute' is selected.  
+#' @param time_resolution Character; Time resolution in which the emissions is
+#'  aggregated. Options are 'hour', 'minute', or 'day (Default).
+#' @param quiet Logical; User can print the total emissions before and after the
+#'  intersection operation in order to check if the gridded emissions were estimated
+#'  correctly. Default is 'TRUE'.
+#' @param aggregate Logical; Aggregate emissions by pollutant. Default is FALSE.
 #' @return An `"sf" "data.frame"` object with emissions estimates per grid cell.
 #' @export
 #' 
@@ -49,102 +51,171 @@
 #'                 )
 #'
 #' # create spatial grid
-#' mygrid <- sf::st_make_grid(
-#'   x = sf::st_bbox(emi_list$tp_model$geometry)
+#' grid <- sf::st_make_grid(
+#'   x = emi_list$tp_model
 #'   , cellsize = 0.25 / 200
 #'   , crs= 4329
 #'   , what = "polygons"
 #'   , square = FALSE
 #'   )
 #'   
-#' mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
 #' 
+#' emi_grid <- emis_grid( emi_list,grid,'day')
 #' 
-#' #
-#' # mygrid_emi <- emis_grid(data = emi_list$tp_model,
-#' #                         grid = mygrid,
-#' #                         time_resolution = 'day')
+#' plot(grid)
+#' plot(emi_grid["PM10_2010"],add = TRUE)
+#' plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
 #'}
-emis_grid <- function(data, emi, grid, time_class, time_column){
+emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggregate = FALSE){
   
+  # 1) Check -----
+  checkmate::assert_list(emi_list, null.ok = FALSE)
+  checkmate::assert(
+    checkmate::check_choice("emi",names(emi_list))
+    , checkmate::check_choice("tp_model",names(emi_list))
+    , combine = "and"
+  )
+  checkmate::assert(
+    checkmate::check_class(emi_list$tp_model, classes = c("sf", "data.frame"))
+    ,checkmate::check_vector(time_resolution,len = 1, null.ok = FALSE)
+    ,checkmate::check_string(time_resolution, null.ok = FALSE)
+    ,checkmate::check_choice(time_resolution,c('day','minute','hour'),null.ok = FALSE)
+    ,combine = "and"
+  )
+  checkmate::assert(
+    checkmate::check_class(grid, "sf")
+    , checkmate::check_class(grid, "sfc")
+    , combine = "or"
+  )
+  checkmate::assert_logical(quiet)
+  checkmate::assert_logical(aggregate)
   
-  # Rename columns ----
-  data.table::setDT(data)
-  emi_input <- emi
-  emi <- paste0(emi,"_",1:length(emi))
-  data.table::setnames(data,old = emi_input,new = emi)
-  
-  # Working files -----
-  netdata <- data.table::copy(data.table::as.data.table(data))
-  net <- sf::st_as_sf(data.table::setDF(data)) 
-  
-  # Check units ----
-  
-  emi_units <- c()
-  for(i in 1:length(emi)){ # i = 1
-    if(class(netdata[, .SD, .SDcols = (emi[i])][[1]]) == "units"){
-      # retrieve units
-      emi_units[i] <- units::deparse_unit(netdata[, .SD, .SDcols = (emi[i])][[1]])
-      
-      message(paste0('input data "', emi_input[i], '" is in units: ', emi_units[i]))
-    }else{
-      emi_units[i] <- NA
-      message(paste0('input data "', emi[i], '" has no units'))
-      
+  if(sf::st_crs(grid) != sf::st_crs(emi_list$tp_model)){
+    stop(paste0("Incompatible projections: 'emi_list$tp_model' and 'grid' needs to"
+                ," have the same projection. Please check `sf::st_crs()`."))
+  }
+  if(time_resolution != "day"){
+    checkmate::assert(
+      checkmate::check_choice("timestamp", names(emi_list$tp_model))
+      , checkmate::check_class(emi_list$tp_model$timestamp,"ITime",null.ok = FALSE)
+      , checkmate::check_posixct(emi_list$tp_model$timestamp,null.ok = FALSE)
+      , combine = "or"
+    )
+    if(sum(is.na(emi_list$tp_model$timestamp))>0){
+      stop(paste0("Invalid 'timestamp':\n the provided 'timestamp' in the"
+                  ," 'emi_list$tp_model' has NA values"))
     }
   }
   
-  # Convert to numeric ----
-  
-  netdata[, (emi) := lapply(.SD, as.numeric), .SDcols = emi]
-  
-  # Add 'id' info into grid data ----
-  
-  grid$id <- 1:(dim(grid)[1])
-  
-  # Check projections ----
-  
-  if(identical(sf::st_crs(grid), sf::st_crs(net)) == FALSE){
-    message("Transforming input data into lat/long projection")
-    grid <- sf::st_transform(grid, 4326)
-    net <- sf::st_transform(net, 4326)
+  # convert 'geom' to "sf" "data.fram" if a "sfc" was given
+  # and add 'ID' info
+  if (inherits(grid,"sfc")) {
+    grid <-sf::st_sf(data = data.frame(id = 1:length(grid),grid))
+  }else{
+    grid$id <- 1:(dim(grid)[1])
   }
   
-  # Display emissions BEFORE  -----
+  # aggregate condition
+  if(aggregate){
+    emi_list$road_segment <- 1:nrow(emi_list$tp_model)
+    tmp_emi <- emis_summary(emi_list
+                 ,segment_vars = "road_segment")
+    tmp_emi <- data.table::dcast(tmp_emi
+                                 ,formula = road_segment ~ pollutant
+                                 ,value.var = "emi"
+                                 ,fun.aggregate = sum)
+    tmp_emi[,road_segment := NULL]
+    emi_list$emi <- tmp_emi
+  }
+  # 2) Cbind and rename ----- 
+  tmp_tp_emi <- cbind(emi_list$tp_model, emi_list$emi)
+  
+  data.table::setDT(tmp_tp_emi)
+  name_emi_old <- names(emi_list$emi)
+  name_emi_new <- sprintf("%s_%s"
+                          ,name_emi_old
+                          ,seq_along(name_emi_old))
+  data.table::setnames(tmp_tp_emi
+                       ,old = name_emi_old
+                       ,new = name_emi_new)
+  
+  # 3) Check units ----
+  # Working files
+  netdata <- data.table::copy(data.table::as.data.table(tmp_tp_emi))
+  net <- sf::st_as_sf(data.table::setDF(tmp_tp_emi))
+  
+  emi_units <- c()
+  for(i in seq_along(name_emi_new)){ # i = 1
+    if(class(netdata[, .SD, .SDcols = (name_emi_new[i])][[1]]) == "units"){
+      # retrieve units
+      emi_units[i] <- units::deparse_unit(
+        netdata[, .SD
+                , .SDcols = (name_emi_new[i])][[1]]
+      )
+    }else{
+      emi_units[i] <- NA
+      
+    }
+  }
+  # numeric
+  netdata[, (name_emi_new) := lapply(.SD, as.numeric), .SDcols = name_emi_new]
+  
+  # 4) Display emissions BEFORE  -----
   #
   # objective: user verification purposes, they can check if
   # the intersection operation into grid are displaying the total 
   # emissions correctly
   #
-  message("Sum of street emissions ")
-  sapply(seq_along(emi), function(j){# j = 1
-    sumofstreets <- netdata[, lapply(.SD, sum, na.rm = TRUE), .SDcols = emi[j]]
-    message(paste(emi_input[j], "=", round(sumofstreets, 2), emi_units[j]))
-  })
+  print_emissions <- function(emissions,name_old,name_new,emi_units){
+    sapply(seq_along(name_emi_new), function(j){# j = 1
+      sumofstreets <- emissions[
+        , lapply(.SD, sum, na.rm = TRUE)
+        , .SDcols = name_new[j]]
+      sumofstreets <- as.numeric(sumofstreets)
+      
+      # printing nicely
+      nzeros_after_decimal <- attr(regexpr("(?<=\\.)0+"
+                                           , sumofstreets
+                                           , perl = TRUE)
+                                   , "match.length")
+      round_sum <- ifelse(nzeros_after_decimal>0
+                          ,round(sumofstreets,nzeros_after_decimal + 3)
+                          ,round(sumofstreets,2))
+      message(paste(name_old[j], "="
+                    , round_sum
+                    , emi_units[j]))
+    })
+    return(NULL)
+  }
   
-  # Estimate emissions -------
+  if(!quiet){
+    message("Sum of street emissions ")
+    print_emissions(netdata,name_emi_old,name_emi_new,emi_units)
+  }
+  
+  # 5) Estimate emissions -------
   
   tmp_netdata <- data.table::copy(netdata)
   data.table::setDT(tmp_netdata)
-  if(!missing(time_column)){
-    ### 'hour' time stamp
-    if(time_class == "hour"){
-      tmp_netdata[, time_column := data.table::hour(get(time_column))]
+  if(time_resolution != "day"){
+    # 'hour' resolution
+    if(time_resolution == "hour"){
+      tmp_netdata[, "timestamp" := data.table::hour(timestamp)]
     }
-    ### 'hour-minute' time stamp
-    if(time_class == "hour-minute"){
+    # 'minute' resolution
+    if(time_resolution == "minute"){
       
       tmp_netdata[
-        , "time_column" := paste0(data.table::hour(get(time_column)), ":",
-                                  data.table::minute(get(time_column)))
-      ]
-      
-    } 
+        , "timestamp" := sprintf("%s:%s"
+                                 ,data.table::hour(timestamp) 
+                                 ,data.table::minute(timestamp))]
+    }
     
+    # 'time_column' scenario 
     tmp_netdata <- tmp_netdata[
       , lapply(.SD, sum, na.rm = TRUE)
-      , .SDcols = emi
-      , by = .(time_column
+      , .SDcols = name_emi_new
+      , by = .(timestamp
                , shape_id
                , stop_sequence
                , from_stop_id
@@ -155,7 +226,7 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
     # No 'time_column' scenario 
     tmp_netdata <- tmp_netdata[
       , lapply(.SD, sum, na.rm = TRUE)
-      , .SDcols = emi
+      , .SDcols = name_emi_new
       , by = .(shape_id
                , stop_sequence
                , from_stop_id
@@ -163,7 +234,7 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
     
   }
   
-  # VII) Add geometry into 'netdata' ----
+  # Add geometry into 'netdata' 
   
   tmp_netdata[netdata
               ,on = c("shape_id"
@@ -175,7 +246,7 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
   # 'tmp_netdata' to net
   net <- sf::st_as_sf(data.table::setDF(tmp_netdata))
   
-  # Reduce grid size  -----
+  # 6) Reduce grid size  -----
   # Keep only polygons that intersect with lines
   
   intersect_index <- sf::st_intersects(grid, net,sparse = FALSE)
@@ -184,7 +255,7 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
   grid <- subset(grid, id %in% intersect_index)
   net$temp_lkm <- sf::st_length(net)
   
-  # Intersection -----
+  # 7) Intersection -----
   netg <- suppressMessages(suppressWarnings(
     sf::st_intersection(net, grid)))
   
@@ -195,17 +266,17 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
   netg[, ratio := lkm_inter / temp_lkm]
   
   # adjust emissions by ratio
-  for (col in emi) netg[, (col) := get(col) * ratio]
+  for (i in name_emi_new) netg[, (i) := get(i) * ratio]
   
-  # Aggregate by TIME-------------------
-  # 
-  if(!missing(time_column)){
+  # 8) Aggregate by TIME-------------------
+  
+  if(time_resolution != "day"){
     
-    # time_class
+    # time_resolution
     netg <- netg[
       , lapply(.SD, sum, na.rm = TRUE)
-      ,.SDcols = emi
-      ,by = .(time_column, id)]
+      ,.SDcols = name_emi_new
+      ,by = .(timestamp, id)]
     
   }else{
     
@@ -213,57 +284,41 @@ emis_grid <- function(data, emi, grid, time_class, time_column){
     netg <- netg[
       , lapply(.SD, sum, na.rm = TRUE)
       , by = .(id)
-      ,.SDcols = emi]
+      ,.SDcols = name_emi_new]
     
   }
-  
-  # VI) prepare output file--------
   
   temp_output <- netg[data.table::setDT(grid)
-                      ,on = "id"
-                      ,geometry := i.geometry] 
+                      ,on = "id"]
   
   # add units
-  temp_output[, (emi) := lapply(.SD, as.numeric), .SDcols = emi]
-  
-  for(k in 1:length(emi_units)){ # k = 1
+  temp_output[
+    , (name_emi_new) := lapply(.SD, as.numeric)
+    , .SDcols = name_emi_new
+  ]
+  for(k in seq_along(emi_units)){ # k = 1
     
     temp_output[
-      , (emi[k]) := lapply(.SD, 
-                           units::as_units,
-                           emi_units[k])
-      ,.SDcols = emi[k]]
+      , (name_emi_new[k]) := lapply(.SD, 
+                                    units::as_units,
+                                    emi_units[k])
+      ,.SDcols = name_emi_new[k]]
     
   }
   
-  #
-  # VII) display emissions sum AFTER intersection -----
-  # print emission sum after operation 
-  #
+
+  # 9) Display emissions AFTER ----
+
+  if(!quiet){
+    message("Sum of gridded emissions ")
+    print_emissions(temp_output,name_emi_old,name_emi_new,emi_units)
+  }
   
-  message("Sum of gridded emissions ")
-  sapply(seq_along(emi), function(l){ # l = 1
-    
-    sumofgrids <- temp_output[, lapply(.SD, sum, na.rm = TRUE), .SDcols = emi[l]]
-    message(paste(emi_input[l], "=", round(sumofgrids, 2), emi_units[l]))
-    
-  })
-  
-  
-  # rename columns
+  # 10) Rename and export ----
+  temp_output$id <- NULL
   data.table::setnames(temp_output
-                       ,old = emi
-                       ,new = emi_input)
-  
-  if(missing(time_column) == FALSE){
-    
-    data.table::setnames(temp_output,old = "time_column"
-                         ,new = time_column)
-    
-  }
-  
-  
-  # return output ------
+                       ,old = name_emi_new
+                       ,new = name_emi_old)
   
   temp_output <- sf::st_as_sf(temp_output)
   
