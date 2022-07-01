@@ -17,6 +17,7 @@ utils::globalVariables(c('year','i.den','i.s','i.pah','i.cn','i.t95','den_base',
                          'cn_imp','t95_imp','s_imp',
                          'from_stop_id', 'geometry', 'i.geometry',
                          'shape_id', 'stop_sequence', 'to_stop_id'))
+utils::globalVariables(c("road_segment","timestamp"))
 # emission_model / transport_model
 utils::globalVariables(c("arrival_time", "cumdist", "cumtime", "departure_time",
                          "dist", "files_gps_names","speed"))
