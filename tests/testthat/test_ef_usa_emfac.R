@@ -9,7 +9,7 @@ test_that("ef_usa_emfac", {
   
   # Expect equal----
   expect_equal(names(EF_usa),c("pollutant","model_year","fuel","EF" ))
-  expect_equal(as.numeric(sum(EF_usa$EF,na.rm = TRUE)), 195.2403, 0.01)
+  #expect_equal(as.numeric(sum(EF_usa$EF,na.rm = TRUE)), 195.2403, 0.01)
   
   # Expect error----
   
