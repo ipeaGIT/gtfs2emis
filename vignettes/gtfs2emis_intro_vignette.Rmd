@@ -196,10 +196,10 @@ head(emi_dt)
 ```
 
 
-Alternatively, the `emis_summary()` function helps users summarize emission estimates, aggregating emissions by pollutant, time of the day, vehicle type or road segment (spatial).
+Alternatively, the `emis_summary()` function helps users summarize emission estimates, aggregating emissions by pollutant, time of the day, vehicle  or road segment (spatial).
 
 
-## 6.1 Total emissions by pollutant type
+## 6.1 Total emissions by pollutant 
 
 
 ```{r, message = FALSE}
@@ -244,8 +244,7 @@ ggplot(data = emi_by_veh) +
 
 ```{r, fig.width=5, fig.height=6}
 emi_by_time <- emis_summary(emi_list = emi_list,
-                                by = "time",
-                                segment_vars = "tp_model") 
+                                by = "time") 
 head(emi_by_time) 
 
 # plot
@@ -271,13 +270,11 @@ Let's create a regular hexagonal grid for this example.
 ```{r, message = FALSE, fig.width=5, fig.height=5}
 # create spatial grid
 mygrid <- sf::st_make_grid(
-  x = sf::st_bbox(emi_list$tp_model$geometry)
+  x = emi_list$tp_model
   , cellsize = 0.25 / 200
   , crs= 4326
   , what = "polygons"
   , square = FALSE)
-
-mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
 
  ggplot() + 
    geom_sf(data=mygrid) +
@@ -285,22 +282,15 @@ mygrid <- sf::st_sf(data.frame(id=1:length(mygrid), geom=mygrid))
 ```
 
 
-```{r, eval=FALSE, message=FALSE, fig.width=5, fig.height=5}
-# we add info of emissions into gps file
-emi_list$tp_model <- cbind(emi_list$tp_model, emi_list$emi) #### ja nao podia ser feito dentro da funcao ???
-
-
-mygrid_emi <- emis_grid(data = emi_list,
-                        emi = "CO2_Euro_III",    #### TOdo CO2 e Todo PM10 ????
-                        grid = mygrid,
-                        time_class = 'all periods')
+```{r, message=FALSE, fig.width=5, fig.height=5}
+mygrid_emi <- emis_grid(emi_list, mygrid,time_resolution = "day")
 
 ggplot() +
-  geom_sf(data = mygrid_emi, aes(fill= as.numeric(CO2_Euro_III)/1000), color=NA) +
-  scale_fill_continuous(type = "viridis")+
-  labs(fill = "CO2 (Kg)")+
+  geom_sf(data = mygrid_emi, aes(fill= as.numeric(CO2_Euro_III)), color=NA) +
+  geom_sf(data = emi_list$tp_model$geometry,color = "black")+
+scale_fill_continuous(type = "viridis")+
+  labs(fill = "CO2 (g)")+
   theme_void()
-
 
 ```
 
