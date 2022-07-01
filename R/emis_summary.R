@@ -73,94 +73,41 @@ emis_summary <- function(emi_list,
                          veh_vars = "veh_type", 
                          segment_vars = NULL){
   
-# gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
-# 
-#  cur <- gtfstools::read_gtfs(gtfs_file)  %>%
-#    gtfs2gps::filter_single_trip() %>% 
-#    gtfstools::filter_by_trip_id("4439181") %>% 
-#    gtfs2gps::gtfs2gps() %>% 
-#    gtfs2gps::adjust_speed() %>% 
-#    gtfs2gps::gps_as_sflinestring()
-#  
-#  cur
-#  ef <- ef_europe_emep(speed = cur$speed,
-#                       veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-#                       euro = c("IV","V"),
-#                       pollutant = c("CO2","NOx"),
-#                       fuel = "D" ,
-#                       tech =  c("SCR","EGR"),
-#                       as_list = TRUE)
-#  
-#  emi_list <- emis(fleet_composition =  c(0.7,0.3),
-#              dist = units::set_units(cur$dist,"km"),
-#              ef = ef,
-#              aggregate = FALSE,
-#              as_list = TRUE)  
-#
-   #emi_list$tp_model <- cur
-   #by = "time"
-  # emi_vars = "emi"
-  # veh_vars = "veh_type"
-  # pol_vars = "pollutant"
-  #segment_vars = "tp_model"
-  #time_column = "timestamp"
+  # A) Checking inputs -----
   
+  checkmate::assert_list(emi_list, null.ok = FALSE)
+  checkmate::assert_vector(by, len = 1,null.ok = FALSE)
+  checkmate::assert_string(by, null.ok = FALSE)
+  checkmate::assert_vector(segment_vars, len = 1, null.ok = TRUE)
+  checkmate::assert_string(segment_vars, null.ok = TRUE)
   
-  #
-  # check list condition -----
-  #
-  
-  if(class(emi_list) != "list"){
-    stop("Invalid class: 'emi_list' input needs to have a list format.")
-  }
-  
-  # check consistencies----
-  
-  if(by != "time" & by != "pollutant"  & by != "vehicle"){
-    stop("Invalid input: 'by' argument needs to be 'time', 'vehicle' or 'pollutant' type")
-  }
-  
-  if(!("emi" %in% names(emi_list))){
-    stop("No emissions data.frame found: 'emi_list' should have a data.frame named 'emi' with emissions information.")
-  }
-  
-  if(!("pollutant" %in% names(emi_list))){
-    stop("No 'pollutant' vector found: 'emi_list' should have a vector named 'pollutant'.")
-  }
+  checkmate::assert_choice("emi",names(emi_list),null.ok = FALSE)
+  checkmate::assert_choice("pollutant",names(emi_list),null.ok = FALSE)
+  checkmate::assert_choice(by,c("time","vehicle","pollutant"),null.ok = FALSE)
+  checkmate::assert_choice(segment_vars,names(emi_list),null.ok = TRUE)
   
   if(by == "time"){
-    if(missing(segment_vars)){
-      stop("Missing argument: 'segment_vars' argument is needed when by = 'time' is assigned")
-    }
-    if(!("timestamp" %in% names(emi_list[[segment_vars]]))){
-      stop(sprintf("Missing argument: 'timestamp' argument is needed in '%s' data"
-                   ,segment_vars))
-    }
+    segment_vars = "tp_model"
+    checkmate::assert_choice(segment_vars,names(emi_list),null.ok = FALSE)
+    checkmate::assert_choice("timestamp",names(emi_list[[segment_vars]]))
     if(length(emi_list[[segment_vars]][["timestamp"]]) != nrow(emi_list[["emi"]])){
-      stop("Incorrect dimensions: 'emi' columns needs to have the same length of 'timestamp'")
+      stop("Incorrect dimensions: 'emi_list$emi' columns needs to have the same length of 'timestamp'")
     }
   }
-  
   if(by == "vehicle"){
-    lapply(veh_vars,function(i){
-      if(is.null(i)){
-        stop("Missing argument: 'veh_vars' or 'pol_vars' are missing for 'vehicle type' post processing")
-      }
-    })
-    segment_vars <- NULL
+    checkmate::assert_vector(veh_vars,min.len = 1,unique = TRUE, null.ok = FALSE)
+    for(i in veh_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
   }
   
   #
   # check 'emi_vars' units-----
   #
   
-  lapply(seq_along(emi_list[["emi"]]),function(i){
-    if(class(emi_list[["emi"]][[i]]) != "units"){
-      stop("Missing units. Emissions 'emi' neeeds to have 'units' class. Please, check package 'units'")
-    }
+  lapply(seq_along(emi_list[["emi"]]),function(i){ 
+    checkmate::expect_class(emi_list[["emi"]][[i]],"units")
     if(units(emi_list[["emi"]][[i]])$numerator != "g" & 
        units(emi_list[["emi"]][[i]])$numerator != "kg"){
-      stop("Incorrect 'units'. Emissions 'emi' needs to have 'units' in 'g' or 'kg'.")
+      stop("Incorrect 'units': Emissions 'emi_list$emi' needs to have 'units' in 'g' or 'kg'.")
     }
   })
   
@@ -182,22 +129,32 @@ emis_summary <- function(emi_list,
       emi_list[[segment_vars]][["timestamp"]]
     ) 
   }
-  if(by == "vehicle")  my_var <- veh_vars 
-  
+  if(by == "vehicle")  {
+    my_var <- veh_vars 
+    segment_vars <- NULL
+  }
   
   # to DT
   tmp_dt <- emis_to_dt(emi_list = emi_list
                        , emi_vars = "emi"
                        , veh_vars = veh_vars
                        , pol_vars = "pollutant"
-                       , segment_vars =  if(by == "time"){my_var}else{NULL}
+                       , segment_vars =  if(by == "time"){my_var}else{segment_vars}
   )
+  
   
   # perform sum
   if(by == "pollutant"){
-    tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
-                     ,by = c("pollutant")
-                     ,.SDcols = c("emi")]
+    if(!is.null(segment_vars)){
+      tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
+                       ,by = c("pollutant",segment_vars)
+                       ,.SDcols = c("emi")]
+      
+    }else{
+      tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
+                       ,by = c("pollutant")
+                       ,.SDcols = c("emi")]
+    }
   }else{
     tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
                      ,by = c(my_var,"pollutant")
