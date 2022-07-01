@@ -73,30 +73,15 @@ transport_model <- function(gtfs_data,
                             parallel = TRUE,
                             spatial_resolution = 100,
                             output_path = NULL){
-  
-  #gtfs_data = gtfs
-  #min_speed = 2
-  #max_speed = NULL
-  #new_speed = NULL
-  #parallel = FALSE
-  #spatial_resolution = 30
-  #output_path = NULL
-  
-  # Check inputs GTFS ----
-  
-  # output_path
-  if(!is.null(output_path)){
-    if(!is.character(output_path)){
-      stop("User should provided a valid 'output_path' argument.")
-    }
-  }
-  
-  # speed
-  checkmate::assert_numeric(min_speed, lower = 2, finite = TRUE, null.ok = TRUE)  
-  checkmate::assert_numeric(max_speed, lower = 3, finite = TRUE, null.ok = TRUE)  
-  checkmate::assert_numeric(new_speed, lower = 1, finite = TRUE, null.ok = TRUE)
+
+  # check if required fields and files exist  ----
+ 
+  checkmate::assert_character(output_path,len = 1,null.ok = TRUE)
+  checkmate::assert_numeric(min_speed, lower = 2, finite = TRUE, null.ok = TRUE, any.missing = FALSE)  
+  checkmate::assert_numeric(max_speed, lower = 3, finite = TRUE, null.ok = TRUE, any.missing = FALSE)  
+  checkmate::assert_numeric(new_speed, lower = 1, finite = TRUE, null.ok = TRUE, any.missing = FALSE)
   checkmate::assert_true(min_speed < max_speed)
-  
+  checkmate::assert_logical(parallel, any.missing = FALSE) 
   
   # Read GTFS ------------
   
@@ -108,7 +93,6 @@ transport_model <- function(gtfs_data,
   
   
   # parallel condition
-  checkmate::assert_logical(parallel)  
   
   if(parallel){
     future::plan(session = "multisession", workers = data.table::getDTthreads() - 1)
@@ -118,14 +102,15 @@ transport_model <- function(gtfs_data,
   
   # gtfs2gps ------------
 
-  gps_path <-  paste0(tempdir(),"/gps")
+  gps_path <-  paste0(tempdir(),"/gps",runif(1))
   suppressWarnings(dir.create(gps_path))
   
   gtfs2gps::gtfs2gps( gtfs_data = city_gtfs
                      , filepath = gps_path
                      , parallel = parallel
                      , compress = TRUE
-                     , spatial_resolution = spatial_resolution)
+                     , spatial_resolution = spatial_resolution
+                     )
 
   
     
@@ -133,7 +118,7 @@ transport_model <- function(gtfs_data,
   
 
   # create new dirs
-  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust")
+  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust",runif(1))
   suppressWarnings(dir.create(gps_adjust_path)) 
   
   # find gps files
@@ -175,8 +160,8 @@ transport_model <- function(gtfs_data,
   # function gps_as_sflinestring
   f_gps_as_sflinestring <- function(i){ # i = files_gps[1]
     tmp_gps <- readRDS(i)
-    tmp_gps[, dist := units::set_units(dist, "km") ]
     tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
+    tmp_gps_fix$dist <- units::set_units(tmp_gps_fix$dist,"km")
     return(tmp_gps_fix)
   }
   
@@ -191,7 +176,7 @@ transport_model <- function(gtfs_data,
   
   
   # output
-  if(missing(output_path)){
+  if(is.null(output_path)){
     gpsLine <- data.table::rbindlist(gpsLine) 
     suppressWarnings( gpsLine <- sf::st_sf(gpsLine, crs = 4326) )
     class(gpsLine) <- c("sf", "data.frame")
