@@ -109,7 +109,7 @@ ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
     }
   })
   # check units and lengths
-  if(class(speed) != "units"){
+  if(!is(speed, "units")){
     stop(paste0("Invalid 'speed' argument: 'speed' needs to have class 'units' in 'km/h'.\n"
                 ,"Please, check package 'units'"))
   }

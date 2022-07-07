@@ -29,6 +29,7 @@ Imports:
     furrr,
     future,
     gtfs2gps,
+    progressr,
     sf (>= 0.9-0),
     units
 Suggests: 
@@ -36,7 +37,6 @@ Suggests:
     ggplot2,
     knitr,
     lwgeom,
-    progressr,
     rmarkdown,
     testthat (>= 2.1.0),
     vein

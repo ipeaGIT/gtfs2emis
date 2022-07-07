@@ -102,7 +102,7 @@ transport_model <- function(gtfs_data,
   
   # gtfs2gps ------------
 
-  gps_path <-  paste0(tempdir(),"/gps",runif(1))
+  gps_path <-  paste0(tempdir(),"/gps",stats::runif(1))
   suppressWarnings(dir.create(gps_path))
   
   gtfs2gps::gtfs2gps( gtfs_data = city_gtfs
@@ -118,7 +118,7 @@ transport_model <- function(gtfs_data,
   
 
   # create new dirs
-  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust",runif(1))
+  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust",stats::runif(1))
   suppressWarnings(dir.create(gps_adjust_path)) 
   
   # find gps files

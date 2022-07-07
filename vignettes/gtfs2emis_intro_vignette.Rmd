@@ -107,7 +107,7 @@ gtfs <- gtfstools::filter_by_weekday(gtfs,
                                      keep = FALSE)
 
 
-gtfs <- gtfstools::filter_by_trip_id(gtfs, trip_id =  "238.2.60-118-b12-1.59.I" )
+#gtfs <- gtfstools::filter_by_trip_id(gtfs, trip_id =  "238.2.60-118-b12-1.59.I" )
 
 ```
 

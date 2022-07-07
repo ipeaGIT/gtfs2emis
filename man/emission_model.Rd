@@ -97,7 +97,7 @@ gtfs <- gtfstools::read_gtfs(gtfs_file)
 gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
   
 # run transport model
-tp_model <- transport_model(gtfs_data = gtfs_small,
+tp_model <- transport_model(gtfs_data = gtfs,
                             min_speed = 2,
                             max_speed = 80,
                             new_speed = 20,
@@ -111,12 +111,12 @@ fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
                                    fleet_composition = rep(0.1,10)
                                    )
                                    
-emi_cetesb <- emission_model(
+emi_cetesb <- progressr::with_progress(emission_model(
                 tp_model = tp_model,
                 ef_model = "ef_brazil_cetesb",
                 fleet_data = fleet_data_ef_cetesb,
                 pollutant = c("CO","PM10","CO2","CH4","NOx")
-                )
+                ))
                             
 # Example using European emission model and fleet
 
@@ -128,10 +128,10 @@ fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t",
                                    , tech = c("-","SCR","SCR")
                                    , fleet_composition = c(0.4,0.5,0.1))
                                    
-emi_emep <- emission_model(tp_model = tp_model
+emi_emep <- progressr::with_progress(emission_model(tp_model = tp_model
                           , ef_model = "ef_europe_emep"
                           , fleet_data = fleet_data_ef_europe
-                          , pollutant = c("CO","PM10","CO2","CH4","NOx"))
+                          , pollutant = c("CO","PM10","CO2","CH4","NOx")))
                           
                           
 # Example using US emission model and fleet

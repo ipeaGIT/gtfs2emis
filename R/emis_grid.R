@@ -146,7 +146,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
   
   emi_units <- c()
   for(i in seq_along(name_emi_new)){ # i = 1
-    if(class(netdata[, .SD, .SDcols = (name_emi_new[i])][[1]]) == "units"){
+    if(is(netdata[, .SD, .SDcols = (name_emi_new[i])][[1]]), "units")){
       # retrieve units
       emi_units[i] <- units::deparse_unit(
         netdata[, .SD

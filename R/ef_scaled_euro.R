@@ -95,7 +95,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   # check dimensions
   #
   
-  if (class(ef_local) == "list") {
+  if (is(ef_local, "list")) {
     ef_local <- ef_local$EF
   }
   if (length(veh_type) == 1) {
@@ -116,7 +116,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   #
   
   lapply(seq_along(ef_local), function(i){ # i = 1
-    if (class(ef_local) != "units") {
+    if (!is(ef_local, "units")) {
       stop("ef neeeds to has class 'units' in 'g/km'. Please, check package 'units'")
     }
     if(units(ef_local[[i]])$numerator != "g" | units(ef_local[[i]])$denominator != "km"){

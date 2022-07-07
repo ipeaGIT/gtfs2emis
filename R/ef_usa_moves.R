@@ -104,7 +104,7 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
     }
   })
   # check units and lengths
-  if(class(speed) != "units"){
+  if(!is(speed, "units")){
     stop(paste0("Invalid 'speed' argument: 'speed' needs to have class 'units' in 'km/h'.\n"
                 ,"Please, check package 'units'"))
   }
@@ -127,7 +127,7 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   if(data.table::uniqueN(tmp_reference_year) != 1){
     stop("calendar_date input needs to has length one.")
   }
-  if(class(speed) != "units"){
+  if(!is(speed, "units")){
     stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'")
   }
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){

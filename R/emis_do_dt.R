@@ -66,7 +66,7 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   # check list condition -----
   #
   
-  if(class(emi_list) != "list"){
+  if(!is(emi_list, "list")){
     stop("Invalid class: 'emi_list' input needs to have a list format.")
   }
   
