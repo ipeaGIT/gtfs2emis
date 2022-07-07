@@ -8,7 +8,8 @@ Authors@R: c(
              person(given = "Pedro R.", family = "Andrade", email = "pedro.andrade@inpe.br", role=c("aut"), comment = c(ORCID = "0000-0001-8675-4046"))
              )
 Description: Estimate the emission levels of public transport networks based on 
-             GTFS data. The package requires two main inputs: i) public transport 
+             general transit feed specification (GTFS) data.
+             The package requires two main inputs: i) public transport 
              data in the GTFS standard format; and ii) some basic information on 
              fleet characteristics such as fleet age, technology, fuel and Euro 
              stage. As it stands, the the package estimates several pollutants 
