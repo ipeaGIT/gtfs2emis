@@ -14,8 +14,7 @@ test_that("ef_brazil_cetesb", {
   expect_equal(length(ef_brazil$veh_type), 12)
   expect_equal(length(ef_brazil$model_year), 12)
   expect_equal(units::deparse_unit(ef_brazil$EF), "g km-1")
-  expect_equal(class(ef_brazil$EF), "units")
-  
+  expect_true(is(ef_brazil$EF, "units"))
   #expect_equal(as.numeric(sum(ef_brazil$EF,na.rm = TRUE)), 3837.902,0.1)
   
   

@@ -64,7 +64,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   #
   
   
-  if(class(dist) != "units"){
+  if(!is(dist, "units")){
     stop("Invalid 'dist' argument: 'dist' neeeds to have class 'units' in 'km'. Please, check package 'units'.")
   }
   if(units(dist)$numerator != "km"){
@@ -74,7 +74,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   # ef----
   
   # check if its a list
-  if(class(ef) == "list"){
+  if(is(ef, "list")){
     tmpEf <- ef$EF
   }else{
     tmpEf <- ef
@@ -86,7 +86,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   
   # units
   lapply(seq_along(tmpEf), function(i){ # i = 1
-    if(class(tmpEf[[i]]) != "units"){
+    if(!is(tmpEf[[i]], "units")){
       stop("Invalid 'ef' argument: 'ef' needs to have class 'units' in 'g/km'. Please, check package 'units'")
     }
     if(units(tmpEf[[i]])$numerator != "g" | units(tmpEf[[i]])$denominator != "km"){
@@ -100,7 +100,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   
   # extract single pollutants----
   
-  if(class(ef) == "list"){
+  if(is(ef, "list")){
     single_pol <- unique(ef$pollutant)
   }else{
     # verify how many pollutants 'ef' data has based on names(ef)

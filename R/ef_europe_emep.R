@@ -84,7 +84,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   
   # check units and lengths----
   
-  if(class(speed) != "units"){
+  if(!is(speed, "units")){
     stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'.")
   }
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
