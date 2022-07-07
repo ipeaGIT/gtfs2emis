@@ -1,4 +1,5 @@
 #' @importFrom data.table := .SD .I .GRP %like% setDT
+#' @importFrom methods is
 NULL
 
 # Globals

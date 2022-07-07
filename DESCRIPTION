@@ -29,6 +29,7 @@ Imports:
     furrr,
     future,
     gtfs2gps,
+    methods,
     progressr,
     sf (>= 0.9-0),
     units
