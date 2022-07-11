@@ -270,7 +270,7 @@ Let's create a regular hexagonal grid for this example.
 ```{r, message = FALSE, fig.width=5, fig.height=5}
 # create spatial grid
 mygrid <- sf::st_make_grid(
-  x = emi_list$tp_model
+  x = sf::st_make_valid(emi_list$tp_model)
   , cellsize = 0.25 / 200
   , crs= 4326
   , what = "polygons"
@@ -283,7 +283,8 @@ mygrid <- sf::st_make_grid(
 
 
 ```{r, message=FALSE, fig.width=5, fig.height=5}
-mygrid_emi <- emis_grid(emi_list, mygrid,time_resolution = "day")
+mygrid_emi <- emis_grid(emi_list, mygrid,time_resolution = "day"
+                        ,quiet = FALSE)
 
 ggplot() +
   geom_sf(data = mygrid_emi, aes(fill= as.numeric(CO2_Euro_III)), color=NA) +
