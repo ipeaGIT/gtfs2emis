@@ -70,7 +70,7 @@ emi_list <- emission_model(
 
 # create spatial grid
 grid <- sf::st_make_grid(
-  x = emi_list$tp_model
+  x = sf::st_make_valid(emi_list$tp_model)
   , cellsize = 0.25 / 200
   , crs= 4329
   , what = "polygons"
