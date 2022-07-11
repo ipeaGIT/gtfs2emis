@@ -40,41 +40,21 @@
 #'}     
 multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
   
-  #
-  # init---
-  #
-  
-  #set.seed(1335)
-  #fleet_composition = rep(1/8,8)
-  #dist = units::set_units(2,"km")
-  #ef <- ef_final1
-  # ef <- ef_europe(speed = units::set_units(rnorm(100,50,5),"km/h"),
-  #                 veh_type = c("Urban Buses Standard 15 - 18 t","Urban Buses Articulated >18 t"),
-  #                 euro = c("IV","V"),
-  #                 pollutant = c("CO2","NOx"),
-  #                 fuel = "Diesel" ,
-  #                 tech =  c("SCR","EGR"),
-  #                 slope = 0.0,
-  #                 load = 0.5,
-  #                 fcorr = 1,
-  #                 as.list = TRUE)
-  
-  # 
-  # check units----
-  #
-  
-  
-  if(!is(dist, "units")){
-    stop("Invalid 'dist' argument: 'dist' neeeds to have class 'units' in 'km'. Please, check package 'units'.")
-  }
+  # check ----
+  # fleet_composition
+  checkmate::assert_vector(fleet_composition,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_numeric(fleet_composition,any.missing = FALSE,min.len = 1,lower = 0,upper = 1)
+  # dist
+  checkmate::assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_numeric(dist,any.missing = FALSE,min.len = 1)
+  checkmate::assert_class(dist,"units")
   if(units(dist)$numerator != "km"){
     stop("Invalid 'dist' argument: 'units' should be in 'km'.")
   }
-  
-  # ef----
-  
+  # ef
   # check if its a list
   if(is(ef, "list")){
+    checkmate::check_choice("EF",names(ef),null.ok = FALSE)
     tmpEf <- ef$EF
   }else{
     tmpEf <- ef
@@ -94,7 +74,8 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
     }
     # check 'tmpEf' length with veh
     if(length(tmpEf[[i]]) != 1 & length(tmpEf[[i]]) != length(dist)){
-      stop(paste0("ef '", names(tmpEf[i]), "' needs to has the same length of dist"))
+      stop(paste0("Invalid 'ef' argument: ef '", names(tmpEf[i])
+                  , "' needs to has the same length of dist"))
     }
   })
   
