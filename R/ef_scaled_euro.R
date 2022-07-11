@@ -78,23 +78,51 @@
 ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D", 
                            tech = "SCR", SDC = 19, slope = 0.0, 
                            load = 0.5, fcorr = 1){
-  # local test
-  # ef_local = ef_brazil(pollutant = c("CO","PM"),
-  #                      veh_type = "BUS_URBAN_D",
-  #                      years = c(2008:2017),as_list = TRUE)
-  # speed = units::set_units(rep(1,1),"km/h")
-  # veh_type = rep("Ubus Std 15 - 18 t",10)
-  # euro = c(rep("IV",5),rep("V",5))
-  # fuel = rep("D",10)
-  # pollutant = c("CO","PM10")
-  # SDC = 34.12; tech = rep("SCR",10); slope = 0.0; load = 0.5; fcorr = 1;
+
+  # check inputs ----
+  # euro vector
+  utils::data('ef_europe_emep_db') 
+  temp_ef <- ef_europe_emep_db
   
+  # ef_local
+  checkmate::assert(
+    checkmate::check_class(ef_local, "data.frame")
+    , checkmate::check_class(ef_local, "data.table")
+    , checkmate::check_class(ef_local, "units")
+    , combine = "or"
+  )
+  # speed
+  checkmate::assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_numeric(speed,lower = 1,upper = 130)
+  checkmate::assert_class(speed,"units")
+  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
+    stop("Invalid 'speed' units: 'speed' needs to be in 'km/h' units.")
+  }
+  # vehicle type
+  checkmate::assert_vector(veh_type,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(veh_type,any.missing = FALSE,min.len = 1)
+  for(i in veh_type) checkmate::assert_choice(i,unique(temp_ef$Segment),null.ok = FALSE)
+  # euro
+  checkmate::assert_vector(euro,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(euro,any.missing = FALSE,min.len = 1)
+  for(i in euro) checkmate::assert_choice(i,unique(temp_ef$Euro),null.ok = FALSE)
+  # pollutant
+  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  for(i in pollutant) checkmate::assert_choice(i,unique(temp_ef$Pol),null.ok = FALSE)
+  # fuel
+  checkmate::assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(fuel,any.missing = FALSE,min.len = 1)
+  for(i in fuel) checkmate::assert_choice(i,unique(temp_ef$Fuel),null.ok = FALSE)
+  # technology
+  checkmate::assert_vector(tech,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(tech,any.missing = FALSE,min.len = 1)
+  for(i in tech) checkmate::assert_choice(i,unique(temp_ef$Technology),null.ok = FALSE)
   
-  checkmate::assert_class(pollutant, 'character')
   #
   # check dimensions
   #
-  
+  temp_ef$Pol
   if (is(ef_local, "list")) {
     ef_local <- ef_local$EF
   }
@@ -102,13 +130,13 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
     veh_type <- rep(veh_type, length(euro))
   }
   if (length(veh_type) != length(euro)) {
-    stop("'euro' and 'veh_type' need to have the same length.")
+    stop("Incorrect input lengths: 'euro' and 'veh_type' need to have the same length.")
   }
   if (length(fuel) == 1) {
     fuel <- rep(fuel,length(euro))
   }
   if (length(fuel) != length(euro)) {
-    stop("'fuel' and 'veh_type' need to have the same length.")
+    stop("Incorrect input lengths: 'fuel' and 'veh_type' need to have the same length.")
   }
   
   #
@@ -117,10 +145,10 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   
   lapply(seq_along(ef_local), function(i){ # i = 1
     if (!is(ef_local, "units")) {
-      stop("ef neeeds to has class 'units' in 'g/km'. Please, check package 'units'")
+      stop("Incorrect units: 'ef_local' needs to be in 'g/km' units.")
     }
     if(units(ef_local[[i]])$numerator != "g" | units(ef_local[[i]])$denominator != "km"){
-      stop("ef need to has 'units' in 'g/km'.")
+      stop("Incorrect units: 'ef_local' needs to be in 'g/km' units.")
     }
   })
   
@@ -128,10 +156,9 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   # ef_europe with SDC (urban driving speed condition)
   #
   
-  euro1 <- euro
   ef_sdc <- ef_europe_emep(speed = units::set_units(SDC, "km/h"), 
                       veh_type = veh_type,
-                      euro = euro1,
+                      euro = euro,
                       pollutant = pollutant,
                       fuel = fuel,
                       tech = tech,
@@ -157,7 +184,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   ef_speed <- ef_europe_emep(speed = speed, 
                         veh_type = veh_type,
                         fuel = fuel,
-                        euro = euro1,
+                        euro = euro,
                         slope = slope,
                         load = load,
                         tech = tech, 
@@ -174,7 +201,6 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   if(length(speed) == 1){
     ef_scaled <- t(as.matrix(ef_scaled))
   }
-  #ef_scaled <- sapply(seq_along(k),function(i){ef_speed$EF[,i] * k[i]})
   
   # to units
   ef_scaled <- units::set_units(ef_scaled, 'g/km')

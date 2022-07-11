@@ -20,23 +20,32 @@
 #' 
 #' @export
 fuel_cor <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320)){
-  # init config
-  # 
-  # euro_stage <- c("PRE", "PRE", "I", "I", "II", "III", "IV", "V", "VI")
-  # pollutant <- c("CO","PM","VOC","NOx")
-  # improved_fuel = c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320)
-
+  
+  # checking----
+  # pollutant
+  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  for(i in pollutant) checkmate::assert_choice(i,c("CO","VOC","NOx","PM10"),null.ok = FALSE)
+  # euro_stage
+  checkmate::assert_vector(euro_stage,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(euro_stage,any.missing = FALSE,min.len = 1)
+  for(i in euro_stage) checkmate::assert_choice(i,c("PRE", "I", "II", "III", "IV", "V", "VI"),null.ok = FALSE)
+  # improved_fuel
+  checkmate::assert_vector(improved_fuel,any.missing = FALSE,len = 5,null.ok = FALSE)
+  checkmate::assert_numeric(improved_fuel,any.missing = FALSE,len = 5)
+  for(i in names(improved_fuel)) checkmate::assert_choice(i,c("den","s","pah","cn","t95"),null.ok = FALSE)
+  
   # relation between fuel properties and emissions
   
   fcorr_list <- list(
     "CO" = function(den, pah, cn, t95, s = 0)
-      {2.24407 - 0.0011 * den + 0.00007 * pah - 0.00768 * cn - 0.00087 * t95},
+    {2.24407 - 0.0011 * den + 0.00007 * pah - 0.00768 * cn - 0.00087 * t95},
     "VOC" = function(den, pah, cn, t95, s = 0)
-      {1.61466 - 0.00123 * den + 0.00133 * pah - 0.00181 * cn - 0.00068 * t95},
+    {1.61466 - 0.00123 * den + 0.00133 * pah - 0.00181 * cn - 0.00068 * t95},
     "NOx" = function(den, pah, cn, t95, s = 0)
-      {-1.75444 + 0.00906 * den - 0.0163 * pah + 0.00493 * cn + 0.00266 * t95},
+    {-1.75444 + 0.00906 * den - 0.0163 * pah + 0.00493 * cn + 0.00266 * t95},
     "PM10" = function(den, pah, cn, t95, s = 0)
-      {(0.06959 + 0.00006 * den + 0.00065 * pah - 0.00001 * cn) * (1 - 0.0086 * (450 - s)/100)}
+    {(0.06959 + 0.00006 * den + 0.00065 * pah - 0.00001 * cn) * (1 - 0.0086 * (450 - s)/100)}
   )
   
   #

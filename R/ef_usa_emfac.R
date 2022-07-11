@@ -49,13 +49,6 @@
 ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
                          , model_year, speed, as_list = TRUE){
   
-  # pollutant = c("CO","PM10","CH4","NOx")
-  # reference_year = "2019"
-  # model_year = c("2014","2013","2010");model_year = c("2010")
-  # speed = units::set_units(33,"km/h")
-  # fuel = c("Diesel","CNG"); fuel = "D"
-  # 
-  
   # Use specific name-----
   tmp_fuel <- fuel
   tmp_reference_year <- reference_year
@@ -63,65 +56,29 @@ ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
   tmp_model_year <- model_year
   utils::data('ef_usa_emfac_db') 
   
-  # Checkings -----
+  # check inputs ----
   # pollutant
-  lapply(pollutant,function(i){
-    if(!(i %in% unique(ef_usa_emfac_db$pollutant))){
-      stop(
-        paste0("Invalid input: pollutant '",i,"' argument not found.\n", 
-               "Please check available data in `data(ef_usa_emfac_db)`.")
-      )
-    }
-  })
+  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  for(i in pollutant) checkmate::assert_choice(i,unique(ef_usa_emfac_db$pollutant),null.ok = FALSE)
+  
   # reference_year
-  if(!is.numeric(reference_year)){
-    stop(
-      "Invalid input: 'reference_year' argument should be a numeric value."
-    )
-  }
-  if(length(reference_year) != 1){
-    stop(
-      "Invalid input: only one 'reference_year' is accepted."
-    )
-  }
-  if(!(reference_year %in% 2010:2020)){
-    stop(
-      paste0("Invalid input: 'reference_year' argument should be between 2010 - 2020:\n", 
-             "Please check available data in `data(ef_usa_emfac_db)`.")
-    )
-  }
+  checkmate::assert_vector(reference_year,any.missing = FALSE,len = 1,null.ok = FALSE)
+  checkmate::assert_numeric(reference_year,lower = 2010,upper = 2020,len = 1,any.missing = FALSE)
+  
   # fuel
-  lapply(fuel,function(i){
-    if(!(i %in% c("D","CNG","G"))){
-      stop(
-        paste0("Invalid input: fuel '",i,"' argument not found.\n"
-               ,"Please check `utils::data('ef_usa_emfac_db')` for a valid 'fuel' input.")
-      )
-    }
-  })
+  checkmate::assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(fuel,any.missing = FALSE,min.len = 1)
+  for(i in fuel) checkmate::assert_choice(i,unique(ef_usa_emfac_db$fuel),null.ok = FALSE)
+  
   # model_year
-  lapply(model_year,function(i){
-    if(!(i %in% 1982:2020)){
-      stop(
-        paste0("Invalid input: model_year '",i,"' argument not found.\n"
-               ,"Please check `utils::data('ef_usa_emfac_db')` for a valid 'model_year' input.")
-      )
-    }
-  })
-  # check units and lengths
-  if(!is(speed, "units")){
-    stop(paste0("Invalid 'speed' argument: 'speed' needs to have class 'units' in 'km/h'.\n"
-                ,"Please, check package 'units'"))
-  }
-  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
-    stop("Invalid 'speed' argument: 'speed' needs to have 'units' in 'km/h'.")
-  }
-  if(sum(speed <= units::set_units(0,"km/h")) > 0){
-    stop("Invalid 'speed' argument: 'speed' argument should be greater than 0 km/h.")
-  }
-  if(sum(speed > units::set_units(113,"km/h")) > 0){
-    stop("Invalid 'speed' argument: 'speed' argument should be smaller than 113 km/h.")
-  }
+  checkmate::assert_vector(model_year,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_numeric(model_year,lower = 1982,upper = 2020,min.len = 1,any.missing = FALSE)
+  # speed
+  checkmate::assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_numeric(speed,lower = 1,upper = 113)
+  checkmate::assert_class(speed,"units")
+  
     # Pre-filter in usa data----
   temp_emfac <- ef_usa_emfac_db[reference_year %in% as.character(unique(tmp_reference_year)) &
                                   fuel %in% unique(tmp_fuel) &

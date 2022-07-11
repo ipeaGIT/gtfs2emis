@@ -48,51 +48,21 @@
 #' }
 ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   
-  #
-  # init config
-  #
-  #pollutant = c("CO","PM10","CO2","CH4","NOx")
-  #veh_type = c("BUS_URBAN_D") #veh_type
-  #model_year = c(2001:2010)
-  # vehicle distribution----
-  utils::data(ef_brazil_cetesb_db)
-  
   # check inputs----
   
+  checkmate::assert_vector(pollutant,min.len = 1,any.missing = FALSE,null.ok = FALSE)
+  checkmate::assert_vector(veh_type,min.len = 1,any.missing = FALSE,null.ok = FALSE)
+  checkmate::assert_vector(model_year,min.len = 1,any.missing = FALSE,null.ok = FALSE)
+  checkmate::assert_numeric(model_year,lower = 1960,upper = 2020,any.missing = FALSE,min.len = 1)
+  checkmate::assert_logical(as_list,len = 1)
+  
   # pollutant
-  lapply(pollutant,function(i){
-    if(!(i %in% unique(ef_brazil_cetesb_db$pollutant))){
-      stop(
-        paste0("Pollutant '",i,"' not found in CETESB Emission factor database:\n",
-               "Please check available data in `data(ef_brazil_cetesb_db)`.")
-      )
-    }
-  })
+  names_pollutant <- unique(ef_brazil_cetesb_db$pollutant)
+  for(i in pollutant) checkmate::assert_choice(i,names_pollutant ,null.ok = FALSE)
   
   # veh_type
-  lapply(veh_type,function(i){
-    if(!(i %in% c('BUS_URBAN_D', 'BUS_MICRO_D', 'BUS_COACH_D', 'BUS_ARTIC_D'))){
-      stop(
-        paste0("Vehicle type '",i,"' not found in CETESB Emission factor database:\n"
-               ,"Please check available data in `data(ef_brazil_cetesb_db)`.")
-      )
-    }
-  })
-  
-  # model_year
-  lapply(model_year,function(i){
-    if(!is.numeric(i)){
-      stop(
-       "'model_year' argument should be a numeric value."
-      )
-    }
-    if(!(i %in% 1960:2020)){
-      stop(
-        paste0("'model_year' argument should be between 1960 - 2020:\n", 
-               "Please check available data in `data(ef_brazil_cetesb_db)`.")
-      )
-    }
-  })
+  names_veh <- c('BUS_URBAN_D', 'BUS_MICRO_D', 'BUS_COACH_D', 'BUS_ARTIC_D')
+  for(i in veh_type) checkmate::assert_choice(i, names_veh,null.ok = FALSE)
   
   # model_year and veh_type
   if(length(model_year) != length(veh_type) && length(veh_type) == 1){

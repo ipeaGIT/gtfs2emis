@@ -61,57 +61,29 @@
 emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
                        , pol_vars = "pollutant", segment_vars = NULL){
   
- 
-  #
-  # check list condition -----
-  #
   
-  if(!is(emi_list, "list")){
-    stop("Invalid class: 'emi_list' input needs to have a list format.")
-  }
   
-  # check consistencies----
-  lapply(emi_vars, function(i){
-    if(!(i %in% names(emi_list))){
-      sprintf("Invalid input: emi_vars '%s' argument not found. Please inform a valid 'emi_vars' input."
-              ,i)
-      stop()
-    }
-  })
-  
-  lapply(veh_vars, function(i){
-    if(!(i %in% names(emi_list))){
-      sprintf("Invalid input:  veh_vars '%s' argument not found. Please inform a valid 'veh_vars' input."
-              ,i)
-      stop()
-    }
-  })
-  
-  lapply(pol_vars, function(i){
-    if(!(i %in% names(emi_list))){
-      sprintf("Invalid input: pol_vars '%s' argument not found. Please inform a valid 'pol_vars' input."
-              ,i)
-      stop()
-    }
-  })
-  
-  lapply(segment_vars, function(i){
-    if(!is.null(i)){
-      if(!(i %in% names(emi_list))){
-        sprintf("Invalid input: segment_vars '%s' argument not found. Please inform a valid 'segment_vars' input."
-                ,i)
-        stop()
-      }
-    }
-  })
-  
+  # checkings -----
+  checkmate::assert_list(emi_list, null.ok = FALSE)
+  # emi_vars
+  checkmate::assert_vector(emi_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(emi_vars,any.missing = FALSE,min.len = 1)
+  for(i in emi_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  # veh_vars
+  checkmate::assert_vector(veh_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(veh_vars,any.missing = FALSE,min.len = 1)
+  for(i in veh_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  # pol_vars
+  checkmate::assert_vector(pol_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(pol_vars,any.missing = FALSE,min.len = 1)
+  for(i in pol_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  # segment_vars
+  checkmate::assert_vector(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
+  checkmate::assert_character(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
+  # all variables
   all_vars = c(veh_vars, pol_vars,emi_vars)
   
-  
-  #
-  # check units previously
-  #
-  
+  # check units 
   myunits <- sapply(seq_along(emi_list[[emi_vars]]),function(i){
     units::deparse_unit(emi_list[[emi_vars]][[i]])
   })
@@ -119,7 +91,7 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   if(length(unique(myunits)) == 1){
     myunits <- myunits[1]
   }else{
-    stop("Invalid units: units are not the same for emissions columns")
+    stop("Invalid units: units are not the same for all emissions columns")
   }
   
   #

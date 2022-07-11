@@ -59,43 +59,46 @@
 #'}
 ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                            slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
-  #
-  # local test
-  #
-  # 
-  # library(magrittr)
-  # #speed = rnorm(n = 100,mean = 50,sd = 5) %>% units::set_units("km/h")
-  # speed = units::set_units(rep(1:100,2),"km/h")
-  # veh_type <- c("Ubus Std 15 - 18 t")
-  # euro <-c("I","II","III","IV")
-  # pollutant <- c("CO2")
-  # fuel <- "D"
-  # tech <- c("-")
-  # slope = 0.0
-  # load = 0.5
-  # k =1
-  # fcorr = 1
-  # i = j = 1
-  
   # euro vector----
   utils::data('ef_europe_emep_db') 
   temp_ef <- ef_europe_emep_db
   
   
-  # check units and lengths----
-  
-  if(!is(speed, "units")){
-    stop("speed neeeds to has class 'units' in 'km/h'. Please, check package 'units'.")
-  }
+  # check inputs ----
+  # speed
+  checkmate::assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_numeric(speed,lower = 1,upper = 130)
+  checkmate::assert_class(speed,"units")
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
-    stop("speed need to has 'units' in 'km/h'.")
+    stop("Invalid 'speed' units: 'speed' needs to be in 'km/h' units.")
   }
+  # vehicle type
+  checkmate::assert_vector(veh_type,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(veh_type,any.missing = FALSE,min.len = 1)
+  for(i in veh_type) checkmate::assert_choice(i,unique(temp_ef$Segment),null.ok = FALSE)
+  # euro
+  checkmate::assert_vector(euro,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(euro,any.missing = FALSE,min.len = 1)
+  for(i in euro) checkmate::assert_choice(i,unique(temp_ef$Euro),null.ok = FALSE)
+  # fuel
+  checkmate::assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(fuel,any.missing = FALSE,min.len = 1)
+  for(i in fuel) checkmate::assert_choice(i,unique(temp_ef$Fuel),null.ok = FALSE)
+  # pollutant
+  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  for(i in pollutant) checkmate::assert_choice(i,unique(temp_ef$Pol),null.ok = FALSE)
+  # technology
+  checkmate::assert_vector(tech,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(tech,any.missing = FALSE,min.len = 1)
+  for(i in tech) checkmate::assert_choice(i,unique(temp_ef$Technology),null.ok = FALSE)
+  # as_list
+  checkmate::assert_logical(as_list, any.missing = FALSE) 
   
   # speed----
   
   speed <- round(as.numeric(speed))
   tmpSpeed <- unique(speed)
-  tmpSpeed[tmpSpeed < 1] <- 1
   
   # check lengths----
   
@@ -114,10 +117,10 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   if(length(fcorr) == 1)  fcorr <- rep(fcorr,length(euro))
   
   if(length(slope) > 1 & (length(slope) != length(speed)) ){
-    stop("'slope' and 'speed' arguments need to have the same length.")
+    stop("Invalid lengths: 'slope' and 'speed' arguments need to have the same length.")
   }
   if(length(load) > 1 & (length(load) != length(speed)) ){
-    stop("'load' and 'speed' arguments need to have the same length.")
+    stop("Invalid lengths: 'load' and 'speed' arguments need to have the same length.")
   }
   
   # polynomial expression----
@@ -155,22 +158,34 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       #message(sprintf("i=%s, j=%s",i,j))
       # condition for missing technologies
       
-      if(euro[j] %in%  c("Conventional","I","II","III")){
+      if(euro[j] %in%  c("Conventional","I","II","III") &  tech[j] != "-"){
+        message(paste0("Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro ", euro[j]
+                       ,". The package assumes missing Technology entry. Please check "
+                       ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
-        message(sprintf("no technology associated with %s", euro[j]))
       }
-      if(euro[j] %in%  c("IV") && (pollutant[i] == "CO2" | pollutant[i] == "FC") ){
+      if(euro[j] %in%  c("IV") && (pollutant[i] == "CO2" | pollutant[i] == "FC") &  tech[j] != "-"){
+        message(paste0("Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro ", euro[j]
+                       ,". The package assumes missing Technology entry. Please check "
+                       ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
-        message(sprintf("no technology associated with %s and pollutant %s", euro[j],pollutant[i]))
       }
-      if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("CO2","FC"))){
+      if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("CO2","FC")) && tech[j] != "SCR"){
+        message(paste0("Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro ", euro[j]
+                       ,". The package assumed 'SCR' Technology entry. Please check "
+                       ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "SCR"
-        message(sprintf("Only 'SCR' technology associated with Euro %s and pollutant %s", euro[j],pollutant[i]))
-      }
-      if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC"))){
+        }
+      if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC")) & tech[j] != "DPF+SCR"){
+        message(paste0("Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro ", euro[j]
+                       ,". The package assumed 'DPF+SCR' Technology entry. Please check "
+                       ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "DPF+SCR"
-        message(sprintf("Only 'DPF+SCR' technology associated with Euro %s and pollutant %s", euro[j], pollutant[i]))
-      }
+        }
       
       # fix load and slope
       
