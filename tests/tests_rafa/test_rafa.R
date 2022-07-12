@@ -147,7 +147,7 @@ gtfs <- gtfstools::filter_by_weekday(gtfs,
 id <- "6264.2.60-1-b12-1.1.O"
 gtfs <- gtfstools::filter_by_trip_id(gtfs, trip_id =  id )
 
-# gtfs <- gtfstools::filter_by_shape_id(gtfs, shape_id =  '60-15-b12-1.32.O' )
+# gtfs <- gtfstools::filter_by_shape_id(gtfs, shape_id =  '60-1-b12-1.1.O' )
 
 
 

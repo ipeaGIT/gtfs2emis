@@ -70,7 +70,7 @@
 #' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
 #'   
 #' # run transport model
-#' tp_model <- transport_model(gtfs_data = gtfs,
+#' tp_model <- transport_model(gtfs_data = gtfs_small,
 #'                             min_speed = 2,
 #'                             max_speed = 80,
 #'                             new_speed = 20,
@@ -92,7 +92,6 @@
 #'                 ))
 #'                             
 #' # Example using European emission model and fleet
-#' 
 #' fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t",
 #'                                                   "Ubus Std 15 - 18 t",
 #'                                                   "Ubus Artic >18 t")
@@ -107,7 +106,7 @@
 #'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")))
 #'                           
 #'                           
-#' # Example using US emission model and fleet
+#' # Example using US EMFAC emission model and fleet
 #' fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
 #'                                   , model_year = 2010:2019
 #'                                   , fuel = "D"
@@ -120,6 +119,7 @@
 #'                                   , reference_year = 2020
 #'                                   , fleet_composition = rep(0.1,10))
 #'                                   
+#' # Example using US MOVES emission model and fleet
 #' emi_moves <- emission_model(tp_model = tp_model
 #'                           , ef_model = "ef_usa_moves"
 #'                           , fleet_data = fleet_data_ef_moves
