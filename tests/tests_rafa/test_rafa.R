@@ -108,3 +108,68 @@ system("R CMD build . --resave-data") # build tar.gz
 
 # Run to build the website
 pkgdown::build_site()
+
+
+
+
+
+
+
+
+
+
+
+
+utils::remove.packages('gtfs2gps')
+devtools::install_github("ipeaGIT/gtfs2gps")
+
+
+library(gtfs2emis)
+library(gtfstools)
+library(data.table)
+library(ggplot2)
+library(gtfs2gps)
+
+
+# path to GTFS.zip file
+gtfs_file <- system.file("extdata/irl_dub/irl_dub_gtfs.zip", package = "gtfs2emis")
+
+# read GTFS
+gtfs <- gtfstools::read_gtfs(gtfs_file)
+
+# Keep Monday services GTFS
+gtfs <- gtfstools::filter_by_weekday(gtfs, 
+                                     weekday = c('saturday', 'sunday'), 
+                                     keep = FALSE)
+
+
+# id <- '6343.2.60-1-b12-1.1.O'
+id <- "6264.2.60-1-b12-1.1.O"
+gtfs <- gtfstools::filter_by_trip_id(gtfs, trip_id =  id )
+
+# gtfs <- gtfstools::filter_by_shape_id(gtfs, shape_id =  '60-15-b12-1.32.O' )
+
+
+
+stops_df <- gtfstools::convert_stops_to_sf(gtfs)
+
+head(gtfs$trips)
+head(gtfs$stop_times)
+head(gtfs$stops)
+head(gtfs$shapes)
+
+
+gps <- gtfs2gps(gtfs)
+gps_sf <- gtfs2gps::gps_as_sflinestring(gps)
+# gps_sf <- gtfs2emis::transport_model(gtfs)
+
+ggplot() +
+  geom_sf(data=gps_sf, aes(color=as.numeric(speed))) +
+  geom_sf(data=stops_df, color='red') 
+
+
+
+
+mtcars
+
+list(mtcars, mtcars, NULL, mtcars) |> rbindlist()
