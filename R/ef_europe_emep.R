@@ -159,30 +159,30 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       # condition for missing technologies
       
       if(euro[j] %in%  c("Conventional","I","II","III") &  tech[j] != "-"){
-        message(paste0("Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro ", euro[j]
-                       ,". The package assumes missing Technology entry. Please check "
+        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro '", euro[j]
+                       ,"'. The package assumes missing Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
       }
       if(euro[j] %in%  c("IV") && (pollutant[i] == "CO2" | pollutant[i] == "FC") &  tech[j] != "-"){
-        message(paste0("Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro ", euro[j]
-                       ,". The package assumes missing Technology entry. Please check "
+        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro '", euro[j]
+                       ,"'. The package assumes missing Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
       }
       if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("CO2","FC")) && tech[j] != "SCR"){
-        message(paste0("Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro ", euro[j]
-                       ,". The package assumed 'SCR' Technology entry. Please check "
+        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro '", euro[j]
+                       ,"'. The package assumed 'SCR' Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "SCR"
         }
       if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC")) & tech[j] != "DPF+SCR"){
-        message(paste0("Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro ", euro[j]
-                       ,". The package assumed 'DPF+SCR' Technology entry. Please check "
+        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro '", euro[j]
+                       ,"'. The package assumed 'DPF+SCR' Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "DPF+SCR"
         }
