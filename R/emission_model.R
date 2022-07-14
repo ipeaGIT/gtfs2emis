@@ -9,7 +9,7 @@
 #' @param ef_model character. A string indicating the emission factor model 
 #' to be used. Options include `ef_usa_moves`, `ef_usa_emfac`,`ef_europe_emep`, 
 #' or `ef_brazil_cetesb`.
-#' @param fleet_data data.frame. A`data.frame` with information the fleet 
+#' @param fleet_data data.frame. A `data.frame` with information the fleet 
 #' characteristics. The required columns depend on the 
 #' `ef_model` parameted selected. See @examples for input.
 #' @param pollutant character. Vector with one or more pollutants to be estimated.
@@ -26,18 +26,12 @@
 #'                 internally. Defaults is TRUE. Note that it is possible to create 
 #'                 your own plan before calling this function. In this case, do not
 #'                 use this argument.                
-#' @param output_path character. Filepath where the function output is saved.
-#'                    666  The function only exports the emissions files when `gps` 
-#'                    parameter is input as character. If `gps` argument is a 
-#'                    sf_linestring, the function returns the data to user. 
-#'                    666 Esse comportamento nao faz sentido neh. O funcionamento
-#'                    do output_path nao deveria depender do input de gps. Isso deveria ser:
-#'                    666 If `NULL` (Default), the function returns the output
-#'                    to user.
+#' @param output_path character. File path where the function output is exported.
+#'                 If `NULL` (Default), the function returns the output to user.
 #' @details The `fleet_data` must be a `data.frame` organized according to the desired
 #' `ef_model`. The required columns is organized as follows (see @examples for real 
 #' data usage). 
-#' - `reference_year`: character; Base year of the @ef_model input. 
+#' - `reference_year`: character; Base year of the emission factor model input. 
 #' Required only when  `ef_usa_moves` or `_efusa_emfac` are selected.
 #' - `tech`: character; After treatment technology. This is required only 
 #' when `emep_europe` is selected. Check `?ef_emep_europe` for details.
@@ -144,39 +138,38 @@ emission_model <- function(  tp_model
   checkmate::assert_data_frame(fleet_data, null.ok = FALSE)
   checkmate::assert_vector(pollutant, null.ok = FALSE)
   checkmate::assert_logical(parallel, null.ok = FALSE)
-  checkmate::assert_string(output_path, null.ok = TRUE)
   checkmate::assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
-  checkmate::assert_class(tp_model, classes = c("sf", "data.frame"))
-    
-  ## i) EF model ----
-  if (!(ef_model %in% c("ef_brazil_cetesb","ef_usa_emfac","ef_usa_moves","ef_europe_emep"))) {
-    stop("'ef_model' has to me one of the following 'ef_brazil_cetesb',\n'ef_usa_emfac'
-         ,'ef_usa_moves', or 'ef_europe_emep'")
-  }
-  
-  ## ii) Fleet data  | EF model ----
-  if (ef_model == "ef_cetesb_brazil") {
-    if(is.null(fleet_data$veh_type) | is.null(fleet_data$model_year)
-       | is.null(fleet_data$fleet_composition)){
-      stop("fleet_data input must have the columns c('veh_type',
-           'fleet_composition', 'model_year') when ef_model == 'ef_cetesb_brazil'")
-    }
-  }
-  if (ef_model == "ef_usa_emfac" | ef_model == "ef_usa_moves") {
+  checkmate::assert(
+    checkmate::check_class(tp_model, classes = c("sf", "data.frame"))
+    , checkmate::check_class(tp_model, classes = c("character"))
+    , combine = "or"
+  )
+  if(is.character(tp_model)) checkmate::assert_directory_exists(tp_model)
+  checkmate::assert_string(output_path, null.ok = TRUE)
+  if(!is.null(output_path)) checkmate::assert_directory_exists(output_path)
 
-    if(is.null(fleet_data$veh_type) | is.null(fleet_data$model_year)
-       | is.null(fleet_data$fleet_composition)){
-      stop(sprintf("fleet_data input must have the columns c('veh_type', 
-                   'fleet_composition', 'model_year') when ef_model == %s")
-           ,ef_model)
-    }
+  ## i) EF model ----
+  checkmate::assert_choice(ef_model
+                           ,c("ef_brazil_cetesb","ef_usa_emfac"
+                              ,"ef_usa_moves","ef_europe_emep")
+                           ,null.ok = FALSE)
+  ## ii) Fleet data  | EF model ----
+  if (ef_model != "ef_europe_emep"){
+    checkmate::assert(
+        checkmate::check_choice('veh_type', names(fleet_data))
+      , checkmate::check_choice('model_year', names(fleet_data))
+      , checkmate::check_choice('fleet_composition', names(fleet_data))
+      , combine = "and"
+    )
   }
-  if (ef_model == "ef_europe_emep") {
-    if(is.null(fleet_data$euro) | is.null(fleet_data$fuel)|
-       is.null(fleet_data$tech) | is.null(fleet_data$fleet_composition)){
-      stop("fleet_data input must have the columns c('speed','euro', 
-           'fleet_composition', 'speed') when  input ef_model == ef_europe_emep")
-    }
+  if (ef_model == "ef_europe_emep"){
+    checkmate::assert(
+      checkmate::check_choice('euro', names(fleet_data))
+      , checkmate::check_choice('fuel', names(fleet_data))
+      , checkmate::check_choice('tech', names(fleet_data))
+      , checkmate::check_choice('fleet_composition', names(fleet_data))
+      , combine = "and"
+    )
   }
   
   ## iii) Transport model ----
@@ -184,40 +177,22 @@ emission_model <- function(  tp_model
   ### Character input path----
   if(is.character(tp_model)){ 
     
-    message(sprintf("Checking files in %s path", tp_model))
-    #tp_model <- "article/data/gps_spo/"
-    tp_model_files <- list.files(path = tp_model,pattern = ".txt|.rds"
+    tp_fname_files <- list.files(path = tp_model,pattern = ".rds"
                                  ,all.files = TRUE,full.names = TRUE)
-    tp_name_files <- list.files(path = tp_model,pattern = ".txt|.rds"
+    tp_name_files <- list.files(path = tp_model,pattern = ".rds"
                                 ,all.files = TRUE,full.names = FALSE)
     
     # check if there is files with .txt|.rds patterns
-    if(length(tp_model_files) == 0){ 
-      stop(sprintf("No files with patterns '.txt' or '.rds' were found %s path "
+    if(length(tp_fname_files) == 0){ 
+      stop(sprintf("No files with patterns '.rds' were found in %s path "
                    ,tp_model,".\n Please provide a valid input path."))
     }
     
   }
-  ### iv) Sflinestring input file----
-  if (!is.character(tp_model)) {
-    
-    # Columns that should exist 
-    getCols <- colnames(tp_model)
-    if(sum(getCols %in% c("speed","dist","cumdist","cumtime")) != 4){
-      stop("Columns 'speed', 'dist', 'cumdist' and 'cumtime' should exist in the tp_model file.")
-    }
-    # checa output (tem que ser rds)
-    if (!is.null(output_path)) {
-      if (!(output_path %like% ".rds")) {
-        stop("User should provide a valid output_filepath in '.rds' format.")
-      }
-    }
-    
-  } 
   
   
   # B) EF function ---------------- 
-
+  
   # Generate EF cetesb_brazil before the loop
   # to avoid multiple runs in the loop
   if(ef_model == "ef_brazil_cetesb"){
@@ -227,35 +202,16 @@ emission_model <- function(  tp_model
                                 as_list = TRUE)
   }
   # C) Emission function -----
-  emission_estimate <- function(tp_model){ # i = 1  
-    
-    # 666 essa funcao aqui nao tinha q ter os parametros de frota e ef q sao passados adiante?
+  core_fun_emis <- function(temp_shape){ # i = 1  
     
     # i) Read GPS linestrings or DT ----
-    if (is.character(tp_model)) {
-      
-      # type txt
-      if(tp_model %like% ".txt"){
-        tp_model <- data.table::fread(tp_model)
-      }
-      # type rds
-      if(tp_model %like% ".rds"){
-        tp_model <- readRDS(tp_model)
-      }
-      
-      # fix units
-      data.table::setDT(tp_model)
-      tp_model[,speed := units::set_units(speed,"km/h")]
-      tp_model[, dist := units::set_units(dist,"m")]
-      tp_model[, cumdist := units::set_units(cumdist,"m")]
-      tp_model[, speed := units::set_units(speed,"km/h")]
-      tp_model[, cumtime := units::set_units(cumtime,"s")]
-    }
+    if (is.character(temp_shape))  temp_shape <- readRDS(temp_shape)
+    
     # ii) Get EF  ----
     if (ef_model == "ef_europe_emep") {
       
       temp_ef <- ef_europe_emep(pollutant = pollutant,
-                                speed = tp_model$speed,
+                                speed = temp_shape$speed,
                                 veh_type = fleet_data$veh_type,
                                 tech = fleet_data$tech,
                                 euro = fleet_data$euro,
@@ -266,7 +222,7 @@ emission_model <- function(  tp_model
       temp_ef <- ef_usa_emfac(pollutant = pollutant,
                               reference_year = reference_year,
                               model_year = fleet_data$model_year,
-                              speed = tp_model$speed,
+                              speed = temp_shape$speed,
                               fuel = fleet_data$fuel)
     }
     if(ef_model == "ef_usa_moves"){
@@ -274,7 +230,7 @@ emission_model <- function(  tp_model
       temp_ef <- ef_usa_moves(pollutant = pollutant,
                               reference_year = reference_year,
                               model_year = fleet_data$model_year,
-                              speed = tp_model$speed,
+                              speed = temp_shape$speed,
                               fuel = fleet_data$fuel)
     }
     
@@ -282,10 +238,10 @@ emission_model <- function(  tp_model
     
     # iii) Emissions -----
     temp_emis <- multiply_ef(fleet_composition = fleet_data$fleet_composition
-                      , dist = units::set_units(tp_model$dist, "km") 
-                      , ef = temp_ef
-                      , aggregate = FALSE
-                      , as_list = TRUE)
+                             , dist = units::set_units(temp_shape$dist, "km") 
+                             , ef = temp_ef
+                             , aggregate = FALSE
+                             , as_list = TRUE)
     
     # iv) Add data -----
     # Add fleet info
@@ -313,15 +269,16 @@ emission_model <- function(  tp_model
   }
   
   # D) function to write individual files -----
-  if(is.character(tp_model)) 
-    p <- progressr::progressor(steps = length(tp_model_files))
-    
-  f_input_character <- function(i){
+  if(is.character(tp_model)){ 
+    p <- progressr::progressor(steps = length(tp_fname_files))
+  }
+  
+  prepare_emis_output <- function(i){ # i = 1
     p()
-    tmp_emis <- emission_estimate(tp_model_files[i])
+    tmp_emis <- core_fun_emis(temp_shape = tp_fname_files[i])
     ###  i) Output NULL ----
     if (is.null(output_path)) {
-      return(emisLine)
+      return(tmp_emis)
     }
     ###  ii) Output Valid ----
     output_name <- paste0(output_path,"/",tp_name_files[i])
@@ -329,20 +286,19 @@ emission_model <- function(  tp_model
     return(NULL)
   }
   
-  ## E) Input is a character -----
+  ## E) IF 'tp_model' is character -----
   if(is.character(tp_model)){ 
     
     # Check parallel condition
     if(parallel){
-      emisLine <- furrr::future_map(.x = 1:length(tp_model_files)
-                                    ,.f = f_input_character
+      emisLine <- furrr::future_map(.x = 1:length(tp_fname_files)
+                                    ,.f = prepare_emis_output
                                     ,.options = furrr::furrr_options(seed = 123))
     }else{
-      emisLine <- lapply(.x = 1:length(tp_model_files)
-                         ,.f = f_input_character
+      emisLine <- lapply(.x = 1:length(tp_fname_files)
+                         ,.f = prepare_emis_output
                          ,.options = furrr::furrr_options(seed = 123))
     }
-    emisLine <- data.table::rbindlist(emisLine)
     
     # if an output_path is provided, function do not return data
     if (!is.null(output_path)) return(NULL)
@@ -350,16 +306,25 @@ emission_model <- function(  tp_model
     return(emisLine)
   }else{ 
     
-    ## F) Input is a file  -----
+    ## F) If 'tp_model' is transport model -----
     
-    tmp_emis <- emission_estimate(tp_model)
+    tmp_emis <- core_fun_emis(tp_model)
     
     #  Output NULL 
     if (is.null(output_path)) {
       return(tmp_emis)
     }
     # Output valid
-    saveRDS(object = tmp_emis,file = output_path)
+    export_path <- paste0(output_path,"/"
+                          ,unique(tp_model$shape_id)[1]
+                          ,".rds")
+    
+    if( data.table::uniqueN(tp_model$shape_id) > 1){
+      message(sprintf("Writing output as '%s' file."
+                      ,export_path))
+    }
+    saveRDS(object = tmp_emis
+            ,file = export_path)
     return(NULL)
   }
 }

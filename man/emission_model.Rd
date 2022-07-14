@@ -23,7 +23,7 @@ or the path in which the output files from the \code{\link{transport_model}} are
 to be used. Options include \code{ef_usa_moves}, \code{ef_usa_emfac},\code{ef_europe_emep},
 or \code{ef_brazil_cetesb}.}
 
-\item{fleet_data}{data.frame. A\code{data.frame} with information the fleet
+\item{fleet_data}{data.frame. A \code{data.frame} with information the fleet
 characteristics. The required columns depend on the
 \code{ef_model} parameted selected. See @examples for input.}
 
@@ -44,14 +44,8 @@ internally. Defaults is TRUE. Note that it is possible to create
 your own plan before calling this function. In this case, do not
 use this argument.}
 
-\item{output_path}{character. Filepath where the function output is saved.
-666  The function only exports the emissions files when \code{gps}
-parameter is input as character. If \code{gps} argument is a
-sf_linestring, the function returns the data to user.
-666 Esse comportamento nao faz sentido neh. O funcionamento
-do output_path nao deveria depender do input de gps. Isso deveria ser:
-666 If \code{NULL} (Default), the function returns the output
-to user.}
+\item{output_path}{character. File path where the function output is exported.
+If \code{NULL} (Default), the function returns the output to user.}
 }
 \value{
 A \code{list} with emissions estimates or \code{NULL} with output files saved
@@ -66,7 +60,7 @@ The \code{fleet_data} must be a \code{data.frame} organized according to the des
 \code{ef_model}. The required columns is organized as follows (see @examples for real
 data usage).
 \itemize{
-\item \code{reference_year}: character; Base year of the @ef_model input.
+\item \code{reference_year}: character; Base year of the emission factor model input.
 Required only when  \code{ef_usa_moves} or \verb{_efusa_emfac} are selected.
 \item \code{tech}: character; After treatment technology. This is required only
 when \code{emep_europe} is selected. Check \code{?ef_emep_europe} for details.
