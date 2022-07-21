@@ -104,7 +104,7 @@ transport_model <- function(gtfs_data,
   # gtfs2gps ------------
   
   if(is.null(output_path)){
-    gps_path <-  paste0(tempdir(),"/gps",stats::runif(1),"/")
+    gps_path <-  paste0(tempdir(),"/gps/")
     suppressWarnings(dir.create(tempdir()))
     suppressWarnings(dir.create(gps_path))
   }else{
@@ -126,7 +126,7 @@ transport_model <- function(gtfs_data,
   
   # create new dirs
   if(is.null(output_path)){
-    gps_adjust_path <-  paste0(tempdir(), "/gps_adjust",stats::runif(1),"/")
+    gps_adjust_path <-  paste0(tempdir(), "/gps_adjust/")
     suppressWarnings(dir.create(tempdir())) 
     suppressWarnings(dir.create(gps_adjust_path)) 
   }else{
@@ -163,7 +163,7 @@ transport_model <- function(gtfs_data,
   
   # create new dirs
   if(is.null(output_path)){
-    gps_line_path <-  paste0(tempdir(), "/gps_line/",stats::runif(1))
+    gps_line_path <-  paste0(tempdir(), "/gps_line/")
     suppressWarnings(dir.create(gps_line_path)) 
   }else{
     gps_line_path <-  paste0(output_path,"/gps_line/")
