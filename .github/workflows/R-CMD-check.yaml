@@ -38,7 +38,7 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-
+            
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Install pak and query dependencies
@@ -72,6 +72,7 @@ jobs:
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
           pak::pkg_install("rcmdcheck")
+          pak::pkg_install("ipeaGIT/gtfs2gps")
         shell: Rscript {0}
 
       - name: Session info

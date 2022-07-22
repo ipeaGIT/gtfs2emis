@@ -48,6 +48,7 @@ jobs:
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
           pak::pkg_install("pkgdown")
+          pak::pkg_install("ipeaGIT/gtfs2gps")
         shell: Rscript {0}
 
       - name: Install package
