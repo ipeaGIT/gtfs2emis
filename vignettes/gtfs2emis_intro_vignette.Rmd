@@ -260,9 +260,6 @@ ggplot(data = emi_by_time) +
 
 ## 6.4 Spatial distribution of emissions
 
-666666666 by road segment ??????????????
-
-
 Finally, users can analyze how public transport emissions are spatially distributed. To do this, the `emis_grid()` function helps aggregate emission estimates over any custom spatial vector data (`sf POLYGON`). 
 
 Let's create a regular hexagonal grid for this example.

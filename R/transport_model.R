@@ -89,7 +89,7 @@ transport_model <- function(gtfs_data,
   if (is.character(gtfs_data)) {
     city_gtfs <- gtfstools::read_gtfs(path = gtfs_data)
   }else{
-    city_gtfs <- gtfs_data
+    city_gtfs <- data.table::copy(gtfs_data)
   }
   
   
@@ -112,12 +112,11 @@ transport_model <- function(gtfs_data,
     suppressWarnings(dir.create(gps_path))
   }
   
-  gtfs2gps::gtfs2gps( gtfs_data = city_gtfs
-                      , filepath = gps_path
-                      , parallel = parallel
-                      , compress = TRUE
-                      , spatial_resolution = spatial_resolution
-  )
+  gtfs2gps::gtfs2gps(gtfs_data = city_gtfs
+                     , spatial_resolution = spatial_resolution
+                     , parallel = parallel
+                     , filepath =  gps_path
+                     , compress =  TRUE)
   
   
   
