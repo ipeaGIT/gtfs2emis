@@ -40,7 +40,6 @@ Suggests:
     knitr,
     lwgeom,
     rmarkdown,
-    terra,
     testthat (>= 2.1.0),
     vein
 VignetteBuilder: 
@@ -48,5 +47,4 @@ VignetteBuilder:
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
-SystemRequirements: GEOS (>= 3.5.0)
 LazyData: true
