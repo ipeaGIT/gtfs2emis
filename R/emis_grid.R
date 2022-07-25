@@ -54,7 +54,7 @@
 #' grid <- sf::st_make_grid(
 #'   x = sf::st_make_valid(emi_list$tp_model)
 #'   , cellsize = 0.25 / 200
-#'   , crs= 4329
+#'   , crs= 4326
 #'   , what = "polygons"
 #'   , square = FALSE
 #'   )
