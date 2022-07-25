@@ -60,11 +60,6 @@ jobs:
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
-          # conflicts with gfortran from r-lib/actions when linking gcc
-          rm '/usr/local/bin/gfortran'
-          brew install pkg-config gdal proj geos
-          # conflicts with gfortran from r-lib/actions when linking gcc
-          rm '/usr/local/bin/gfortran'
           brew install pkg-config gdal proj geos
           #  Install libgit2
           brew install libgit2
