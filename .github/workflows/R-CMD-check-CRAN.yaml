@@ -53,8 +53,7 @@ jobs:
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows'
         run: |
-          pak::pkg_install("Rtools")
-          pak::pkg_install("rspatial/terra")
+          pak::pkg_install('terra', lib='https://rspatial.r-universe.dev')
           
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
