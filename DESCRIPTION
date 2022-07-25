@@ -19,8 +19,8 @@ Description: Estimate the emission levels of public transport networks based on
              estimates can be extracted in different formats, supporting analysis 
              on how emission levels vary across space, time and by fleet 
              characteristics.
-URL: https://github.com/rafapereirabr/gtfs2emis
-BugReports: https://github.com/rafapereirabr/gtfs2emis
+URL: https://github.com/ipeaGIT/gtfs2emis
+BugReports: https://github.com/ipeaGIT/gtfs2emis
 License: MIT + file LICENSE
 Depends:
     R (>= 3.6)

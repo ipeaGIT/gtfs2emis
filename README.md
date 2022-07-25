@@ -1,10 +1,10 @@
 # gtfs2emis: Generating estimates of public transport emissions from GTFS data <img align="right" src="man/figures/logo.png" alt="logo" width="180">
 
-[![R-CMD-check](https://github.com/rafapereirabr/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/rafapereirabr/gtfs2emis/actions)
+[![R-CMD-check](https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipeaGIT/gtfs2emis/actions)
 [![Lifecycle:
      experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
-coverage](https://codecov.io/gh/rafapereirabr/gtfs2emis/branch/main/graph/badge.svg)](https://app.codecov.io/gh/rafapereirabr/gtfs2emis?branch=main)
+coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=main)
 
 
 **gtfs2emis** is an R package to estimate the emission levels of public

@@ -297,4 +297,4 @@ scale_fill_continuous(type = "viridis")+
 
 ## Credits
 
-The `gtfs2gps` package is developed by a team at the Institute for Applied Economic Research (Ipea) with collaboration from the National Institute for Space Research (INPE), both from Brazil. If you have any suggestions or want to report an error, please visit [the package GitHub page](https://github.com/rafapereirabr/gtfs2emis).
+The `gtfs2gps` package is developed by a team at the Institute for Applied Economic Research (Ipea) with collaboration from the National Institute for Space Research (INPE), both from Brazil. If you have any suggestions or want to report an error, please visit [the package GitHub page](https://github.com/ipeaGIT/gtfs2emis).
