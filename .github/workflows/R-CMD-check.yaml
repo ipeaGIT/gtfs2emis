@@ -63,11 +63,6 @@ jobs:
           pak::pkg_system_requirements("rcmdcheck", execute = TRUE)
         shell: Rscript {0}
 
-      - name: Install system dependencies (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          pak::pkg_install('terra', lib='https://rspatial.r-universe.dev')
-          
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |

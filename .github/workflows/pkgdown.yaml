@@ -38,11 +38,6 @@ jobs:
           key: ubuntu-18.04-${{ steps.install-r.outputs.installed-r-version }}-1-${{ hashFiles('.github/r-depends.rds') }}
           restore-keys: ubuntu-18.04-${{ steps.install-r.outputs.installed-r-version }}-1-
 
-      - name: Install system dependencies (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          pak::pkg_install('terra', lib='https://rspatial.r-universe.dev')
-          
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
