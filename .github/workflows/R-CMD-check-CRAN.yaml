@@ -73,6 +73,7 @@ jobs:
           pak::local_install_dev_deps(upgrade = TRUE)
           pak::pkg_install("rcmdcheck")
           pak::pkg_install("ipeaGIT/gtfs2gps")
+          pak::pkg_install("rspatial/terra")
         shell: Rscript {0}
 
       - name: Session info

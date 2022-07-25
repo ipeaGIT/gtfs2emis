@@ -45,11 +45,23 @@ jobs:
           pak::pkg_system_requirements("covr", execute = TRUE)
         shell: Rscript {0}
 
+      - name: Install system dependencies (MacOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install pkg-config gdal proj geos
+          #  Install libgit2
+          brew install libgit2
+          
+      - name: "[Stage] [macOS] Install system libs for pkgdown"
+        if: runner.os == 'macOS' && matrix.config.pkgdown != ''
+        run: brew install harfbuzz fribidi
+        
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
           pak::pkg_install("covr")
           pak::pkg_install("ipeaGIT/gtfs2gps")
+          pak::pkg_install("rspatial/terra")
         shell: Rscript {0}
 
       - name: Test coverage
