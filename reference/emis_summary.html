@@ -106,11 +106,11 @@ type, or road segment.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ipeaGIT/gtfs2emis" class="external-link">gtfs2emis</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/" class="external-link">gtfs2emis</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># read GTFS</span></span></span>
-<span class="r-in"><span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Keep a single trip</span></span></span>
@@ -123,7 +123,7 @@ type, or road segment.</p>
 <span class="r-in"><span>                            parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fleet data</span></span></span>
-<span class="r-in"><span><span class="va">fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub/irl_dub_fleet.txt"</span></span></span>
+<span class="r-in"><span><span class="va">fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span></span></span>
 <span class="r-in"><span>                                 , package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># emission model</span></span></span>
 <span class="r-in"><span><span class="va">emi_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="emission_model.html">emission_model</a></span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span></span>

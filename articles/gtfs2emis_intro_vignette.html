@@ -87,7 +87,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to gtfs2emis</h1>
             
-            <h4 data-toc-skip class="date">2022-07-26</h4>
+            <h4 data-toc-skip class="date">2022-07-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/HEAD/vignettes/gtfs2emis_intro_vignette.Rmd" class="external-link"><code>vignettes/gtfs2emis_intro_vignette.Rmd</code></a></small>
       <div class="hidden name"><code>gtfs2emis_intro_vignette.Rmd</code></div>
@@ -103,19 +103,33 @@
 <div class="section level2">
 <h2 id="introduction">1. Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p><code>gtfs2emis</code> is an R package to estimate hot exhaust emissions of public transport systems using data in the General Transit Feed Specification (GTFS) format. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics. This vignette introduces the main functions of the <code>gtfs2emis</code> package and shows a step-by-step reproducible example of how to use the package.</p>
+<p><code>gtfs2emis</code> is an R package to estimate hot exhaust emissions of public transport vehicles using data in the General Transit Feed Specification (GTFS) format. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics. This vignette introduces the main functions of the <code>gtfs2emis</code> package and shows a step-by-step reproducible example of how to use the package.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">2. Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>One can install <code>gtfs2emis</code> from CRAN (recommended) or the development version from Github:</p>
+<p>One can install <code>gtfs2emis</code> from CRAN (stable version) or the development version from Github:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># From CRAN</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Dev. version with latest features</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/remove.packages.html" class="external-link">remove.packages</a></span><span class="op">(</span><span class="st">'gtfs2emis'</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ipeaGIT/gtfs2emis"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ipeaGIT/gtfs2emis"</span><span class="op">)</span></span></code></pre></div>
+<p>A few sample of GTFS and fleet files are included in the package:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">data_path</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "bra_cur_fleet.txt" "bra_cur_gtfs.zip"  "irl_dub_fleet.txt"</span></span>
+<span><span class="co">#&gt; [4] "irl_dub_gtfs.zip"  "usa_det_fleet.txt" "usa_det_gtfs.zip"</span></span></code></pre></div>
+<ul>
+<li>Subset of Curitiba (Brazil): <code>bra_cur_gtfs.zip</code> and <code>bra_cur_fleet.txt</code>
+</li>
+<li>Subset of Dublin (Ireland): <code>irl_dub_gtfs.zip</code> and <code>irl_dub_fleet.txt</code>
+</li>
+<li>Subset of Detroit (US): <code>usa_det_gtfs.zip</code> and <code>usa_det_fleet.txt</code>
+</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="data-requirements">3. Data requirements<a class="anchor" aria-label="anchor" href="#data-requirements"></a>
@@ -123,7 +137,7 @@
 <p>To estimate the emission levels from a given public transport system, users need to:</p>
 <ol style="list-style-type: decimal">
 <li>Input a <code>GTFS.zip</code> file</li>
-<li>Input <code>data.frame</code> with a few characteristics of the public transport fleet (such as age and fuel)</li>
+<li>Input <code>data.frame</code> with a few characteristics of the public transport fleet (such as age, vehicle type and fuel)</li>
 <li>Select an emission factor model from the models provided by the package, which currently includes models from the US, Europe and Brazil.</li>
 <li>Select which pollutants should be estimated from a list with of over 15 pollutants provided by the package.</li>
 </ol>
@@ -132,15 +146,15 @@
 <h2 id="package-overview">4. Package overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
 </h2>
 <p>Before we start, let’s load a few packages we’ll be using in this vignette:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ipeaGIT/gtfs2emis" class="external-link">gtfs2emis</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/" class="external-link">gtfs2emis</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/units/" class="external-link">units</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span></code></pre></div>
-<p>The <code>gtfs2mis</code> package two core functions:</p>
+<p>The <code>gtfs2emis</code> package has two core functions:</p>
 <ol style="list-style-type: decimal">
 <li>
 <code><a href="../reference/transport_model.html">transport_model()</a></code>. This function converts GTFS data into a GPS-like <code>data.table</code> with the space-time positions and speeds of public transport vehicles.</li>
@@ -155,28 +169,28 @@
 </li>
 </ol>
 <p>To help users analyze the output from <code><a href="../reference/emission_model.html">emission_model()</a></code>, the <code>gtfs2emis</code> package has few functions:</p>
-<ol start="3" style="list-style-type: decimal">
+<ul>
 <li>
 <code><a href="../reference/emis_summary.html">emis_summary()</a></code> to aggregate emission estimates by time of the day, vehicle type or road segment.</li>
 <li>
 <code><a href="../reference/emis_grid.html">emis_grid()</a></code> to spatially aggregate emission estimates using any custom spatial grid or polygons.</li>
 <li>
 <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> to convert the output of <code><a href="../reference/emission_model.html">emission_model()</a></code> from <code>list</code> to <code>data.table</code>.</li>
-</ol>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="demonstration-on-sample-data">5. Demonstration on sample data<a class="anchor" aria-label="anchor" href="#demonstration-on-sample-data"></a>
 </h2>
-<p>In this introductory vignette, we show a very simple case study using default parameters of the <code>gtfs2emis</code> package and where we assume that fleet characteristics are homogeneously distributed across the public transport routes. <a href="add_link">For advanced users, we have written another vignette</a> that demonstrates how <code>gtfs2emis</code> allows one to allocate specific vehicles into predefined routes, fix speeds and boarding times in the transport model, and adjust emissions factors. We have also written a separate vignette to help users build the <code>data.frame</code> with information on <a href="add_link">fleet characteristics</a>.</p>
-<p>To demonstrate how the <code>gtfs2emis</code> package works, we will be using a small sample data for the city of Dublin, Ireland. In this example, we’ll be estimating <code>CO2</code> and <code>PM10</code> emissions of bus services on business days.</p>
+<p>In this introductory vignette, we show a very simple case study using default parameters of the <code>gtfs2emis</code> package and where we assume that fleet characteristics are homogeneously distributed across the public transport routes. <a href="add_link">For advanced users, we have written another vignette</a> that demonstrates how <code>gtfs2emis</code> allows one to allocate specific vehicles into predefined routes, fix speeds and boarding times in the transport model, and adjust emissions factors. We have also written a separate vignette to help users build the <code>data.frame</code> with information on <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">fleet characteristics</a>.</p>
+<p>To demonstrate how the <code>gtfs2emis</code> package works, we will be using a small sample data for the city of Dublin, Ireland. In this example, we’ll be estimating <code>NOx</code> and <code>PM10</code> emissions of bus services on business days.</p>
 <div class="section level3">
 <h3 id="transport-model">5.1 Transport model<a class="anchor" aria-label="anchor" href="#transport-model"></a>
 </h3>
 <p>The first step is to generate the transport model using <code>transport_model{gtfs2emis}</code>. This function converts GTFS data into a GPS-like <code>data.table</code>, transforming the output into a <code>sf-linestring</code>, which is the required input for emissions estimates. The user can input either a string with the file path where the a <code>gtfs.zip</code> file is stored, or an object of class <code>"gtfs" "list"</code>, generated with <code><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">gtfstools::read_gtfs()</a></code>.</p>
 <p>First, let’s read the GTFS data and filter only the transport services that run on</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># path to GTFS.zip file</span></span>
-<span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
+<span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># read GTFS</span></span>
 <span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
@@ -184,12 +198,9 @@
 <span><span class="co"># Keep Monday services GTFS</span></span>
 <span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/filter_by_weekday.html" class="external-link">filter_by_weekday</a></span><span class="op">(</span><span class="va">gtfs</span>, </span>
 <span>                                     weekday <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'saturday'</span>, <span class="st">'sunday'</span><span class="op">)</span>, </span>
-<span>                                     keep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co">#gtfs &lt;- gtfstools::filter_by_trip_id(gtfs, trip_id =  "238.2.60-118-b12-1.59.I" )</span></span></code></pre></div>
+<span>                                     keep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Now let’s generate the transport model. This is the most time consuming part. If you want to, you can set a progress bar by calling the <code><a href="../reference/transport_model.html">transport_model()</a></code> function within <code><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">progressr::with_progress()</a></code>, as shown below.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># generate transport model</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span> </span>
 <span>  </span>
@@ -235,22 +246,21 @@
 <span><span class="co">#&gt; 5 LINESTRING (-6.262147 53.35...</span></span>
 <span><span class="co">#&gt; 6 LINESTRING (-6.25953 53.348...</span></span></code></pre></div>
 <p>Here is how the output of the transport model looks like. In essence, it’s a trajectory <code>data.table sf linestring</code> with the space-time position and speed of trips segments for each single vehicle of the public transport system.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">tp_model</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">speed</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_continuous.html" class="external-link">scale_color_continuous</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"Speed (km/h)"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-6-1.png" width="480"></p>
+<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-7-1.png" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="fleet-data">5.2 Fleet data<a class="anchor" aria-label="anchor" href="#fleet-data"></a>
 </h3>
 <p>The next step is to prepare a <code>data.frame</code> with some characteristics of the public transport fleet. This can be either: - A simple table with the overall composition of the fleet. In this case, the <code>gtfs2emis</code> will assume that fleet is homogeneously distributed across all routes; OR - A detailed table that (1) brings info on the characteristics of each individual vehicle and, (2) tells the probability with which each vehicle type is allocated to each transport route.</p>
 <p>In this introductory vignette, we’ll be working with a simple table that tell us the proportion of buses in Dublin according to their vehicle type, Euro standard, technology and fuel. The table looks like this:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fleet_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub/irl_dub_fleet.txt"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
-<span></span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fleet_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span><span class="va">fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">fleet_file</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fleet_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             veh_type euro fuel   N fleet_composition    tech</span></span>
@@ -258,14 +268,14 @@
 <span><span class="co">#&gt; 2 Ubus Std 15 - 18 t   IV    D 296        0.29540918     SCR</span></span>
 <span><span class="co">#&gt; 3 Ubus Std 15 - 18 t    V    D 148        0.14770459     SCR</span></span>
 <span><span class="co">#&gt; 4 Ubus Std 15 - 18 t   VI    D 548        0.54690619 DPF+SCR</span></span></code></pre></div>
-<p>Please note different emission factor models may require different information and that the fleet <code>data.frame</code> needs to be organized accordingly. In our current example for the city of Dublin, the fleet data must include certain columns with the fleet characteristics that are used in the Emep-EEA emission factor model: vehicle type, Euro standard, technology and fuel. To check which columns and sets of vehicle characteristics are required by a given emission factor model, check the <a href="add_link">fleet data vignette</a>.</p>
+<p>Please note different emission factor models may require different information and that the fleet <code>data.frame</code> needs to be organized accordingly. In our current example for the city of Dublin, the fleet data must include certain columns with the fleet characteristics that are used in the Emep-EEA emission factor model: vehicle type, Euro standard, technology and fuel. To check which columns and sets of vehicle characteristics are required by a given emission factor model, check the <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">fleet data vignette</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="emission-model">5.3 Emission model<a class="anchor" aria-label="anchor" href="#emission-model"></a>
 </h3>
 <p>In the final step, we use the <code>emission_model{gtfs2emis}</code> function to estimate hot exhaust emissions of our public transport system. Here, the user needs to pass the results from <code><a href="../reference/transport_model.html">transport_model()</a></code>, some fleet data as described above, and select which emission factor model and pollutants should be considered. The <code><a href="../reference/emission_model.html">emission_model()</a></code> outputs a <code>list</code> with several <code>vectors</code> and <code>data.frames</code> with emission estimates and related information such as vehicle variables (<code>fuel</code>, <code>age</code>, <code>tech</code>, <code>euro</code>, <code>fleet_composition</code>), travel variables (<code>slope</code>, <code>load</code>, <code>gps</code>) or pollution (<code>EF</code>, <code>emi</code>).</p>
 <p>[BAZZO 666] acho q essa ultima frase texto pode ficar mais clara.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emission_model.html">emission_model</a></span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span>,</span>
 <span>                           ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span>,</span>
 <span>                           fleet_data <span class="op">=</span> <span class="va">fleet_df</span>,</span>
@@ -284,7 +294,7 @@
 <h2 id="analyzing-emission-estimates">6 Analyzing emission estimates<a class="anchor" aria-label="anchor" href="#analyzing-emission-estimates"></a>
 </h2>
 <p>Sometimes, working with data stored in a long list can be tricky. For convenience, <code>gtfs2emis</code> package has a few functions to users analyze the these results and make. For example, you can use the <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> function to convert the output of <code><a href="../reference/emission_model.html">emission_model()</a></code> from a <code>list</code> to a <code>data.table</code> format:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_to_dt.html">emis_to_dt</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                     veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>, <span class="st">"euro"</span>, <span class="st">"fuel"</span><span class="op">)</span>,</span>
 <span>                     pol_vars <span class="op">=</span> <span class="st">"pollutant"</span></span>
@@ -302,7 +312,7 @@
 <div class="section level3">
 <h3 id="total-emissions-by-pollutant">6.1 Total emissions by pollutant<a class="anchor" aria-label="anchor" href="#total-emissions-by-pollutant"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_by_pol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                                 by <span class="op">=</span> <span class="st">"pollutant"</span><span class="op">)</span> </span>
 <span><span class="va">emi_by_pol</span></span>
@@ -314,7 +324,7 @@
 <h3 id="total-emissions-by-vehicle-type">6.2 Total emissions by vehicle type<a class="anchor" aria-label="anchor" href="#total-emissions-by-vehicle-type"></a>
 </h3>
 <p>The <code><a href="../reference/emis_summary.html">emis_summary()</a></code> function help users summarize emission estimates by either <code>veh_type</code>, <code>pollutant</code>, or <code>time</code>. Using this function, users can easily:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_by_veh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                          by <span class="op">=</span> <span class="st">"vehicle"</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">emi_by_veh</span><span class="op">)</span></span>
@@ -322,7 +332,7 @@
 <span><span class="co">#&gt; 1: Ubus Std 15 - 18 t       CO2 2.685654e+06 [g]</span></span>
 <span><span class="co">#&gt; 2: Ubus Std 15 - 18 t      PM10 8.732673e+01 [g]</span></span></code></pre></div>
 <p>It is also possible to summarize emission estimates by other vehicle characteristics AND pollutant.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_by_veh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                          by <span class="op">=</span> <span class="st">"vehicle"</span>,</span>
 <span>                          veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>,<span class="st">"euro"</span><span class="op">)</span><span class="op">)</span> </span>
@@ -342,12 +352,12 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y<span class="op">=</span><span class="st">"Total emissions (Kg)"</span>, x<span class="op">=</span><span class="st">"Euro standard"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pollutant</span>, scales <span class="op">=</span> <span class="st">"free"</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-12-1.png" width="480"></p>
+<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-13-1.png" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="total-emissions-by-time-of-the-day">6.3 Total emissions by time of the day<a class="anchor" aria-label="anchor" href="#total-emissions-by-time-of-the-day"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_by_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                                by <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">emi_by_time</span><span class="op">)</span> </span>
@@ -366,14 +376,14 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y<span class="op">=</span><span class="st">"Total emissions (Kg)"</span>, x<span class="op">=</span><span class="st">"Hour of the day"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pollutant</span>, scales <span class="op">=</span> <span class="st">"free"</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-13-1.png" width="480"></p>
+<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-14-1.png" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="spatial-distribution-of-emissions">6.4 Spatial distribution of emissions<a class="anchor" aria-label="anchor" href="#spatial-distribution-of-emissions"></a>
 </h3>
 <p>Finally, users can analyze how public transport emissions are spatially distributed. To do this, the <code><a href="../reference/emis_grid.html">emis_grid()</a></code> function helps aggregate emission estimates over any custom spatial vector data (<code>sf POLYGON</code>).</p>
 <p>Let’s create a regular hexagonal grid for this example.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># create spatial grid</span></span>
 <span><span class="va">mygrid</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html" class="external-link">st_make_grid</a></span><span class="op">(</span></span>
 <span>  x <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/valid.html" class="external-link">st_make_valid</a></span><span class="op">(</span><span class="va">emi_list</span><span class="op">$</span><span class="va">tp_model</span><span class="op">)</span></span>
@@ -385,8 +395,8 @@
 <span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">mygrid</span><span class="op">)</span> <span class="op">+</span></span>
 <span>   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-14-1.png" width="480"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-15-1.png" width="480"></p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mygrid_emi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_grid.html">emis_grid</a></span><span class="op">(</span><span class="va">emi_list</span>, <span class="va">mygrid</span>,time_resolution <span class="op">=</span> <span class="st">"day"</span></span>
 <span>                        ,quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -396,7 +406,7 @@
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_continuous.html" class="external-link">scale_fill_continuous</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"CO2 (g)"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-15-1.png" width="480"></p>
+<p><img src="gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-16-1.png" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="credits">Credits<a class="anchor" aria-label="anchor" href="#credits"></a>
