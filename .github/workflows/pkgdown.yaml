@@ -44,20 +44,12 @@ jobs:
           pak::local_system_requirements(execute = TRUE)
           pak::pkg_system_requirements("pkgdown", execute = TRUE)
         shell: Rscript {0}
-
-      - name: Install system dependencies (MacOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install pkg-config gdal proj geos
-          #  Install libgit2
-          brew install libgit2
           
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
           pak::pkg_install("pkgdown")
           pak::pkg_install("ipeaGIT/gtfs2gps")
-          pak::pkg_install("rspatial/terra")
         shell: Rscript {0}
 
       - name: Install package
