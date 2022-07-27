@@ -24,7 +24,7 @@
 #' library(gtfstools)
 #' 
 #' # read GTFS, and keep a single trip_id to speed up this example
-#' gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+#' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439186")
 #'   

@@ -3,8 +3,11 @@
 \docType{data}
 \name{ef_usa_moves_db}
 \alias{ef_usa_moves_db}
-\title{MOVES
-Running exhaust emissions factors from United States (MOVES3 model)}
+\title{Emission factors from MOtor Vehicle Emission Simulator (MOVES)
+
+Data.frame of emission factors for buses based on
+values from the \href{https://www.epa.gov/moves}{MOVES3 Model}.
+Estimates expressed in units 'g/km'.}
 \format{
 A data.table:
 \describe{
@@ -38,6 +41,8 @@ The speed intervals are analogous to \code{lower_speed_interval} above.}
 ef_usa_moves_db
 }
 \description{
+Emission factors from MOtor Vehicle Emission Simulator (MOVES)
+
 Data.frame of emission factors for buses based on
 values from the \href{https://www.epa.gov/moves}{MOVES3 Model}.
 Estimates expressed in units 'g/km'.
