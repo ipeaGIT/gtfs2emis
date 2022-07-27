@@ -78,9 +78,8 @@
 #' 
 "ef_usa_emfac_db" # data(ef_usa_emfac_db)
 
-#' MOVES
-#' Running exhaust emissions factors from United States (MOVES3 model)
-#' 
+#'  Emission factors from MOtor Vehicle Emission Simulator (MOVES)
+#'  
 #' Data.frame of emission factors for buses based on 
 #' values from the [MOVES3 Model](https://www.epa.gov/moves).
 #' Estimates expressed in units 'g/km'.
@@ -113,8 +112,7 @@
 "ef_usa_moves_db"  # data(ef_usa_moves_db)
 
 
-#' CETESB
-#' Emission factor for buses in Brazil
+#' Emission factors from Environment Company of Sao Paulo, Brazil (CETESB)
 #' 
 #' units 'g/km'; Emission factors for buses based on estimates from the 
 #' [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
