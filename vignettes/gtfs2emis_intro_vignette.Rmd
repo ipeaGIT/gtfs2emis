@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 # 2. Installation
 
-One can install `gtfs2emis` from CRAN (stable version) or the development version from Github:
+One can install the development version `gtfs2emis` from Github:
 
 ```{r, eval = FALSE, message = FALSE}
 # From CRAN

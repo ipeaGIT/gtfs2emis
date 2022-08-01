@@ -31,14 +31,8 @@ Emission factors (EF) provides information on the mass of pollutants by traveled
 Before checking EF graphically, user needs to select the desired emission factor function based on fleet characteristics — as shown in [Defining Fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html).
 This section we will use `ef_europe_emep()` function to illustrate how emissions varies according to vehicle type, mean speed and pollutant.
 
-```{r,eval=FALSE}
+```{r}
 library(gtfs2emis)
-library(units)
-library(ggplot2)
-```
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-library(devtools)
-devtools::load_all(".")
 library(units)
 library(ggplot2)
 ```
