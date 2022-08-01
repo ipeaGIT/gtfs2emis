@@ -109,7 +109,7 @@ test_that("output is correct", {
   # checks
   expect_equal(length(tmp_emis_detailed),3)
   for(i in 1:3) expect_is(tmp_emis_detailed[[i]] , 'list') 
-  for(i in 1:3) expect_equal(length(tmp_emis_detailed[[i]]),11)
+  for(i in 1:3) expect_equal(length(tmp_emis_detailed[[i]]),12)
 
 })
 
