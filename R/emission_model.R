@@ -28,6 +28,10 @@
 #'                 use this argument.                
 #' @param output_path character. File path where the function output is exported.
 #'                 If `NULL` (Default), the function returns the output to user.
+#' @param continue logical. Argument that can be used only with output_path When TRUE,
+#'                 it skips processing the shape identifiers that were already saved into 
+#'                 files. It is useful to continue processing a GTFS file that was stopped
+#'                 for some reason. Default value is FALSE.    
 #' @details The `fleet_data` must be a `data.frame` organized according to the desired
 #' `ef_model`. The required columns is organized as follows (see @examples for real 
 #' data usage). 
@@ -44,9 +48,10 @@
 #'  cases, the user might not know which vehicles run on each specific routes.
 #'  The composition is used to attribute a probability of a specific vehicle to 
 #'  circulate in the line. The probability sums one. Required for all emission 
-#'  factors selection. If the information of specific vehicle is known, user 
-#'  should develop the emission inventory according to the vignette 
-#'  <<http://www.github.com/ipeaGIT/gtfs2emis/>>.
+#'  factors selection. 
+#'  Users can check the 
+#'  [gtfs2emis fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
+#'   for more examples. 
 #'  
 #' @return A `list` with emissions estimates or `NULL` with output files saved 
 #'         locally at `output_path`.
@@ -132,12 +137,14 @@ emission_model <- function(  tp_model
                              , pollutant
                              , reference_year = 2020
                              , parallel = TRUE
-                             , output_path = NULL){
+                             , output_path = NULL
+                             , continue = FALSE){
   # A) Checking inputs -----
   
   checkmate::assert_data_frame(fleet_data, null.ok = FALSE)
   checkmate::assert_vector(pollutant, null.ok = FALSE)
   checkmate::assert_logical(parallel, null.ok = FALSE)
+  checkmate::assert_logical(continue, null.ok = FALSE)
   checkmate::assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
   checkmate::assert(
     checkmate::check_class(tp_model, classes = c("sf", "data.frame"))
@@ -282,6 +289,10 @@ emission_model <- function(  tp_model
     }
     ###  ii) Output Valid ----
     output_name <- paste0(output_path,"/",tp_name_files[i])
+    
+    # continue condition
+    if(continue){ if(file.exists(output_name)) return(NULL)  }
+    
     saveRDS(object = tmp_emis,file = output_name)
     return(NULL)
   }
@@ -323,6 +334,10 @@ emission_model <- function(  tp_model
       message(sprintf("Writing output as '%s' file."
                       ,export_path))
     }
+    
+    # continue condition
+    if(continue){ if(file.exists(export_path)) return(NULL)  }
+    
     saveRDS(object = tmp_emis
             ,file = export_path)
     return(NULL)

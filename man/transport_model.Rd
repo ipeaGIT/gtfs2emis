@@ -11,7 +11,8 @@ transport_model(
   new_speed = NULL,
   parallel = TRUE,
   spatial_resolution = 100,
-  output_path = NULL
+  output_path = NULL,
+  continue = FALSE
 )
 }
 \arguments{
@@ -54,6 +55,11 @@ output of each public transport \code{shape_id} is saved separately in
 different files. Setting an \code{output_path} is recommended when working
 with large public transport system because the output of the function
 can be significantly large.}
+
+\item{continue}{logical. Argument that can be used only with output_path When TRUE,
+it skips processing the shape identifiers that were already saved into
+files. It is useful to continue processing a GTFS file that was stopped
+for some reason. Default value is FALSE.}
 }
 \value{
 A \verb{data.table sf_linestring} object or \code{NULL}.

@@ -41,7 +41,10 @@
 #'        different files. Setting an `output_path` is recommended when working
 #'        with large public transport system because the output of the function 
 #'        can be significantly large.
-#'        
+#' @param continue logical. Argument that can be used only with output_path When TRUE,
+#'        it skips processing the shape identifiers that were already saved into 
+#'        files. It is useful to continue processing a GTFS file that was stopped
+#'        for some reason. Default value is FALSE.    
 #' @return A `data.table sf_linestring` object or `NULL`.
 #' 
 #' @family Core function
@@ -72,7 +75,8 @@ transport_model <- function(gtfs_data,
                             new_speed = NULL,
                             parallel = TRUE,
                             spatial_resolution = 100,
-                            output_path = NULL){
+                            output_path = NULL,
+                            continue = FALSE){
   
   # check if required fields and files exist  ----
   
@@ -83,7 +87,7 @@ transport_model <- function(gtfs_data,
   checkmate::assert_numeric(new_speed, lower = 1, finite = TRUE, null.ok = TRUE, any.missing = FALSE)
   checkmate::assert_true(min_speed < max_speed)
   checkmate::assert_logical(parallel, any.missing = FALSE) 
-  
+  checkmate::assert_logical(continue, null.ok = FALSE, any.missing = FALSE) 
   # Read GTFS ------------
   
   if (is.character(gtfs_data)) {
@@ -138,14 +142,20 @@ transport_model <- function(gtfs_data,
   files_gps_names <- list.files(gps_path,full.names = FALSE)
   
   gps_speed_fix <- function(i){ # i =1 
+    
+    outputfile_path <- paste0(gps_adjust_path
+                              ,"/",files_gps_names[i])
+    if(continue){
+      if(file.exists(outputfile_path)) return(NULL)
+    }
+    
     tmp_gps <- readRDS(files_gps[i])
     tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps
                                           ,min_speed = min_speed
                                           ,max_speed = max_speed
                                           ,new_speed = new_speed)
     saveRDS(object = tmp_gps_fix
-            ,file = paste0(gps_adjust_path
-                           ,"/",files_gps_names[i]))
+            ,file = outputfile_path)
     return(NULL)
   }
   if(parallel){
@@ -174,6 +184,12 @@ transport_model <- function(gtfs_data,
   
   # function gps_as_sflinestring
   f_gps_as_sflinestring <- function(i){ # i = 1
+    
+    outputfile_path <- paste0(gps_line_path,files_gps_names[i])
+    if(continue){
+      if(file.exists(outputfile_path)) return(NULL)
+    }
+    
     tmp_gps <- readRDS(files_gps[i])
     tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
     tmp_gps_fix$dist <- units::set_units(tmp_gps_fix$dist,"km")
@@ -183,7 +199,7 @@ transport_model <- function(gtfs_data,
       return(tmp_gps_fix)
     }else{
       saveRDS(object =  tmp_gps_fix, 
-              file = paste0(gps_line_path,files_gps_names[i]))
+              file = outputfile_path)
       return(NULL)
     }
     

@@ -11,7 +11,8 @@ emission_model(
   pollutant,
   reference_year = 2020,
   parallel = TRUE,
-  output_path = NULL
+  output_path = NULL,
+  continue = FALSE
 )
 }
 \arguments{
@@ -46,6 +47,11 @@ use this argument.}
 
 \item{output_path}{character. File path where the function output is exported.
 If \code{NULL} (Default), the function returns the output to user.}
+
+\item{continue}{logical. Argument that can be used only with output_path When TRUE,
+it skips processing the shape identifiers that were already saved into
+files. It is useful to continue processing a GTFS file that was stopped
+for some reason. Default value is FALSE.}
 }
 \value{
 A \code{list} with emissions estimates or \code{NULL} with output files saved
@@ -73,9 +79,10 @@ when \code{ef_emep_europe} is selected. Check \code{ef_europe_emep} for details.
 cases, the user might not know which vehicles run on each specific routes.
 The composition is used to attribute a probability of a specific vehicle to
 circulate in the line. The probability sums one. Required for all emission
-factors selection. If the information of specific vehicle is known, user
-should develop the emission inventory according to the vignette
-<\url{http://www.github.com/ipeaGIT/gtfs2emis/}>.
+factors selection.
+Users can check the
+\href{https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
+for more examples.
 }
 }
 \examples{
