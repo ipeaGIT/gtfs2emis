@@ -187,7 +187,7 @@ the different features:
 -   [Defining Fleet
     data](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
 -   [Exploring Emission
-    Factors](ttps://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
+    Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
 
 ### **Related packages**
 
