@@ -154,7 +154,7 @@ Check out the guides for learning everything there is to know about all the diff
 
  - [Getting started](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_intro_vignette.html)
  - [Defining Fleet data](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
- - [Exploring Emission Factors](add link)
+ - [Exploring Emission Factors](ttps://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
 
 
 ### **Related packages**

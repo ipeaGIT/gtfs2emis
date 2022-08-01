@@ -1,11 +1,11 @@
 ---
-title: 'Introduction to gtfs2emis'
+title: 'Getting started'
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 abstract: "`gtfs2emis` is an R package to estimate public transport emissions using data in the General Transit Feed Specification (GTFS) format. The package allows users to estimate the emission levels of several types of pollutants for each public transport vehicle/trip/route at high spatial and temporal resolutions simply using a GTFS feed and some information on fleet characteristics."
 urlcolor: blue
 vignette: >
-  %\VignetteIndexEntry{Introduction to gtfs2emis} 
+  %\VignetteIndexEntry{Getting started} 
   %\VignetteEngine{knitr::rmarkdown} 
   \usepackage[utf8]{inputenc}
 ---

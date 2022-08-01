@@ -135,8 +135,8 @@ emi_list <- emission_model(tp_model = tp_model
 names(emi_list)
 #>  [1] "pollutant"         "veh_type"          "euro"             
 #>  [4] "fuel"              "tech"              "slope"            
-#>  [7] "load"              "EF"                "emi"              
-#> [10] "fleet_composition" "tp_model"
+#>  [7] "load"              "speed"             "EF"               
+#> [10] "emi"               "fleet_composition" "tp_model"
 ```
 
 ## Emission factor models and pollutants available
@@ -186,7 +186,8 @@ the different features:
     started](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_intro_vignette.html)
 -   [Defining Fleet
     data](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
--   [Exploring Emission Factors](add%20link);
+-   [Exploring Emission
+    Factors](ttps://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
 
 ### **Related packages**
 
