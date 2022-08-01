@@ -75,7 +75,8 @@ function must be used together with <code><a href="transport_model.html">transpo
 <span>  <span class="va">pollutant</span>,</span>
 <span>  reference_year <span class="op">=</span> <span class="fl">2020</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  output_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  output_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  continue <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -126,6 +127,13 @@ use this argument.</p></dd>
 <dd><p>character. File path where the function output is exported.
 If <code>NULL</code> (Default), the function returns the output to user.</p></dd>
 
+
+<dt>continue</dt>
+<dd><p>logical. Argument that can be used only with output_path When TRUE,
+it skips processing the shape identifiers that were already saved into
+files. It is useful to continue processing a GTFS file that was stopped
+for some reason. Default value is FALSE.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -151,9 +159,10 @@ when <code>ef_emep_europe</code> is selected. Check <code>ef_europe_emep</code> 
 cases, the user might not know which vehicles run on each specific routes.
 The composition is used to attribute a probability of a specific vehicle to
 circulate in the line. The probability sums one. Required for all emission
-factors selection. If the information of specific vehicle is known, user
-should develop the emission inventory according to the vignette
-&lt;<a href="http://www.github.com/ipeaGIT/gtfs2emis/" class="external-link">http://www.github.com/ipeaGIT/gtfs2emis/</a>&gt;.</p></li>
+factors selection.
+Users can check the
+<a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">gtfs2emis fleet data vignette</a>,
+for more examples.</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>

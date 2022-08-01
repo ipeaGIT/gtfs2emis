@@ -81,7 +81,8 @@ output and to adjust the speed of public transport vehicles given a
 <span>  new_speed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  output_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  output_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  continue <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -139,6 +140,13 @@ output of each public transport <code>shape_id</code> is saved separately in
 different files. Setting an <code>output_path</code> is recommended when working
 with large public transport system because the output of the function
 can be significantly large.</p></dd>
+
+
+<dt>continue</dt>
+<dd><p>logical. Argument that can be used only with output_path When TRUE,
+it skips processing the shape identifiers that were already saved into
+files. It is useful to continue processing a GTFS file that was stopped
+for some reason. Default value is FALSE.</p></dd>
 
 </dl></div>
     <div id="value">
