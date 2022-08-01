@@ -5,7 +5,7 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
-coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=main)
+coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master)
 
 **gtfs2emis** is an R package to estimate the emission levels of public
 transport vehicles based on General Transit Feed Specification (GTFS)
