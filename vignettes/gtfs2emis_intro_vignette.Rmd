@@ -292,8 +292,13 @@ scale_fill_continuous(type = "viridis")+
 ```
 
 
+## Learn more
 
+Check out our extra guides:
 
-## Credits
+ - [Defining Fleet data](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
+ - [Exploring Emission Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
 
-The `gtfs2gps` package is developed by a team at the Institute for Applied Economic Research (Ipea) with collaboration from the National Institute for Space Research (INPE), both from Brazil. If you have any suggestions or want to report an error, please visit [the package GitHub page](https://github.com/ipeaGIT/gtfs2emis).
+## Report a bug
+
+If you have any suggestions or want to report an error, please visit [the package GitHub page](https://github.com/ipeaGIT/gtfs2emis/issues).

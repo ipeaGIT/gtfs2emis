@@ -219,4 +219,4 @@ in `gtfs2emis` in order to be easily read by the emission factor functions. User
 
 ## Report a bug
 
-Any feedback, bug or questions about the pre-processing EF stage can be done in [gtfs2emis]("https://github.com/ipeaGIT/gtfs2emis/issues").
+If you have any suggestions or want to report an error, please visit [the package GitHub page](https://github.com/ipeaGIT/gtfs2emis/issues).
