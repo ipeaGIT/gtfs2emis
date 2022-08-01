@@ -33,10 +33,13 @@ emission inventory guidebooks. Estimates are expressed in units 'g/km'."><meta p
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/gtfs2emis_emission_factor.html">Exploring Emission Factors</a>
+    </li>
+    <li>
       <a href="../articles/gtfs2emis_fleet_data.html">Preparing fleet data for gtfs2emis</a>
     </li>
     <li>
-      <a href="../articles/gtfs2emis_intro_vignette.html">Introduction to gtfs2emis</a>
+      <a href="../articles/gtfs2emis_intro_vignette.html">Getting started</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -135,7 +138,12 @@ each euro standards. Default is 1.0.</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The new convention for vehicles names are translated from the EMEP/EEA report:</p><table class="table table"><tr><td>vehicle category</td><td>description</td></tr><tr><td>Ubus Midi &lt;=15 t</td><td>Urban Bus Midi size, Gross Vehicle Weight (GVW) &lt;= 15 tons</td></tr><tr><td>Ubus Std 15 - 18 t</td><td>Urban Bus Standard size, GVW between 15 - 18 tons</td></tr><tr><td>Ubus Artic &gt;18 t</td><td>Urban Bus Articulated size, GVW &gt;= 18 tons</td></tr><tr><td>Coaches Std &lt;=18 t</td><td>Coach (inter-state) Standard size, GVW &lt;= 18 tons</td></tr><tr><td>Coaches Artic &gt;18 t</td><td>Coach (inter-state) Articulated size, GVW &gt; 18 tons</td></tr></table><p>The R scripts used to download and pre-process all 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
+    <p>The new convention for vehicles names are translated from the EMEP/EEA report:</p><table class="table table"><tr><td>vehicle category</td><td>description</td></tr><tr><td>Ubus Midi &lt;=15 t</td><td>Urban Bus Midi size, Gross Vehicle Weight (GVW) &lt;= 15 tons</td></tr><tr><td>Ubus Std 15 - 18 t</td><td>Urban Bus Standard size, GVW between 15 - 18 tons</td></tr><tr><td>Ubus Artic &gt;18 t</td><td>Urban Bus Articulated size, GVW &gt;= 18 tons</td></tr><tr><td>Coaches Std &lt;=18 t</td><td>Coach (inter-state) Standard size, GVW &lt;= 18 tons</td></tr><tr><td>Coaches Artic &gt;18 t</td><td>Coach (inter-state) Articulated size, GVW &gt; 18 tons</td></tr></table><p>When the information of vehicle technology does not match the existing database,
+the function display a message mentioning the returned technology.
+User can either select an existing data for the combining variables
+(<code>euro</code>, <code>tech</code>, <code>veh_type</code> and <code>pollutant</code>), or accept the assumed change
+in vehicle technology.</p>
+<p>The R scripts used to download and pre-process all 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
 can be accessed in the gtfs2emis GitHub repository at
 &lt;<a href="https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R" class="external-link">https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R</a>&gt;</p>
 <p>EMEP/EEA data and reports can be accessed in the following links:</p><ul><li><p>2019 edition <a href="https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook" class="external-link">https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook</a>,</p></li>

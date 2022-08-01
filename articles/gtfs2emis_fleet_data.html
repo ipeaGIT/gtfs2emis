@@ -57,10 +57,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/gtfs2emis_emission_factor.html">Exploring Emission Factors</a>
+    </li>
+    <li>
       <a href="../articles/gtfs2emis_fleet_data.html">Preparing fleet data for gtfs2emis</a>
     </li>
     <li>
-      <a href="../articles/gtfs2emis_intro_vignette.html">Introduction to gtfs2emis</a>
+      <a href="../articles/gtfs2emis_intro_vignette.html">Getting started</a>
     </li>
   </ul>
 </li>
@@ -87,7 +90,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Preparing fleet data for gtfs2emis</h1>
             
-            <h4 data-toc-skip class="date">2022-07-29</h4>
+            <h4 data-toc-skip class="date">2022-08-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/HEAD/vignettes/gtfs2emis_fleet_data.Rmd" class="external-link"><code>vignettes/gtfs2emis_fleet_data.Rmd</code></a></small>
       <div class="hidden name"><code>gtfs2emis_fleet_data.Rmd</code></div>
@@ -216,7 +219,9 @@
 </h3>
 <p>Based on the European Monitoring and Evaluation Programme (<a href="https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep" class="external-link">EMEP</a>), developed by EEA.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fleet_data_ef_europe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>  veh_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ubus Midi &lt;=15 t"</span>,<span class="st">"Ubus Std 15 - 18 t"</span> ,<span class="st">"Ubus Artic &gt;18 t"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fleet_data_ef_europe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>  veh_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ubus Midi &lt;=15 t"</span></span>
+<span>                                                  ,<span class="st">"Ubus Std 15 - 18 t"</span></span>
+<span>                                                  ,<span class="st">"Ubus Artic &gt;18 t"</span><span class="op">)</span></span>
 <span>                                   , euro <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"III"</span>,<span class="st">"IV"</span>,<span class="st">"V"</span><span class="op">)</span></span>
 <span>                                   , fuel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"D"</span>,<span class="fl">3</span><span class="op">)</span></span>
 <span>                                   , tech <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-"</span>,<span class="st">"SCR"</span>,<span class="st">"SCR"</span><span class="op">)</span></span>
