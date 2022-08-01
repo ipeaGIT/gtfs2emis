@@ -36,24 +36,24 @@ ef_europe_emep_db
 }
 \description{
 Hot exhaust emission factors are speed dependent functions and are expressed in g/km.
-They differ by fuel, vehicle segment, euro standard, pollutant, and after treatment technology.
-Several functions are consolidated into equations, given by
+It varies by fuel, vehicle segment, euro standard, pollutant, and after treatment technology.
+These variables are consolidated in different EF equations, given by:
 }
 \details{
 EF = EF(Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, RF, Speed, Function_ID, k, fcorr),
 
 where Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta are constant parameters;
 RF is the Reduction Factor, Speed in the average speed, Function_ID is the
-formula that depends on the year of the inventory and the pollutant; k is
-a constant value, fcorr is the fuel correction factor.
+equation (function of on the year of the inventory and the pollutant); k is
+a constant value, and fcorr is the fuel correction factor.
 
 The emissions factors are derived from the EMEP/EEA air pollutant emission inventory guidebook
-(formerly called the EMEP CORINAIR emission inventory guidebook). The guide provides guidance on
+(formerly called the EMEP CORINAIR emission inventory guidebook). The document provides guidance on
 estimating emissions from both anthropogenic and natural emission sources.
 
 The package presents a combination of emission factors from EMEP/EEA guidelines of 2007,
 2013, 2016, and 2019, aiming to cover a greater number of pollutants and vehicle segments.
-The script used to organize the EMEP/EEA databases can be found in the repository
+The script used to process the raw EMEP/EEA databases can be found in the repository
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>.
 }
 \keyword{datasets}
