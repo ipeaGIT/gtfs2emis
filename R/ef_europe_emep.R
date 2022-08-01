@@ -35,6 +35,12 @@
 #' | Coaches Std <=18 t  | Coach (inter-state) Standard size, GVW <= 18 tons |
 #' | Coaches Artic >18 t | Coach (inter-state) Articulated size, GVW > 18 tons |
 #' 
+#' When the information of vehicle technology does not match the existing database, 
+#' the function display a message mentioning the returned technology. 
+#' User can either select an existing data for the combining variables 
+#' (`euro`, `tech`, `veh_type` and `pollutant`), or accept the assumed change 
+#' in vehicle technology.
+#' 
 #' The R scripts used to download and pre-process all 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
 #' can be accessed in the gtfs2emis GitHub repository at
 #' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>  
@@ -161,28 +167,28 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       if(euro[j] %in%  c("Conventional","I","II","III") &  tech[j] != "-"){
         message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
                        ,"' Technology and Euro '", euro[j]
-                       ,"'. The package assumes missing Technology entry. Please check "
+                       ,"'.\n The package assumes missing Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
       }
       if(euro[j] %in%  c("IV") && (pollutant[i] == "CO2" | pollutant[i] == "FC") &  tech[j] != "-"){
         message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
                        ,"' Technology and Euro '", euro[j]
-                       ,"'. The package assumes missing Technology entry. Please check "
+                       ,"'.\n The package assumes missing Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
       }
       if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("CO2","FC")) && tech[j] != "SCR"){
         message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
                        ,"' Technology and Euro '", euro[j]
-                       ,"'. The package assumed 'SCR' Technology entry. Please check "
+                       ,"'.\n The package assumed 'SCR' Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "SCR"
         }
       if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC")) & tech[j] != "DPF+SCR"){
         message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
                        ,"' Technology and Euro '", euro[j]
-                       ,"'. The package assumed 'DPF+SCR' Technology entry. Please check "
+                       ,"'.\n The package assumed 'DPF+SCR' Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "DPF+SCR"
         }
@@ -307,6 +313,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                      "tech" = rep(tech,length(pollutant)),
                      "slope" = slope,
                      "load" = load,
+                     "speed" = units::set_units(speed,"km/h"),
                      "EF" = ef_final)
   }
   
