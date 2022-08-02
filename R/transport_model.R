@@ -120,7 +120,8 @@ transport_model <- function(gtfs_data,
                      , spatial_resolution = spatial_resolution
                      , parallel = parallel
                      , filepath =  gps_path
-                     , compress =  TRUE)
+                     , compress =  TRUE
+                     , continue = continue)
   
   
   
