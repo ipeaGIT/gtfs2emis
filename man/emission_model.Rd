@@ -22,7 +22,8 @@ or the path in which the output files from the \code{\link{transport_model}} are
 
 \item{ef_model}{character. A string indicating the emission factor model
 to be used. Options include \code{ef_usa_moves}, \code{ef_usa_emfac},\code{ef_europe_emep},
-or \code{ef_brazil_cetesb}.}
+,\code{ef_brazil_cetesb}, and \code{ef_brazil_scaled_euro} (scale \code{ef_brazil_cetesb()} based
+on \code{ef_scaled_euro()}).}
 
 \item{fleet_data}{data.frame. A \code{data.frame} with information the fleet
 characteristics. The required columns depend on the

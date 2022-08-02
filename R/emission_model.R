@@ -8,7 +8,8 @@
 #' or the path in which the output files from the \code{\link{transport_model}} are saved.
 #' @param ef_model character. A string indicating the emission factor model 
 #' to be used. Options include `ef_usa_moves`, `ef_usa_emfac`,`ef_europe_emep`, 
-#' or `ef_brazil_cetesb`.
+#' ,`ef_brazil_cetesb`, and `ef_brazil_scaled_euro` (scale `ef_brazil_cetesb()` based 
+#' on `ef_scaled_euro()`).
 #' @param fleet_data data.frame. A `data.frame` with information the fleet 
 #' characteristics. The required columns depend on the 
 #' `ef_model` parameted selected. See @examples for input.
@@ -158,7 +159,8 @@ emission_model <- function(  tp_model
   ## i) EF model ----
   checkmate::assert_choice(ef_model
                            ,c("ef_brazil_cetesb","ef_usa_emfac"
-                              ,"ef_usa_moves","ef_europe_emep")
+                              ,"ef_usa_moves","ef_europe_emep"
+                              ,"ef_brazil_scaled_euro")
                            ,null.ok = FALSE)
   ## ii) Fleet data  | EF model ----
   if (ef_model != "ef_europe_emep"){
@@ -169,7 +171,7 @@ emission_model <- function(  tp_model
       , combine = "and"
     )
   }
-  if (ef_model == "ef_europe_emep"){
+  if (ef_model == "ef_europe_emep" | ef_model == "ef_brazil_scaled_euro"){
     checkmate::assert(
       checkmate::check_choice('euro', names(fleet_data))
       , checkmate::check_choice('fuel', names(fleet_data))
@@ -202,7 +204,7 @@ emission_model <- function(  tp_model
   
   # Generate EF cetesb_brazil before the loop
   # to avoid multiple runs in the loop
-  if(ef_model == "ef_brazil_cetesb"){
+  if(ef_model == "ef_brazil_cetesb" | ef_model == "ef_brazil_scaled_euro"){
     temp_ef <- ef_brazil_cetesb(pollutant = pollutant,
                                 veh_type = fleet_data$veh_type,
                                 model_year = as.numeric(fleet_data$model_year),
@@ -240,7 +242,21 @@ emission_model <- function(  tp_model
                               speed = temp_shape$speed,
                               fuel = fleet_data$fuel)
     }
-    
+    if(ef_model == "ef_brazil_scaled_euro"){
+      
+      temp_ef <- ef_scaled_euro(ef_local = temp_ef
+                                ,speed = temp_shape$speed
+                                ,veh_type = fleet_data$veh_type
+                                ,euro = fleet_data$euro
+                                ,pollutant = pollutant
+                                ,fuel = fleet_data$fuel
+                                ,SDC = 19
+                                ,slope = 0
+                                ,load = 0.5
+                                ,fcorr = 1
+                                )
+      
+    }
     
     
     # iii) Emissions -----
@@ -252,6 +268,14 @@ emission_model <- function(  tp_model
     
     # iv) Add data -----
     # Add fleet info
+    if(ef_model == "ef_brazil_scaled_euro"){
+      
+      temp_emis$model_year = rep(  fleet_data$model_year
+                                   , data.table::uniqueN(temp_emis$pollutant))
+      temp_emis$euro = rep(  fleet_data$euro
+                             , data.table::uniqueN(temp_emis$pollutant))
+      
+    }
     if (ef_model != "ef_europe_emep") {
       temp_emis$model_year = rep(  fleet_data$model_year
                                    , data.table::uniqueN(temp_emis$pollutant))
