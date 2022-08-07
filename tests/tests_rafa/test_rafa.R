@@ -143,11 +143,18 @@ gtfs <- gtfstools::filter_by_weekday(gtfs,
                                      keep = FALSE)
 
 
-# id <- '6343.2.60-1-b12-1.1.O'
-id <- "6264.2.60-1-b12-1.1.O"
-gtfs <- gtfstools::filter_by_trip_id(gtfs, trip_id =  id )
+# check number of stops in trip_id
+id <- "6030.2.60-15B-b12-1.359.O"
+gtfs1 <- gtfstools::filter_by_trip_id(gtfs, trip_id =  id )
+head(gtfs1$stops)
 
-# gtfs <- gtfstools::filter_by_shape_id(gtfs, shape_id =  '60-1-b12-1.1.O' )
+
+
+# check number of stops in shape_id
+gtfs2 <- gtfstools::filter_by_shape_id(gtfs, shape_id =  '60-15A-b12-1.358.I' )
+head(gtfs2$stop_times)
+
+
 
 
 
@@ -161,7 +168,7 @@ head(gtfs$shapes)
 
 gps <- gtfs2gps(gtfs)
 gps_sf <- gtfs2gps::gps_as_sflinestring(gps)
-# gps_sf <- gtfs2emis::transport_model(gtfs)
+# gps_sf <- gtfs2emis::transport_model(gtfs1)
 
 ggplot() +
   geom_sf(data=gps_sf, aes(color=as.numeric(speed))) +
