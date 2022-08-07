@@ -90,7 +90,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Getting started</h1>
             
-            <h4 data-toc-skip class="date">2022-08-02</h4>
+            <h4 data-toc-skip class="date">2022-08-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/HEAD/vignettes/gtfs2emis_intro_vignette.Rmd" class="external-link"><code>vignettes/gtfs2emis_intro_vignette.Rmd</code></a></small>
       <div class="hidden name"><code>gtfs2emis_intro_vignette.Rmd</code></div>
@@ -296,7 +296,7 @@
 <div class="section level2">
 <h2 id="analyzing-emission-estimates">6 Analyzing emission estimates<a class="anchor" aria-label="anchor" href="#analyzing-emission-estimates"></a>
 </h2>
-<p>Sometimes, working with data stored in a long list can be tricky. For convenience, <code>gtfs2emis</code> package has a few functions to users analyze the these results and make. For example, you can use the <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> function to convert the output of <code><a href="../reference/emission_model.html">emission_model()</a></code> from a <code>list</code> to a <code>data.table</code> format:</p>
+<p>Sometimes, working with data stored in a long list can be tricky. For convenience, gtfs2emis package has a few functions to help users analyze the results of emission estimates. For example, you can use the <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> function to convert the output of <code><a href="../reference/emission_model.html">emission_model()</a></code> from a <code>list</code> to a <code>data.table</code> format:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_to_dt.html">emis_to_dt</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                     veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>, <span class="st">"euro"</span>, <span class="st">"fuel"</span><span class="op">)</span>,</span>
