@@ -3,8 +3,7 @@
 \docType{data}
 \name{ef_brazil_cetesb_db}
 \alias{ef_brazil_cetesb_db}
-\title{CETESB
-Emission factor for buses in Brazil}
+\title{Emission factors from Environment Company of Sao Paulo, Brazil (CETESB)}
 \format{
 A data.table:
 \describe{

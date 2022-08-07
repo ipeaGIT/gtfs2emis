@@ -1,23 +1,23 @@
 #' Emission factors from European Environment Agency — EMEP/EEA
 #'
 #' Hot exhaust emission factors are speed dependent functions and are expressed in g/km. 
-#' They differ by fuel, vehicle segment, euro standard, pollutant, and after treatment technology. 
-#' Several functions are consolidated into equations, given by
+#' It varies by fuel, vehicle segment, euro standard, pollutant, and after treatment technology. 
+#' These variables are consolidated in different EF equations, given by:
 #'
 #' EF = EF(Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, RF, Speed, Function_ID, k, fcorr),
 #' 
 #' where Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta are constant parameters; 
 #' RF is the Reduction Factor, Speed in the average speed, Function_ID is the 
-#' formula that depends on the year of the inventory and the pollutant; k is 
-#' a constant value, fcorr is the fuel correction factor.
+#' equation (function of on the year of the inventory and the pollutant); k is 
+#' a constant value, and fcorr is the fuel correction factor.
 #' 
 #' The emissions factors are derived from the EMEP/EEA air pollutant emission inventory guidebook
-#' (formerly called the EMEP CORINAIR emission inventory guidebook). The guide provides guidance on
+#' (formerly called the EMEP CORINAIR emission inventory guidebook). The document provides guidance on
 #' estimating emissions from both anthropogenic and natural emission sources. 
 #' 
 #' The package presents a combination of emission factors from EMEP/EEA guidelines of 2007,
 #'  2013, 2016, and 2019, aiming to cover a greater number of pollutants and vehicle segments.
-#'  The script used to organize the EMEP/EEA databases can be found in the repository
+#'  The script used to process the raw EMEP/EEA databases can be found in the repository
 #'  <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>.
 #'  
 #'  
@@ -49,15 +49,15 @@
 
 #' Emission factors from California Air Resources Board (EMFAC Model)
 #' 
-#' Running exhaust emissions factors from EMFAC2017 model. The model considers
-#' emission factors (EF) of urban buses in California (United States), considering 
+#' Running exhaust emissions factors from [EMFAC2017 model](https://arb.ca.gov/emfac/emissions-inventory).
+#'  The model generates emission factors (EF) of urban buses in California (United States), considering 
 #' different pollutants, years of reference, model year, fuel, speed ranges,
-#' type of regions, model version, and type of season. The gtfs2emis package 
-#' currently supports EF only for "Statewide" region type, and "Annual" season. 
-#' Specific data of these variables can be download at <<https://arb.ca.gov/emfac/emissions-inventory>>.
+#' type of regions, model version, and type of season. Currently, the package 
+#' supports EFs only for "Statewide" region type, and "Annual" season. 
+#' Specific data of other regions and seasons can be download at <<https://arb.ca.gov/emfac/emissions-inventory>>.
 #' 
-#' The package returns the data in a data.frame format. The R script used to organize 
-#' the EMFAC database can be found in the repository
+#' The function returns the data in a data.frame format. The R script used to process 
+#' the raw EMFAC database can be found in the repository
 #' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R>>.
 #' 
 #'
@@ -78,9 +78,8 @@
 #' 
 "ef_usa_emfac_db" # data(ef_usa_emfac_db)
 
-#' MOVES
-#' Running exhaust emissions factors from United States (MOVES3 model)
-#' 
+#'  Emission factors from MOtor Vehicle Emission Simulator (MOVES)
+#'  
 #' Data.frame of emission factors for buses based on 
 #' values from the [MOVES3 Model](https://www.epa.gov/moves).
 #' Estimates expressed in units 'g/km'.
@@ -113,8 +112,7 @@
 "ef_usa_moves_db"  # data(ef_usa_moves_db)
 
 
-#' CETESB
-#' Emission factor for buses in Brazil
+#' Emission factors from Environment Company of Sao Paulo, Brazil (CETESB)
 #' 
 #' units 'g/km'; Emission factors for buses based on estimates from the 
 #' [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),

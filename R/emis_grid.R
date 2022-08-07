@@ -24,7 +24,7 @@
 #' library(gtfstools)
 #' 
 #' # read GTFS, and keep a single trip_id to speed up this example
-#' gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+#' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439186")
 #'   
@@ -54,7 +54,7 @@
 #' grid <- sf::st_make_grid(
 #'   x = sf::st_make_valid(emi_list$tp_model)
 #'   , cellsize = 0.25 / 200
-#'   , crs= 4329
+#'   , crs= 4326
 #'   , what = "polygons"
 #'   , square = FALSE
 #'   )

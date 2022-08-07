@@ -13,6 +13,7 @@ jobs:
     env:
       RSPM: https://packagemanager.rstudio.com/cran/__linux__/bionic/latest
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      HOMEBREW_NO_INSTALL_CLEANUP: TRUE
 
     steps:
       - uses: actions/checkout@v2
@@ -43,11 +44,12 @@ jobs:
           pak::local_system_requirements(execute = TRUE)
           pak::pkg_system_requirements("pkgdown", execute = TRUE)
         shell: Rscript {0}
-
+          
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
           pak::pkg_install("pkgdown")
+          pak::pkg_install("ipeaGIT/gtfs2gps")
         shell: Rscript {0}
 
       - name: Install package

@@ -38,7 +38,7 @@ library(gtfs2emis)
 library(gtfstools)
 
 # read GTFS
-gtfs_file <- system.file("extdata/irl_dub/irl_dub_gtfs.zip", package = "gtfs2emis")
+gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file)
 
 # Keep a single trip
@@ -51,7 +51,7 @@ tp_model <- transport_model(gtfs_data = gtfs,
                             parallel = TRUE)
 
 # fleet data
-fleet_df <- read.csv(system.file("extdata/irl_dub/irl_dub_fleet.txt"
+fleet_df <- read.csv(system.file("extdata/irl_dub_fleet.txt"
                                  , package = "gtfs2emis"))
 # emission model
 emi_list <- emission_model(tp_model = tp_model

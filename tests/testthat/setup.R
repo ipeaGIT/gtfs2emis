@@ -5,7 +5,7 @@ library(gtfstools)
 #### Europe EMEP --------------------------------------------------------------
 
 # GTFS
-gtfs_irl_raw <- system.file("extdata/irl_dub/irl_dub_gtfs.zip", package = "gtfs2emis")
+gtfs_irl_raw <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 gtfs_irl_raw <- gtfstools::read_gtfs(gtfs_irl_raw)
 gtfs_irl <- gtfstools::filter_by_shape_id(gtfs_irl_raw, shape_id = "60-123-b12-1.72.O")
 

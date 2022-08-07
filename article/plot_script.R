@@ -20,25 +20,23 @@ library(extrafont)
 library(extrafontdb) 
 library(fontcm)
 library(extrafont) 
-extrafont::font_import()
-extrafont::loadfonts(device = "win")
-extrafont::fonts()
-extrafont::font_install('fontcm')
+#extrafont::font_import()
+#extrafont::loadfonts(device = "win")
+#extrafont::fonts()
+#extrafont::font_install('fontcm')
 # 1) GTFS ---------
 ## a) Prep GTFS ----
 
 # read gtfs
-spo_gtfs <- gtfstools::read_gtfs("../../../data-raw/gtfs/bra_spo/gtfs_spo_sptrans_2019-10.zip")
+spo_gtfs <- gtfstools::read_gtfs("../../Pessoal/IPEA/gtfs2gps/data-raw/gtfs/gtfs_spo_sptrans_2019-10.zip")
 spo_gtfs$`_transparencia_e-SIC_42374_email_05-09-19` <- NULL
 
-# convert frequency to stop_times
-spo_gtfs <- gtfstools::frequencies_to_stop_times(gtfs = spo_gtfs)
-
 # filter by bus route
+spo_gtfs1 <- gtfstools::filter_by_route_id(spo_gtfs,route_id = "3")
 temp_routeid <- spo_gtfs$routes[route_type == 3,route_id]
 temp_shapeids <- spo_gtfs$trips[route_id %in% unique(temp_routeid),shape_id]
-spo_gtfs <- gtfs2gps::filter_by_shape_id(gtfs_data = spo_gtfs,
-                                         shape_ids = unique(temp_shapeids))
+spo_gtfs <- gtfstools::filter_by_shape_id(spo_gtfs,
+                                         shape_id = unique(temp_shapeids))
 
 # set dirs
 getwd()
@@ -46,10 +44,10 @@ dir.create("article")
 dir.create("article/data/")
 
 # save gtfs
-gtfs2gps::write_gtfs(spo_gtfs,"article/data/gtfs_spo_sptrans_prep.zip")
+gtfstools::write_gtfs(spo_gtfs,"article/data/gtfs_spo_sptrans_prep.zip")
 
 ## b) GTFS2gps ----
-
+rm(list=ls())
 gc(reset = TRUE)
 
 # read gtfs
@@ -65,14 +63,14 @@ spo_gtfs$calendar
 # 4:        _SD      0       0         0        0      0        1      1 2008-01-01 2020-05-01
 # 5:        __D      0       0         0        0      0        0      1 2008-01-01 2020-05-01
 # 6:        _S_      0       0         0        0      0        1      0 2008-01-01 2020-05-01
-spo_gtfs$trips$trip_id %>% uniqueN() # [1] 193831
+spo_gtfs$trips$trip_id %>% uniqueN() # 2260
 spo_gtfs$trips$shape_id %>% uniqueN() # 2260
 spo_gtfs1 <- gtfstools::filter_by_weekday(gtfs = spo_gtfs
                                           ,weekday = "wednesday"
                                           ,keep = TRUE)
-spo_gtfs1$trips$trip_id  %>% uniqueN() # 193831
+spo_gtfs1$trips$trip_id  %>% uniqueN() # 2260
 spo_gtfs1$shapes$shape_id  %>% uniqueN() # 2260
-spo_gtfs1$stop_times$trip_id %>% uniqueN() # 193831
+spo_gtfs1$stop_times$trip_id %>% uniqueN() # 2260
 spo_gtfs1$trips$shape_id  %>% uniqueN() # 2260
 spo_gtfs1$trips %>% nrow() # 193831
 
@@ -91,23 +89,18 @@ rm(spo_gtfs2)
 rm(spo_gtfs3)
 gc(reset = TRUE)
 
-# fix times 
-spo_gtfs$stop_times[,arrival_time := data.table::as.ITime(arrival_time)]
-spo_gtfs$stop_times[,departure_time := data.table::as.ITime(departure_time)]
-
 # generate gps
-dir.create("article/data/gps_spo/")
 
-future::plan(session = "multisession",workers = 19)
+future::plan(session = "multisession",workers = 2)
 
-
-gtfs2gps::gtfs2gps(gtfs_data = spo_gtfs
-                   ,snap_method = "nearest2"
-                   ,spatial_resolution = 50
-                   ,parallel = TRUE
-                   ,filepath = "article/data/gps_spo"
-                   ,continue = TRUE
-                   ,compress = TRUE)
+transport_model(gtfs_data = spo_gtfs
+                ,min_speed = 2
+                ,max_speed = 80
+                ,new_speed = NULL
+                ,parallel = TRUE
+                ,spatial_resolution = 100
+                ,output_path = "article/data/"
+                ,continue = TRUE)
 
 ## c) Adjust gps speed---------
 dir.create("article/data/gps_spo_adjusted/")

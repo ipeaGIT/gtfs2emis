@@ -11,7 +11,8 @@ emission_model(
   pollutant,
   reference_year = 2020,
   parallel = TRUE,
-  output_path = NULL
+  output_path = NULL,
+  continue = FALSE
 )
 }
 \arguments{
@@ -21,7 +22,8 @@ or the path in which the output files from the \code{\link{transport_model}} are
 
 \item{ef_model}{character. A string indicating the emission factor model
 to be used. Options include \code{ef_usa_moves}, \code{ef_usa_emfac},\code{ef_europe_emep},
-or \code{ef_brazil_cetesb}.}
+,\code{ef_brazil_cetesb}, and \code{ef_brazil_scaled_euro} (scale \code{ef_brazil_cetesb()} based
+on \code{ef_scaled_euro()}).}
 
 \item{fleet_data}{data.frame. A \code{data.frame} with information the fleet
 characteristics. The required columns depend on the
@@ -46,6 +48,11 @@ use this argument.}
 
 \item{output_path}{character. File path where the function output is exported.
 If \code{NULL} (Default), the function returns the output to user.}
+
+\item{continue}{logical. Argument that can be used only with output_path When TRUE,
+it skips processing the shape identifiers that were already saved into
+files. It is useful to continue processing a GTFS file that was stopped
+for some reason. Default value is FALSE.}
 }
 \value{
 A \code{list} with emissions estimates or \code{NULL} with output files saved
@@ -73,9 +80,10 @@ when \code{ef_emep_europe} is selected. Check \code{ef_europe_emep} for details.
 cases, the user might not know which vehicles run on each specific routes.
 The composition is used to attribute a probability of a specific vehicle to
 circulate in the line. The probability sums one. Required for all emission
-factors selection. If the information of specific vehicle is known, user
-should develop the emission inventory according to the vignette
-<\url{http://www.github.com/ipeaGIT/gtfs2emis/}>.
+factors selection.
+Users can check the
+\href{https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
+for more examples.
 }
 }
 \examples{
@@ -84,7 +92,7 @@ library(gtfs2emis)
 library(gtfstools)
 
 # read GTFS
-gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file) 
 
 # keep a single trip_id to speed up this example

@@ -26,16 +26,16 @@ such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "
 ef_usa_emfac_db
 }
 \description{
-Running exhaust emissions factors from EMFAC2017 model. The model considers
-emission factors (EF) of urban buses in California (United States), considering
+Running exhaust emissions factors from \href{https://arb.ca.gov/emfac/emissions-inventory}{EMFAC2017 model}.
+The model generates emission factors (EF) of urban buses in California (United States), considering
 different pollutants, years of reference, model year, fuel, speed ranges,
-type of regions, model version, and type of season. The gtfs2emis package
-currently supports EF only for "Statewide" region type, and "Annual" season.
-Specific data of these variables can be download at <\url{https://arb.ca.gov/emfac/emissions-inventory}>.
+type of regions, model version, and type of season. Currently, the package
+supports EFs only for "Statewide" region type, and "Annual" season.
+Specific data of other regions and seasons can be download at <\url{https://arb.ca.gov/emfac/emissions-inventory}>.
 }
 \details{
-The package returns the data in a data.frame format. The R script used to organize
-the EMFAC database can be found in the repository
+The function returns the data in a data.frame format. The R script used to process
+the raw EMFAC database can be found in the repository
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R}>.
 }
 \keyword{datasets}

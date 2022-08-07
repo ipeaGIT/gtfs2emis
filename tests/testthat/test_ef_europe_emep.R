@@ -9,7 +9,7 @@ test_that("ef_europe_emep", {
                               euro = fleet_data_europe$euro)
   
   # Expect equal -----
-  expect_equal(length(EF_europe), 8)
+  expect_equal(length(EF_europe), 9)
   expect_equal(length(EF_europe$pollutant), 6)
   expect_equal(length(EF_europe$veh_type), 6)
   expect_equal(length(EF_europe$euro), 6)

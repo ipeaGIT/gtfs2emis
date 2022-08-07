@@ -26,7 +26,7 @@
 #' library(gtfstools)
 #' 
 #' # read GTFS
-#' gtfs_file <- system.file("extdata/bra_cur/bra_cur_gtfs.zip", package = "gtfs2emis")
+#' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 
 #' # keep a single trip_id to speed up this example
@@ -80,6 +80,7 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   # segment_vars
   checkmate::assert_vector(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
   checkmate::assert_character(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
+  for(i in segment_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
   # all variables
   all_vars = c(veh_vars, pol_vars,emi_vars)
   

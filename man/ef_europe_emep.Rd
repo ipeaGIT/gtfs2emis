@@ -62,6 +62,12 @@ The new convention for vehicles names are translated from the EMEP/EEA report:\t
 }
 
 
+When the information of vehicle technology does not match the existing database,
+the function display a message mentioning the returned technology.
+User can either select an existing data for the combining variables
+(\code{euro}, \code{tech}, \code{veh_type} and \code{pollutant}), or accept the assumed change
+in vehicle technology.
+
 The R scripts used to download and pre-process all 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
 can be accessed in the gtfs2emis GitHub repository at
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>

@@ -1,0 +1,222 @@
+---
+title: 'Exploring Emission Factors'
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+urlcolor: blue
+vignette: >
+  %\VignetteIndexEntry{Exploring Emission Factors} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>")
+```
+
+Emission factors (EF) provides information on the mass of pollutants by traveled distance or engine power. In order to understand how the overall emissions are impacted by a given public transport network and vehicle fleet, it is useful to check the emission factors of an individual vehicle. This session helps users to explore the available EF data.
+
+## Available functions
+
+`gtfs2emis` currently supports emission factor from four agencies databases, while detailed reports containing detailed information can be found in the websites:
+
+- Environment Company of São Paulo ---- [CETESB](https://cetesb.sp.gov.br/veicular/)
+- Environmental Protection Agency --- [MOVES3 Model](https://www.epa.gov/moves)
+- California Air Resources Board --- [EMFAC2017 model](https://arb.ca.gov/emfac/emissions-inventory)
+- European Environment Agency --- [EMEP-EEA](https://www.eea.europa.eu//publications/emep-eea-guidebook-2019)
+
+## Visualizing data
+
+Before checking EF graphically, user needs to select the desired emission factor function based on fleet characteristics — as shown in [Defining Fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html).
+This section we will use `ef_europe_emep()` function to illustrate how emissions varies according to vehicle type, mean speed and pollutant.
+
+```{r}
+library(gtfs2emis)
+library(units)
+library(ggplot2)
+```
+```{r}
+ef_europe <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
+                            ,veh_type = c("Ubus Midi <=15 t"
+                                          ,"Ubus Std 15 - 18 t"
+                                          ,"Ubus Artic >18 t")
+                            ,euro = c("III", "IV", "V")
+                            ,pollutant = c("PM10", "NOx")
+                            ,fuel = c("D", "D", "D")
+                            ,tech = c("-", "SCR", "SCR")
+                            ,as_list = TRUE)
+class(ef_europe)
+names(ef_europe)
+```
+
+In the case above, the function returns a `list` that contains all the relevant information for the EF --- shown in `names(ef_europe)`. However, it may be useful to check the EF results in a data.frame or graphic format. 
+
+```{r}
+ef_europe_dt <- emis_to_dt(emi_list = ef_europe
+                           ,emi_vars = "EF"
+                           ,veh_vars = c("veh_type","euro","fuel","tech")
+                           ,pol_vars = "pollutant"
+                           ,segment_vars = c("slope","load","speed"))
+head(ef_europe_dt)
+```
+
+Plotting a the speed-dependent EF according to vehicle type (`veh_type`) and
+euro standard (`euro`).
+
+```{r, fig.height=4, fig.width=7}
+ef_europe_dt$name_fleet <- paste(ef_europe_dt$veh_type, "/ Euro"
+                                 , ef_europe_dt$euro)
+
+# plot
+library(ggplot2)
+ggplot(ef_europe_dt) + 
+  geom_line(aes(x = speed,y = EF,color = name_fleet))+
+  labs(color = "Category / EURO")+
+  facet_wrap(~pollutant,scales = "free")+
+  theme(legend.position = "bottom")
+```
+
+In few situations in `ef_europe_emep()`, when the information of vehicle technology does not match the existing database, the package display a message mentioning the returned technology. User can either select an existing data for the combining variables (`euro`, `tech`, `veh_type` and `pollutant`), or accept the assumed change in vehicle technology.
+
+```{r}
+ef_europe_co2 <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
+                                ,veh_type = "Ubus Std 15 - 18 t"
+                                ,euro = "VI",pollutant = "CO2"
+                                ,tech = "DPF+SCR"
+                                ,as_list = TRUE)
+```
+
+The other EF functions, `ef_usa_emfac()`, `ef_usa_moves()` and `ef_brazil_cetesb()`, has similar usage, and can be checked in details in the documentation.
+
+<!-- ```{r} -->
+<!-- ef_usa_moves_list <- ef_usa_moves(pollutant = "CO2" -->
+<!--                                   ,model_year = 2018 -->
+<!--                                   ,reference_year = 2019 -->
+<!--                                   ,speed = units::set_units(20,"km/h") -->
+<!--                                   ,fuel = "D") -->
+<!-- ef_usa_emfac_list <- ef_usa_emfac(pollutant = "CO2" -->
+<!--                                   ,model_year = 2018 -->
+<!--                                   ,reference_year = 2019 -->
+<!--                                   ,speed = units::set_units(20,"km/h") -->
+<!--                                   ,fuel = "D") -->
+<!-- ef_brazil_list <- ef_brazil_cetesb(pollutant = "CO2" -->
+<!--                                    ,veh_type = "BUS_URBAN_D" -->
+<!--                                    ,model_year = 2018) -->
+<!-- ``` -->
+
+### Exploring Scaled Emission Factors
+
+One special case is of EF usage is the Scaled Emission Factors. In the databases provided by the package, CETESB (`ef_brazil_cetesb()`) methodology reports EF that are not dependent on speed. If one needs to scale or adjust the local EF in order to make them speed-dependent, the function `ef_scaled_euro()` can be applied. 
+
+The scaled emission factor is related to speed by the expression
+
+$$
+EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)}, 
+$$
+where $EF_{scaled}(V)$ is the scaled emission factors for each street link, 
+$EF_{local}$ is the local emission factor, $EF_{euro}(V)$ and $EF_{euro}(SDC)$ are the EMEP/EEA emission factor the speed of V and the average urban driving speed SDC, respectively.
+
+The scaled behavior of EF can be verified graphically when we plot the $EF_{local}$, $EF_{scaled}(V)$, and the $EF_{euro}(V)$ that is used as the base. It can be done in five steps:
+
+1) Build a data.frame of fleet relating the local and European fleet characteristics
+```{r}
+fleet_filepath <- system.file("extdata/bra_cur_fleet.txt", package = "gtfs2emis")
+cur_fleet <- read.table(fleet_filepath,header = TRUE, sep = ",",nrows = 1)
+cur_fleet
+```
+
+2) Estimate local EF
+
+```{r}
+cur_local_ef <- ef_brazil_cetesb(pollutant = "CO2"
+                                 ,veh_type = cur_fleet$type_name_br
+                                 ,model_year = cur_fleet$year)
+```
+
+3) Apply `ef_scaled_euro()`
+
+
+```{r}
+cur_scaled_ef <- ef_scaled_euro(ef_local = cur_local_ef$EF
+                                ,speed = units::set_units(10:100,"km/h")
+                                ,veh_type = cur_fleet$veh_type
+                                ,euro = cur_fleet$euro
+                                ,pollutant = "CO2"
+                                ,tech = "-"
+)
+```
+
+ 4) Rely on `emis_to_dt()` to generate a data.frame
+```{r}
+# Local EF
+cur_local_ef_dt <- emis_to_dt(emi_list = cur_local_ef
+                             ,emi_vars = "EF")
+# Euro EF
+cur_euro_ef <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
+                              ,veh_type = cur_fleet$veh_type
+                              ,euro = cur_fleet$euro
+                              ,pollutant = "CO2"
+                              ,tech = "-"
+)
+cur_euro_ef_dt <- emis_to_dt(emi_list = cur_euro_ef
+                             ,emi_vars = "EF"
+                             ,veh_vars = c("veh_type","euro","fuel","tech")
+                             ,segment_vars = "speed")
+cur_euro_ef_dt$source <- "Euro EF"
+
+# Scaled EF
+cur_scaled_ef_dt <- emis_to_dt(emi_list = cur_scaled_ef
+                               ,emi_vars = "EF"
+                               ,veh_vars = c("veh_type","euro","fuel","tech")
+                               ,segment_vars = "speed")
+cur_scaled_ef_dt$source <- "Scaled EF"
+
+# rbind data
+cur_ef <- rbind(cur_euro_ef_dt, cur_scaled_ef_dt)
+cur_ef$source <- factor(cur_ef$source
+                        ,levels = c("Scaled EF", "Euro EF"))
+```
+
+5) View in ggplot2
+
+```{r, fig.width=6, fig.height=5}
+ggplot() + 
+  # add scaled and euro EF
+  geom_line(data = cur_ef
+            ,aes(x = speed,y = EF
+                 ,group = source,color = source))+
+  # add local EF
+  geom_hline(aes(yintercept = cur_local_ef_dt$EF)
+            ,colour = "black",linetype="dashed") + 
+  geom_point(aes(x = 19,y = cur_local_ef$EF)) + 
+  # add local EF text
+  geom_text(aes(x = 19
+                , y = cur_local_ef_dt$EF)
+            ,label = sprintf('Local EF = %s g/km at 19 km/h',round(cur_local_ef_dt$EF,1))
+            ,hjust = 0,nudge_y = 100,nudge_x = 1
+            ,size = 3,fontface = 1)+
+  # configs plots
+  scale_color_manual(values=c("red","blue"))+
+  coord_cartesian(ylim = c(0,max(cur_scaled_ef_dt$EF)))+
+  labs(color = NULL)
+```
+
+
+In this case, the `scaled_EF` has the same value of `local_EF` (dashed line) when `speed = 19` km/h, and the similar decaying behavior as `Euro_EF` as speed decreases.
+
+## Checking `gtfs2emis` imported data
+
+Users can go in detail into the emission factor database that is being used by the package:
+
+- `data(ef_brazil_cetesb)` from Environment Company of Sao Paulo, Brazil (CETESB)
+- `data(ef_usa_moves)` from MOtor Vehicle Emission Simulator (MOVES)
+- `data(ef_usa_emfac)` from California Air Resources Board (EMFAC Model)
+- `data(ef_europe_emep)` from European Environment Agency (EMEP/EEA)
+
+The data presented in the agencies website and software was downloaded and pre-processed
+in `gtfs2emis` in order to be easily read by the emission factor functions. Users can also access the scripts used to the process raw data in the [gtfs2emis GitHub repository]("https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw"). 
+
+## Report a bug
+
+If you have any suggestions or want to report an error, please visit [the package GitHub page](https://github.com/ipeaGIT/gtfs2emis/issues).

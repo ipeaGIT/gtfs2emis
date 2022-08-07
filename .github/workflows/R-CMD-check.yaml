@@ -38,7 +38,7 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-
+            
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Install pak and query dependencies
@@ -67,11 +67,18 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install pkg-config gdal proj geos
+          #  Install libgit2
+          brew install libgit2
+          
+      - name: "[Stage] [macOS] Install system libs for pkgdown"
+        if: runner.os == 'macOS' && matrix.config.pkgdown != ''
+        run: brew install harfbuzz fribidi
 
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
           pak::pkg_install("rcmdcheck")
+          pak::pkg_install("ipeaGIT/gtfs2gps")
         shell: Rscript {0}
 
       - name: Session info
