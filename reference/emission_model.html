@@ -75,8 +75,10 @@ function must be used together with <code><a href="transport_model.html">transpo
 <span>  <span class="va">pollutant</span>,</span>
 <span>  reference_year <span class="op">=</span> <span class="fl">2020</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  continue <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  continue <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -117,11 +119,13 @@ argument is <code>ef_usa_moves</code> or <code>ef_usa_emfac</code>.</p></dd>
 
 <dt>parallel</dt>
 <dd><p>logical. Decides whether the function should run in parallel.
-When TRUE, it will use all cores available
-minus one using future::plan() with strategy "multisession"
-internally. Defaults is TRUE. Note that it is possible to create
-your own plan before calling this function. In this case, do not
-use this argument.</p></dd>
+Defaults is <code>TRUE</code>.</p></dd>
+
+
+<dt>ncores</dt>
+<dd><p>integer. Number of cores to be used in parallel execution. This
+argument is ignored if parallel is <code>FALSE</code>. Default (<code>NULL</code>) selects
+the total number of available cores minus one.</p></dd>
 
 
 <dt>output_path</dt>
@@ -134,6 +138,11 @@ If <code>NULL</code> (Default), the function returns the output to user.</p></dd
 it skips processing the shape identifiers that were already saved into
 files. It is useful to continue processing a GTFS file that was stopped
 for some reason. Default value is FALSE.</p></dd>
+
+
+<dt>quiet</dt>
+<dd><p>Logical; Display messages from the emissions or emission factor functions.
+Default is 'TRUE'.</p></dd>
 
 </dl></div>
     <div id="value">

@@ -80,6 +80,7 @@ output and to adjust the speed of public transport vehicles given a
 <span>  max_speed <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>  new_speed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  output_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  continue <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -118,9 +119,14 @@ data feed.</p></dd>
 
 
 <dt>parallel</dt>
-<dd><p>Decides whether the function should run in parallel. Defaults
-to <code>TRUE</code>. When <code>TRUE</code>, it will use all cores available minus one
-using <code><a href="https://future.futureverse.org/reference/plan.html" class="external-link">future::plan()</a></code> with strategy "multisession" internally.</p></dd>
+<dd><p>logical. Decides whether the function should run in parallel.
+Defaults is <code>TRUE</code>.</p></dd>
+
+
+<dt>ncores</dt>
+<dd><p>integer. Number of cores to be used in parallel execution. This
+argument is ignored if parallel is <code>FALSE</code>. Default (<code>NULL</code>) selects
+the total number of available cores minus one.</p></dd>
 
 
 <dt>spatial_resolution</dt>
