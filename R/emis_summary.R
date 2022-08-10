@@ -105,20 +105,11 @@ emis_summary <- function(emi_list,
   
   lapply(seq_along(emi_list[["emi"]]),function(i){ 
     checkmate::expect_class(emi_list[["emi"]][[i]],"units")
-    if(units(emi_list[["emi"]][[i]])$numerator != "g" & 
-       units(emi_list[["emi"]][[i]])$numerator != "kg"){
+    if(units::deparse_unit(emi_list[["emi"]][[i]]) != "g" & 
+       units::deparse_unit(emi_list[["emi"]][[i]]) != "kg"){
       stop("Incorrect 'units': Emissions 'emi_list$emi' needs to have 'units' in 'g' or 'kg'.")
     }
   })
-  
-  #
-  # get units-----
-  #
-  
-  myunits <- sapply(seq_along(emi_list[["emi"]]),function(i){
-    units::deparse_unit(emi_list[["emi"]][[i]])
-  }) 
-  myunits <- unique(myunits)
   
   #  aggregate --------
   
