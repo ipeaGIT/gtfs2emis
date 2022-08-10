@@ -133,6 +133,7 @@ transport_model <- function(gtfs_data
   gtfs2gps::gtfs2gps(gtfs_data = city_gtfs
                      , spatial_resolution = spatial_resolution
                      , parallel = parallel
+                     , ncores = ncores
                      , filepath =  gps_path
                      , compress =  TRUE
                      , continue = continue)
