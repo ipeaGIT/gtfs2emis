@@ -11,8 +11,10 @@ emission_model(
   pollutant,
   reference_year = 2020,
   parallel = TRUE,
+  ncores = NULL,
   output_path = NULL,
-  continue = FALSE
+  continue = FALSE,
+  quiet = TRUE
 )
 }
 \arguments{
@@ -40,11 +42,11 @@ argument is only required when the \code{ef_model}
 argument is \code{ef_usa_moves} or \code{ef_usa_emfac}.}
 
 \item{parallel}{logical. Decides whether the function should run in parallel.
-When TRUE, it will use all cores available
-minus one using future::plan() with strategy "multisession"
-internally. Defaults is TRUE. Note that it is possible to create
-your own plan before calling this function. In this case, do not
-use this argument.}
+Defaults is \code{TRUE}.}
+
+\item{ncores}{integer. Number of cores to be used in parallel execution. This
+argument is ignored if parallel is \code{FALSE}. Default (\code{NULL}) selects
+the total number of available cores minus one.}
 
 \item{output_path}{character. File path where the function output is exported.
 If \code{NULL} (Default), the function returns the output to user.}
@@ -53,6 +55,9 @@ If \code{NULL} (Default), the function returns the output to user.}
 it skips processing the shape identifiers that were already saved into
 files. It is useful to continue processing a GTFS file that was stopped
 for some reason. Default value is FALSE.}
+
+\item{quiet}{Logical; Display messages from the emissions or emission factor functions.
+Default is 'TRUE'.}
 }
 \value{
 A \code{list} with emissions estimates or \code{NULL} with output files saved

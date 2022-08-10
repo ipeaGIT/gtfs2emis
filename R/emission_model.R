@@ -4,35 +4,36 @@
 #'              function must be used together with \code{\link{transport_model}}.
 #' 
 #' @param tp_model sf_linestring object or a character path the to sf_linestring objects.
-#' The `tp_model` is the output from \code{\link{transport_model}}, 
-#' or the path in which the output files from the \code{\link{transport_model}} are saved.
+#'        The `tp_model` is the output from \code{\link{transport_model}}, 
+#'        or the path in which the output files from the \code{\link{transport_model}} are saved.
 #' @param ef_model character. A string indicating the emission factor model 
-#' to be used. Options include `ef_usa_moves`, `ef_usa_emfac`,`ef_europe_emep`, 
-#' ,`ef_brazil_cetesb`, and `ef_brazil_scaled_euro` (scale `ef_brazil_cetesb()` based 
-#' on `ef_scaled_euro()`).
+#'        to be used. Options include `ef_usa_moves`, `ef_usa_emfac`,`ef_europe_emep`, 
+#'        ,`ef_brazil_cetesb`, and `ef_brazil_scaled_euro` (scale `ef_brazil_cetesb()` based 
+#'        on `ef_scaled_euro()`).
 #' @param fleet_data data.frame. A `data.frame` with information the fleet 
-#' characteristics. The required columns depend on the 
-#' `ef_model` parameted selected. See @examples for input.
+#'        characteristics. The required columns depend on the 
+#'        `ef_model` parameted selected. See @examples for input.
 #' @param pollutant character. Vector with one or more pollutants to be estimated.
-#' Example: `c("CO", "CO2", "PM10", "NOx")`. See the documentation to check which 
-#' pollutants are available for each emission factor model (`ef_usa_moves`, `ef_usa_emfac`,
-#' `ef_europe_emep`, or `ef_brazil_cetesb`).
+#'        Example: `c("CO", "CO2", "PM10", "NOx")`. See the documentation to check which 
+#'        pollutants are available for each emission factor model (`ef_usa_moves`, `ef_usa_emfac`,
+#'        `ef_europe_emep`, or `ef_brazil_cetesb`).
 #' @param reference_year numeric. Year of reference considered to calculate the
-#'                      emissions inventory. Defaults to `2020`. This 
-#'                      argument is only required when the `ef_model` 
-#'                      argument is `ef_usa_moves` or `ef_usa_emfac`.
+#'        emissions inventory. Defaults to `2020`. This 
+#'        argument is only required when the `ef_model` 
+#'        argument is `ef_usa_moves` or `ef_usa_emfac`.
 #' @param parallel logical. Decides whether the function should run in parallel. 
-#'                 When TRUE, it will use all cores available
-#'                 minus one using future::plan() with strategy "multisession" 
-#'                 internally. Defaults is TRUE. Note that it is possible to create 
-#'                 your own plan before calling this function. In this case, do not
-#'                 use this argument.                
+#'        Defaults is `TRUE`. 
+#' @param ncores integer. Number of cores to be used in parallel execution. This 
+#'        argument is ignored if parallel is `FALSE`. Default (`NULL`) selects 
+#'        the total number of available cores minus one.                
 #' @param output_path character. File path where the function output is exported.
-#'                 If `NULL` (Default), the function returns the output to user.
+#'        If `NULL` (Default), the function returns the output to user.
 #' @param continue logical. Argument that can be used only with output_path When TRUE,
-#'                 it skips processing the shape identifiers that were already saved into 
-#'                 files. It is useful to continue processing a GTFS file that was stopped
-#'                 for some reason. Default value is FALSE.    
+#'        it skips processing the shape identifiers that were already saved into 
+#'        files. It is useful to continue processing a GTFS file that was stopped
+#'        for some reason. Default value is FALSE.    
+#' @param quiet Logical; Display messages from the emissions or emission factor functions. 
+#'        Default is 'TRUE'.
 #' @details The `fleet_data` must be a `data.frame` organized according to the desired
 #' `ef_model`. The required columns is organized as follows (see @examples for real 
 #' data usage). 
@@ -138,14 +139,20 @@ emission_model <- function(  tp_model
                              , pollutant
                              , reference_year = 2020
                              , parallel = TRUE
+                             , ncores = NULL
                              , output_path = NULL
-                             , continue = FALSE){
+                             , continue = FALSE
+                             , quiet = TRUE){
   # A) Checking inputs -----
   
   checkmate::assert_data_frame(fleet_data, null.ok = FALSE)
   checkmate::assert_vector(pollutant, null.ok = FALSE)
   checkmate::assert_logical(parallel, null.ok = FALSE)
+  
+  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = future::availableCores(),null.ok = TRUE)
+  
   checkmate::assert_logical(continue, null.ok = FALSE)
+  checkmate::assert_logical(quiet, null.ok = FALSE)
   checkmate::assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
   checkmate::assert(
     checkmate::check_class(tp_model, classes = c("sf", "data.frame"))
@@ -155,7 +162,8 @@ emission_model <- function(  tp_model
   if(is.character(tp_model)) checkmate::assert_directory_exists(tp_model)
   checkmate::assert_string(output_path, null.ok = TRUE)
   if(!is.null(output_path)) checkmate::assert_directory_exists(output_path)
-
+ 
+  
   ## i) EF model ----
   checkmate::assert_choice(ef_model
                            ,c("ef_brazil_cetesb","ef_usa_emfac"
@@ -165,7 +173,7 @@ emission_model <- function(  tp_model
   ## ii) Fleet data  | EF model ----
   if (ef_model != "ef_europe_emep"){
     checkmate::assert(
-        checkmate::check_choice('veh_type', names(fleet_data))
+      checkmate::check_choice('veh_type', names(fleet_data))
       , checkmate::check_choice('model_year', names(fleet_data))
       , checkmate::check_choice('fleet_composition', names(fleet_data))
       , combine = "and"
@@ -199,19 +207,47 @@ emission_model <- function(  tp_model
     
   }
   
-  
+  if(parallel){
+    # number of cores
+    if(is.null(ncores)){
+      ncores <- max(1, future::availableCores() - 1)
+      
+      if(!quiet) message(paste('Using', ncores, 'CPU cores'))
+    }
+    
+    oplan <- future::plan("multisession", workers = ncores)
+    on.exit(future::plan(oplan), add = TRUE)
+    
+  }
   # B) EF function ---------------- 
   
   # Generate EF cetesb_brazil before the loop
   # to avoid multiple runs in the loop
-  if(ef_model == "ef_brazil_cetesb" | ef_model == "ef_brazil_scaled_euro"){
-    temp_ef <- ef_brazil_cetesb(pollutant = pollutant,
-                                veh_type = fleet_data$veh_type,
-                                model_year = as.numeric(fleet_data$model_year),
-                                as_list = TRUE)
+  if(ef_model == "ef_brazil_scaled_euro" | ef_model == "ef_brazil_cetesb"){
+    
+    if(quiet){
+      
+      temp_ef <- suppressMessages( ef_brazil_cetesb(pollutant = pollutant,
+                                                    veh_type = fleet_data$veh_type,
+                                                    model_year = as.numeric(fleet_data$model_year),
+                                                    as_list = TRUE) )
+    }else{
+      
+      temp_ef <- ef_brazil_cetesb(pollutant = pollutant,
+                                  veh_type = fleet_data$veh_type,
+                                  model_year = as.numeric(fleet_data$model_year),
+                                  as_list = TRUE) 
+    }
+    
+    if(ef_model == "ef_brazil_scaled_euro"){
+      
+      temp_local_ef <- temp_ef
+      
+    }
   }
+  
   # C) Emission function -----
-  core_fun_emis <- function(temp_shape){ # i = 1  
+  core_fun_emis <- function(temp_shape){ # temp_shape = tp_fname_files[1]
     
     # i) Read GPS linestrings or DT ----
     if (is.character(temp_shape))  temp_shape <- readRDS(temp_shape)
@@ -225,6 +261,7 @@ emission_model <- function(  tp_model
                                 tech = fleet_data$tech,
                                 euro = fleet_data$euro,
                                 fcorr = 1)
+      
     }
     if(ef_model == "ef_usa_emfac"){
       
@@ -244,9 +281,9 @@ emission_model <- function(  tp_model
     }
     if(ef_model == "ef_brazil_scaled_euro"){
       
-      temp_ef <- ef_scaled_euro(ef_local = temp_ef
+      temp_ef <- ef_scaled_euro(ef_local = temp_local_ef$EF
                                 ,speed = temp_shape$speed
-                                ,veh_type = fleet_data$veh_type
+                                ,veh_type = fleet_data$type_name_eu
                                 ,euro = fleet_data$euro
                                 ,pollutant = pollutant
                                 ,fuel = fleet_data$fuel
@@ -254,7 +291,7 @@ emission_model <- function(  tp_model
                                 ,slope = 0
                                 ,load = 0.5
                                 ,fcorr = 1
-                                )
+      )
       
     }
     
@@ -292,7 +329,7 @@ emission_model <- function(  tp_model
     temp_emis$EF = temp_ef$EF
     
     # Add gps data into emissions
-    temp_emis$tp_model <- tp_model
+    temp_emis$tp_model <- temp_shape
     
     # v) Save emissions -----
     
@@ -300,22 +337,32 @@ emission_model <- function(  tp_model
   }
   
   # D) function to write individual files -----
-  if(is.character(tp_model)){ 
-    p <- progressr::progressor(steps = length(tp_fname_files))
-  }
+  #if(is.character(tp_model)){ 
+  #  p <- progressr::progressor(steps = length(tp_fname_files))
+  #}
   
   prepare_emis_output <- function(i){ # i = 1
-    p()
-    tmp_emis <- core_fun_emis(temp_shape = tp_fname_files[i])
+    #p()
+    ###  i) Output Valid ----
+    output_name <- paste0(output_path,"/",tp_name_files[i])
+    if(continue){ if(file.exists(output_name)) return(NULL)  }
+    
+    # Core fun
+    if(quiet){    
+      
+      tmp_emis <- suppressMessages(
+        core_fun_emis(temp_shape = tp_fname_files[i])
+      )
+      
+    }else{
+      
+      tmp_emis <- core_fun_emis(temp_shape = tp_fname_files[i])
+      
+    }
     ###  i) Output NULL ----
     if (is.null(output_path)) {
       return(tmp_emis)
     }
-    ###  ii) Output Valid ----
-    output_name <- paste0(output_path,"/",tp_name_files[i])
-    
-    # continue condition
-    if(continue){ if(file.exists(output_name)) return(NULL)  }
     
     saveRDS(object = tmp_emis,file = output_name)
     return(NULL)
@@ -326,13 +373,16 @@ emission_model <- function(  tp_model
     
     # Check parallel condition
     if(parallel){
+      
+      requiredPackages = c('data.table', 'sf', 'units')
       emisLine <- furrr::future_map(.x = 1:length(tp_fname_files)
                                     ,.f = prepare_emis_output
-                                    ,.options = furrr::furrr_options(seed = 123))
+                                    ,.options = furrr::furrr_options(
+                                      seed = 123
+                                      ,packages = requiredPackages))
     }else{
-      emisLine <- lapply(.x = 1:length(tp_fname_files)
-                         ,.f = prepare_emis_output
-                         ,.options = furrr::furrr_options(seed = 123))
+      emisLine <- lapply(X = 1:length(tp_fname_files)
+                         ,FUN = prepare_emis_output)
     }
     
     # if an output_path is provided, function do not return data
@@ -354,7 +404,7 @@ emission_model <- function(  tp_model
                           ,unique(tp_model$shape_id)[1]
                           ,".rds")
     
-    if( data.table::uniqueN(tp_model$shape_id) > 1){
+    if( data.table::uniqueN(tp_model$shape_id) > 1 & quiet == "FALSE"){
       message(sprintf("Writing output as '%s' file."
                       ,export_path))
     }

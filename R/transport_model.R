@@ -25,9 +25,11 @@
 #'        range or which are missing from the GTFS input. When `new_speed = NULL` 
 #'        (the default), the function uses the average speed of the entire GTFS 
 #'        data feed.
-#' @param parallel Decides whether the function should run in parallel. Defaults 
-#'        to `TRUE`. When `TRUE`, it will use all cores available minus one 
-#'        using `future::plan()` with strategy "multisession" internally.
+#' @param parallel logical. Decides whether the function should run in parallel. 
+#'         Defaults is `TRUE`. 
+#' @param ncores integer. Number of cores to be used in parallel execution. This 
+#'        argument is ignored if parallel is `FALSE`. Default (`NULL`) selects 
+#'        the total number of available cores minus one. 
 #' @param spatial_resolution The spatial resolution in meters. Defaults to `100`.
 #'        The function only creates points in order to guarantee that the 
 #'        minimum distance between two consecutive points will be at most the 
@@ -69,14 +71,15 @@
 #'                             spatial_resolution = 100,
 #'                             parallel = FALSE)
 #'}
-transport_model <- function(gtfs_data,
-                            min_speed = 2,
-                            max_speed = 80, 
-                            new_speed = NULL,
-                            parallel = TRUE,
-                            spatial_resolution = 100,
-                            output_path = NULL,
-                            continue = FALSE){
+transport_model <- function(gtfs_data
+                            , min_speed = 2
+                            , max_speed = 80
+                            , new_speed = NULL
+                            , parallel = TRUE
+                            , ncores = NULL
+                            , spatial_resolution = 100
+                            , output_path = NULL
+                            , continue = FALSE){
   
   # check if required fields and files exist  ----
   
@@ -87,6 +90,10 @@ transport_model <- function(gtfs_data,
   checkmate::assert_numeric(new_speed, lower = 1, finite = TRUE, null.ok = TRUE, any.missing = FALSE)
   checkmate::assert_true(min_speed < max_speed)
   checkmate::assert_logical(parallel, any.missing = FALSE) 
+  
+  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = future::availableCores()
+                                             ,null.ok = TRUE)
+
   checkmate::assert_logical(continue, null.ok = FALSE, any.missing = FALSE) 
   # Read GTFS ------------
   
@@ -100,9 +107,16 @@ transport_model <- function(gtfs_data,
   # parallel condition
   
   if(parallel){
-    future::plan(session = "multisession", workers = data.table::getDTthreads() - 1)
-  }else{
-    future::plan(session = "sequential")
+    # number of cores
+    if(is.null(ncores)){
+      ncores <- max(1, future::availableCores() - 1)
+      
+      message(paste('Using', ncores, 'CPU cores'))
+    }
+    
+    oplan <- future::plan("multisession", workers = ncores)
+    on.exit(future::plan(oplan), add = TRUE)
+    
   }
   
   # gtfs2gps ------------
@@ -160,9 +174,12 @@ transport_model <- function(gtfs_data,
     return(NULL)
   }
   if(parallel){
+    requiredPackages = c('data.table', 'sf', 'units')
     furrr::future_map(.x = seq_along(files_gps)
                       ,.f = gps_speed_fix
-                      ,.options = furrr::furrr_options(seed = 123)) 
+                      ,.options = furrr::furrr_options(
+                        seed = 123
+                        ,packages = requiredPackages)) 
     #lapply(seq_along(files_gps),gps_speed_fix)
   }else{
     lapply(seq_along(files_gps),gps_speed_fix)
@@ -208,9 +225,13 @@ transport_model <- function(gtfs_data,
   
   # Return conditions ----
   if(parallel){
+    requiredPackages = c('data.table', 'sf', 'units')
     gpsLine <- furrr::future_map(seq_along(files_gps)
                                  ,f_gps_as_sflinestring
-                                 ,.options = furrr::furrr_options(seed = 123)) # why ???
+                                 ,.options = furrr::furrr_options(
+                                   seed = 123
+                                   ,packages = requiredPackages
+                                   )) 
   }else{
     gpsLine <- lapply(seq_along(files_gps),f_gps_as_sflinestring) 
   }
