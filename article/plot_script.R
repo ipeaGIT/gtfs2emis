@@ -3,14 +3,22 @@
 rm(list=ls())
 gc(reset = TRUE)
 
+library(devtools)
+
+#devtools::load_all()
+#devtools::document()
+#devtools::load_all()
+#devtools::install()
+#library(gtfs2emis)
+
 library(data.table)
 library(magrittr)
 library(ggplot2)
 library(sfheaders)
 library(furrr)
 library(sf)
-library(gtfs2gps) #devtools::install_github("Joaobazzo/gtfs2gps")
-library(gtfstools)
+library(gtfs2gps) #devtools::install_github("ipeaGIT/gtfs2gps")
+library(gtfstools)  #devtools::install_github("ipeaGIT/gtfstools")
 #library(gtfs2emis) # devtools::install(build_vignettes = FALSE,build = FALSE)
 devtools::load_all()
 
@@ -24,11 +32,13 @@ library(extrafont)
 #extrafont::loadfonts(device = "win")
 #extrafont::fonts()
 #extrafont::font_install('fontcm')
-# 1) GTFS ---------
-## a) Prep GTFS ----
+
+
+# 1)  Prep GTFS ----
 
 # read gtfs
-spo_gtfs <- gtfstools::read_gtfs("../../Pessoal/IPEA/gtfs2gps/data-raw/gtfs/gtfs_spo_sptrans_2019-10.zip")
+# spo_gtfs <- gtfstools::read_gtfs("../../Pessoal/IPEA/gtfs2gps/data-raw/gtfs/gtfs_spo_sptrans_2019-10.zip")
+spo_gtfs <- gtfstools::read_gtfs("../../../data-raw/gtfs/bra_spo/gtfs_spo_sptrans_2019-10.zip")
 spo_gtfs$`_transparencia_e-SIC_42374_email_05-09-19` <- NULL
 
 # filter by bus route
@@ -36,8 +46,11 @@ spo_gtfs1 <- gtfstools::filter_by_route_id(spo_gtfs,route_id = "3")
 temp_routeid <- spo_gtfs$routes[route_type == 3,route_id]
 temp_shapeids <- spo_gtfs$trips[route_id %in% unique(temp_routeid),shape_id]
 spo_gtfs <- gtfstools::filter_by_shape_id(spo_gtfs,
-                                         shape_id = unique(temp_shapeids))
+                                          shape_id = unique(temp_shapeids))
 
+spo_gtfs <- gtfstools::filter_by_weekday(gtfs = spo_gtfs
+                                         ,weekday = "wednesday"
+                                         ,keep = TRUE)
 # set dirs
 getwd()
 dir.create("article")
@@ -46,7 +59,7 @@ dir.create("article/data/")
 # save gtfs
 gtfstools::write_gtfs(spo_gtfs,"article/data/gtfs_spo_sptrans_prep.zip")
 
-## b) GTFS2gps ----
+# b) Transport model ----
 rm(list=ls())
 gc(reset = TRUE)
 
@@ -65,93 +78,35 @@ spo_gtfs$calendar
 # 6:        _S_      0       0         0        0      0        1      0 2008-01-01 2020-05-01
 spo_gtfs$trips$trip_id %>% uniqueN() # 2260
 spo_gtfs$trips$shape_id %>% uniqueN() # 2260
-spo_gtfs1 <- gtfstools::filter_by_weekday(gtfs = spo_gtfs
-                                          ,weekday = "wednesday"
-                                          ,keep = TRUE)
 spo_gtfs1$trips$trip_id  %>% uniqueN() # 2260
 spo_gtfs1$shapes$shape_id  %>% uniqueN() # 2260
 spo_gtfs1$stop_times$trip_id %>% uniqueN() # 2260
 spo_gtfs1$trips$shape_id  %>% uniqueN() # 2260
 spo_gtfs1$trips %>% nrow() # 193831
 
-spo_gtfs3 <- gtfstools::filter_by_weekday(gtfs = spo_gtfs
-                                          ,weekday = "saturday"
-                                          ,keep = TRUE)
-spo_gtfs3$trips$trip_id  %>% uniqueN() # 186549
-spo_gtfs3$shapes$shape_id %>% uniqueN() # 1969
-spo_gtfs3$stop_times$trip_id %>% uniqueN() # 186549
-spo_gtfs3$trips$shape_id  %>% uniqueN() # 1969
-spo_gtfs3$trips %>% nrow() # 186549
-
-# remove files
-rm(spo_gtfs1)
-rm(spo_gtfs2)
-rm(spo_gtfs3)
-gc(reset = TRUE)
-
 # generate gps
 
-future::plan(session = "multisession",workers = 2)
-
+future::plan(session = "multisession",workers = 19)
+devtools::load_all()
 transport_model(gtfs_data = spo_gtfs
                 ,min_speed = 2
                 ,max_speed = 80
                 ,new_speed = NULL
                 ,parallel = TRUE
                 ,spatial_resolution = 100
-                ,output_path = "article/data/"
+                ,output_path = "article/data"
                 ,continue = TRUE)
 
 ## c) Adjust gps speed---------
-dir.create("article/data/gps_spo_adjusted/")
-files_gps <- list.files("article/data/gps_spo/",full.names = TRUE)
-files_gps_names <- list.files("article/data/gps_spo/",full.names = FALSE)
-
-
-
-gps_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i =1 
-  
-  message(paste0("adjust gps speed of file '",files_gps_names[i],"'")) 
-  
-  tmp_gps <- readr::read_rds(files_gps[i])
-  tmp_gps[, dist := units::set_units(dist,"m")]
-  tmp_gps[, cumdist := units::set_units(cumdist,"m")]
-  tmp_gps[, cumtime := units::set_units(cumtime,"s")]
-  tmp_gps_fix <- gtfs2gps::adjust_speed(gps_data = tmp_gps)
-  readr::write_rds(x = tmp_gps_fix
-                   ,file = paste0("article/data/gps_spo_adjusted/"
-                                  ,files_gps_names[i]),compress = "gz")
-  return(NULL)
-})
-
-## d) Gps points to Linestring ------
-dir.create("article/data/gps_spo_linestring/")
-files_gps <- list.files("article/data/gps_spo_adjusted/",full.names = TRUE)
-files_gps_names <- list.files("article/data/gps_spo_adjusted/",full.names = FALSE)
-
-future::plan(strategy = "multisession",workers = 35)
-gpsLine_speed_fix <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
-  
-  message(paste0("Gps points to Linestring file '",files_gps_names[i],"'"))
-  
-  
-  tmp_gps <- readr::read_rds(files_gps[i])
-  tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
-  
-  readr::write_rds(x = tmp_gps_fix
-                   ,file = paste0("article/data/gps_spo_linestring/",files_gps_names[i])
-                   , compress = "gz")
-  return(NULL)
-},.options = furrr::furrr_options(seed = 123))
 
 ## e) Generall statistics ----
 
-files_gps <- list.files("article/data/gps_spo_linestring/",full.names = TRUE)
-files_gps_names <- list.files("article/data/gps_spo_linestring/",full.names = FALSE)
+files_gps <- list.files("article/data/gps_line/",full.names = TRUE)
+files_gps_names <- list.files("article/data/gps_line/",full.names = FALSE)
 
 future::plan(strategy =  "multisession",workers = 29)
 
-gen_stats <- furrr::future_map(seq_along(files_gps)[1]
+gen_stats <- furrr::future_map(seq_along(files_gps)
                                ,function(i){ # i = 2
                                  
                                  #message(paste0("Stats of Linestring file '",files_gps_names[i],"'"))
@@ -174,9 +129,10 @@ gen_stats <- furrr::future_map(seq_along(files_gps)[1]
                                  
                                  
                                  return(stats_dt)
-                               }) %>% data.table::rbindlist()
+                               }) %>% data.table::rbindlist(use.names = TRUE)
 
 gen_stats
+readr::write_rds(gen_stats,"article/data/general_stats.rds")
 gen_stats[,total_time := as.numeric(total_time) ]
 gen_stats[,lapply(.SD,weighted.mean,VTK)
           ,.SDcols = c("Q25","Q50","Q75","VTK_per_trip","VTK")]
@@ -276,169 +232,119 @@ ggplot2::ggsave(plot = p,
 
 
 
-# 2) Read fleet -----
+# 2) Emissions -----
+# obs: this needs to read fleet first
+#
+rm(list=ls())
+gc(reset=TRUE)
+devtools::load_all()
+devtools::document()
+devtools::load_all()
+# Read fleet 
 fleet_spo <- readr::read_rds("../../../data/fleet/bra_spo/bra_spo.rds")
-
 # adjust technology
 fleet_spo <- fleet_spo[fuel %in% "D",] # remove electric
 fleet_spo[euro %in% "V", Technology := "SCR"]
 fleet_spo[euro %in% "III",Technology := "-"]
 fleet_spo[,fleet_composition := N/sum(N)]
-
-
-# 3) Emission factor & Emissions -----
-# obs: this needs to read fleet first
-#
-
+setnames(fleet_spo,"Technology","tech")
+setnames(fleet_spo,"type_name_br","veh_type")
+setnames(fleet_spo,"year","model_year")
 dir.create("article/data/emissions/")
 
-# local EF
-temp_ef_br <- ef_brazil(pollutant = c("CO2","NOx","PM10","CH4"),
-                        veh_type = fleet_spo$type_name_br,
-                        model_year = as.numeric(fleet_spo$year),
-                        as_list = TRUE)
+future::plan(session = "multisession",workers = 19)
 
-# list-files
-files_gps <- list.files(path = 'article/data/gps_spo_linestring/',full.names = TRUE)
-files_gps_names <- list.files(path = 'article/data/gps_spo_linestring/',full.names = FALSE)
+emission_model(tp_model = "article/data/gps_line"
+               ,ef_model = "ef_brazil_scaled_euro"
+               ,pollutant = c("CO2","NOx","PM10","CH4")
+               ,fleet_data = fleet_spo
+               ,parallel = TRUE
+               ,ncores = 19
+               ,output_path = "article/data/emissions"
+               ,continue = TRUE
+               ,quiet = TRUE)
+
 
 future::plan(strategy =  "multisession",workers = 35)
 
-# Emissions estimates
-
-emission_estimate <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
-  
-  message(paste0("Emissions estimates of file '",files_gps_names[i],"'"))
-  
-  # Read
-  tmp_gps <- readr::read_rds(files_gps[i])
-  # EF scaled
-  data(ef_europe_db)
-  temp_ef <- base::suppressMessages(ef_euro_scaled(ef_local = units::set_units(temp_ef_br$EF,"g/km"),
-                                                   speed = units::set_units(tmp_gps$speed,"km/h"),
-                                                   veh_type = fleet_spo$type_name_eu,
-                                                   euro = fleet_spo$euro,
-                                                   fuel = fleet_spo$fuel,
-                                                   tech = fleet_spo$Technology,
-                                                   pollutant = c("CO2","NOx","PM10","CH4")) )
-  # EMISSION estimates
-  temp_emis <- emis(fleet_composition = fleet_spo$fleet_composition
-                    , dist = units::set_units(tmp_gps$dist,"km")
-                    , ef = temp_ef
-                    , aggregate = FALSE
-                    , as_list = TRUE)
-  
-  # # add fleet info
-  temp_emis$age = rep(fleet_spo$year
-                      ,data.table::uniqueN(temp_emis$pollutant))
-  temp_emis$fleet_composition <- rep(fleet_spo$fleet_composition
-                                     ,data.table::uniqueN(temp_emis$pollutant))
-  
-  
-  # add EF to list
-  temp_emis$EF = temp_ef$EF
-  
-  # cbind geometry and emisions
-  temp_emis$gps <- tmp_gps
-  
-  readr::write_rds(x = temp_emis
-                   ,file = paste0("article/data/emissions/",files_gps_names[i])
-                   ,compress = "gz")
-  return(NULL)
-},.options = furrr::furrr_options(seed=TRUE))
-#},.options = furrr::furrr_options(seed = 123))
-
 # 4) Processing -----
 ## a) Time processing -----
+rm(list=ls())
+gc(reset=TRUE)
 dir.create("article/data/emi_time/")
+devtools::load_all()
 
 # list-files
 files_gps <- list.files(path = 'article/data/emissions/',full.names = TRUE)
 files_gps_names <- list.files(path = 'article/data/emissions/',full.names = FALSE)
 
-future::plan(strategy =  "multisession",workers = 29)
+oplan <- future::plan(strategy =  "multisession",workers = 29)
+requiredPackages = c('data.table', 'sf', 'units')
 
-time_processing <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
+time_processing <- furrr::future_map(seq_along(files_gps),function(j){ # j = 1
   
   
   # message(paste0("Emi time of file '",files_gps_names[i],"'"))
   
-  
-  temp_emi <- readr::read_rds(files_gps[i])
-  emi_post <- emis_summary(emi = temp_emi,
-                           emi_vars = "emi",
-                           by = "time",
-                           time_column = data.table::as.ITime(temp_emi$gps$timestamp),
-                           pol_vars = "pollutant")
-  
+  #message(i)
+  temp_emi <- readr::read_rds(files_gps[j])
+  emi_post <- emis_summary(emi_list = temp_emi
+                           ,by = "time")
+  #emi_post <- units::drop_units(emi_post)
   readr::write_rds(x = emi_post
-                   ,file = paste0("article/data/emi_time/",files_gps_names[i])
+                   ,file = paste0("article/data/emi_time/",files_gps_names[j])
                    ,compress = 'gz')
   return(NULL)
-},.options = furrr::furrr_options(seed=TRUE))
+},.options = furrr::furrr_options(seed=TRUE
+                                  ,packages = requiredPackages))
 
 ## b) Spatial post-processing-----
+rm(list=ls())
+gc(reset = TRUE)
+devtools::load_all()
 
 dir.create("article/data/emi_grid/")
 
 # list-files
 files_gps <- list.files(path = 'article/data/emissions/',full.names = TRUE)
 files_gps_names <- list.files(path = 'article/data/emissions/',full.names = FALSE)
-
-
 temp_grid <- readr::read_rds("../../../data/grid/res9/bra_spo.rds")
 
-future::plan(strategy =  "multisession",workers = 29)
-
-spatial_f <- function(i){
-  gc(reset = TRUE, full = TRUE)
+spatial_f <- function(i){ # i = 2
   #message(paste0("Emi grid of file '",files_gps_names[i],"'"))
   
-  # read
   temp_emi <- readr::read_rds(files_gps[i])
-  # emi_to_dt
-  temp_emi_dt <-  emi_to_dt(emi_list = temp_emi,
-                            emi_vars = "emi",
-                            veh_vars = c("veh_type","fuel"),
-                            pol_vars = "pollutant")
-  namePol <- unique(temp_emi_dt$pollutant)
-  # sum emissions
-  temp_emi_dt <- temp_emi_dt[,lapply(.SD,sum, na.rm = TRUE),
-                             by = .(pollutant,segment_id), .SDcols = ("emi")]
-  # reshape
-  temp_emi_dt <- data.table::dcast(temp_emi_dt,segment_id ~ pollutant,value.var = "emi")
   
-  # rename segment_id
-  temp_emi$gps$segment_id <- 1:nrow(temp_emi$gps)
-  # 
-  temp_emi2 <- data.table::copy(temp_emi$gps)
-  data.table::setDT(temp_emi2)
-  temp_emi2 <- temp_emi2[temp_emi_dt,on = "segment_id"]
-  
-  # dt to sf to transform
-  temp_emi2 <- sf::st_as_sf(temp_emi2) %>% 
+  #  transform
+  temp_emi$tp_model <- temp_emi$tp_model %>% 
     sf::st_transform("+proj=utm +zone=23 +ellps=WGS84 +south +units=m")
   
   # grid
-  emi_grid <- base::suppressMessages(
-    emis_grid(data = temp_emi2,
-              emi = namePol, 
-              grid = temp_grid)
-  )
-  
+  output_grid <-  emis_grid(emi_list =temp_emi
+                            ,grid = temp_grid
+                            ,quiet = TRUE
+                            ,aggregate = TRUE)
   # write
-  readr::write_rds(x = emi_grid
+  readr::write_rds(x = output_grid
                    ,file = paste0("article/data/emi_grid/",files_gps_names[i])
                    ,compress = 'gz')
   return(NULL) 
 }
 
-# 
+
+oplan <- future::plan(strategy =  "multisession",workers = 29)
+requiredPackages = c('data.table', 'sf', 'units')
+
 spatial_processing <- furrr::future_map(seq_along(files_gps)
                                         ,spatial_f 
-                                        ,.options = furrr::furrr_options(seed=TRUE))
+                                        ,.options = furrr::furrr_options(
+                                          seed=TRUE
+                                          ,packages = requiredPackages))
 
 ## c) Vehicle-age post-processing-----
+rm(list=ls())
+gc(reset = TRUE)
+devtools::load_all()
 
 dir.create("article/data/emi_age/")
 
@@ -446,43 +352,30 @@ dir.create("article/data/emi_age/")
 files_gps <- list.files(path = 'article/data/emissions/',full.names = TRUE)
 files_gps_names <- list.files(path = 'article/data/emissions/',full.names = FALSE)
 
-gc(reset = TRUE, full = TRUE)
-
-future::plan(strategy =  "multisession",workers = 37)
-
-veh_age_processing <- furrr::future_map(seq_along(files_gps),function(i){ # i = 1
-  
-  message(paste0("Emi_age of file '",files_gps_names[i],"'"))
-  
+f_veh_agr <- function(i){ # i = 1
   # read
   temp_emi <- readr::read_rds(files_gps[i])
-  
-  # add VTK
-  temp_emi$VTK <- as.numeric(units::set_units(temp_emi$gps$dist,"km"))
-  
-  # emi_to_dt
-  temp_emi_dt <-  emi_to_dt(emi_list = temp_emi
-                            , emi_vars = "emi"
-                            , veh_vars = c("veh_type","euro"
-                                           ,"fuel","tech","age","fleet_composition")
-                            , pol_vars = "pollutant"
-                            , segment_vars = "VTK")
-  
-  # namePol <- unique(temp_emi_dt$pollutant)
-  data.table::setDT(temp_emi_dt)
-  # sum emissions
-  temp_emi_dt[,"total_emi" := sum(emi,na.rm = TRUE),by = c("veh_type","age","pollutant")]
-  temp_emi_dt[,"total_VTK" := sum(VTK,na.rm = TRUE),by = c("veh_type","age","pollutant")]
-  temp_emi_dt <- temp_emi_dt[,.SD[1], by = c("veh_type","age","pollutant")]
-  
-  # add VTK to vehicles
-  
+  # process
+  temp_emi_dt <- emis_summary(emi_list = temp_emi
+                              ,by = "vehicle"
+                              ,veh_vars = c("veh_type","euro"
+                                            ,"fuel","tech","fleet_composition"
+                                            ,"model_year"))
+  temp_emi_dt$VTK <- sum(units::set_units(temp_emi$tp_model$dist,"km"))
   # write
   readr::write_rds(x = temp_emi_dt
                    ,file = paste0("article/data/emi_age/",files_gps_names[i])
                    ,compress = 'gz')
   return(NULL)
-} ,.options = furrr::furrr_options(seed=TRUE))
+}
+
+future::plan(strategy =  "multisession",workers = 29)
+requiredPackages = c('data.table', 'sf', 'units')
+veh_age_processing <- furrr::future_map(seq_along(files_gps)
+                                        ,f_veh_agr 
+                                        ,.options = furrr::furrr_options(
+                                          seed=TRUE
+                                          ,packages = requiredPackages))
 
 # 5) Plot ------
 ## a) Temporal emissions ---------
@@ -491,6 +384,8 @@ veh_age_processing <- furrr::future_map(seq_along(files_gps),function(i){ # i = 
 # extrafont::font_import(paths = "C://Users//B138750230//Downloads//Latin-Modern-Roman-fontfacekit//web fonts/")
 
 # create folder
+rm(list=ls())
+gc(reset = TRUE)
 dir.create("article/data/plots/")
 
 # list-files
@@ -505,24 +400,23 @@ to_compartible_units <- function(i){  #i = my_time$CO2
   if(median(pol_digits,na.rm = TRUE) >= 6){return(units::set_units(i,"t"))}
 }
 
-future::plan(strategy =  "multisession",workers = 29)
-
 tmp_my_time <- lapply(files_gps, readr::read_rds) %>% 
   data.table::rbindlist(fill = TRUE)
 
+
+# 
+tmp_my_time[,sum(emi),by = .(pollutant)]
 # aggregate by summing
-colPol <- names(tmp_my_time)[!(names(tmp_my_time) %in% "time")]
-my_time <- tmp_my_time[,lapply(.SD,sum),by = time,.SDcols = colPol]
-my_time <- my_time[,(colPol) := lapply(.SD,to_compartible_units),.SDcols = colPol]
-my_time <- my_time[order(time),]
+my_time <- tmp_my_time[,sum(emi),by = .(timestamp_hour,pollutant)]
+my_time <- my_time[pollutant == "PM10"]
+data.table::setkeyv(my_time,cols = c("pollutant","timestamp_hour"))
+my_time[,V2 := to_compartible_units(V1)]
+
 
 # plot time-
-tmpTime1 <- data.table::copy(my_time)[,.SD,.SDcols = c("time","PM10")]
-names(tmpTime1) <- c("time","pol")
-getUnit_graphic <- units::deparse_unit(tmpTime1$pol) # kg
 
-ggplot(data = tmpTime1) + 
-  geom_bar(aes(x = time, y = as.numeric(pol),fill = as.numeric(pol)),
+ggplot(data = my_time) + 
+  geom_bar(aes(x = timestamp_hour, y = as.numeric(V2), fill = as.numeric(V2)),
            stat = "identity")+
   labs(title = NULL,
        x = "Hour",
@@ -538,6 +432,8 @@ ggplot2::ggsave(filename = "article/data/plots/temporal_PM10.png",
                 width = 18,height = 10,units = "cm",dpi = 300)
 
 ## b) Plot EF | MEF by age----------------
+rm(list=ls())
+gc(reset = TRUE)
 
 # list-files
 files_gps <- list.files(path = 'article/data/emi_age/',full.names = TRUE)
@@ -546,28 +442,34 @@ files_gps_names <- list.files(path = 'article/data/emi_age/',full.names = FALSE)
 # read files
 tmp_my_age <- lapply(files_gps, readr::read_rds) %>% 
   data.table::rbindlist()
-tmp_my_age[,VTK := as.numeric(as.character(VTK))]
+
+tmp_my_age[,VTK := units::drop_units(VTK)]
 tmp_my_age[,fleet_composition := as.numeric(as.character(fleet_composition))]
 tmp_my_age[,single_VTK := VTK * fleet_composition]
 
 # aggregate by sum
-tmp_my_age <- tmp_my_age[
-  ,c("emi","single_VTK","total_emi") := list(sum(emi),sum(single_VTK),sum(total_emi))
-  ,by =.(veh_type,age,pollutant)]
+tmp_my_age[,list(
+  emi = sum(emi)
+  ,single_VTK = sum(single_VTK)
+),by = .(pollutant)][,emi/single_VTK,by = .(pollutant)]
 
-tmp_my_age <- tmp_my_age[,.SD[1],by =.(veh_type,age,pollutant)]
+# aggregate by sum
+tmp_my_age <- tmp_my_age[,list(
+  emi = sum(emi)
+  ,single_VTK = sum(single_VTK)
+),by = .(veh_type,model_year,pollutant)]
 
 
 
 # fix/check names
 tmp_my_age[pollutant == "CO2",
-           emis := units::set_units(total_emi,"t") %>% as.numeric()]
+           emi_total := units::set_units(emi,"t") %>% as.numeric()]
 tmp_my_age[pollutant == "NOx"
-           ,emis := units::set_units(total_emi,"kg") %>% as.numeric()]
+           ,emi_total := units::set_units(emi,"kg") %>% as.numeric()]
 tmp_my_age[pollutant == "CH4"
-           ,emis := units::set_units(total_emi,"g") %>% as.numeric()]
+           ,emi_total := units::set_units(emi,"g") %>% as.numeric()]
 tmp_my_age[pollutant == "PM10"
-           ,emis := units::set_units(total_emi,"g") %>% as.numeric()]
+           ,emi_total := units::set_units(emi,"g") %>% as.numeric()]
 
 # estimate MEF
 
@@ -576,7 +478,7 @@ tmp_my_age
 
 
 # factors
-tmp_my_age[,age_f := factor(x = age,levels = 2008:2019)]
+tmp_my_age[,model_year_f := factor(x = model_year ,levels = 2008:2019)]
 tmp_my_age[, pollutant_f := dplyr::recode_factor(pollutant
                                                  , `CO2` = "CO[2] (t)"
                                                  , `PM10` = "PM[10] (g)"
@@ -589,7 +491,7 @@ tmp_my_age[, pollutant_meff := dplyr::recode_factor(pollutant
                                                     , `NOx` = "NO[X]")]
 ## c) Total_emi ----
 ggplot(data = tmp_my_age) + 
-  geom_bar(aes(y= emis,x = age_f,fill = veh_type)
+  geom_bar(aes(y= emi_total,x = model_year_f,fill = veh_type)
            ,stat = "identity",position = "dodge")+
   facet_wrap(~pollutant_f
              ,scales = "free"
@@ -613,7 +515,7 @@ ggsave(filename = "article/data/plots/emissions_age.png"
 ## d) MEF ----
 
 ggplot(data = tmp_my_age) + 
-  geom_bar(aes(y= as.numeric(mef),x = age_f,fill = veh_type)
+  geom_bar(aes(y= as.numeric(mef),x = model_year_f ,fill = veh_type)
            ,stat = "identity",position = "dodge")+
   facet_wrap(~pollutant_meff
              ,scales = "free"
@@ -634,6 +536,8 @@ ggsave(filename = "article/data/plots/MEF_age.png"
        ,width = 36,height = 30,dpi = 300,units = "cm",scale = 0.5)
 
 ## e) Spatial emissions -----
+rm(list=ls())
+gc(reset = TRUE)
 
 # read Tiles & Boundaries
 my_tile <- readr::read_rds("../../../data-raw/maptiles/mapbox/bra_spo.rds")
@@ -661,24 +565,32 @@ tmp_my_grid <- lapply(files_gps, readr::read_rds) %>%
   data.table::rbindlist()
 
 # aggregate by sum
-colPol <- names(tmp_my_grid)[!(names(tmp_my_grid) %in% "id" | names(tmp_my_grid) %in% "geometry")]
-my_grid <- tmp_my_grid[,(colPol) := lapply(.SD,sum),by = id,.SDcols = colPol]
-my_grid <- my_grid[,.SD[1],by = id]
+colPol <- names(tmp_my_grid)[!(names(tmp_my_grid) %in% c("id_hex","h3_resolution","geometry"))]
+
+my_grid <- tmp_my_grid[,(colPol) := lapply(.SD,sum),by = id_hex,.SDcols = colPol]
+my_grid <- my_grid[,.SD[1],by = id_hex]
 my_grid <- my_grid[,(colPol) := lapply(.SD,to_compartible_units),.SDcols = colPol]
 my_grid <- sf::st_as_sf(my_grid) %>% sf::st_transform(3857)
 
 
 # plot
-j = 3 # pol = "PM10"
-getUnit_map <- my_grid[[colPol[j]]][1] %>% units::deparse_unit()
+getUnit_map <- c("t","g") # CO2, PM10
+
 map_scale <- as.numeric(sf::st_bbox(my_grid)[3]) -  
   as.numeric(sf::st_bbox(my_grid)[1])
 plot_scale <- 10
 xlim_coord <- c( min(my_tile$x), max(my_tile$x))
 ylim_coord <- c( min(my_tile$y), max(my_tile$y))
 
-# plot spatial
-p <- ggplot() + 
+# organize data to plot
+bind_grid <- data.table::melt(data = my_grid
+                              , variable.name = "pollutant"
+                              , id.vars = c("id_hex","geometry","h3_resolution"))
+bind_grid <- sf::st_as_sf(bind_grid)
+bind_grid <- sf::st_set_crs(x = bind_grid,value = sf::st_crs(my_grid))
+
+# PM10
+pm10_plot <-  ggplot(bind_grid[bind_grid$pollutant == "PM10",]) + 
   # add raster
   geom_raster(data = my_tile, aes(x, y, fill = hex), alpha = 1) +
   coord_cartesian(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
@@ -688,21 +600,22 @@ p <- ggplot() +
   scale_y_continuous(expand = c(0, 0)) +
   # add emissions
   ggnewscale::new_scale_fill() +
-  geom_sf(data = my_grid
-          , aes(fill = as.numeric(get(colPol[j])))
+  geom_sf(aes(fill = as.numeric(value))
           , colour = "transparent")  +
   viridis::scale_fill_viridis(option = "D"
                               ,direction = -1) +
-  # add boundary
+  ## add boundary
   ggnewscale::new_scale_color() +
-  geom_sf(data = my_bound,aes(color = city_name)
+  geom_sf(data = my_bound,color = "black"
           ,linetype = "dashed",alpha = 0.5, size = 0.35,fill = NA) +
+  # facet_wrap(~pollutant)+
   scale_color_manual(values = "black"
                      ,labels = "City \nboundary",)+
   coord_sf(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
   # labels and theme
   labs(title = NULL
-       , subtitle =  NULL
+       #, subtitle =  expression(PM[10][] emissions)
+       , subtitle =  expression(PM[10][])
        , fill =  expression(PM[10][] (g))
        , color = NULL
        , x = NULL
@@ -727,13 +640,113 @@ p <- ggplot() +
         text = element_text(family = "LM Roman 10"),
         legend.box.background = element_rect(fill = "white",color = "white"),
         legend.box.margin = margin(3,3,3,3, "pt")) 
-# save
-ggplot2::ggsave(plot = p
-                ,filename = sprintf("article/data/plots/spatial_%s.png",colPol[j]),
-                scale = 0.7,width = 18,
-                bg = "white",
-                height = 20,units = "cm",dpi = 300)
 
+
+mapview::mapview(bind_grid[bind_grid$pollutant == "CO2",],zcol = "value")
+
+co2_plot <-  ggplot(bind_grid[bind_grid$pollutant == "CO2",]) + 
+  # add raster
+  geom_raster(data = my_tile, aes(x, y, fill = hex), alpha = 1) +
+  coord_cartesian(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
+  coord_equal() +
+  scale_fill_identity() +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  # add emissions
+  ggnewscale::new_scale_fill() +
+  geom_sf(aes(fill = as.numeric(value))
+          , colour = "transparent")  +
+  viridis::scale_fill_viridis(option = "E"
+                              ,direction = -1) +
+  ## add boundary
+  ggnewscale::new_scale_color() +
+  geom_sf(data = my_bound,color = "black"
+          ,linetype = "dashed",alpha = 0.5, size = 0.35,fill = NA) +
+  # facet_wrap(~pollutant)+
+  scale_color_manual(values = "black"
+                     ,labels = "City \nboundary",)+
+  coord_sf(xlim = xlim_coord, ylim = ylim_coord,expand = FALSE) +
+  # labels and theme
+  labs(title = "Total emissions"
+       , subtitle = expression(CO[2][])
+       , fill =  expression(CO[2][] (t))
+       , color = NULL
+       , x = NULL
+       , y = NULL) +
+  theme(legend.position = c(0.9,0.1)) + 
+  theme_minimal() + 
+  theme_void() +
+  theme(legend.position = c(0.8,0.3),
+        text = element_text(family = "LM Roman 10"),
+        legend.box.background = element_rect(fill = "white",color = "white"),
+        legend.box.margin = margin(3,3,3,3, "pt")) 
+
+co2_plot
+library(patchwork)
+both_plot <- co2_plot + pm10_plot
+both_plot
+# save
+ggplot2::ggsave(plot = both_plot
+                , filename = "article/data/plots/spatial_co2_pm10.png"
+                , scale = 0.7
+                , width = 32
+                , bg = "white"
+                , height = 20
+                , units = "cm"
+                , dpi = 300)
+
+
+## e1) zoom emissions ----
+
+get_bbox <- c(-46.63319,-23.54904) %>% 
+  sf::st_point(.,dim = "XY") %>% 
+  sf::st_sfc() %>% 
+  sf::st_set_crs(4326) %>% 
+  sf::st_transform(3857) %>% 
+  sf::st_buffer(5000) %>% 
+  sf::st_coordinates() %>% 
+  as.data.frame() %>% 
+  data.table::setDT() %>% 
+  .[,list(X =  c(min(X),max(X),max(X),min(X))
+          ,Y = c(min(Y),min(Y),max(Y),max(Y)))] %>% 
+  sfheaders::sf_polygon(.,x = "X",y = "Y") %>% 
+  sf::st_set_crs(x = .,3857)
+
+intersect_bound <- sf::st_intersection(x = bind_grid
+                                       ,y = get_bbox)
+
+lim_coord_zoom <- bind_grid %>%
+  sf::st_coordinates() %>% 
+  as.data.frame() %>% 
+  data.table::setDT() %>% 
+  .[,list(X =  c(min(X),max(X))
+          ,Y = c(min(Y),min(Y)))]
+
+lim_coord_zoom
+
+pm10_zoom <-  ggplot(intersect_bound[intersect_bound$pollutant == "PM10",]) + 
+  geom_sf(aes(fill = as.numeric(value))
+          , colour = "transparent")  +
+  viridis::scale_fill_viridis(option = "D"
+                              ,direction = -1) +
+  #coord_sf(xlim = lim_coord_zoom$X, ylim = lim_coord_zoom$Y,expand = FALSE) +
+  # labels and theme
+  labs(title = NULL
+       #, subtitle =  expression(PM[10][] emissions)
+       , subtitle =  expression(PM[10][])
+       , fill =  expression(PM[10][] (g))
+       , color = NULL
+       , x = NULL
+       , y = NULL) +
+  theme(legend.position = c(0.9,0.1)) + 
+  theme_minimal() + 
+  theme_void() +
+  theme(legend.position = c(0.8,0.3),
+        text = element_text(family = "LM Roman 10"),
+        legend.box.background = element_rect(fill = "white",color = "white"),
+        legend.box.margin = margin(3,3,3,3, "pt")) 
+
+pm10_zoom
 
 ## f) EF (@ speed = 34.12 kph) -----
 
