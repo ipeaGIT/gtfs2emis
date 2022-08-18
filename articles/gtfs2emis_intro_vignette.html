@@ -119,7 +119,7 @@
 <span><span class="co"># Dev. version with latest features</span></span>
 <span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ipeaGIT/gtfs2emis"</span><span class="op">)</span></span></code></pre></div>
-<p>A few sample of GTFS and fleet files are included in the package:</p>
+<p>A few samples of GTFS and fleet files are included in the package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">data_path</span><span class="op">)</span></span>
@@ -140,13 +140,13 @@
 <p>To estimate the emission levels from a given public transport system, users need to:</p>
 <ol style="list-style-type: decimal">
 <li>Input a <code>GTFS.zip</code> file</li>
-<li>Input <code>data.frame</code> with a few characteristics of the public transport fleet (such as age, vehicle type and fuel)</li>
-<li>Select an emission factor model from the models provided by the package, which currently includes models from the US, Europe and Brazil.</li>
-<li>Select which pollutants should be estimated from a list with of over 15 pollutants provided by the package.</li>
+<li>Input <code>data.frame</code> with a few characteristics of the public transport fleet (such as age, vehicle type, and fuel)</li>
+<li>Select an emission factor model from the models provided by the package, which currently includes models from the US, Europe, and Brazil.</li>
+<li>Select which pollutants should be estimated from a list of over 15 pollutants provided by the package.</li>
 </ol>
 </div>
 <div class="section level2">
-<h2 id="package-overview">4. Package overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
+<h2 id="package-overview">4. Package Overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
 </h2>
 <p>Before we start, let’s load a few packages we’ll be using in this vignette:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -174,7 +174,7 @@
 <p>To help users analyze the output from <code><a href="../reference/emission_model.html">emission_model()</a></code>, the <code>gtfs2emis</code> package has few functions:</p>
 <ul>
 <li>
-<code><a href="../reference/emis_summary.html">emis_summary()</a></code> to aggregate emission estimates by time of the day, vehicle type or road segment.</li>
+<code><a href="../reference/emis_summary.html">emis_summary()</a></code> to aggregate emission estimates by the time of the day, vehicle type, or road segment.</li>
 <li>
 <code><a href="../reference/emis_grid.html">emis_grid()</a></code> to spatially aggregate emission estimates using any custom spatial grid or polygons.</li>
 <li>
@@ -182,14 +182,14 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="demonstration-on-sample-data">5. Demonstration on sample data<a class="anchor" aria-label="anchor" href="#demonstration-on-sample-data"></a>
+<h2 id="demonstration-of-sample-data">5. Demonstration of sample data<a class="anchor" aria-label="anchor" href="#demonstration-of-sample-data"></a>
 </h2>
-<p>In this introductory vignette, we show a very simple case study using default parameters of the <code>gtfs2emis</code> package and where we assume that fleet characteristics are homogeneously distributed across the public transport routes. <a href="add_link">For advanced users, we have written another vignette</a> that demonstrates how <code>gtfs2emis</code> allows one to allocate specific vehicles into predefined routes, fix speeds and boarding times in the transport model, and adjust emissions factors. We have also written a separate vignette to help users build the <code>data.frame</code> with information on <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">fleet characteristics</a>.</p>
-<p>To demonstrate how the <code>gtfs2emis</code> package works, we will be using a small sample data for the city of Dublin, Ireland. In this example, we’ll be estimating <code>NOx</code> and <code>PM10</code> emissions of bus services on business days.</p>
+<p>In this introductory vignette, we show a very simple case study using default parameters of the <code>gtfs2emis</code> package and where we assume that fleet characteristics are homogeneously distributed across the public transport routes. <a href="add_link">For advanced users, we have written another vignette</a> that demonstrates how <code>gtfs2emis</code> allows one to allocate specific vehicles into predefined routes, fix speeds, and boarding times in the transport model, and adjust emissions factors. We have also written a separate vignette to help users build the <code>data.frame</code> with information on <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">fleet characteristics</a>.</p>
+<p>To demonstrate how the <code>gtfs2emis</code> package works, we will be using a small sample of data for the city of Dublin, Ireland. In this example, we’ll be estimating <code>NOx</code> and <code>PM10</code> emissions of bus services on business days.</p>
 <div class="section level3">
 <h3 id="transport-model">5.1 Transport model<a class="anchor" aria-label="anchor" href="#transport-model"></a>
 </h3>
-<p>The first step is to generate the transport model using <code>transport_model{gtfs2emis}</code>. This function converts GTFS data into a GPS-like <code>data.table</code>, transforming the output into a <code>sf-linestring</code>, which is the required input for emissions estimates. The user can input either a string with the file path where the a <code>gtfs.zip</code> file is stored, or an object of class <code>"gtfs" "list"</code>, generated with <code><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">gtfstools::read_gtfs()</a></code>.</p>
+<p>The first step is to generate the transport model using <code>transport_model{gtfs2emis}</code>. This function converts GTFS data into a GPS-like <code>data.table</code>, transforming the output into a <code>sf-linestring</code>, which is the required input for emissions estimates. The user can input either a string with the file path where the a <code>gtfs.zip</code> file is stored or an object of class <code>"gtfs" "list"</code>, generated with <code><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">gtfstools::read_gtfs()</a></code>.</p>
 <p>First, let’s read the GTFS data and filter only the transport services that run on</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># path to GTFS.zip file</span></span>
@@ -202,7 +202,7 @@
 <span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/filter_by_weekday.html" class="external-link">filter_by_weekday</a></span><span class="op">(</span><span class="va">gtfs</span>, </span>
 <span>                                     weekday <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'saturday'</span>, <span class="st">'sunday'</span><span class="op">)</span>, </span>
 <span>                                     keep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>Now let’s generate the transport model. This is the most time consuming part. If you want to, you can set a progress bar by calling the <code><a href="../reference/transport_model.html">transport_model()</a></code> function within <code><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">progressr::with_progress()</a></code>, as shown below.</p>
+<p>Now let’s generate the transport model. This is the most time-consuming part. If you want to, you can set a progress bar by calling the <code><a href="../reference/transport_model.html">transport_model()</a></code> function within <code><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">progressr::with_progress()</a></code>, as shown below.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># generate transport model</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span> </span>
@@ -248,7 +248,7 @@
 <span><span class="co">#&gt; 4 LINESTRING (-6.26464 53.356...</span></span>
 <span><span class="co">#&gt; 5 LINESTRING (-6.262147 53.35...</span></span>
 <span><span class="co">#&gt; 6 LINESTRING (-6.25953 53.348...</span></span></code></pre></div>
-<p>Here is how the output of the transport model looks like. In essence, it’s a trajectory <code>data.table sf linestring</code> with the space-time position and speed of trips segments for each single vehicle of the public transport system.</p>
+<p>Here is what the output of the transport model looks like. In essence, it’s a trajectory <code>data.table sf linestring</code> with the space-time position and speed of trip segments for every single vehicle of the public transport system.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">tp_model</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">speed</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -260,8 +260,8 @@
 <div class="section level3">
 <h3 id="fleet-data">5.2 Fleet data<a class="anchor" aria-label="anchor" href="#fleet-data"></a>
 </h3>
-<p>The next step is to prepare a <code>data.frame</code> with some characteristics of the public transport fleet. This can be either: - A simple table with the overall composition of the fleet. In this case, the <code>gtfs2emis</code> will assume that fleet is homogeneously distributed across all routes; OR - A detailed table that (1) brings info on the characteristics of each individual vehicle and, (2) tells the probability with which each vehicle type is allocated to each transport route.</p>
-<p>In this introductory vignette, we’ll be working with a simple table that tell us the proportion of buses in Dublin according to their vehicle type, Euro standard, technology and fuel. The table looks like this:</p>
+<p>The next step is to prepare a <code>data.frame</code> with some characteristics of the public transport fleet. This can be either: - A simple table with the overall composition of the fleet. In this case, the <code>gtfs2emis</code> will assume that fleet is homogeneously distributed across all routes; OR - A detailed table that (1) brings info on the characteristics of each vehicle and, (2) tells the probability with which each vehicle type is allocated to each transport route.</p>
+<p>In this introductory vignette, we’ll be working with a simple table that tells us the proportion of buses in Dublin according to their vehicle type, Euro standard, technology, and fuel. The table looks like this:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fleet_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span><span class="va">fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">fleet_file</span><span class="op">)</span></span>
@@ -271,13 +271,12 @@
 <span><span class="co">#&gt; 2 Ubus Std 15 - 18 t   IV    D 296        0.29540918     SCR</span></span>
 <span><span class="co">#&gt; 3 Ubus Std 15 - 18 t    V    D 148        0.14770459     SCR</span></span>
 <span><span class="co">#&gt; 4 Ubus Std 15 - 18 t   VI    D 548        0.54690619 DPF+SCR</span></span></code></pre></div>
-<p>Please note different emission factor models may require different information and that the fleet <code>data.frame</code> needs to be organized accordingly. In our current example for the city of Dublin, the fleet data must include certain columns with the fleet characteristics that are used in the Emep-EEA emission factor model: vehicle type, Euro standard, technology and fuel. To check which columns and sets of vehicle characteristics are required by a given emission factor model, check the <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">fleet data vignette</a>.</p>
+<p>Please note different emission factor models may require different information and that the fleet <code>data.frame</code> needs to be organized accordingly. In our current example for the city of Dublin, the fleet data must include certain columns with the fleet characteristics that are used in the EMEP-EEA emission factor model: vehicle type, Euro standard, technology, and fuel. To check which columns and sets of vehicle characteristics are required by a given emission factor model, check the <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">fleet data vignette</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="emission-model">5.3 Emission model<a class="anchor" aria-label="anchor" href="#emission-model"></a>
 </h3>
-<p>In the final step, we use the <code>emission_model{gtfs2emis}</code> function to estimate hot exhaust emissions of our public transport system. Here, the user needs to pass the results from <code><a href="../reference/transport_model.html">transport_model()</a></code>, some fleet data as described above, and select which emission factor model and pollutants should be considered. The <code><a href="../reference/emission_model.html">emission_model()</a></code> outputs a <code>list</code> with several <code>vectors</code> and <code>data.frames</code> with emission estimates and related information such as vehicle variables (<code>fuel</code>, <code>age</code>, <code>tech</code>, <code>euro</code>, <code>fleet_composition</code>), travel variables (<code>slope</code>, <code>load</code>, <code>gps</code>) or pollution (<code>EF</code>, <code>emi</code>).</p>
-<p>[BAZZO 666] acho q essa ultima frase texto pode ficar mais clara.</p>
+<p>In the final step, we use the <code>emission_model{gtfs2emis}</code> function to estimate the hot exhaust emissions of our public transport system. Here, the user needs to pass the results from <code><a href="../reference/transport_model.html">transport_model()</a></code>, some fleet data as described above, and select which emission factor model and pollutants should be considered. The <code><a href="../reference/emission_model.html">emission_model()</a></code> outputs a <code>list</code> with several <code>vectors</code> and <code>data.frames</code> with emission estimates and related information such as vehicle variables (<code>fuel</code>, <code>age</code>, <code>tech</code>, <code>euro</code>, <code>fleet_composition</code>), travel variables (<code>slope</code>, <code>load</code>, <code>gps</code>) or pollution (<code>EF</code>, <code>emi</code>).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emission_model.html">emission_model</a></span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span>,</span>
 <span>                           ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span>,</span>
@@ -296,7 +295,7 @@
 <div class="section level2">
 <h2 id="analyzing-emission-estimates">6 Analyzing emission estimates<a class="anchor" aria-label="anchor" href="#analyzing-emission-estimates"></a>
 </h2>
-<p>Sometimes, working with data stored in a long list can be tricky. For convenience, gtfs2emis package has a few functions to help users analyze the results of emission estimates. For example, you can use the <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> function to convert the output of <code><a href="../reference/emission_model.html">emission_model()</a></code> from a <code>list</code> to a <code>data.table</code> format:</p>
+<p>Sometimes, working with data stored in a long list can be tricky. For convenience, <code>gtfs2emis</code> package has a few functions to help users analyze the results of emission estimates. For example, you can use the <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> function to convert the output of <code><a href="../reference/emission_model.html">emission_model()</a></code> from a <code>list</code> to a <code>data.table</code> format:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_to_dt.html">emis_to_dt</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                     veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>, <span class="st">"euro"</span>, <span class="st">"fuel"</span><span class="op">)</span>,</span>
@@ -334,7 +333,7 @@
 <span><span class="co">#&gt;              veh_type pollutant              emi</span></span>
 <span><span class="co">#&gt; 1: Ubus Std 15 - 18 t       CO2 2.685654e+06 [g]</span></span>
 <span><span class="co">#&gt; 2: Ubus Std 15 - 18 t      PM10 8.732673e+01 [g]</span></span></code></pre></div>
-<p>It is also possible to summarize emission estimates by other vehicle characteristics AND pollutant.</p>
+<p>It is also possible to summarize emission estimates by other vehicle characteristics AND pollutants.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_by_veh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                          by <span class="op">=</span> <span class="st">"vehicle"</span>,</span>

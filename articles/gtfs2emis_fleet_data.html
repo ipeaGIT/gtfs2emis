@@ -102,20 +102,20 @@
 <div class="section level2">
 <h2 id="introduction">1. Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>When using the <code>gtfs2emis</code> package to estimate the emission levels of a given public transport system, users are required to input <code>data.frame</code> with a few characteristics of the public transport fleet, such as age or vehicle type. This vignette explains how users can build these this input showing with practical examples for fleet data in Brazilian, European and North American cities.</p>
+<p>When using the <code>gtfs2emis</code> package to estimate the emission levels of a given public transport system, users are required to input <code>data.frame</code> with a few characteristics of the public transport fleet, such as age or vehicle type. This vignette explains how users can build this input by showing practical examples for fleet data in Brazilian, European, and North American cities.</p>
 </div>
 <div class="section level2">
 <h2 id="simple-or-detailed-fleet-data-table">2. Simple or detailed fleet data table<a class="anchor" aria-label="anchor" href="#simple-or-detailed-fleet-data-table"></a>
 </h2>
-<p>The first thing to have in mind, is that the fleet <code>data.frame</code> can be either:</p>
+<p>The first thing to have in mind is that the fleet <code>data.frame</code> can be either:</p>
 <ul>
 <li>A <strong>simple</strong> table with the overall composition of the fleet. In this case, the <code>gtfs2emis</code> will assume that fleet is homogeneously distributed across all routes; OR</li>
-<li>A <strong>detailed</strong> table that brings info on the the proportion with which each vehicle type is allocated to each transport route.</li>
+<li>A <strong>detailed</strong> table that brings info on the proportion with which each vehicle type is allocated to each transport route.</li>
 </ul>
 <div class="section level4">
 <h4 id="example-of-simple-fleet-table">Example of <em>simple</em> fleet table<a class="anchor" aria-label="anchor" href="#example-of-simple-fleet-table"></a>
 </h4>
-<p>Here is an example of a simple fleet table that tell us the characteristics of the urban buses of Dublin, Ireland. The <code>N</code> and <code>fleet_composition</code> columns tell us, respectively, the absolute number and the proportion of buses with each combination of the following characteristics: vehicle type, Euro standard, technology and fuel. Note that <code>sum(fleet_df$fleet_composition)</code> has to be equal to 1.</p>
+<p>Here is an example of a simple fleet table that tells us the characteristics of the urban buses of Dublin, Ireland. The <code>N</code> and <code>fleet_composition</code> columns tell us, respectively, the absolute number and the proportion of buses with each combination of the following characteristics: vehicle type, Euro standard, technology, and fuel. Note that <code>sum(fleet_df$fleet_composition)</code> has to be equal to 1.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simple_fleet_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span><span class="va">simple_fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">simple_fleet_file</span><span class="op">)</span></span>
@@ -129,7 +129,7 @@
 <div class="section level4">
 <h4 id="example-of-detailed-fleet-table">Example of <em>detailed</em> fleet table<a class="anchor" aria-label="anchor" href="#example-of-detailed-fleet-table"></a>
 </h4>
-<p>This other table illustrates how a detailed fleet data table looks like, using the example of city of of Curitiba, Brazil. Here, the <code>N</code> column also tells us the absolute number of of buses with each combination of vehicle characteristics. However, note that this table brings a <code>shape_id</code> column. This columns indicates which specific vehicles should be allocated to run on predefined <code>shape_id</code>s of the GTFS data. For example, it allows users to assign articulated buses to specific routes in the transport network.</p>
+<p>This other table illustrates what a detailed fleet data table looks like, using the example of the city of Curitiba, Brazil. Here, the <code>N</code> column also tells us the absolute number of buses with each combination of vehicle characteristics. However, note that this table brings a <code>shape_id</code> column. These columns indicate which specific vehicles should be allocated to run on predefined <code>shape_id</code>s of the GTFS data. For example, it allows users to assign articulated buses to specific routes in the transport network.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">detailed_fleet_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/bra_cur_fleet.txt"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span><span class="va">detailed_fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">detailed_fleet_file</span><span class="op">)</span></span>
@@ -146,7 +146,7 @@
 <div class="section level2">
 <h2 id="fleet-characteristics-vary-by-emission-factor-model">3. Fleet characteristics vary by emission factor model<a class="anchor" aria-label="anchor" href="#fleet-characteristics-vary-by-emission-factor-model"></a>
 </h2>
-<p>Please note that the columns in your fleet data table should differ depending on the data requirements of the emission factor model the user wants to consider. For example, the emission factor models for US cities (EMFAC2017 and MOVES3), developed by CARB and EPA, only require information on the type of bus, the fuel used and age of the vehicle. Meanwhile, the EMEP model developed by the European Environment Agency require much more info, including: vehicle type, Euro standard, technology and fuel. It also allow users to consider the passenger load and slope of streets.</p>
+<p>Please note that the columns in your fleet data table should differ depending on the data requirements of the emission factor model the user wants to consider. For example, the emission factor models for US cities (EMFAC2017 and MOVES3), developed by CARB and EPA, only require information on the type of bus, the fuel used, and age of the vehicle. Meanwhile, the EMEP model developed by the European Environment Agency requires much more info, including vehicle type, Euro standard, technology, and fuel. It also allows users to consider the passenger load and slope of streets.</p>
 <p>To check which columns and sets of vehicle characteristics are required by each emission factor model, the user can read the documentation of the emission factor functions listed in the table below:</p>
 <table class="table">
 <colgroup>
@@ -198,7 +198,7 @@
 <div class="section level2">
 <h2 id="examples-of-fleet-data-tables">4. Examples of fleet data tables<a class="anchor" aria-label="anchor" href="#examples-of-fleet-data-tables"></a>
 </h2>
-<p>Now here are a few examples of <code>data.frames</code> with the fleet characteristics required by different emission factor models. Note that these examples are built as a simple fleet table that includes the <code>fleet_composition</code>, indicating what proportion of the fleet is represented by vehicles with each characteristics.</p>
+<p>Now here are a few examples of <code>data.frames</code> with the fleet characteristics required by different emission factor models. Note that these examples are built as a simple fleet table that includes the <code>fleet_composition</code>, indicating what proportion of the fleet is represented by vehicles with each characteristic.</p>
 <div class="section level3">
 <h3 id="brazil-environmental-company-of-são-paulo-cetesb">4.1 Brazil: Environmental Company of São Paulo (CETESB):<a class="anchor" aria-label="anchor" href="#brazil-environmental-company-of-s%C3%A3o-paulo-cetesb"></a>
 </h3>

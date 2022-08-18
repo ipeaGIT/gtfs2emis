@@ -102,8 +102,8 @@
 <div class="page-header"><h1 id="gtfs2emis-generating-estimates-of-public-transport-emissions-from-gtfs-data-">gtfs2emis: Generating estimates of public transport emissions from GTFS data <img align="right" src="reference/figures/logo.png" alt="logo" width="180"><a class="anchor" aria-label="anchor" href="#gtfs2emis-generating-estimates-of-public-transport-emissions-from-gtfs-data-"></a>
 </h1></div>
 
-<p><strong>gtfs2emis</strong> is an R package to estimate the emission levels of public transport vehicles based on General Transit Feed Specification (GTFS) data. The package requires two main inputs: i) public transport data in GTFS standard format; and ii) some basic information on fleet characteristics such as vehicle age, technology, fuel and Euro stage. As it stands, the the package estimates several pollutants (see table below) at high spatial and temporal resolutions. Pollution levels can be calculated for specific transport routes, trips, time of the day or for the transport system as a whole. The output with emission estimates can be extracted in different formats, supporting analysis on how emission levels vary across space, time and by fleet characteristics.</p>
-<!-- The **gtfs2emis** package leverages on standard GTFS data format and develops a computational method that can be easily used to estimate enviromental emissions of several public transport systems around the world. One of the core advantages of **gtfs2emis** is that it makes extremely easy to simulate how the environmental performance of a public transport system would change under different policy scenarios. Simple modifications to the package input would allow one to estimate how emissions levels could be affected by different interventions such as electrifying the fleet, building new transport corridors, changing route itineraries or frequencies and fleet renewal. --><div class="section level3">
+<p><strong>gtfs2emis</strong> is an R package to estimate the emission levels of public transport vehicles based on General Transit Feed Specification (GTFS) data. The package requires two main inputs: i) public transport data in GTFS standard format; and ii) some basic information on fleet characteristics such as vehicle age, technology, fuel, and Euro stage. As it stands, the package estimates several pollutants (see table below) at high spatial and temporal resolutions. Pollution levels can be calculated for specific transport routes, trips, time of the day, or for the transport system as a whole. The output with emission estimates can be extracted in different formats, supporting analysis of how emission levels vary across space, time, and by fleet characteristics.</p>
+<!-- The **gtfs2emis** package leverages on standard GTFS data format and develops a computational method that can be easily used to estimate the enviromental emissions of several public transport systems around the world. One of the core advantages of **gtfs2emis** is that it makes it extremely easy to simulate how the environmental performance of a public transport system would change under different policy scenarios. Simple modifications to the package input would allow one to estimate how emissions levels could be affected by different interventions such as electrifying the fleet, building new transport corridors, changing route itineraries or frequencies, and fleet renewal. --><div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
 <p><code>gtfs2emis</code> will soon be on CRAN. In the meantime, you can install the dev version from Github:</p>
@@ -130,7 +130,7 @@
 <li>
 <code><a href="reference/emis_to_dt.html">emis_to_dt()</a></code> to convert the output of <code><a href="reference/emission_model.html">emission_model()</a></code> from <code>list</code> to <code>data.table</code>.</li>
 <li>
-<code><a href="reference/emis_summary.html">emis_summary()</a></code> to aggregate emission estimates by time of the day, vehicle type or road segment.</li>
+<code><a href="reference/emis_summary.html">emis_summary()</a></code> to aggregate emission estimates by the time of the day, vehicle type, or road segment.</li>
 <li>
 <code><a href="reference/emis_grid.html">emis_grid()</a></code> to spatially aggregate emission estimates using any custom spatial grid or polygons.</li>
 </ol>
@@ -138,7 +138,7 @@
 <div class="section level2">
 <h2 id="demonstration-on-sample-data">Demonstration on sample data<a class="anchor" aria-label="anchor" href="#demonstration-on-sample-data"></a>
 </h2>
-<p>To illustrate functionality, the package includes small sample data sets of the public transport and fleet of Curitiba (Brazil), Detroit (USA) and Dublin (Ireland). Estimating the emissions of a given public transport system using <code>gtfs2emis</code> can be done three simple steps, as follows.</p>
+<p>To illustrate functionality, the package includes small sample data sets of the public transport and fleet of Curitiba (Brazil), Detroit (USA), and Dublin (Ireland). Estimating the emissions of a given public transport system using <code>gtfs2emis</code> can be done in three simple steps, as follows.</p>
 <div class="section level3">
 <h3 id="1-run-transport-model">1. Run transport model<a class="anchor" aria-label="anchor" href="#1-run-transport-model"></a>
 </h3>
@@ -154,8 +154,8 @@
 <div class="section level3">
 <h3 id="2-prepare-fleet-data">2. Prepare fleet data<a class="anchor" aria-label="anchor" href="#2-prepare-fleet-data"></a>
 </h3>
-<p>The second step is to prepare a <code>data.frame</code> with some characteristics of the public transport fleet. Note that different emission factor models may require information on different fleet characteristics, such as vehicle age, type, Euro standard, technology and fuel. This can be either: - A simple table with the overall composition of the fleet. In this case, the <code>gtfs2emis</code> will assume that fleet is homogeneously distributed across all routes; OR - A detailed table that (1) brings info on the characteristics of each individual vehicle and, (2) tells the probability with which each vehicle type is allocated to each transport route.</p>
-<p>Here is how a simple fleet table to be used with the EMEP-EEA emission factor model looks like:</p>
+<p>The second step is to prepare a <code>data.frame</code> with some characteristics of the public transport fleet. Note that different emission factor models may require information on different fleet characteristics, such as vehicle age, type, Euro standard, technology, and fuel. This can be either: - A simple table with the overall composition of the fleet. In this case, the <code>gtfs2emis</code> will assume that fleet is homogeneously distributed across all routes; OR - A detailed table that (1) brings info on the characteristics of each vehicle and, (2) tells the probability with which each vehicle type is allocated to each transport route.</p>
+<p>Here is what a simple fleet table to be used with the EMEP-EEA emission factor model looks like:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fleet_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span></span>
@@ -188,7 +188,7 @@
 <div class="section level2">
 <h2 id="emission-factor-models-and-pollutants-available">Emission factor models and pollutants available<a class="anchor" aria-label="anchor" href="#emission-factor-models-and-pollutants-available"></a>
 </h2>
-<p>Currently the <code>gtfs2emis</code> package provides a computational method to estimate running exhaust emissions factors based on the following emission factor models:</p>
+<p>Currently, the <code>gtfs2emis</code> package provides a computational method to estimate running exhaust emissions factors based on the following emission factor models:</p>
 <ul>
 <li>Brazil<ul><li>
 <a href="https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/" class="external-link">CETESB</a>: 2019 model from the Environmental Company of São Paulo (CETESB)</li></ul>
@@ -205,7 +205,7 @@
 </li>
 </ul>
 <div class="section level4">
-<h4 id="list-of-pollutants-available-by-emission-factor-model">List of pollutants available by emission factor model<a class="anchor" aria-label="anchor" href="#list-of-pollutants-available-by-emission-factor-model"></a>
+<h4 id="list-of-pollutants-available-by-emission-factor-models">List of pollutants available by emission factor models<a class="anchor" aria-label="anchor" href="#list-of-pollutants-available-by-emission-factor-models"></a>
 </h4>
 <table class="table">
 <colgroup>
@@ -223,7 +223,7 @@
 </tr>
 <tr class="even">
 <td>EMFAC2017/CARB</td>
-<td>CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX and TOG (Total Organic Gases)</td>
+<td>CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)</td>
 </tr>
 <tr class="odd">
 <td>EMEP/EEA</td>
@@ -231,7 +231,7 @@
 </tr>
 <tr class="even">
 <td>MOVES3/EPA</td>
-<td>CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG and VOC</td>
+<td>CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC</td>
 </tr>
 </tbody>
 </table>
@@ -254,12 +254,12 @@
 <tr class="odd">
 <td>CETESB</td>
 <td>Micro, Standard, Articulated</td>
-<td>Age, Fuel, EURO stantard</td>
+<td>Age, Fuel, EURO standard</td>
 </tr>
 <tr class="even">
 <td>EMEP/EAA</td>
 <td>Micro, Standard, Articulated</td>
-<td>Fuel, EURO stantard, technology, load, slope</td>
+<td>Fuel, EURO standard, technology, load, slope</td>
 </tr>
 <tr class="odd">
 <td>EMFAC2017/CARB</td>
@@ -288,7 +288,7 @@
 <h3 id="related-packages">
 <strong>Related packages</strong><a class="anchor" aria-label="anchor" href="#related-packages"></a>
 </h3>
-<p>There several others transport emissions models available for different purposes (see below). As of today, <code>gtfs2emis</code> is the only method with the capability to estimate emissions of public transport systems using GTFS data.</p>
+<p>There are several others transport emissions models available for different purposes (see below). As of today, <code>gtfs2emis</code> is the only method with the capability to estimate emissions of public transport systems using GTFS data.</p>
 <ul>
 <li>R: <a href="https://github.com/atmoschem/vein" class="external-link">vein</a> Bottom-up and top-down inventory using GPS data.</li>
 <li>R: <a href="https://github.com/atmoschem/emissv" class="external-link">EmissV</a> Top-down inventory.</li>
@@ -302,7 +302,7 @@
 <strong>Future enhancements</strong><a class="anchor" aria-label="anchor" href="#future-enhancements"></a>
 </h3>
 <ul>
-<li>Include cold-start, resuspension and evaporative emissions factors</li>
+<li>Include cold-start, resuspension, and evaporative emissions factors</li>
 <li>Add railway emission factors</li>
 </ul>
 <hr>
@@ -310,7 +310,7 @@
 <div class="section level3">
 <h3 id="credits-">Credits <img align="right" src="reference/figures/ipea_logo.png" alt="ipea" width="300"><a class="anchor" aria-label="anchor" href="#credits-"></a>
 </h3>
-<p>The <strong>gtfs2emis</strong> package is developed by a team at the Institute for Applied Economic Research (IPEA) with collaboration from the National Institute for Space Research (INPE), both from Brazil. You can cite this package as:</p>
+<p>The <strong>gtfs2emis</strong> package is developed by a team at the Institute for Applied Economic Research (IPEA) in collaboration from the National Institute for Space Research (INPE), both from Brazil. You can cite this package as:</p>
 <p>Bazzo, J.P.; Pereira, R.H.M.; Andrade, P.R.; (2020) gtfs2emis: Generating estimates of public transport emissions from GTFS data</p>
 </div>
 </div>

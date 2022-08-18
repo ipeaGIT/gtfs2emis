@@ -99,11 +99,11 @@
 
     
     
-<p>Emission factors (EF) provides information on the mass of pollutants by traveled distance or engine power. In order to understand how the overall emissions are impacted by a given public transport network and vehicle fleet, it is useful to check the emission factors of an individual vehicle. This session helps users to explore the available EF data.</p>
+<p>Emission factors (EF) provide information on the mass of pollutants by traveled distance or engine power. To understand how the overall emissions are impacted by a given public transport network and vehicle fleet, it is useful to check the emission factors of an individual vehicle. This session helps users to explore the available EF data.</p>
 <div class="section level2">
 <h2 id="available-functions">Available functions<a class="anchor" aria-label="anchor" href="#available-functions"></a>
 </h2>
-<p><code>gtfs2emis</code> currently supports emission factor from four agencies databases, while detailed reports containing detailed information can be found in the websites:</p>
+<p><code>gtfs2emis</code> currently supports emission factors from four agencies’ databases, while detailed reports containing detailed information can be found on the websites:</p>
 <ul>
 <li>Environment Company of São Paulo —- <a href="https://cetesb.sp.gov.br/veicular/" class="external-link">CETESB</a>
 </li>
@@ -118,7 +118,7 @@
 <div class="section level2">
 <h2 id="visualizing-data">Visualizing data<a class="anchor" aria-label="anchor" href="#visualizing-data"></a>
 </h2>
-<p>Before checking EF graphically, user needs to select the desired emission factor function based on fleet characteristics — as shown in <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">Defining Fleet data vignette</a>. This section we will use <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code> function to illustrate how emissions varies according to vehicle type, mean speed and pollutant.</p>
+<p>Before checking EF graphically, the user needs to select the desired emission factor function based on fleet characteristics — as shown in <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">Defining Fleet data vignette</a>. In this section we will use the <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code> function to illustrate how emissions vary according to vehicle type, mean speed, and pollutant.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/" class="external-link">gtfs2emis</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/units/" class="external-link">units</a></span><span class="op">)</span></span>
@@ -161,7 +161,7 @@
 <span><span class="co">#&gt; 4:          4</span></span>
 <span><span class="co">#&gt; 5:          5</span></span>
 <span><span class="co">#&gt; 6:          6</span></span></code></pre></div>
-<p>Plotting a the speed-dependent EF according to vehicle type (<code>veh_type</code>) and euro standard (<code>euro</code>).</p>
+<p>Plotting the speed-dependent EF according to vehicle type (<code>veh_type</code>) and euro standard (<code>euro</code>).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ef_europe_dt</span><span class="op">$</span><span class="va">name_fleet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ef_europe_dt</span><span class="op">$</span><span class="va">veh_type</span>, <span class="st">"/ Euro"</span></span>
 <span>                                 , <span class="va">ef_europe_dt</span><span class="op">$</span><span class="va">euro</span><span class="op">)</span></span>
@@ -174,7 +174,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pollutant</span>,scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="gtfs2emis_emission_factor_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-<p>In few situations in <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code>, when the information of vehicle technology does not match the existing database, the package display a message mentioning the returned technology. User can either select an existing data for the combining variables (<code>euro</code>, <code>tech</code>, <code>veh_type</code> and <code>pollutant</code>), or accept the assumed change in vehicle technology.</p>
+<p>In a few situations in <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code>, when the information on vehicle technology does not match the existing database, the package display a message mentioning the returned technology. Users can either select existing data for the combining variables (<code>euro</code>, <code>tech</code>, <code>veh_type</code>, and <code>pollutant</code>), or accept the assumed change in vehicle technology.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ef_europe_co2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ef_europe_emep.html">ef_europe_emep</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">100</span>,<span class="st">"km/h"</span><span class="op">)</span></span>
 <span>                                ,veh_type <span class="op">=</span> <span class="st">"Ubus Std 15 - 18 t"</span></span>
@@ -202,11 +202,11 @@
 <div class="section level3">
 <h3 id="exploring-scaled-emission-factors">Exploring Scaled Emission Factors<a class="anchor" aria-label="anchor" href="#exploring-scaled-emission-factors"></a>
 </h3>
-<p>One special case is of EF usage is the Scaled Emission Factors. In the databases provided by the package, CETESB (<code><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb()</a></code>) methodology reports EF that are not dependent on speed. If one needs to scale or adjust the local EF in order to make them speed-dependent, the function <code><a href="../reference/ef_scaled_euro.html">ef_scaled_euro()</a></code> can be applied.</p>
+<p>One special case is of EF usage is the Scaled Emission Factors. In the databases provided by the package, CETESB (<code><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb()</a></code>) methodology reports EF that are not dependent on speed. If one needs to scale or adjust the local EF to make them speed-dependent, the function <code><a href="../reference/ef_scaled_euro.html">ef_scaled_euro()</a></code> can be applied.</p>
 <p>The scaled emission factor is related to speed by the expression</p>
 <p><span class="math display">\[
 EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)}, 
-\]</span> where <span class="math inline">\(EF_{scaled}(V)\)</span> is the scaled emission factors for each street link, <span class="math inline">\(EF_{local}\)</span> is the local emission factor, <span class="math inline">\(EF_{euro}(V)\)</span> and <span class="math inline">\(EF_{euro}(SDC)\)</span> are the EMEP/EEA emission factor the speed of V and the average urban driving speed SDC, respectively.</p>
+\]</span> where <span class="math inline">\(EF_{scaled}(V)\)</span> is the scaled emission factor for each street link, <span class="math inline">\(EF_{local}\)</span> is the local emission factor, <span class="math inline">\(EF_{euro}(V)\)</span> and <span class="math inline">\(EF_{euro}(SDC)\)</span> are the EMEP/EEA emission factor the speed of V and the average urban driving speed SDC, respectively.</p>
 <p>The scaled behavior of EF can be verified graphically when we plot the <span class="math inline">\(EF_{local}\)</span>, <span class="math inline">\(EF_{scaled}(V)\)</span>, and the <span class="math inline">\(EF_{euro}(V)\)</span> that is used as the base. It can be done in five steps:</p>
 <ol style="list-style-type: decimal">
 <li>Build a data.frame of fleet relating the local and European fleet characteristics</li>
@@ -308,7 +308,7 @@ EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)},
 <li>
 <code>data(ef_europe_emep)</code> from European Environment Agency (EMEP/EEA)</li>
 </ul>
-<p>The data presented in the agencies website and software was downloaded and pre-processed in <code>gtfs2emis</code> in order to be easily read by the emission factor functions. Users can also access the scripts used to the process raw data in the <a href="%22https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw%22" class="external-link">gtfs2emis GitHub repository</a>.</p>
+<p>The data presented on the agencies website and software was downloaded and pre-processed in <code>gtfs2emis</code> to be easily read by the emission factor functions. Users can also access the scripts used to process raw data in the <a href="%22https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw%22" class="external-link">gtfs2emis GitHub repository</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="report-a-bug">Report a bug<a class="anchor" aria-label="anchor" href="#report-a-bug"></a>
