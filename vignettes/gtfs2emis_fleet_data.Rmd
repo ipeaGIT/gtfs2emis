@@ -17,19 +17,19 @@ knitr::opts_chunk$set(
 
 # 1. Introduction
 
-When using the `gtfs2emis` package to estimate the emission levels of a given public transport system, users are required to input `data.frame` with a few characteristics of the public transport fleet, such as age or vehicle type. This vignette explains how users can build these this input showing with practical examples for fleet data in Brazilian, European and North American cities.
+When using the `gtfs2emis` package to estimate the emission levels of a given public transport system, users are required to input `data.frame` with a few characteristics of the public transport fleet, such as age or vehicle type. This vignette explains how users can build this input by showing practical examples for fleet data in Brazilian, European, and North American cities.
 
 
 # 2. Simple or detailed fleet data table
 
-The first thing to have in mind, is that the fleet `data.frame` can be either:
+The first thing to have in mind is that the fleet `data.frame` can be either:
 
 - A **simple** table with the overall composition of the fleet. In this case, the `gtfs2emis` will assume that fleet is homogeneously distributed across all routes; OR
-- A **detailed** table that brings info on the the proportion with which each vehicle type is allocated to each transport route.
+- A **detailed** table that brings info on the proportion with which each vehicle type is allocated to each transport route.
 
 ### Example of *simple* fleet table
 
-Here is an example of a simple fleet table that tell us the characteristics of the urban buses of Dublin, Ireland. The `N` and `fleet_composition` columns tell us, respectively, the absolute number and the proportion of buses with each combination of the following characteristics: vehicle type, Euro standard, technology and fuel. Note that `sum(fleet_df$fleet_composition)` has to be equal to 1.
+Here is an example of a simple fleet table that tells us the characteristics of the urban buses of Dublin, Ireland. The `N` and `fleet_composition` columns tell us, respectively, the absolute number and the proportion of buses with each combination of the following characteristics: vehicle type, Euro standard, technology, and fuel. Note that `sum(fleet_df$fleet_composition)` has to be equal to 1.
 
 ```{r, message = FALSE}
 simple_fleet_file <- system.file("extdata/irl_dub_fleet.txt", package = "gtfs2emis")
@@ -40,7 +40,7 @@ head(simple_fleet_df)
 
 ### Example of *detailed* fleet table
 
-This other table illustrates how a detailed fleet data table looks like, using the example of city of of Curitiba, Brazil. Here, the `N` column also tells us the absolute number of of buses with each combination of vehicle characteristics. However, note that this table brings a `shape_id` column. This columns indicates which specific vehicles should be allocated to run on predefined `shape_id`s of the GTFS data. For example, it allows users to assign articulated buses to specific routes in the transport network.
+This other table illustrates what a detailed fleet data table looks like, using the example of the city of Curitiba, Brazil. Here, the `N` column also tells us the absolute number of buses with each combination of vehicle characteristics. However, note that this table brings a `shape_id` column. These columns indicate which specific vehicles should be allocated to run on predefined `shape_id`s of the GTFS data. For example, it allows users to assign articulated buses to specific routes in the transport network.
 
 ```{r, message = FALSE}
 detailed_fleet_file <- system.file("extdata/bra_cur_fleet.txt", package = "gtfs2emis")
@@ -52,7 +52,7 @@ head(detailed_fleet_df)
 
 # 3. Fleet characteristics vary by emission factor model
 
-Please note that the columns in your fleet data table should differ depending on the data requirements of the emission factor model the user wants to consider. For example, the emission factor models for US cities (EMFAC2017 and MOVES3), developed by CARB and EPA, only require information on the type of bus, the fuel used and age of the vehicle. Meanwhile, the EMEP model developed by the European Environment Agency require much more info, including: vehicle type, Euro standard, technology and fuel. It also allow users to consider the passenger load and slope of streets.
+Please note that the columns in your fleet data table should differ depending on the data requirements of the emission factor model the user wants to consider. For example, the emission factor models for US cities (EMFAC2017 and MOVES3), developed by CARB and EPA, only require information on the type of bus, the fuel used, and age of the vehicle. Meanwhile, the EMEP model developed by the European Environment Agency requires much more info, including vehicle type, Euro standard, technology, and fuel. It also allows users to consider the passenger load and slope of streets.
 
 To check which columns and sets of vehicle characteristics are required by each emission factor model, the user can read the documentation of the emission factor functions listed in the table below:
 
@@ -68,7 +68,7 @@ To check which columns and sets of vehicle characteristics are required by each 
 
 # 4. Examples of fleet data tables
 
-Now here are a few examples of `data.frames` with the fleet characteristics required by different emission factor models. Note that these examples are built as a simple fleet table that includes the `fleet_composition`, indicating what proportion of the fleet is represented by vehicles with each characteristics.
+Now here are a few examples of `data.frames` with the fleet characteristics required by different emission factor models. Note that these examples are built as a simple fleet table that includes the `fleet_composition`, indicating what proportion of the fleet is represented by vehicles with each characteristic.
 
 
 ## 4.1 Brazil: Environmental Company of São Paulo (CETESB):
