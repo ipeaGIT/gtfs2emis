@@ -1,1 +1,4 @@
 *.html
+article/*
+tests/test_joao/*
+tests/test_rafa/*
