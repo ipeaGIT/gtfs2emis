@@ -90,7 +90,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Exploring Emission Factors</h1>
             
-            <h4 data-toc-skip class="date">2022-08-18</h4>
+            <h4 data-toc-skip class="date">2022-08-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/HEAD/vignettes/gtfs2emis_emission_factor.Rmd" class="external-link"><code>vignettes/gtfs2emis_emission_factor.Rmd</code></a></small>
       <div class="hidden name"><code>gtfs2emis_emission_factor.Rmd</code></div>
@@ -99,33 +99,34 @@
 
     
     
-<p>Emission factors (EF) provide information on the mass of pollutants by traveled distance or engine power. To understand how the overall emissions are impacted by a given public transport network and vehicle fleet, it is useful to check the emission factors of an individual vehicle. This session helps users to explore the available EF data.</p>
+<p>Emission factor models tell us the mass of pollutants that are expected to be emitted by a given vehicle given a few characteristics such as vehicle age, type, fuel, technology, speed, and distance traveled. Various environmental agencies develop these functional relations based on data collected from local measurements. Understanding how emission factor data work is very important to understand how the emission estimates of a given vehicle or public transport system are influenced by the methodological choices of which emission factor model should be used. This vignette helps users explore the emission factors data available in the <code>gtfs2emis</code> package.</p>
 <div class="section level2">
-<h2 id="available-functions">Available functions<a class="anchor" aria-label="anchor" href="#available-functions"></a>
+<h2 id="available-emission-factor-models">Available emission factor models<a class="anchor" aria-label="anchor" href="#available-emission-factor-models"></a>
 </h2>
-<p><code>gtfs2emis</code> currently supports emission factors from four agencies’ databases, while detailed reports containing detailed information can be found on the websites:</p>
+<p>The <code>gtfs2emis</code> package currently includes emission factor data from four environmental agencies. Reports with detailed information and methos on how these emission factor data were originally calculated can be found on the agencies’ websites in the links below</p>
 <ul>
-<li>Environment Company of São Paulo —- <a href="https://cetesb.sp.gov.br/veicular/" class="external-link">CETESB</a>
+<li>Brazil, Environment Company of São Paulo — <a href="https://cetesb.sp.gov.br/veicular/" class="external-link">CETESB</a>
 </li>
-<li>Environmental Protection Agency — <a href="https://www.epa.gov/moves" class="external-link">MOVES3 Model</a>
+<li>United States, Environmental Protection Agency — <a href="https://www.epa.gov/moves" class="external-link">MOVES3 Model</a>
 </li>
-<li>California Air Resources Board — <a href="https://arb.ca.gov/emfac/emissions-inventory" class="external-link">EMFAC2017 model</a>
+<li>United States, California Air Resources Board — <a href="https://arb.ca.gov/emfac/emissions-inventory" class="external-link">EMFAC2017 model</a>
 </li>
-<li>European Environment Agency — <a href="https://www.eea.europa.eu//publications/emep-eea-guidebook-2019" class="external-link">EMEP-EEA</a>
+<li>Europe, European Environment Agency — <a href="https://www.eea.europa.eu//publications/emep-eea-guidebook-2019" class="external-link">EMEP-EEA</a>
 </li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="visualizing-data">Visualizing data<a class="anchor" aria-label="anchor" href="#visualizing-data"></a>
+<h2 id="visualizing-emission-factor-data">Visualizing emission factor data<a class="anchor" aria-label="anchor" href="#visualizing-emission-factor-data"></a>
 </h2>
-<p>Before checking EF graphically, the user needs to select the desired emission factor function based on fleet characteristics — as shown in <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">Defining Fleet data vignette</a>. In this section we will use the <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code> function to illustrate how emissions vary according to vehicle type, mean speed, and pollutant.</p>
+<p>Emission fator values vary by fleet characteristics — as shown in <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">Defining Fleet data vignette</a>. In this section we will use the <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code> function and look at three types of urban buses (Midi, Standard and Articulated) to illustrate how emissions vary according to vehicle type, average speed, and pollutant.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/" class="external-link">gtfs2emis</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/units/" class="external-link">units</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; udunits database from /usr/share/xml/udunits/udunits2.xml</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ef_europe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ef_europe_emep.html">ef_europe_emep</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">100</span>,<span class="st">"km/h"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">ef_europe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ef_europe_emep.html">ef_europe_emep</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">100</span>,<span class="st">"km/h"</span><span class="op">)</span></span>
 <span>                            ,veh_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ubus Midi &lt;=15 t"</span></span>
 <span>                                          ,<span class="st">"Ubus Std 15 - 18 t"</span></span>
 <span>                                          ,<span class="st">"Ubus Artic &gt;18 t"</span><span class="op">)</span></span>
@@ -134,13 +135,11 @@
 <span>                            ,fuel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"D"</span>, <span class="st">"D"</span>, <span class="st">"D"</span><span class="op">)</span></span>
 <span>                            ,tech <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-"</span>, <span class="st">"SCR"</span>, <span class="st">"SCR"</span><span class="op">)</span></span>
 <span>                            ,as_list <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">ef_europe</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "list"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ef_europe</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "pollutant" "veh_type"  "euro"      "fuel"      "tech"      "slope"    </span></span>
 <span><span class="co">#&gt; [7] "load"      "speed"     "EF"</span></span></code></pre></div>
-<p>In the case above, the function returns a <code>list</code> that contains all the relevant information for the EF — shown in <code>names(ef_europe)</code>. However, it may be useful to check the EF results in a data.frame or graphic format.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>In the case above, the function returns a <code>list</code> that contains all the relevant information for the emission factor — shown in <code>names(ef_europe)</code>. However, it may be useful to check the emission factor results in a <code>data.frame</code> or graphic format.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ef_europe_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_to_dt.html">emis_to_dt</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">ef_europe</span></span>
 <span>                           ,emi_vars <span class="op">=</span> <span class="st">"EF"</span></span>
 <span>                           ,veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>,<span class="st">"euro"</span>,<span class="st">"fuel"</span>,<span class="st">"tech"</span><span class="op">)</span></span>
@@ -161,21 +160,20 @@
 <span><span class="co">#&gt; 4:          4</span></span>
 <span><span class="co">#&gt; 5:          5</span></span>
 <span><span class="co">#&gt; 6:          6</span></span></code></pre></div>
-<p>Plotting the speed-dependent EF according to vehicle type (<code>veh_type</code>) and euro standard (<code>euro</code>).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p>Plotting the speed-dependent emission factors according to vehicle type (<code>veh_type</code>) and euro standard (<code>euro</code>).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ef_europe_dt</span><span class="op">$</span><span class="va">name_fleet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ef_europe_dt</span><span class="op">$</span><span class="va">veh_type</span>, <span class="st">"/ Euro"</span></span>
 <span>                                 , <span class="va">ef_europe_dt</span><span class="op">$</span><span class="va">euro</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># plot</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ef_europe_dt</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">speed</span>,y <span class="op">=</span> <span class="va">EF</span>,color <span class="op">=</span> <span class="va">name_fleet</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"Category / EURO"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pollutant</span>,scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_emission_factor_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-<p>In a few situations in <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code>, when the information on vehicle technology does not match the existing database, the package display a message mentioning the returned technology. Users can either select existing data for the combining variables (<code>euro</code>, <code>tech</code>, <code>veh_type</code>, and <code>pollutant</code>), or accept the assumed change in vehicle technology.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><img src="gtfs2emis_emission_factor_files/figure-html/unnamed-chunk-4-1.png" width="672"><!--  666 Achei esse paragrafo confuso --> In a few situations in <code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code>, when the information on vehicle technology does not match the existing database, the package displays a message indicating the technology considered. Users can either select existing data for the combining variables (<code>euro</code>, <code>tech</code>, <code>veh_type</code>, and <code>pollutant</code>), or accept the assumed change in vehicle technology.</p>
+<!--  666 nao ficou indicado no texto o q esse codigo abaixo faz -->
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ef_europe_co2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ef_europe_emep.html">ef_europe_emep</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">100</span>,<span class="st">"km/h"</span><span class="op">)</span></span>
 <span>                                ,veh_type <span class="op">=</span> <span class="st">"Ubus Std 15 - 18 t"</span></span>
 <span>                                ,euro <span class="op">=</span> <span class="st">"VI"</span>,pollutant <span class="op">=</span> <span class="st">"CO2"</span></span>
@@ -183,7 +181,7 @@
 <span>                                ,as_list <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 'CO2' Emission factor not found for 'DPF+SCR' Technology and Euro 'VI'.</span></span>
 <span><span class="co">#&gt;  The package assumed 'SCR' Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span></span></code></pre></div>
-<p>The other EF functions, <code><a href="../reference/ef_usa_emfac.html">ef_usa_emfac()</a></code>, <code><a href="../reference/ef_usa_moves.html">ef_usa_moves()</a></code> and <code><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb()</a></code>, has similar usage, and can be checked in details in the documentation.</p>
+<p>The other EF functions, <code><a href="../reference/ef_usa_emfac.html">ef_usa_emfac()</a></code>, <code><a href="../reference/ef_usa_moves.html">ef_usa_moves()</a></code> and <code><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb()</a></code> work in a similar way. See the functions documentation for more detail.</p>
 <!-- ```{r} -->
 <!-- ef_usa_moves_list <- ef_usa_moves(pollutant = "CO2" -->
 <!--                                   ,model_year = 2018 -->
@@ -200,46 +198,62 @@
 <!--                                    ,model_year = 2018) -->
 <!-- ``` -->
 <div class="section level3">
-<h3 id="exploring-scaled-emission-factors">Exploring Scaled Emission Factors<a class="anchor" aria-label="anchor" href="#exploring-scaled-emission-factors"></a>
+<h3 id="scaling-emission-factors-making-emission-facotrs-speed-dependent">Scaling Emission Factors: making emission facotrs speed-dependent<a class="anchor" aria-label="anchor" href="#scaling-emission-factors-making-emission-facotrs-speed-dependent"></a>
 </h3>
-<p>One special case is of EF usage is the Scaled Emission Factors. In the databases provided by the package, CETESB (<code><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb()</a></code>) methodology reports EF that are not dependent on speed. If one needs to scale or adjust the local EF to make them speed-dependent, the function <code><a href="../reference/ef_scaled_euro.html">ef_scaled_euro()</a></code> can be applied.</p>
-<p>The scaled emission factor is related to speed by the expression</p>
+<p>For most models (MOVES3, EMEP-EEA and EMFAC2017), emission factors depend on a vehicle’s speed. However, the emission factors developed for Brazil by CETESB (<code><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb()</a></code>) do not vary by vehicle speed. In such a case, users can “scale” or adjust the local emission factor values to make them speed-dependent using the function <code><a href="../reference/ef_scaled_euro.html">ef_scaled_euro()</a></code>.</p>
+<p>When using the EMEP-EEA model as a reference, the scaled emission factor varies according to vehicle’s speed following the expression:</p>
 <p><span class="math display">\[
 EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)}, 
 \]</span> where <span class="math inline">\(EF_{scaled}(V)\)</span> is the scaled emission factor for each street link, <span class="math inline">\(EF_{local}\)</span> is the local emission factor, <span class="math inline">\(EF_{euro}(V)\)</span> and <span class="math inline">\(EF_{euro}(SDC)\)</span> are the EMEP/EEA emission factor the speed of V and the average urban driving speed SDC, respectively.</p>
-<p>The scaled behavior of EF can be verified graphically when we plot the <span class="math inline">\(EF_{local}\)</span>, <span class="math inline">\(EF_{scaled}(V)\)</span>, and the <span class="math inline">\(EF_{euro}(V)\)</span> that is used as the base. It can be done in five steps:</p>
+<p>The scaled behavior of EF can be verified graphically when we plot the <span class="math inline">\(EF_{local}\)</span>, <span class="math inline">\(EF_{scaled}(V)\)</span>, and the <span class="math inline">\(EF_{euro}(V)\)</span> that is used as the reference To plot these data, we need five quick steps:</p>
 <ol style="list-style-type: decimal">
-<li>Build a data.frame of fleet relating the local and European fleet characteristics</li>
+<li>Build a <code>data.frame</code> of fleet indicating the correspondence between the fleet characteristic in the local and European emission models</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fleet_filepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/bra_cur_fleet.txt"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
-<span><span class="va">cur_fleet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="va">fleet_filepath</span>,header <span class="op">=</span> <span class="cn">TRUE</span>, sep <span class="op">=</span> <span class="st">","</span>,nrows <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">cur_fleet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="va">fleet_filepath</span>,header <span class="op">=</span> <span class="cn">TRUE</span>, sep <span class="op">=</span> <span class="st">","</span>, nrows <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">cur_fleet</span></span>
 <span><span class="co">#&gt;   year euro shape_id type_name_br           veh_type total fuel</span></span>
 <span><span class="co">#&gt; 1 2006  III     1849  BUS_URBAN_D Ubus Std 15 - 18 t     2    D</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
-<li>Estimate local EF</li>
+<li>Estimate local emission factors</li>
 </ol>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cur_local_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb</a></span><span class="op">(</span>pollutant <span class="op">=</span> <span class="st">"CO2"</span></span>
 <span>                                 ,veh_type <span class="op">=</span> <span class="va">cur_fleet</span><span class="op">$</span><span class="va">type_name_br</span></span>
-<span>                                 ,model_year <span class="op">=</span> <span class="va">cur_fleet</span><span class="op">$</span><span class="va">year</span><span class="op">)</span></span></code></pre></div>
+<span>                                 ,model_year <span class="op">=</span> <span class="va">cur_fleet</span><span class="op">$</span><span class="va">year</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cur_local_ef</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $pollutant</span></span>
+<span><span class="co">#&gt; [1] "CO2"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $veh_type</span></span>
+<span><span class="co">#&gt; [1] "BUS_URBAN_D"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $model_year</span></span>
+<span><span class="co">#&gt; [1] 2006</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $EF</span></span>
+<span><span class="co">#&gt; Units: [g/km]</span></span>
+<span><span class="co">#&gt;      CO2_2006</span></span>
+<span><span class="co">#&gt; [1,] 1385.626</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Apply <code><a href="../reference/ef_scaled_euro.html">ef_scaled_euro()</a></code>
 </li>
 </ol>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cur_scaled_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ef_scaled_euro.html">ef_scaled_euro</a></span><span class="op">(</span>ef_local <span class="op">=</span> <span class="va">cur_local_ef</span><span class="op">$</span><span class="va">EF</span></span>
 <span>                                ,speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">100</span>,<span class="st">"km/h"</span><span class="op">)</span></span>
 <span>                                ,veh_type <span class="op">=</span> <span class="va">cur_fleet</span><span class="op">$</span><span class="va">veh_type</span></span>
 <span>                                ,euro <span class="op">=</span> <span class="va">cur_fleet</span><span class="op">$</span><span class="va">euro</span></span>
 <span>                                ,pollutant <span class="op">=</span> <span class="st">"CO2"</span></span>
 <span>                                ,tech <span class="op">=</span> <span class="st">"-"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>                                <span class="op">)</span></span></code></pre></div>
+<!--  666 uai, o codigo 4 esta be confuso. Isso nao parece ser um unico passo. Ou precisa de mais explicacao / documentacao nos comentarios -->
 <ol start="4" style="list-style-type: decimal">
-<li>Rely on <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> to generate a data.frame</li>
+<li>Use <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> to convert the results to a <code>data.frame</code>
+</li>
 </ol>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Local EF</span></span>
 <span><span class="va">cur_local_ef_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_to_dt.html">emis_to_dt</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">cur_local_ef</span></span>
 <span>                             ,emi_vars <span class="op">=</span> <span class="st">"EF"</span><span class="op">)</span></span>
@@ -270,7 +284,7 @@ EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)},
 <ol start="5" style="list-style-type: decimal">
 <li>View in ggplot2</li>
 </ol>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="co"># add scaled and euro EF</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cur_ef</span></span>
@@ -290,14 +304,14 @@ EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)},
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"blue"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">cur_scaled_ef_dt</span><span class="op">$</span><span class="va">EF</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_emission_factor_files/figure-html/unnamed-chunk-11-1.png" width="576"></p>
-<p>In this case, the <code>scaled_EF</code> has the same value of <code>local_EF</code> (dashed line) when <code>speed = 19</code> km/h, and the similar decaying behavior as <code>Euro_EF</code> as speed decreases.</p>
+<p><img src="gtfs2emis_emission_factor_files/figure-html/unnamed-chunk-10-1.png" width="576"></p>
+<p>In this case, the <code>scaled_EF</code> has the same value of <code>local_EF</code> (dashed line) when <code>speed = 19</code> km/h, and a similar decaying behavior as <code>Euro_EF</code> as speed decreases.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="checking-gtfs2emis-imported-data">Checking <code>gtfs2emis</code> imported data<a class="anchor" aria-label="anchor" href="#checking-gtfs2emis-imported-data"></a>
 </h2>
-<p>Users can go in detail into the emission factor database that is being used by the package:</p>
+<p>Users can have a closer look to the emission factor data that included the package by using the following functions:</p>
 <ul>
 <li>
 <code>data(ef_brazil_cetesb)</code> from Environment Company of Sao Paulo, Brazil (CETESB)</li>
