@@ -42,7 +42,8 @@ no available after treatment technology associated with euro standards "Conventi
 \item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
 each euro standards. Default is 1.0.}
 
-\item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
+\item{as_list}{logical. If \code{TRUE} (default), the function returns the output
+in a \code{list} format. If \code{FALSE}, the output is returned as a \code{data.table}.}
 }
 \value{
 List. emission factors in units 'g/km' (list or a data.table).

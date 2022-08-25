@@ -35,8 +35,8 @@ such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40",
 "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85"
 , "85-90", ">90" mph (miles/h).}
 
-\item{as_list}{logical; Returns emission factors as a list, instead of data.table format.
-Default is TRUE.}
+\item{as_list}{logical. If \code{TRUE} (default), the function returns the output
+in a \code{list} format. If \code{FALSE}, the output is returned as a \code{data.table}.}
 }
 \value{
 List or data.table. Emission factors in units 'g/km' by speed and model_year.

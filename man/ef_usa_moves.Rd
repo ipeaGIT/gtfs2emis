@@ -2,7 +2,7 @@
 % Please edit documentation in R/ef_usa_moves.R
 \name{ef_usa_moves}
 \alias{ef_usa_moves}
-\title{Running exhaust emissions factors from United States (MOVES3 model)}
+\title{Running exhaust emissions factors for buses from United States (MOVES3 model)}
 \usage{
 ef_usa_moves(
   pollutant,
@@ -14,48 +14,52 @@ ef_usa_moves(
 )
 }
 \arguments{
-\item{pollutant}{character; Pollutants: CH4 (Methane), CO (Carbon Monoxide),
-CO2 (Carbon Dioxide), EC (Energy Consumption), HONO (Nitrous Acid), N2O (Nitrous Oxide),
-NH3 (Ammonia ), NH4 (Ammonium), NO (Nitrogen Oxide), NO2 (Nitrogen Dioxide),
-NO3 (Nitrate), NOx (Oxides of Nitrogen), PM10 (Primary Exhaust PM10 - Total),
-PM25 (Primary Exhaust PM2.5 - Total), SO2 (Sulfur Dioxide),
-THC (Total Gaseous Hydrocarbons ), TOG (Total Organic Gases) and
-VOC (Volatile Organic Compounds)}
+\item{pollutant}{character; Pollutants: "CH4" (Methane), "CO" (Carbon
+Monoxide), "CO2" (Carbon Dioxide), "EC" (Energy Consumption), "HONO"
+(Nitrous Acid), "N2O" (Nitrous Oxide), "NH3" (Ammonia ), "NH4"
+(Ammonium), "NO" (Nitrogen Oxide), "NO2" (Nitrogen Dioxide), "NO3"
+(Nitrate), "NOx" (Oxides of Nitrogen), "PM10" (Primary Exhaust PM10 -
+Total), "PM25" (Primary Exhaust PM2.5 - Total), "SO2" (Sulfur Dioxide),
+"THC" (Total Gaseous Hydrocarbons ), "TOG" (Total Organic Gases) and
+"VOC" (Volatile Organic Compounds)}
 
 \item{model_year}{numeric; Model year of vehicle.}
 
-\item{reference_year}{numeric; Year of reference, between 2015 - 2022.
-Year in which the emissions inventory is estimated. Default is 2020.}
+\item{reference_year}{numeric; Year of reference, in which the emissions
+inventory is estimated. Default is 2020. Values between 2015 - 2022.}
 
-\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed intervals
-such as " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 - 22.5", "22.5 - 27.5",
-"27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5 - 47.5","47.5 - 52.5",
-"52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5", "67.5 - 72.5", ">72.5" mph (miles/h).}
+\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed
+intervals: " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 -
+22.5", "22.5 - 27.5", "27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5
+- 47.5","47.5 - 52.5", "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5",
+"67.5 - 72.5", ">72.5" mph (miles/h).}
 
-\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline),
-'CNG' (Compressed Natural Gas). Default is 'D'.}
+\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline), 'CNG'
+(Compressed Natural Gas). Default is 'D'.}
 
-\item{as_list}{logical; Returns emission factors as a list,
-instead of data.table format. Default is TRUE.}
+\item{as_list}{logical. If \code{TRUE} (default), the function returns the output
+in a \code{list} format. If \code{FALSE}, the output is returned as a \code{data.table}.}
 }
 \value{
 List. Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
 Returns a vector or data.frame of emission factors for urban buses based on
-values from the \href{https://www.epa.gov/moves}{MOVES3 Model}.
-Estimates expressed in units 'g/km'.
+values from the \href{https://www.epa.gov/moves}{MOVES3 Model}. Emission factor
+estimates are expressed in units 'g/km'.
 }
 \details{
-User can view the pre-processed database in \code{data(ef_usa_moves_db)} function.
+Users can view the pre-processed database in \code{data(ef_usa_moves_db)} function.
 }
 \examples{
- ef_usa_moves(pollutant = c("CO","PM10"),
-        model_year = 2015,
-        speed = units::set_units(1:100,"km/h"),
-        reference_year = 2016,
-        fuel = "D",
-        as_list = TRUE)
+df <- ef_usa_moves(
+         pollutant = c("CO","PM10"),
+         model_year = 2015,
+         speed = units::set_units(10:100,"km/h"),
+         reference_year = 2016,
+         fuel = "D",
+         as_list = TRUE
+        )
 }
 \seealso{
 Other Emission factor model: 

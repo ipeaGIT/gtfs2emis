@@ -20,7 +20,7 @@
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
 #' @param fcorr numeric; Correction based on fuel composition. The length must be one per
 #' each euro standards. Default is 1.0.
-#' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
+#' @template as_list
 #' 
 #' @return List. emission factors in units 'g/km' (list or a data.table).
 #' @details 

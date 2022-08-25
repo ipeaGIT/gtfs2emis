@@ -2,7 +2,7 @@
 % Please edit documentation in R/ef_brazil_cetesb.R
 \name{ef_brazil_cetesb}
 \alias{ef_brazil_cetesb}
-\title{Emission factor for buses in Brazil}
+\title{Running exhaust emissions factors for buses from Brazil (CETESB)}
 \source{
 \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
 }
@@ -22,15 +22,15 @@ ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 \item{model_year}{numeric; Vehicle model year. Supports \code{model_year} from
 1960 to 2020.}
 
-\item{as_list}{logical; Returns emission factors in a \code{list} format instead of
-a \code{data.table} format. Default is \code{TRUE.}}
+\item{as_list}{logical. If \code{TRUE} (default), the function returns the output
+in a \code{list} format. If \code{FALSE}, the output is returned as a \code{data.table}.}
 }
 \value{
-data.table; Emission factors in units 'g/km' by speed and model_year.
+data.table; Emission factors in units 'g/km' by model_year.
 }
 \description{
-Returns a vector or \code{data.table} of emission factors for buses
-based on estimates from the  \href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2019}.
+Returns a vector or \code{data.table} of emission factors for buses based on
+estimates from the  \href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2019}.
 Emission factor estimates are expressed in units 'g/km'.
 }
 \details{
@@ -53,8 +53,11 @@ air pollutant emission inventory guidebook.
 }
 }
 \examples{
-ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
-model_year = 2015,as_list = TRUE)
+df <- ef_brazil_cetesb(
+          pollutant = c("CO","PM10","CO2","CH4","NOx"),
+          veh_type = "BUS_URBAN_D",
+          model_year = 2015,
+          as_list = TRUE)
 
 }
 \seealso{

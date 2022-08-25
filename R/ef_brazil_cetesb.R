@@ -1,7 +1,9 @@
-#' @title Emission factor for buses in Brazil
+#' @title 
+#' Running exhaust emissions factors for buses from Brazil (CETESB)
 #' 
-#' @description Returns a vector or `data.table` of emission factors for buses 
-#' based on estimates from the  [Environment Company of Sao Paulo, Brazil (CETESB) 2019](https://cetesb.sp.gov.br/veicular/).
+#' @description 
+#' Returns a vector or `data.table` of emission factors for buses based on 
+#' estimates from the  [Environment Company of Sao Paulo, Brazil (CETESB) 2019](https://cetesb.sp.gov.br/veicular/).
 #' Emission factor estimates are expressed in units 'g/km'.
 #'
 #' @param pollutant character; Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
@@ -13,10 +15,9 @@
 #'        "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".
 #' @param model_year numeric; Vehicle model year. Supports `model_year` from 
 #'        1960 to 2020.
-#' @param as_list logical; Returns emission factors in a `list` format instead of 
-#'        a `data.table` format. Default is `TRUE.`
+#' @template as_list
 #' 
-#' @return data.table; Emission factors in units 'g/km' by speed and model_year.
+#' @return data.table; Emission factors in units 'g/km' by model_year.
 #' 
 #' @details 
 #' 
@@ -42,8 +43,11 @@
 #' @family Emission factor model
 #' 
 #' @examples
-#' ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
-#' model_year = 2015,as_list = TRUE)
+#' df <- ef_brazil_cetesb(
+#'           pollutant = c("CO","PM10","CO2","CH4","NOx"),
+#'           veh_type = "BUS_URBAN_D",
+#'           model_year = 2015,
+#'           as_list = TRUE)
 #' 
 #' @export
 ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
