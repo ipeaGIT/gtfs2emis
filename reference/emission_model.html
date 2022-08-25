@@ -182,8 +182,7 @@ for more examples.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/" class="external-link">gtfs2emis</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/" class="external-link">gtfs2emis</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># read GTFS</span></span></span>
@@ -200,6 +199,15 @@ for more examples.</p></li>
 <span class="r-in"><span>                            new_speed <span class="op">=</span> <span class="fl">20</span>,</span></span>
 <span class="r-in"><span>                            spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>                            parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Converting shapes to sf objects</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing the data</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘data.table’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:purrr’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     transpose</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Linking to GEOS 3.6.2, GDAL 2.2.3, PROJ 4.9.3; sf_use_s2() is TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> udunits database from /usr/share/xml/udunits/udunits2.xml</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example using Brazilian emission model and fleet</span></span></span>
 <span class="r-in"><span><span class="va">fleet_data_ef_cetesb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>veh_type <span class="op">=</span> <span class="st">"BUS_URBAN_D"</span>,</span></span>
@@ -214,6 +222,7 @@ for more examples.</p></li>
 <span class="r-in"><span>                fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_cetesb</span>,</span></span>
 <span class="r-in"><span>                pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO"</span>,<span class="st">"PM10"</span>,<span class="st">"CO2"</span>,<span class="st">"CH4"</span>,<span class="st">"NOx"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>                <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Constant emission factor along the route</span>
 <span class="r-in"><span>                            </span></span>
 <span class="r-in"><span><span class="co"># Example using European emission model and fleet</span></span></span>
 <span class="r-in"><span><span class="va">fleet_data_ef_europe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>  veh_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ubus Midi &lt;=15 t"</span>,</span></span>
@@ -228,6 +237,8 @@ for more examples.</p></li>
 <span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
 <span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_europe</span></span></span>
 <span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO"</span>,<span class="st">"PM10"</span>,<span class="st">"CO2"</span>,<span class="st">"CH4"</span>,<span class="st">"NOx"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
 <span class="r-in"><span>                          </span></span>
 <span class="r-in"><span>                          </span></span>
 <span class="r-in"><span><span class="co"># Example using US EMFAC emission model and fleet</span></span></span>
@@ -249,13 +260,13 @@ for more examples.</p></li>
 <span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_moves</span></span></span>
 <span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO"</span>,<span class="st">"PM10"</span>,<span class="st">"CO2"</span>,<span class="st">"CH4"</span>,<span class="st">"NOx"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>                          , reference_year <span class="op">=</span> <span class="fl">2020</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>longer object length is not a multiple of shorter object length</span>
 <span class="r-in"><span>                          </span></span>
 <span class="r-in"><span><span class="va">emi_emfac</span> <span class="op">&lt;-</span> <span class="fu">emission_model</span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span></span>
 <span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_usa_emfac"</span></span></span>
 <span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_emfac</span></span></span>
 <span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO"</span>,<span class="st">"PM10"</span>,<span class="st">"CO2"</span>,<span class="st">"CH4"</span>,<span class="st">"NOx"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>                          , reference_year <span class="op">=</span> <span class="fl">2020</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>

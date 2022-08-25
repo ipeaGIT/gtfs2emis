@@ -107,8 +107,7 @@ type, or road segment.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/" class="external-link">gtfs2emis</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -124,6 +123,9 @@ type, or road segment.</p>
 <span class="r-in"><span><span class="va">tp_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="transport_model.html">transport_model</a></span><span class="op">(</span>gtfs_data <span class="op">=</span> <span class="va">gtfs</span>,</span></span>
 <span class="r-in"><span>                            spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>                            parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 1 CPU cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Converting shapes to sf objects</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in rcpp_to_sf(obj, geometry_columns, NULL, linestring_id, NULL,     NULL, NULL, list_columns, FALSE, keep, xyzm(x, y, z, m),     "LINESTRING"):</span> attempt to set index 0/0 in SET_VECTOR_ELT</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fleet data</span></span></span>
 <span class="r-in"><span><span class="va">fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span></span></span>
@@ -133,31 +135,37 @@ type, or road segment.</p>
 <span class="r-in"><span>                           , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
 <span class="r-in"><span>                           , fleet_data <span class="op">=</span> <span class="va">fleet_df</span></span></span>
 <span class="r-in"><span>                           , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO2"</span>,<span class="st">"PM10"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in checkmate::check_class(tp_model, classes = c("sf", "data.frame")):</span> object 'tp_model' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Aggregate total emissions by 'pollutant'</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span><span class="op">)</span> </span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># by vehicle type</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span>, by <span class="op">=</span> <span class="st">"vehicle"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
 <span class="r-in"><span>             </span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"euro"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>,<span class="st">"euro"</span>,<span class="st">"tech"</span>,<span class="st">"fuel"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
 <span class="r-in"><span>             </span></span>
 <span class="r-in"><span><span class="co"># by time of the day</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"time"</span></span></span>
 <span class="r-in"><span>             , segment_vars <span class="op">=</span> <span class="st">"slope"</span><span class="op">)</span> </span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
