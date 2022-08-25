@@ -56,4 +56,11 @@ The package presents a combination of emission factors from EMEP/EEA guidelines 
 The script used to process the raw EMEP/EEA databases can be found in the repository
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>.
 }
+\seealso{
+Other emission factor data: 
+\code{\link{ef_brazil_cetesb_db}},
+\code{\link{ef_usa_emfac_db}},
+\code{\link{ef_usa_moves_db}}
+}
+\concept{emission factor data}
 \keyword{datasets}

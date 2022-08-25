@@ -1,20 +1,20 @@
 #' @title Emission factor for buses in Brazil
 #' 
-#' @description Returns a vector or data.table of emission factors for buses based on
-#' estimates from the 
-#' [Environment Company of Sao Paulo, Brazil (CETESB) 2019](https://cetesb.sp.gov.br/veicular/),
-#' and obtained via vein package.
-#' Estimates are expressed in units 'g/km'.
+#' @description Returns a vector or `data.table` of emission factors for buses 
+#' based on estimates from the  [Environment Company of Sao Paulo, Brazil (CETESB) 2019](https://cetesb.sp.gov.br/veicular/).
+#' Emission factor estimates are expressed in units 'g/km'.
 #'
 #' @param pollutant character; Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
-#' "NO2", "NO", "RCHO", "ETOH" "KML", "FC" (Fuel Consumption), 
-#' "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh), 
-#' "CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon), "FS"(Fuel Sales)
-#'  and "NH3".
-#' @param veh_type character; Vehicle categories by fuel: "BUS_URBAN_D" 
-#' , "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".
-#' @param model_year numeric; Vehicle model year. Supports `model_year` from 1960 to 2020.
-#' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
+#'        "NO2", "NO", "RCHO", "ETOH" "KML", "FC" (Fuel Consumption), 
+#'        "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh), 
+#'        "CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon), 
+#'        "FS"(Fuel Sales) and "NH3".
+#' @param veh_type character; Vehicle categories by fuel: "BUS_URBAN_D", 
+#'        "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".
+#' @param model_year numeric; Vehicle model year. Supports `model_year` from 
+#'        1960 to 2020.
+#' @param as_list logical; Returns emission factors in a `list` format instead of 
+#'        a `data.table` format. Default is `TRUE.`
 #' 
 #' @return data.table; Emission factors in units 'g/km' by speed and model_year.
 #' 

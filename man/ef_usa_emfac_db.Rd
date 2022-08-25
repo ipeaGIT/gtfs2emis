@@ -38,4 +38,11 @@ The function returns the data in a data.frame format. The R script used to proce
 the raw EMFAC database can be found in the repository
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R}>.
 }
+\seealso{
+Other emission factor data: 
+\code{\link{ef_brazil_cetesb_db}},
+\code{\link{ef_europe_emep_db}},
+\code{\link{ef_usa_moves_db}}
+}
+\concept{emission factor data}
 \keyword{datasets}
