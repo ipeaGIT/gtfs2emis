@@ -58,9 +58,8 @@
 #' 
 #' @family Emission factor model
 #' 
-#' @export
 #' 
-#' @examples if (interactive()) {
+#' @examples
 #' 
 #' temp_ef_br <- ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),
 #'                         veh_type = c("BUS_URBAN_D","BUS_MICRO_D"),
@@ -74,7 +73,7 @@
 #'                                  , fuel = c("D","D")
 #'                                  , tech = c("SCR","SCR")
 #'                                  , pollutant = c("CO","PM10","CO2","CH4","NOx"))
-#'} 
+#' @export
 ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D", 
                            tech = "SCR", SDC = 19, slope = 0.0, 
                            load = 0.5, fcorr = 1){

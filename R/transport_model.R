@@ -50,9 +50,8 @@
 #' @return A `data.table sf_linestring` object or `NULL`.
 #' 
 #' @family Core function
-#' @export
 #' 
-#' @examples if (interactive()) {
+#' @examples
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 
@@ -70,7 +69,7 @@
 #'                             new_speed = 20,
 #'                             spatial_resolution = 100,
 #'                             parallel = FALSE)
-#'}
+#' @export
 transport_model <- function(gtfs_data
                             , min_speed = 2
                             , max_speed = 80

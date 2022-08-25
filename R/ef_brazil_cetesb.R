@@ -41,11 +41,11 @@
 #' 
 #' @family Emission factor model
 #' 
-#' @export
-#' @examples if (interactive()) {
+#' @examples
 #' ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
 #' model_year = 2015,as_list = TRUE)
-#' }
+#' 
+#' @export
 ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   
   # check inputs----

@@ -36,16 +36,15 @@
 #' 
 #' @family Emission factor model
 #' 
-#' @export
 #' 
-#' @examples if (interactive()) {
+#' @examples
 #'  ef_usa_emfac(pollutant = c("CO","PM10"),
 #'         reference_year = 2019,
 #'         model_year = 2015,
 #'         speed = units::set_units(1:100,"km/h"),
 #'         fuel = "D",
 #'         as_list = TRUE)
-#'}
+#' @export
 ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
                          , model_year, speed, as_list = TRUE){
   

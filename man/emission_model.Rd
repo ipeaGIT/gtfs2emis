@@ -92,7 +92,6 @@ for more examples.
 }
 }
 \examples{
-if (interactive()) {
 library(gtfs2emis)
 library(gtfstools)
 
@@ -165,7 +164,6 @@ emi_emfac <- emission_model(tp_model = tp_model
                           , fleet_data = fleet_data_ef_emfac
                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
                           , reference_year = 2020)
-}
 }
 \seealso{
 Other Core function: 

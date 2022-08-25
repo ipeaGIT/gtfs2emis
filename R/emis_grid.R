@@ -17,9 +17,8 @@
 #'  correctly. Default is 'TRUE'.
 #' @param aggregate Logical; Aggregate emissions by pollutant. Default is FALSE.
 #' @return An `"sf" "data.frame"` object with emissions estimates per grid cell.
-#' @export
 #' 
-#' @examples if (interactive()) {
+#' @examples
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 
@@ -65,7 +64,7 @@
 #' plot(grid)
 #' plot(emi_grid["PM10_2010"],add = TRUE)
 #' plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
-#'}
+#' @export
 emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggregate = FALSE){
   
   # 1) Check -----

@@ -76,7 +76,6 @@ output and to adjust the speed of public transport vehicles given a
 \code{min_speed} and \code{max_speed} range.
 }
 \examples{
-if (interactive()) {
 library(gtfs2emis)
 library(gtfstools)
 
@@ -94,7 +93,6 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             new_speed = 20,
                             spatial_resolution = 100,
                             parallel = FALSE)
-}
 }
 \seealso{
 Other Core function: 

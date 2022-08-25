@@ -81,14 +81,12 @@ EMEP/EEA data and reports can be accessed in the following links:
 }
 }
 \examples{
-if (interactive()) {
 ef_europe_emep( speed = units::set_units(1:100,"km/h"),
            veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
            euro = c("III","IV","V"),
            fuel = "D",
            pollutant = c("CO","PM10","CO2","CH4","NOx"),
            as_list = FALSE) 
-}
 }
 \seealso{
 Other Emission factor model: 

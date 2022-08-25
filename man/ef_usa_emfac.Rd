@@ -56,14 +56,12 @@ organize the EMFAC database can be found in the repository
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R}>.
 }
 \examples{
-if (interactive()) {
  ef_usa_emfac(pollutant = c("CO","PM10"),
         reference_year = 2019,
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
         fuel = "D",
         as_list = TRUE)
-}
 }
 \seealso{
 Other Emission factor model: 

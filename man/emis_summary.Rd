@@ -32,7 +32,6 @@ Summarize emissions estimates, aggregating emissions by pollutant, time of the
 day, vehicle.
 }
 \examples{
-if (interactive()) {
 
 library(gtfs2emis)
 library(gtfstools)
@@ -82,5 +81,4 @@ emis_summary(emi_list
              , by = "time"
              , segment_vars = "slope") 
 
-}
 }

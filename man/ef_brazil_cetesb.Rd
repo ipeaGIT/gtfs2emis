@@ -13,25 +13,25 @@ ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 \item{pollutant}{character; Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
 "NO2", "NO", "RCHO", "ETOH" "KML", "FC" (Fuel Consumption),
 "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh),
-"CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon), "FS"(Fuel Sales)
-and "NH3".}
+"CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon),
+"FS"(Fuel Sales) and "NH3".}
 
-\item{veh_type}{character; Vehicle categories by fuel: "BUS_URBAN_D"
-, "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".}
+\item{veh_type}{character; Vehicle categories by fuel: "BUS_URBAN_D",
+"BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".}
 
-\item{model_year}{numeric; Vehicle model year. Supports \code{model_year} from 1960 to 2020.}
+\item{model_year}{numeric; Vehicle model year. Supports \code{model_year} from
+1960 to 2020.}
 
-\item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
+\item{as_list}{logical; Returns emission factors in a \code{list} format instead of
+a \code{data.table} format. Default is \code{TRUE.}}
 }
 \value{
 data.table; Emission factors in units 'g/km' by speed and model_year.
 }
 \description{
-Returns a vector or data.table of emission factors for buses based on
-estimates from the
-\href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2019},
-and obtained via vein package.
-Estimates are expressed in units 'g/km'.
+Returns a vector or \code{data.table} of emission factors for buses
+based on estimates from the  \href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2019}.
+Emission factor estimates are expressed in units 'g/km'.
 }
 \details{
 The new convention for vehicles names are translated from CETESB report:\tabular{ll}{
@@ -53,10 +53,9 @@ air pollutant emission inventory guidebook.
 }
 }
 \examples{
-if (interactive()) {
 ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),veh_type = "BUS_URBAN_D",
 model_year = 2015,as_list = TRUE)
-}
+
 }
 \seealso{
 Other Emission factor model: 

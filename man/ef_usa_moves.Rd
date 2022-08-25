@@ -50,14 +50,12 @@ Estimates expressed in units 'g/km'.
 User can view the pre-processed database in \code{data(ef_usa_moves_db)} function.
 }
 \examples{
-if (interactive()) {
  ef_usa_moves(pollutant = c("CO","PM10"),
         model_year = 2015,
         speed = units::set_units(1:100,"km/h"),
         reference_year = 2016,
         fuel = "D",
         as_list = TRUE)
-}
 }
 \seealso{
 Other Emission factor model: 
