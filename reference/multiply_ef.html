@@ -82,7 +82,8 @@ weighted by fleet composition profile.</p>
     <h2>Arguments</h2>
     <dl><dt>fleet_composition</dt>
 <dd><p>vector; Fleet composition, which is a distribution
-of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.</p></dd>
+of fleet based on frequency. If there is only one, 'fleet_composition'
+is 1.0.</p></dd>
 
 
 <dt>dist</dt>
@@ -94,16 +95,19 @@ of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.</
 
 
 <dt>aggregate</dt>
-<dd><p>logical; if TRUE (default) emissions are aggregated by pollutant.</p></dd>
+<dd><p>logical; if TRUE (default) emissions are aggregated by
+pollutant.</p></dd>
 
 
 <dt>prefix</dt>
-<dd><p>character; Add prefix into emissions names. Missing parameter (default)
-means empty prefix.</p></dd>
+<dd><p>character; Add prefix into emissions names. Missing parameter
+(default) means empty prefix.</p></dd>
 
 
 <dt>as_list</dt>
-<dd><p>logical; if TRUE (default) emissions are returned inside 'ef' list.</p></dd>
+<dd><p>logical. If <code>TRUE</code> (default), the function returns the output
+in a <code>list</code> format. If <code>FALSE</code>, the output is returned in a <code>data.table</code>
+format.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -113,31 +117,6 @@ means empty prefix.</p></dd>
 <p>units ('g'); emissions per link.</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1335</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dist</span> <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">0.250</span>,<span class="fl">0.03</span><span class="op">)</span>,<span class="st">"km"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="ef_europe_emep.html">ef_europe_emep</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">50</span>,<span class="fl">5</span><span class="op">)</span>,<span class="st">"km/h"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              veh_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ubus Std 15 - 18 t"</span>,<span class="st">"Ubus Artic &gt;18 t"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              euro <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"IV"</span>,<span class="st">"V"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO2"</span>,<span class="st">"NOx"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              fuel <span class="op">=</span> <span class="st">"D"</span> ,</span></span>
-<span class="r-in"><span>              tech <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SCR"</span>,<span class="st">"EGR"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              slope <span class="op">=</span> <span class="fl">0.0</span>,</span></span>
-<span class="r-in"><span>              load <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>              fcorr <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>              as_list <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">emi</span> <span class="op">&lt;-</span> <span class="fu">multiply_ef</span><span class="op">(</span>fleet_composition <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>,<span class="fl">0.3</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                  dist <span class="op">=</span> <span class="va">dist</span>,</span></span>
-<span class="r-in"><span>                  ef <span class="op">=</span> <span class="va">ef</span>,</span></span>
-<span class="r-in"><span>                  aggregate <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>                  as_list <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  </span></span>
-<span class="r-in"><span><span class="op">}</span>     </span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
