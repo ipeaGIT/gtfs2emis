@@ -12,24 +12,24 @@ emis_summary(
 )
 }
 \arguments{
-\item{emi_list}{List; Emission or emission factor list.}
+\item{emi_list}{list. Emission or emission factor list.}
 
-\item{by}{Character; Emissions can be aggregated by 'time', 'vehicle',
-or simply 'pollutant' (Default).}
+\item{by}{character. Emissions can be aggregated by 'time', 'vehicle', or
+simply 'pollutant' (Default).}
 
-\item{veh_vars}{Character; data.frame names of 'emi_list' attributed to vehicle
-characteristics. Default is 'veh_type'.}
+\item{veh_vars}{character. data.frame names of 'emi_list' attributed to
+vehicle characteristics. Default is 'veh_type'.}
 
-\item{segment_vars}{Character; data.frame names of 'emi_list' object attributed to the
-road segments. Default is NULL.}
+\item{segment_vars}{character. data.frame names of 'emi_list' object
+attributed to the road segments. Default is NULL.}
 }
 \value{
-\code{data.table} with pollutants units ('g') aggregated by time, vehicle
-type, or road segment.
+\code{data.table} with pollutants units ('g') aggregated by pollutant,
+time, or vehicle type.
 }
 \description{
-Summarize emissions estimates, aggregating emissions by pollutant, time of the
-day, vehicle.
+Summarize emissions estimates, aggregating emissions by pollutant, time of
+the day, vehicle.
 }
 \examples{
 
@@ -47,7 +47,7 @@ gtfs <- gtfstools::filter_by_trip_id(gtfs
 # Transport model
 tp_model <- transport_model(gtfs_data = gtfs,
                             spatial_resolution = 100,
-                            parallel = TRUE)
+                            parallel = FALSE)
 
 # fleet data
 fleet_df <- read.csv(system.file("extdata/irl_dub_fleet.txt"
@@ -82,3 +82,9 @@ emis_summary(emi_list
              , segment_vars = "slope") 
 
 }
+\seealso{
+Other emission analysis: 
+\code{\link{emis_grid}()},
+\code{\link{emis_to_dt}()}
+}
+\concept{emission analysis}

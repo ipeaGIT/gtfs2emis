@@ -59,13 +59,10 @@
 #'  `c("BUS_URBAN_D","BUS_MICRO_D")`, the related vector for EMEP/EEA model needs
 #'  to be `c("Ubus Std 15 - 18 t","Ubus Midi <=15 t")`. The same approach applies for
 #'  other input arguments. See more in the examples. 
-#'   
 #' 
 #' @family Emission factor model
 #' 
-#' 
 #' @examples
-#' 
 #' temp_ef_br <- ef_brazil_cetesb(
 #'                     pollutant = c("CO","PM10","CO2","CH4","NOx"),
 #'                     veh_type = c("BUS_URBAN_D","BUS_MICRO_D"),

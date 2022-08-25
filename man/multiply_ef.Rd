@@ -15,18 +15,22 @@ multiply_ef(
 }
 \arguments{
 \item{fleet_composition}{vector; Fleet composition, which is a distribution
-of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.}
+of fleet based on frequency. If there is only one, 'fleet_composition'
+is 1.0.}
 
 \item{dist}{units ('km'); Length of each link in km.}
 
 \item{ef}{list or data.table;    Emission factors.}
 
-\item{aggregate}{logical; if TRUE (default) emissions are aggregated by pollutant.}
+\item{aggregate}{logical; if TRUE (default) emissions are aggregated by
+pollutant.}
 
-\item{prefix}{character; Add prefix into emissions names. Missing parameter (default)
-means empty prefix.}
+\item{prefix}{character; Add prefix into emissions names. Missing parameter
+(default) means empty prefix.}
 
-\item{as_list}{logical; if TRUE (default) emissions are returned inside 'ef' list.}
+\item{as_list}{logical. If \code{TRUE} (default), the function returns the output
+in a \code{list} format. If \code{FALSE}, the output is returned in a \code{data.table}
+format.}
 }
 \value{
 units ('g'); emissions per link.
@@ -35,26 +39,4 @@ units ('g'); emissions per link.
 Calculate hot exhaust emissions by multipling emission factors by distances
 weighted by fleet composition profile.
 }
-\examples{
-if (interactive()) {
-
-set.seed(1335)
-dist = units::set_units(rnorm(100,0.250,0.03),"km")
-ef <- ef_europe_emep(speed = units::set_units(rnorm(100,50,5),"km/h"),
-              veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-              euro = c("IV","V"),
-              pollutant = c("CO2","NOx"),
-              fuel = "D" ,
-              tech =  c("SCR","EGR"),
-              slope = 0.0,
-              load = 0.5,
-              fcorr = 1,
-              as_list = TRUE)
-
-emi <- multiply_ef(fleet_composition =  c(0.7,0.3),
-                  dist = dist,
-                  ef = ef,
-                  aggregate = FALSE,
-                  as_list = TRUE)  
-}     
-}
+\keyword{internal}

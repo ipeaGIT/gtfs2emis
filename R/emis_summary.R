@@ -2,19 +2,21 @@
 #' Summarize emissions estimates
 #'
 #' @description 
-#' Summarize emissions estimates, aggregating emissions by pollutant, time of the
-#' day, vehicle.
+#' Summarize emissions estimates, aggregating emissions by pollutant, time of 
+#' the day, vehicle.
 #'
-#' @param emi_list List; Emission or emission factor list.
-#' @param by Character; Emissions can be aggregated by 'time', 'vehicle', 
-#' or simply 'pollutant' (Default). 
-#' @param veh_vars Character; data.frame names of 'emi_list' attributed to vehicle
-#'        characteristics. Default is 'veh_type'.
-#' @param segment_vars Character; data.frame names of 'emi_list' object attributed to the
-#'        road segments. Default is NULL.
+#' @param emi_list list. Emission or emission factor list.
+#' @param by character. Emissions can be aggregated by 'time', 'vehicle', or 
+#'       simply 'pollutant' (Default). 
+#' @param veh_vars character. data.frame names of 'emi_list' attributed to 
+#'        vehicle characteristics. Default is 'veh_type'.
+#' @param segment_vars character. data.frame names of 'emi_list' object 
+#'        attributed to the road segments. Default is NULL.
 #'  
-#' @return `data.table` with pollutants units ('g') aggregated by time, vehicle 
-#' type, or road segment.
+#' @return `data.table` with pollutants units ('g') aggregated by pollutant, 
+#'          time, or vehicle type.
+#' 
+#' @family emission analysis
 #' 
 #' @examples
 #' 
@@ -32,7 +34,7 @@
 #' # Transport model
 #' tp_model <- transport_model(gtfs_data = gtfs,
 #'                             spatial_resolution = 100,
-#'                             parallel = TRUE)
+#'                             parallel = FALSE)
 #' 
 #' # fleet data
 #' fleet_df <- read.csv(system.file("extdata/irl_dub_fleet.txt"

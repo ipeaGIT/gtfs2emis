@@ -2,7 +2,7 @@
 % Please edit documentation in R/emis_grid.R
 \name{emis_grid}
 \alias{emis_grid}
-\title{Allocate emissions into a spatial grid}
+\title{Spatial aggregation of emission estimates into a grid}
 \usage{
 emis_grid(
   emi_list,
@@ -13,19 +13,20 @@ emis_grid(
 )
 }
 \arguments{
-\item{emi_list}{list; A list containing the data of emissions 'emi' ("data.frame" class)
-and the transport model 'tp_model' ("sf" "data.frame" classes).}
+\item{emi_list}{list. A list containing the data of emissions 'emi'
+("data.frame" class) and the transport model 'tp_model' ("sf"
+"data.frame" classes).}
 
-\item{grid}{Sf polygon; Grid cell data to allocate emissions.}
+\item{grid}{Sf polygon. Grid cell data to allocate emissions.}
 
-\item{time_resolution}{Character; Time resolution in which the emissions is
+\item{time_resolution}{character. Time resolution in which the emissions is
 aggregated. Options are 'hour', 'minute', or 'day (Default).}
 
-\item{quiet}{Logical; User can print the total emissions before and after the
-intersection operation in order to check if the gridded emissions were estimated
-correctly. Default is 'TRUE'.}
+\item{quiet}{logical. User can print the total emissions before and after the
+intersection operation in order to check if the gridded emissions were
+estimated correctly. Default is 'TRUE'.}
 
-\item{aggregate}{Logical; Aggregate emissions by pollutant. Default is FALSE.}
+\item{aggregate}{logical. Aggregate emissions by pollutant. Default is \code{FALSE}.}
 }
 \value{
 An \verb{"sf" "data.frame"} object with emissions estimates per grid cell.
@@ -40,16 +41,15 @@ by time of the day.
 library(gtfs2emis)
 library(gtfstools)
 
-# read GTFS, and keep a single trip_id to speed up this example
+# read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file) 
-gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439186")
+
+# keep a single trip_id to speed up this example
+gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
   
 # run transport model
 tp_model <- transport_model(gtfs_data = gtfs_small,
-                            min_speed = 2,
-                            max_speed = 80,
-                            new_speed = 20,
                             spatial_resolution = 100,
                             parallel = FALSE)
 
@@ -75,7 +75,6 @@ grid <- sf::st_make_grid(
   , what = "polygons"
   , square = FALSE
   )
-  
 
 emi_grid <- emis_grid( emi_list,grid,'day')
 
@@ -83,3 +82,9 @@ plot(grid)
 plot(emi_grid["PM10_2010"],add = TRUE)
 plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
 }
+\seealso{
+Other emission analysis: 
+\code{\link{emis_summary}()},
+\code{\link{emis_to_dt}()}
+}
+\concept{emission analysis}

@@ -30,7 +30,6 @@
 #' 
 #' @family Emission factor model
 #' 
-#' 
 #' @examples
 #' df <- ef_usa_emfac(
 #'         pollutant = c("CO","PM10"),

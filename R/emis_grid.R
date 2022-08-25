@@ -1,5 +1,5 @@
 #' @title 
-#' Allocate emissions into a spatial grid
+#' Spatial aggregation of emission estimates into a grid
 #'
 #' @description 
 #' Aggregate emissions proportionally in an sf polygon grid, by performing an 
@@ -7,31 +7,34 @@
 #' the input grid cells. User can also aggregate the emissions in the grid 
 #' by time of the day.
 #'
-#' @param emi_list list; A list containing the data of emissions 'emi' ("data.frame" class)
-#'  and the transport model 'tp_model' ("sf" "data.frame" classes). 
-#' @param grid Sf polygon; Grid cell data to allocate emissions.
-#' @param time_resolution Character; Time resolution in which the emissions is
-#'  aggregated. Options are 'hour', 'minute', or 'day (Default).
-#' @param quiet Logical; User can print the total emissions before and after the
-#'  intersection operation in order to check if the gridded emissions were estimated
-#'  correctly. Default is 'TRUE'.
-#' @param aggregate Logical; Aggregate emissions by pollutant. Default is FALSE.
+#' @param emi_list list. A list containing the data of emissions 'emi' 
+#'        ("data.frame" class) and the transport model 'tp_model' ("sf" 
+#'        "data.frame" classes). 
+#' @param grid Sf polygon. Grid cell data to allocate emissions.
+#' @param time_resolution character. Time resolution in which the emissions is
+#'        aggregated. Options are 'hour', 'minute', or 'day (Default).
+#' @param quiet logical. User can print the total emissions before and after the
+#'        intersection operation in order to check if the gridded emissions were 
+#'        estimated correctly. Default is 'TRUE'.
+#' @param aggregate logical. Aggregate emissions by pollutant. Default is `FALSE`.
+#' 
 #' @return An `"sf" "data.frame"` object with emissions estimates per grid cell.
+#' 
+#' @family emission analysis
 #' 
 #' @examples
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 
-#' # read GTFS, and keep a single trip_id to speed up this example
+#' # read GTFS
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
-#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4439186")
+#' 
+#' # keep a single trip_id to speed up this example
+#' gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
 #'   
 #' # run transport model
 #' tp_model <- transport_model(gtfs_data = gtfs_small,
-#'                             min_speed = 2,
-#'                             max_speed = 80,
-#'                             new_speed = 20,
 #'                             spatial_resolution = 100,
 #'                             parallel = FALSE)
 #'
@@ -57,7 +60,6 @@
 #'   , what = "polygons"
 #'   , square = FALSE
 #'   )
-#'   
 #' 
 #' emi_grid <- emis_grid( emi_list,grid,'day')
 #' 

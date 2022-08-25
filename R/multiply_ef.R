@@ -6,38 +6,19 @@
 #' weighted by fleet composition profile.
 #'
 #' @param fleet_composition vector; Fleet composition, which is a distribution 
-#'        of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.
+#'        of fleet based on frequency. If there is only one, 'fleet_composition' 
+#'        is 1.0.
 #' @param dist units ('km'); Length of each link in km.
 #' @param ef list or data.table;	Emission factors.
-#' @param aggregate logical; if TRUE (default) emissions are aggregated by pollutant.
-#' @param prefix character; Add prefix into emissions names. Missing parameter (default)
-#' means empty prefix.
-#' @param as_list logical; if TRUE (default) emissions are returned inside 'ef' list.
+#' @param aggregate logical; if TRUE (default) emissions are aggregated by 
+#'        pollutant.
+#' @param prefix character; Add prefix into emissions names. Missing parameter 
+#'        (default) means empty prefix.
+#' @template as_list
 #' 
 #' @return units ('g'); emissions per link.
 #' 
-#' @export
-#' @examples if (interactive()) {
-#' 
-#'set.seed(1335)
-#'dist = units::set_units(rnorm(100,0.250,0.03),"km")
-#'ef <- ef_europe_emep(speed = units::set_units(rnorm(100,50,5),"km/h"),
-#'               veh_type = c("Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-#'               euro = c("IV","V"),
-#'               pollutant = c("CO2","NOx"),
-#'               fuel = "D" ,
-#'               tech =  c("SCR","EGR"),
-#'               slope = 0.0,
-#'               load = 0.5,
-#'               fcorr = 1,
-#'               as_list = TRUE)
-#'
-#'emi <- multiply_ef(fleet_composition =  c(0.7,0.3),
-#'                   dist = dist,
-#'                   ef = ef,
-#'                   aggregate = FALSE,
-#'                   as_list = TRUE)  
-#'}     
+#' @keywords internal
 multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
   
   # check ----
