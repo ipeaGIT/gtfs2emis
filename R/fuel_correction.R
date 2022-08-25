@@ -16,10 +16,10 @@
 #' in \%), cn (Cetane number), t95 (Back end distillation in degrees C). Default input uses
 #' c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320).
 #' 
-#' @return numeric; fuel correction factor.
-#' 
+#' @return numeric; A fuel correction factor.
+#' @keywords internal
 #' @export
-fuel_cor <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320)){
+fuel_correction <- function(pollutant, euro_stage, improved_fuel = c(den = 835, s = 40, pah = 5, cn = 53, t95 = 320)){
   
   # checking----
   # pollutant
