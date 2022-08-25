@@ -1,34 +1,39 @@
 #' @title 
-#' Scaled emission factors from the European Environment Agency (EMEP/EEA) model
+#' Scale local emission factors in order to make emission estimates a function 
+#' of speed.
 #' 
 #' @description 
-#' Scale the local emission factors with EMEP/EEA EF model, in order to make the local emission
-#' a function of speed.
+#' Scale emission factors to account for vehicle speed based on values from the 
+#' emission factor model by the European Environment Agency (EMEP/EEA). Emission 
+#' factor estimates are expressed in units 'g/km'.
 #' 
-#' @param ef_local data.frame or a list containing the emission factors data.frame;
-#' Local emission factors, in units 'g/km'.
-#' @param speed units; Speed in 'km/h'.
-#' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t",
-#' "Ubus Std 15 - 18 t","Ubus Artic >18 t",
-#' "Coaches Std <=18 t","Coaches Artic >18 t".
-#' @param euro character; Euro period of vehicle, classified in "Conventional", 
-#' "I", "II", "III", "IV", "V", "VI", and "EEV".
-#' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC",
-#' "PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. 
-#' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" 
-#' (Diesel Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity),
-#'  "CNG" (Compressed Natural Gas), "BD" (Biodiesel). Default is "D". 
-#' @param tech character; After treatment technology, classified in "SCR" 
-#' (Selective Catalytic Reduction), 
-#' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" 
-#' (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V".
-#' @param SDC numeric; Average speed of urban driving condition in 'km/h'. Default is 19 km/h, 
-#' which is the average speed adopted in EMEP/EEA report.
-#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02,
-#'  0.04 and 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.
-#' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
-#' @param fcorr numeric; Correction based on fuel composition. The length must be one per
-#' each euro standards. Default is 1.0.
+#' @param ef_local data.frame or a list containing the emission factors data.frame.
+#'        Local emission factors, in units 'g/km'.
+#' @param speed units. Speed in 'km/h'.
+#' @param veh_type character. Bus type, classified as "Ubus Midi <=15 t",
+#'       "Ubus Std 15 - 18 t",  "Ubus Artic >18 t", "Coaches Std <=18 t", or 
+#'       "Coaches Artic >18 t".
+#' @param euro character. Euro period of vehicle, classified in "Conventional", 
+#'        "I", "II", "III", "IV", "V", "VI", and "EEV".
+#' @param pollutant character. Pollutant: "FC", "CO2", "CO", "NOx", "VOC", 
+#'        "PM10", "EC", "CH4", "NH3", "N2O", "FC" (fuel consumption). 
+#' @param fuel character. Fuel type, classified in "D" (Diesel), "DHD" (Diesel 
+#'        Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity), "CNG" 
+#'        (Compressed Natural Gas), "BD" (Biodiesel). Default is "D". 
+#' @param tech character. After treatment technology, classified in "SCR" 
+#'        (Selective Catalytic Reduction), "EGR" (Exhaust Gas Recirculation), 
+#'        and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default 
+#'        is "SCR" for "IV" and "V".
+#' @param SDC numeric. Average speed of urban driving condition in 'km/h'. 
+#'        Default is 19 km/h,  which is the average speed adopted in EMEP/EEA
+#'        report.
+#' @param slope numeric. Slope gradient, categorized in -0.06, -0.04, -0.02, 
+#'        0.00, 0.02, 0.04 and 0.06. Negative gradients means downhills and 
+#'        positive uphills. Default is 0.0.
+#' @param load numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0. 
+#'        Default is 0.5.
+#' @param fcorr numeric. Correction based on fuel composition. The length must 
+#'        be one per each euro standards. Default is 1.0.
 #' 
 #' @return list. Emission factors in units 'g/km'.
 #' @details 
@@ -61,18 +66,22 @@
 #' 
 #' @examples
 #' 
-#' temp_ef_br <- ef_brazil_cetesb(pollutant = c("CO","PM10","CO2","CH4","NOx"),
-#'                         veh_type = c("BUS_URBAN_D","BUS_MICRO_D"),
-#'                         model_year = c(2015,2015),
-#'                         as_list = TRUE)
+#' temp_ef_br <- ef_brazil_cetesb(
+#'                     pollutant = c("CO","PM10","CO2","CH4","NOx"),
+#'                     veh_type = c("BUS_URBAN_D","BUS_MICRO_D"),
+#'                     model_year = c(2015,2015),
+#'                     as_list = TRUE
+#'                     )
 #' 
-#' temp_ef_scaled <- ef_scaled_euro(ef_local = temp_ef_br
-#'                                  , speed = units::set_units(1:100,"km/h")
-#'                                  , veh_type = c("Ubus Std 15 - 18 t","Ubus Midi <=15 t")
-#'                                  , euro = c("IV","IV")
-#'                                  , fuel = c("D","D")
-#'                                  , tech = c("SCR","SCR")
-#'                                  , pollutant = c("CO","PM10","CO2","CH4","NOx"))
+#' temp_ef_scaled <- ef_scaled_euro(
+#'                     ef_local = temp_ef_br,
+#'                     speed = units::set_units(1:100,"km/h"),
+#'                     veh_type = c("Ubus Std 15 - 18 t","Ubus Midi <=15 t"),
+#'                     euro = c("IV","IV"),
+#'                     fuel = c("D","D"),
+#'                     tech = c("SCR","SCR"),
+#'                     pollutant = c("CO","PM10","CO2","CH4","NOx")
+#'                     )
 #' @export
 ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D", 
                            tech = "SCR", SDC = 19, slope = 0.0, 

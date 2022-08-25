@@ -6,18 +6,18 @@
 #' estimates from the  [Environment Company of Sao Paulo, Brazil (CETESB) 2019](https://cetesb.sp.gov.br/veicular/).
 #' Emission factor estimates are expressed in units 'g/km'.
 #'
-#' @param pollutant character; Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
+#' @param pollutant character. Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
 #'        "NO2", "NO", "RCHO", "ETOH" "KML", "FC" (Fuel Consumption), 
 #'        "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh), 
 #'        "CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon), 
 #'        "FS"(Fuel Sales) and "NH3".
-#' @param veh_type character; Vehicle categories by fuel: "BUS_URBAN_D", 
+#' @param veh_type character. Vehicle categories by fuel: "BUS_URBAN_D", 
 #'        "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".
-#' @param model_year numeric; Vehicle model year. Supports `model_year` from 
+#' @param model_year numeric. Vehicle model year. Supports `model_year` from 
 #'        1960 to 2020.
 #' @template as_list
 #' 
-#' @return data.table; Emission factors in units 'g/km' by model_year.
+#' @return data.table. Emission factors in units 'g/km' by model_year.
 #' 
 #' @details 
 #' 

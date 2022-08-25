@@ -14,7 +14,7 @@ ef_usa_moves(
 )
 }
 \arguments{
-\item{pollutant}{character; Pollutants: "CH4" (Methane), "CO" (Carbon
+\item{pollutant}{character. Pollutants: "CH4" (Methane), "CO" (Carbon
 Monoxide), "CO2" (Carbon Dioxide), "EC" (Energy Consumption), "HONO"
 (Nitrous Acid), "N2O" (Nitrous Oxide), "NH3" (Ammonia ), "NH4"
 (Ammonium), "NO" (Nitrogen Oxide), "NO2" (Nitrogen Dioxide), "NO3"
@@ -23,22 +23,23 @@ Total), "PM25" (Primary Exhaust PM2.5 - Total), "SO2" (Sulfur Dioxide),
 "THC" (Total Gaseous Hydrocarbons ), "TOG" (Total Organic Gases) and
 "VOC" (Volatile Organic Compounds)}
 
-\item{model_year}{numeric; Model year of vehicle.}
+\item{model_year}{numeric. Model year of vehicle.}
 
-\item{reference_year}{numeric; Year of reference, in which the emissions
+\item{reference_year}{numeric. Year of reference, in which the emissions
 inventory is estimated. Default is 2020. Values between 2015 - 2022.}
 
-\item{speed}{units; Speed in 'km/h'; Emission factor are returned in speed
-intervals: " - 2.5", "2.5 - 7.5", "7.5 - 12.5", "12.5 - 17.5", "17.5 -
-22.5", "22.5 - 27.5", "27.5 - 32.5","32.5 - 37.5","37.5 - 42.5","42.5
-- 47.5","47.5 - 52.5", "52.5 - 57.5", "57.5 - 62.5", "62.5 - 67.5",
-"67.5 - 72.5", ">72.5" mph (miles/h).}
+\item{speed}{units. Speed in 'km/h'. Emission factor are returned in speed
+intervals: "0-2.5", "2.5-7.5", "7.5-12.5", "12.5-17.5", "17.5-22.5",
+"22.5-27.5", "27.5-32.5", "32.5-37.5", "37.5-42.5", "42.5-47.5",
+"47.5-52.5", "52.5-57.5", "57.5-62.5", "62.5-67.5", "67.5-72.5",
+">72.5" mph (miles/h).}
 
-\item{fuel}{character; Type of fuel: 'D' (Diesel),'G' (Gasoline), 'CNG'
+\item{fuel}{character. Type of fuel: 'D' (Diesel),'G' (Gasoline), 'CNG'
 (Compressed Natural Gas). Default is 'D'.}
 
 \item{as_list}{logical. If \code{TRUE} (default), the function returns the output
-in a \code{list} format. If \code{FALSE}, the output is returned as a \code{data.table}.}
+in a \code{list} format. If \code{FALSE}, the output is returned in a \code{data.table}
+format.}
 }
 \value{
 List. Emission factors in units 'g/km' by speed and model_year.

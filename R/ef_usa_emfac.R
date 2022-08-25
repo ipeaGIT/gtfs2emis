@@ -1,33 +1,28 @@
 #' @title 
-#' Running exhaust emissions factors from United States (EMFAC2017 model)
+#' Running exhaust emissions factors for buses from United States (EMFAC2017 model)
 #' 
 #' @description 
-#' Returns a vector or data.frame of emission factors for buses based on 
-#' the [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/).
-#' The model considers emission factors (EF) of urban buses in California (United States),
-#'  considering different pollutants, years of reference, model year, fuel, speed ranges,
-#' type of regions, model version, and type of season. The gtfs2emis package 
-#' currently supports EF only for "Statewide" region type, and "Annual" season. 
-#' Specific data of these variables can be download at 
+#' Returns a vector or data.frame of emission factors for buses based on the
+#' [California EMission Factor model (EMFAC2017)](https://arb.ca.gov/emfac/). 
+#' The model considers emission factors (EF) of urban buses in California 
+#' (United States), considering different pollutants, years of reference, model 
+#' year, fuel, speed ranges, type of regions, model version, and type of season. 
+#' The gtfs2emis package currently supports EF only for "Statewide" region type, 
+#' and "Annual" season.  Specific data of these variables can be download at 
 #' <<https://arb.ca.gov/emfac/emissions-inventory>>.
-#' 
-#' The package returns the data in a data.frame format. The R script used to 
-#' organize the EMFAC database can be found in the repository
-#' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R>>.
 #'
-#' @param pollutant Character; Pollutants: CH4(Methane), CO(Carbon Monoxide), 
-#' CO2(Carbon Dioxide), N2O(Nitrous Oxide), NOx(Oxides of Nitrogen),
-#'  PM10(Primary Exhaust PM10 - Total), PM25(Primary Exhaust PM2.5 - Total),
-#'   SOX(Oxides of Sulfur), TOG(Total Organic Gases), ROG (Reactive Organic Gases)
-#' @param reference_year Numeric; Calendar Year between 2015 - 2022. Year in which
-#'  the emissions inventory is estimated. Default is 2020.
-#' @param fuel Character; Type of fuel: 'D' (Diesel),'G' (Gasoline),
-#' 'CNG' (Compressed Natural Gas). Default is 'D'.
+#' @param pollutant character. Pollutants: "CH4" (Methane), "CO" (Carbon 
+#'        Monoxide), "CO2" (Carbon Dioxide), "N2O" (Nitrous Oxide), "NOx" 
+#'        (Oxides of Nitrogen), "PM10" (Primary Exhaust PM10 - Total), "PM25" 
+#'        (Primary Exhaust PM2.5 - Total), "SOX" (Oxides of Sulfur), "TOG" 
+#'        (Total Organic Gases), "ROG"  (Reactive Organic Gases).
+#' @template reference_year
+#' @template fuel
 #' @param model_year Numeric; Model year of vehicle.
-#' @param speed Units; Speed in 'km/h'; Emission factor are returned in speed intervals 
-#'  such as "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40",
-#'   "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85"
-#'   , "85-90", ">90" mph (miles/h).
+#' @param speed Units. Speed in 'km/h'; Emission factor are returned in speed 
+#'        intervals: "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", 
+#'        "35-40", "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", 
+#'        "75-80", "80-85", "85-90", ">90" mph (miles/h).
 #' @template as_list
 #' 
 #' @return List or data.table. Emission factors in units 'g/km' by speed and model_year.
@@ -37,12 +32,14 @@
 #' 
 #' 
 #' @examples
-#'  ef_usa_emfac(pollutant = c("CO","PM10"),
+#' df <- ef_usa_emfac(
+#'         pollutant = c("CO","PM10"),
 #'         reference_year = 2019,
 #'         model_year = 2015,
-#'         speed = units::set_units(1:100,"km/h"),
+#'         speed = units::set_units(10:100,"km/h"),
 #'         fuel = "D",
-#'         as_list = TRUE)
+#'         as_list = TRUE
+#'         )
 #' @export
 ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
                          , model_year, speed, as_list = TRUE){

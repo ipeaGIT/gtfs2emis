@@ -2,7 +2,8 @@
 % Please edit documentation in R/ef_europe_emep.R
 \name{ef_europe_emep}
 \alias{ef_europe_emep}
-\title{Speed-dependent emission factor from the European Environment Agency (EMEP/EEA) model}
+\title{Speed-dependent emission factor from the European Environment Agency
+(EMEP/EEA) model}
 \usage{
 ef_europe_emep(
   speed,
@@ -20,37 +21,48 @@ ef_europe_emep(
 \arguments{
 \item{speed}{units; Speed in 'km/h'.}
 
-\item{veh_type}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
-"Coaches Std <=18 t","Coaches Artic >18 t".}
+\item{veh_type}{character; Bus type, classified in "Ubus Midi <=15 t",
+"Ubus Std 15 - 18 t", "Ubus Artic >18 t", "Coaches Std <=18 t",
+"Coaches Artic >18 t".}
 
-\item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
+\item{euro}{character. Euro period of vehicle, classified in "Conventional",
+"I", "II", "III", "IV", "V", "VI", and "EEV".}
 
-\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.}
+\item{pollutant}{character. Pollutant: "FC", "CO2", "CO", "NOx", "VOC",
+"PM10", "EC", "CH4", "NH3", "N2O", "FC" (fuel consumption).}
 
-\item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
-"DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).}
+\item{fuel}{character. Fuel type, classified in "D" (Diesel), "DHD" (Diesel
+Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity), "CNG"
+(Compressed Natural Gas), "BD" (Biodiesel). Default is "D".}
 
-\item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction),
-"EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are
-no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III".}
+\item{tech}{character. After treatment technology, classified in "SCR"
+(Selective Catalytic Reduction), "EGR" (Exhaust Gas Recirculation),
+and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default
+is "SCR" for "IV" and "V". There are no available after treatment
+technology associated with euro standards "Conventional", "I", "II"
+and "III".}
 
-\item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
-0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
+\item{slope}{numeric. Slope gradient, categorized in -0.06, -0.04, -0.02,
+0.00, 0.02, 0.04 and 0.06. Negative gradients means downhills and
+positive uphills. Default is 0.0.}
 
-\item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
+\item{load}{numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0.
+Default is 0.5.}
 
-\item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
-each euro standards. Default is 1.0.}
+\item{fcorr}{numeric. Correction based on fuel composition. The length must
+be one per each euro standards. Default is 1.0.}
 
 \item{as_list}{logical. If \code{TRUE} (default), the function returns the output
-in a \code{list} format. If \code{FALSE}, the output is returned as a \code{data.table}.}
+in a \code{list} format. If \code{FALSE}, the output is returned in a \code{data.table}
+format.}
 }
 \value{
 List. emission factors in units 'g/km' (list or a data.table).
 }
 \description{
-Returns a list or data.table of emission factors for buses based on EMEP/EEA air pollutant
-emission inventory guidebooks. Estimates are expressed in units 'g/km'.
+Returns a list or data.table of emission factors for buses based on EMEP/EEA
+air pollutant emission inventory guidebooks. Emission factor estimates are
+expressed in units 'g/km'.
 }
 \details{
 The new convention for vehicles names are translated from the EMEP/EEA report:\tabular{ll}{
@@ -82,12 +94,14 @@ EMEP/EEA data and reports can be accessed in the following links:
 }
 }
 \examples{
-ef_europe_emep( speed = units::set_units(1:100,"km/h"),
-           veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-           euro = c("III","IV","V"),
-           fuel = "D",
-           pollutant = c("CO","PM10","CO2","CH4","NOx"),
-           as_list = FALSE) 
+df <- ef_europe_emep(
+         speed = units::set_units(1:100,"km/h"),
+         veh_type = c("Ubus Midi <=15 t", "Ubus Std 15 - 18 t", "Ubus Artic >18 t"),
+         euro = c("III", "IV", "V"),
+         fuel = "D",
+         pollutant = c("CO", "PM10", "CO2", "CH4", "NOx"),
+         as_list = FALSE
+         ) 
 }
 \seealso{
 Other Emission factor model: 

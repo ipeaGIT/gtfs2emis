@@ -1,25 +1,36 @@
 #' @title 
-#' Speed-dependent emission factor from the European Environment Agency (EMEP/EEA) model 
+#' Speed-dependent emission factor from the European Environment Agency 
+#' (EMEP/EEA) model 
 #' 
 #' @description 
-#' Returns a list or data.table of emission factors for buses based on EMEP/EEA air pollutant
-#'  emission inventory guidebooks. Estimates are expressed in units 'g/km'.
+#' Returns a list or data.table of emission factors for buses based on EMEP/EEA 
+#' air pollutant emission inventory guidebooks. Emission factor estimates are 
+#' expressed in units 'g/km'.
 #' 
 #' @param speed units; Speed in 'km/h'.
-#' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
-#' "Coaches Std <=18 t","Coaches Artic >18 t".
-#' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".
-#' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. 
-#' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
-#' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).   
-#' @param tech character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
-#' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
-#' no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". 
-#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
-#' 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.
-#' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
-#' @param fcorr numeric; Correction based on fuel composition. The length must be one per
-#' each euro standards. Default is 1.0.
+#' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t",
+#'        "Ubus Std 15 - 18 t", "Ubus Artic >18 t", "Coaches Std <=18 t", 
+#'        "Coaches Artic >18 t".
+#' @param euro character. Euro period of vehicle, classified in "Conventional", 
+#'        "I", "II", "III", "IV", "V", "VI", and "EEV".
+#' @param pollutant character. Pollutant: "FC", "CO2", "CO", "NOx", "VOC", 
+#'        "PM10", "EC", "CH4", "NH3", "N2O", "FC" (fuel consumption). 
+#' @param fuel character. Fuel type, classified in "D" (Diesel), "DHD" (Diesel 
+#'        Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity), "CNG" 
+#'        (Compressed Natural Gas), "BD" (Biodiesel). Default is "D". 
+#' @param tech character. After treatment technology, classified in "SCR" 
+#'        (Selective Catalytic Reduction), "EGR" (Exhaust Gas Recirculation), 
+#'        and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default 
+#'        is "SCR" for "IV" and "V". There are no available after treatment 
+#'        technology associated with euro standards "Conventional", "I", "II" 
+#'        and "III". 
+#' @param slope numeric. Slope gradient, categorized in -0.06, -0.04, -0.02, 
+#'        0.00, 0.02, 0.04 and 0.06. Negative gradients means downhills and 
+#'        positive uphills. Default is 0.0.
+#' @param load numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0. 
+#'        Default is 0.5.
+#' @param fcorr numeric. Correction based on fuel composition. The length must 
+#'        be one per each euro standards. Default is 1.0.
 #' @template as_list
 #' 
 #' @return List. emission factors in units 'g/km' (list or a data.table).
@@ -54,12 +65,14 @@
 #' @family Emission factor model
 #' 
 #' @examples
-#' ef_europe_emep( speed = units::set_units(1:100,"km/h"),
-#'            veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-#'            euro = c("III","IV","V"),
-#'            fuel = "D",
-#'            pollutant = c("CO","PM10","CO2","CH4","NOx"),
-#'            as_list = FALSE) 
+#' df <- ef_europe_emep(
+#'          speed = units::set_units(1:100,"km/h"),
+#'          veh_type = c("Ubus Midi <=15 t", "Ubus Std 15 - 18 t", "Ubus Artic >18 t"),
+#'          euro = c("III", "IV", "V"),
+#'          fuel = "D",
+#'          pollutant = c("CO", "PM10", "CO2", "CH4", "NOx"),
+#'          as_list = FALSE
+#'          ) 
 #' @export
 ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                            slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
