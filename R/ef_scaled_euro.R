@@ -90,7 +90,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   temp_ef <- ef_europe_emep_db
   
   # ef_local
-  if(checkmate::check_list(ef_local)) {
+  if(inherits(ef_local,what = "list")) {
     checkmate::assert_choice("EF", names(ef_local))
     checkmate::assert(
       checkmate::check_class(ef_local$EF, "data.frame")

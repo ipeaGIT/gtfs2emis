@@ -118,7 +118,7 @@ $$
 where $EF_{scaled}(V)$ is the scaled emission factor for each street link, 
 $EF_{local}$ is the local emission factor, $EF_{euro}(V)$ and $EF_{euro}(SDC)$ are the EMEP/EEA emission factor the speed of V and the average urban driving speed SDC, respectively.
 
-The scaled behavior of EF can be verified graphically when we plot the $EF_{local}$, $EF_{scaled}(V)$, and the $EF_{euro}(V)$ that is used as the reference To plot these data, we need five quick steps:
+The scaled behavior of EF can be verified graphically when we plot the $EF_{local}$, $EF_{scaled}(V)$, and the $EF_{euro}(V)$ that is used as the reference To plot these data, we need six quick steps:
 
 1) Build a `data.frame` of fleet indicating the correspondence between the fleet characteristic in the local and European emission models
 ```{r}
@@ -134,9 +134,33 @@ cur_local_ef <- ef_brazil_cetesb(pollutant = "CO2"
                                  ,veh_type = cur_fleet$type_name_br
                                  ,model_year = cur_fleet$year)
 head(cur_local_ef)
+
+# convert Local EF to data.frame
+cur_local_ef_dt <- emis_to_dt(emi_list = cur_local_ef
+                             ,emi_vars = "EF")
 ```
 
-3) Apply `ef_scaled_euro()`
+3) Estimate `ef_emep_europe`
+
+```{r}
+# Euro EF
+cur_euro_ef <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
+                              ,veh_type = cur_fleet$veh_type
+                              ,euro = cur_fleet$euro
+                              ,pollutant = "CO2"
+                              ,tech = "-"
+)
+
+# convert to data.frame
+cur_euro_ef_dt <- emis_to_dt(emi_list = cur_euro_ef
+                             ,emi_vars = "EF"
+                             ,veh_vars = c("veh_type","euro","fuel","tech")
+                             ,segment_vars = "speed")
+cur_euro_ef_dt$source <- "Euro EF"
+```
+
+
+4) Apply `ef_scaled_euro()`
 
 
 ```{r}
@@ -147,45 +171,24 @@ cur_scaled_ef <- ef_scaled_euro(ef_local = cur_local_ef$EF
                                 ,pollutant = "CO2"
                                 ,tech = "-"
                                 )
-```
-
-
-<!--  666 uai, o codigo 4 esta be confuso. Isso nao parece ser um unico passo. Ou precisa de mais explicacao / documentacao nos comentarios -->
-
- 4) Use `emis_to_dt()` to convert the results to a `data.frame`
-```{r}
-# Local EF
-cur_local_ef_dt <- emis_to_dt(emi_list = cur_local_ef
-                             ,emi_vars = "EF")
-# Euro EF
-cur_euro_ef <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
-                              ,veh_type = cur_fleet$veh_type
-                              ,euro = cur_fleet$euro
-                              ,pollutant = "CO2"
-                              ,tech = "-"
-)
-cur_euro_ef_dt <- emis_to_dt(emi_list = cur_euro_ef
-                             ,emi_vars = "EF"
-                             ,veh_vars = c("veh_type","euro","fuel","tech")
-                             ,segment_vars = "speed")
-cur_euro_ef_dt$source <- "Euro EF"
-
-# Scaled EF
+# convert to data.frame
 cur_scaled_ef_dt <- emis_to_dt(emi_list = cur_scaled_ef
                                ,emi_vars = "EF"
                                ,veh_vars = c("veh_type","euro","fuel","tech")
                                ,segment_vars = "speed")
 cur_scaled_ef_dt$source <- "Scaled EF"
-
-# rbind data
-cur_ef <- rbind(cur_euro_ef_dt, cur_scaled_ef_dt)
-cur_ef$source <- factor(cur_ef$source
-                        ,levels = c("Scaled EF", "Euro EF"))
 ```
+
 
 5) View in ggplot2
 
 ```{r, fig.width=6, fig.height=5}
+# rbind data
+cur_ef <- rbind(cur_euro_ef_dt, cur_scaled_ef_dt)
+cur_ef$source <- factor(cur_ef$source
+                        ,levels = c("Scaled EF", "Euro EF"))
+
+# plot
 ggplot() + 
   # add scaled and euro EF
   geom_line(data = cur_ef
