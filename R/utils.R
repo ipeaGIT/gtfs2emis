@@ -5,7 +5,7 @@ NULL
 # Globals
 utils::globalVariables(c('id', '.'))
 utils::globalVariables(c('Euro', 'Fuel', 'Load', 'Pol','Pollutant','time', 'Slope', 'Segment','segment_id',
-                         'Technology'))
+                         'Technology','tmp_eq'))
 utils::globalVariables(c( 'from_stop_id', 'geometry', 'i.geometry', 'shape_id', 'stop_sequence', 'to_stop_id'))
 utils::globalVariables(c('ef_europe_emep_db'))
 utils::globalVariables(c('ef_usa_moves_db',"fuel_type"))
