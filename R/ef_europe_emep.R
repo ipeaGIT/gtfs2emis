@@ -1,37 +1,26 @@
 #' @title 
-#' Speed-dependent emission factor from the European Environment Agency 
-#' (EMEP/EEA) model 
+#' Speed-dependent emission factor from the European Environment Agency (EMEP/EEA) model 
 #' 
 #' @description 
-#' Returns a list or data.table of emission factors for buses based on EMEP/EEA 
-#' air pollutant emission inventory guidebooks. Emission factor estimates are 
-#' expressed in units 'g/km'.
+#' Returns a list or data.table of emission factors for buses based on EMEP/EEA air pollutant
+#'  emission inventory guidebooks. Estimates are expressed in units 'g/km'.
 #' 
 #' @param speed units; Speed in 'km/h'.
-#' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t",
-#'        "Ubus Std 15 - 18 t", "Ubus Artic >18 t", "Coaches Std <=18 t", 
-#'        "Coaches Artic >18 t".
-#' @param euro character. Euro period of vehicle, classified in "Conventional", 
-#'        "I", "II", "III", "IV", "V", "VI", and "EEV".
-#' @param pollutant character. Pollutant: "FC", "CO2", "CO", "NOx", "VOC", 
-#'        "PM10", "EC", "CH4", "NH3", "N2O", "FC" (fuel consumption). 
-#' @param fuel character. Fuel type, classified in "D" (Diesel), "DHD" (Diesel 
-#'        Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity), "CNG" 
-#'        (Compressed Natural Gas), "BD" (Biodiesel). Default is "D". 
-#' @param tech character. After treatment technology, classified in "SCR" 
-#'        (Selective Catalytic Reduction), "EGR" (Exhaust Gas Recirculation), 
-#'        and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default 
-#'        is "SCR" for "IV" and "V". There are no available after treatment 
-#'        technology associated with euro standards "Conventional", "I", "II" 
-#'        and "III". 
-#' @param slope numeric. Slope gradient, categorized in -0.06, -0.04, -0.02, 
-#'        0.00, 0.02, 0.04 and 0.06. Negative gradients means downhills and 
-#'        positive uphills. Default is 0.0.
-#' @param load numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0. 
-#'        Default is 0.5.
-#' @param fcorr numeric. Correction based on fuel composition. The length must 
-#'        be one per each euro standards. Default is 1.0.
-#' @template as_list
+#' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
+#' "Coaches Std <=18 t","Coaches Artic >18 t".
+#' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".
+#' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. 
+#' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
+#' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).   
+#' @param tech character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
+#' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
+#' no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". 
+#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
+#' 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.
+#' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
+#' @param fcorr numeric; Correction based on fuel composition. The length must be one per
+#' each euro standards. Default is 1.0.
+#' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
 #' 
 #' @return List. emission factors in units 'g/km' (list or a data.table).
 #' @details 
@@ -64,19 +53,19 @@
 #' 
 #' @family Emission factor model
 #' 
-#' @examples
-#' df <- ef_europe_emep(
-#'          speed = units::set_units(1:100,"km/h"),
-#'          veh_type = c("Ubus Midi <=15 t", "Ubus Std 15 - 18 t", "Ubus Artic >18 t"),
-#'          euro = c("III", "IV", "V"),
-#'          fuel = "D",
-#'          pollutant = c("CO", "PM10", "CO2", "CH4", "NOx"),
-#'          as_list = FALSE
-#'          ) 
 #' @export
+#' 
+#' @examples if (interactive()) {
+#' ef_europe_emep( speed = units::set_units(1:100,"km/h"),
+#'                 veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
+#'                 euro = c("IV","V"),
+#'                 fuel = "D",
+#'                 pollutant = c("CO","PM10","CH4","NOx"),
+#'                 as_list = FALSE) 
+#'}
 ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                            slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
-  # euro vector----
+  # euro data----
   utils::data('ef_europe_emep_db') 
   temp_ef <- ef_europe_emep_db
   
@@ -169,8 +158,8 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   
   # emission factor----
   
-  temp_ef1 <- lapply(seq_along(pollutant),function(i){  # i = 3
-    temp_ef2 <- lapply(seq_along(euro),function(j){    # j = 1
+  temp_ef1 <- lapply(seq_along(pollutant),function(i){  # i = 1
+    temp_ef2 <- lapply(seq_along(euro),function(j){    # i=1;j = 1
       
       #message(sprintf("i=%s, j=%s",i,j))
       # condition for missing technologies
@@ -182,43 +171,57 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
       }
-      if(euro[j] %in%  c("IV") && (pollutant[i] == "CO2" | pollutant[i] == "FC") &  tech[j] != "-"){
+      # FC / CO2 with tech
+      if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("FC","CO2")) & 
+         tech[j] == "-"){
+        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
+                       ,"' Technology and Euro '", euro[j]
+                       ,"'.\n The package assumed 'SCR' Technology entry. Please check "
+                       ,"`data(ef_europe_emep_db)` for available data."))
+        tech[j] = "SCR"
+      }
+      # FC / CO2 without tech
+      if(!(euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("FC","CO2")) & 
+         tech[j] != "-"){
         message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
                        ,"' Technology and Euro '", euro[j]
                        ,"'.\n The package assumes missing Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "-"
       }
-      if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("CO2","FC")) && tech[j] != "SCR"){
+      # FC / CO2 with tech
+      if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("FC","CO2")) & 
+         (tech[j] %in% c("-","DPF+SCR"))){
         message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
                        ,"' Technology and Euro '", euro[j]
                        ,"'.\n The package assumed 'SCR' Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "SCR"
-        }
+      }
+      # EURO VI
       if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC")) & tech[j] != "DPF+SCR"){
         message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
                        ,"' Technology and Euro '", euro[j]
                        ,"'.\n The package assumed 'DPF+SCR' Technology entry. Please check "
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "DPF+SCR"
-        }
-      
+      }
       # fix load and slope
       
-      if(length(unique(slope)) > 1 & length(unique(slope)) > 1){
+      if(length(unique(slope)) > 1 | length(unique(load)) > 1){
         
-        temp_ef3 <- lapply(seq_along(euro),function(k){ # k = 1
-          temp_ef[ Pol %in% pollutant[i] &  
-                     Fuel %in% fuel[j] & 
-                     Segment %in% veh_type[j] & 
-                     Technology %in% tech[j] &
-                     Euro %in% euro[j] & 
-                     Slope %in% slope[k] & 
-                     Load == load[k], ]
-          
+        slope_input <- slope 
+        temp_ef3 <- lapply(seq_along(slope),function(k){ # k = 2
+          as.data.frame(temp_ef)[ temp_ef$Pol %in% pollutant[i] &  
+                                    temp_ef$Fuel %in% fuel[j] & 
+                                    temp_ef$Segment %in% veh_type[j] & 
+                                    temp_ef$Technology %in% tech[j] &
+                                    temp_ef$Euro %in% euro[j] & 
+                                    temp_ef$Slope == slope_input[k] & 
+                                    temp_ef$Load == load[k], ]
         }) 
         temp_ef3 <- data.table::rbindlist(temp_ef3)
+        
       }else{
         temp_ef3 <- temp_ef[ Pol %in% pollutant[i] &  
                                Fuel %in% fuel[j] & 
@@ -246,53 +249,69 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
         stop(erro_msg)
       }
       
-      #
-      # fix speed
-      #
       
-      tmpSpeedPol <- tmpSpeed
-      tmpSpeedPol[tmpSpeedPol < temp_ef3$Vmin] <- temp_ef3$Vmin
-      tmpSpeedPol[tmpSpeedPol > temp_ef3$Vmax] <- temp_ef3$Vmax
       
       #
       # Ef estimates
       #
-      if(length(unique(slope)) > 1 & length(unique(slope)) > 1){
+      if(length(unique(slope)) > 1 | length(unique(load)) > 1){
         
-        eq_output <- lapply(seq_along(euro),function(k){ # k = 1
-          tmp_eq <- eq_num(Alpha = temp_ef3$Alpha[k]
-                              , Beta = temp_ef3$Beta[k]
-                              , Gamma = temp_ef3$Gamma[k]
-                              , Delta = temp_ef3$Delta[k]
-                              , Epsilon = temp_ef3$Epsilon[k]
-                              , Zita = temp_ef3$Zita[k]
-                              , Hta = temp_ef3$Hta[k]
-                              , RF = temp_ef3$RF[k]
-                              , Speed = tmpSpeedPol[k]
-                              , Function_ID = temp_ef3$Function_ID[k]
-                              , k = temp_ef3$k[k]
-                              , fcorr = fcorr[j])
+        data_speed <- lapply(seq_along(slope),function(k){ # k =1
+          
+          # select slope specific
+          temp_ef4 <- as.data.frame(temp_ef3)[temp_ef3$Slope == slope[k] & 
+                                                temp_ef3$Load == load[k], ]
+          
+          # fix speed
+          tmpSpeedPol <- tmpSpeed
+          tmpSpeedPol[tmpSpeedPol < temp_ef4$Vmin] <- temp_ef4$Vmin
+          tmpSpeedPol[tmpSpeedPol > temp_ef4$Vmax] <- temp_ef4$Vmax
+          
+          tmp_eq <- eq_num(Alpha = temp_ef4$Alpha
+                           , Beta = temp_ef4$Beta
+                           , Gamma = temp_ef4$Gamma
+                           , Delta = temp_ef4$Delta
+                           , Epsilon = temp_ef4$Epsilon
+                           , Zita = temp_ef4$Zita
+                           , Hta = temp_ef4$Hta
+                           , RF = temp_ef4$RF
+                           , Speed = tmpSpeedPol[k]
+                           , Function_ID = temp_ef4$Function_ID
+                           , k = temp_ef4$k
+                           , fcorr = fcorr[j])
+          
+          eq_output <- data.table::data.table("ef" = tmp_eq, "tmpSpeed" = tmpSpeed)
+          
+          return(eq_output)
+          
         }) 
-        eq_output <- data.table::rbindlist(eq_output)
+        data_speed <- data.table::rbindlist(data_speed)
         
       }else{
         
-        eq_output <- eq_num(Alpha = temp_ef3$Alpha
-                            , Beta = temp_ef3$Beta
-                            , Gamma = temp_ef3$Gamma
-                            , Delta = temp_ef3$Delta
-                            , Epsilon = temp_ef3$Epsilon
-                            , Zita = temp_ef3$Zita
-                            , Hta = temp_ef3$Hta
-                            , RF = temp_ef3$RF
-                            , Speed = tmpSpeedPol
-                            , Function_ID = temp_ef3$Function_ID
-                            , k = temp_ef3$k
-                            , fcorr = fcorr[j])
+        # fix speed
+        tmpSpeedPol <- tmpSpeed
+        tmpSpeedPol[tmpSpeedPol < temp_ef3$Vmin] <- temp_ef3$Vmin
+        tmpSpeedPol[tmpSpeedPol > temp_ef3$Vmax] <- temp_ef3$Vmax
+        
+        tmp_eq <- eq_num(Alpha = temp_ef3$Alpha
+                         , Beta = temp_ef3$Beta
+                         , Gamma = temp_ef3$Gamma
+                         , Delta = temp_ef3$Delta
+                         , Epsilon = temp_ef3$Epsilon
+                         , Zita = temp_ef3$Zita
+                         , Hta = temp_ef3$Hta
+                         , RF = temp_ef3$RF
+                         , Speed = tmpSpeedPol
+                         , Function_ID = temp_ef3$Function_ID
+                         , k = temp_ef3$k
+                         , fcorr = fcorr[j])
+        
+        data_speed <- data.table::data.table("ef" = tmp_eq, "tmpSpeed" = tmpSpeed)
+        
       }
       # expands speed---
       
-      data_speed <- data.table::data.table("ef" = eq_output, "tmpSpeed" = tmpSpeed)
       data.table::setkey(data_speed,tmpSpeed)
       eq_output <- data_speed[data.table::data.table(speed)]$ef
       
