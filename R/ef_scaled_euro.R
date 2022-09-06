@@ -90,12 +90,23 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   temp_ef <- ef_europe_emep_db
   
   # ef_local
+  if(checkmate::check_list(ef_local)) {
+    checkmate::assert_choice("EF", names(ef_local))
+    checkmate::assert(
+      checkmate::check_class(ef_local$EF, "data.frame")
+      , checkmate::check_class(ef_local$EF, "data.table")
+      , checkmate::check_class(ef_local$EF, "units")
+      , combine = "or"
+    )
+  }
   checkmate::assert(
     checkmate::check_class(ef_local, "data.frame")
     , checkmate::check_class(ef_local, "data.table")
+    , checkmate::check_list(ef_local)
     , checkmate::check_class(ef_local, "units")
     , combine = "or"
   )
+
   # speed
   checkmate::assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   checkmate::assert_numeric(speed,lower = 1,upper = 130)
