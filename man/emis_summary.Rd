@@ -42,8 +42,8 @@ gtfs <- gtfstools::read_gtfs(gtfs_file)
 
 # Keep a single trip
 gtfs <- gtfstools::filter_by_trip_id(gtfs
-                                     , trip_id = c('619.3.60-40-d12-1.224.O'
-                                                   ,"10812.1.60-13-d12-1.26.I"))
+                                     , trip_id = c('238.2.60-118-b12-1.59.I'
+                                                   ,"7081.2.60-X27-b12-1.106.I"))
 # Transport model
 tp_model <- transport_model(gtfs_data = gtfs,
                             spatial_resolution = 100,
