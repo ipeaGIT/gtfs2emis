@@ -123,14 +123,14 @@ time, or vehicle type.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Keep a single trip</span></span></span>
 <span class="r-in"><span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/filter_by_trip_id.html" class="external-link">filter_by_trip_id</a></span><span class="op">(</span><span class="va">gtfs</span></span></span>
-<span class="r-in"><span>                                     , trip_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'619.3.60-40-d12-1.224.O'</span></span></span>
-<span class="r-in"><span>                                                   ,<span class="st">"10812.1.60-13-d12-1.26.I"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                                     , trip_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'238.2.60-118-b12-1.59.I'</span></span></span>
+<span class="r-in"><span>                                                   ,<span class="st">"7081.2.60-X27-b12-1.106.I"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Transport model</span></span></span>
 <span class="r-in"><span><span class="va">tp_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="transport_model.html">transport_model</a></span><span class="op">(</span>gtfs_data <span class="op">=</span> <span class="va">gtfs</span>,</span></span>
 <span class="r-in"><span>                            spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>                            parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Converting shapes to sf objects</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in rcpp_to_sf(obj, geometry_columns, NULL, linestring_id, NULL,     NULL, NULL, list_columns, FALSE, keep, xyzm(x, y, z, m),     "LINESTRING"):</span> attempt to set index 0/0 in SET_VECTOR_ELT</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing the data</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fleet data</span></span></span>
 <span class="r-in"><span><span class="va">fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span></span></span>
@@ -140,36 +140,68 @@ time, or vehicle type.</p>
 <span class="r-in"><span>                           , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
 <span class="r-in"><span>                           , fleet_data <span class="op">=</span> <span class="va">fleet_df</span></span></span>
 <span class="r-in"><span>                           , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO2"</span>,<span class="st">"PM10"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in checkmate::check_class(tp_model, classes = c("sf", "data.frame")):</span> object 'tp_model' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'DPF+SCR' Technology and Euro 'VI'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumed 'SCR' Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Aggregate total emissions by 'pollutant'</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span><span class="op">)</span> </span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: testthat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    pollutant              emi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       CO2 1.213444e+04 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      PM10 3.919392e-01 [g]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># by vehicle type</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span>, by <span class="op">=</span> <span class="st">"vehicle"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              veh_type pollutant              emi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Ubus Std 15 - 18 t       CO2 1.213444e+04 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Ubus Std 15 - 18 t      PM10 3.919392e-01 [g]</span>
 <span class="r-in"><span>             </span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"euro"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    euro pollutant              emi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  III       CO2 1.414929e+02 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   IV       CO2 4.021415e+03 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    V       CO2 1.647525e+03 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   VI       CO2 6.324011e+03 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  III      PM10 2.828379e-02 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:   IV      PM10 1.898451e-01 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7:    V      PM10 1.259416e-01 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8:   VI      PM10 4.786875e-02 [g]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fuel pollutant              emi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    D       CO2 1.213444e+04 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    D      PM10 3.919392e-01 [g]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>,<span class="st">"euro"</span>,<span class="st">"tech"</span>,<span class="st">"fuel"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              veh_type euro    tech fuel pollutant              emi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Ubus Std 15 - 18 t  III       -    D       CO2 1.414929e+02 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Ubus Std 15 - 18 t   IV     SCR    D       CO2 4.021415e+03 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Ubus Std 15 - 18 t    V     SCR    D       CO2 1.647525e+03 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Ubus Std 15 - 18 t   VI DPF+SCR    D       CO2 6.324011e+03 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: Ubus Std 15 - 18 t  III       -    D      PM10 2.828379e-02 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Ubus Std 15 - 18 t   IV     SCR    D      PM10 1.898451e-01 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7: Ubus Std 15 - 18 t    V     SCR    D      PM10 1.259416e-01 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8: Ubus Std 15 - 18 t   VI DPF+SCR    D      PM10 4.786875e-02 [g]</span>
 <span class="r-in"><span>             </span></span>
 <span class="r-in"><span><span class="co"># by time of the day</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"time"</span></span></span>
 <span class="r-in"><span>             , segment_vars <span class="op">=</span> <span class="st">"slope"</span><span class="op">)</span> </span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in isTRUE(lhs):</span> object 'emi_list' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    timestamp_hour pollutant              emi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:             19       CO2 1.281897e+03 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:              8       CO2 1.076303e+04 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:              9       CO2 8.952295e+01 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:             19      PM10 3.801056e-02 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              8      PM10 3.509064e-01 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:              9      PM10 3.022266e-03 [g]</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
