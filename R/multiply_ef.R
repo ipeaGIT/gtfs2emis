@@ -34,8 +34,8 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   }
   # ef
   # check if its a list
-  if(is(ef, "list")){
-    checkmate::check_choice("EF",names(ef),null.ok = FALSE)
+  if(inherits(x = ef,what = "list")){
+    checkmate::assert_choice("EF",names(ef),null.ok = FALSE)
     tmpEf <- ef$EF
   }else{
     tmpEf <- ef
@@ -115,7 +115,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   
   # export ---
   
-  if(as_list & class(ef) == "list"){
+  if(as_list & inherits(x = ef,what = "list")){
     ef$emi <- emi
     return(ef)
   }else{
