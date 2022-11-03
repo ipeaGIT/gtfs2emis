@@ -1,0 +1,10 @@
+citHeader("To cite gtfs2emis in publications use:")
+
+@article{vieira2022estimating,
+  title = {Estimating Public Transport Emissions from {{GTFS}} Data with Gtfs2emis},
+  author = {Vieira, Jo{\~a}o Pedro Bazzo and Pereira, Rafael H. M. and Andrade, Pedro Ribeiro},
+  year = {2022},
+  month = nov,
+  journal = {OSF Preprints},
+  doi = {10.31219/osf.io/8m2cy}
+}
