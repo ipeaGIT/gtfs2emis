@@ -1,24 +1,26 @@
 Type: Package
 Package: gtfs2emis
 Title: Estimating Public Transport Emissions from GTFS Data
-Version: 0.0.999
+Version: 0.1.0
 Authors@R: c(
              person(given = "Joao", family = "Bazzo", email = "joao.bazzo@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4536-5006")),
              person(given = "Rafael H. M.", family = "Pereira", email = "rafa.pereira.br@gmail.com", role=c("aut"), comment = c(ORCID = "0000-0003-2125-7465")),
              person(given = "Pedro R.", family = "Andrade", email = "pedro.andrade@inpe.br", role=c("aut"), comment = c(ORCID = "0000-0001-8675-4046"))
              )
-Description: Estimate the emission levels of public transport networks based on 
-             general transit feed specification (GTFS) data.
-             The package requires two main inputs: i) public transport 
-             data in the GTFS standard format; and ii) some basic information on 
-             fleet characteristics such as fleet age, technology, fuel and Euro 
-             stage. As it stands, the the package estimates several pollutants 
-             at high spatial and temporal resolutions. Pollution levels can be 
-             calculated for specific transport routes, trips, time of the day or 
-             for the transport system as a whole. The output with emission 
-             estimates can be extracted in different formats, supporting analysis 
-             on how emission levels vary across space, time and by fleet 
-             characteristics.
+Description: A bottom up model to estimate the emission levels of public 
+             transport systens based on  General Transit Feed Specification 
+             (GTFS) data. The package requires two main inputs: i) public 
+             transport  data in the GTFS standard format; and ii) some basic 
+             information on fleet characteristics such as fleet age, technology, 
+             fuel and Euro stage. As it stands, the the package estimates several 
+             pollutants at high spatial and temporal resolutions. Pollution 
+             levels can be  calculated for specific transport routes, trips, 
+             time of the day or for the transport system as a whole. The output 
+             with emission estimates can be extracted in different formats, 
+             supporting analysis  on how emission levels vary across space, 
+             time and by fleet characteristics. A full description of the 
+             gtfs2emis model is presented by Vieira, Pereira and Andrade (2022)
+             at <https://doi.org/10.31219/osf.io/8m2cy>.
 URL: https://ipeagit.github.io/gtfs2emis/ ,
      https://github.com/ipeaGIT/gtfs2emis
 BugReports: https://github.com/ipeaGIT/gtfs2emis

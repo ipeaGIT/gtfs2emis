@@ -19,7 +19,8 @@ at high spatial and temporal resolutions. Pollution levels can be
 calculated for specific transport routes, trips, time of the day, or for
 the transport system as a whole. The output with emission estimates can
 be extracted in different formats, supporting analysis of how emission
-levels vary across space, time, and by fleet characteristics. A full description of the methods used in the gtfs2emis model is presented in [Vieira, Pereira and Andrade (2022)](https://doi.org/10.31219/osf.io/8m2cy).
+levels vary across space, time, and by fleet characteristics. A full description 
+of the methods used in the gtfs2emis model is presented in [Vieira, Pereira and Andrade (2022)](https://doi.org/10.31219/osf.io/8m2cy).
 
 
 ### Installation
