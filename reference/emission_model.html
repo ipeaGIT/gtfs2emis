@@ -74,6 +74,7 @@ function must be used together with <code><a href="transport_model.html">transpo
 <span>  <span class="va">fleet_data</span>,</span>
 <span>  <span class="va">pollutant</span>,</span>
 <span>  reference_year <span class="op">=</span> <span class="fl">2020</span>,</span>
+<span>  heightfile <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ncores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -115,6 +116,14 @@ pollutants are available for each emission factor model (<code>ef_usa_moves</cod
 emissions inventory. Defaults to <code>2020</code>. This
 argument is only required when the <code>ef_model</code>
 argument is <code>ef_usa_moves</code> or <code>ef_usa_emfac</code>.</p></dd>
+
+
+<dt>heightfile</dt>
+<dd><p>character or raster data. The raster file with height data,
+or its filepath, used to estimate emissions considering the effect of
+street slope. This argument is used only when <code>ef_brazil_scaled_euro</code> or
+<code>ef_europe_emep</code> are selected. Default is <code>NULL</code>. Details are provided in
+<code><a href="slope_class_europe_emep.html">slope_class_europe_emep</a></code>.</p></dd>
 
 
 <dt>parallel</dt>
@@ -173,7 +182,14 @@ factors selection.
 Users can check the
 <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">gtfs2emis fleet data vignette</a>,
 for more examples.</p></li>
-</ul></div>
+</ul><p>Based on the input height data, the function returns the slope class between two consecutive
+bus stop positions of a LineString Simple Feature (transport model object).
+The slope is given by the ratio between the height difference and
+network distance from two consecutive public transport stops.
+The function classifies the slope into one of the seven categories
+available on the European Environmental Agency (EEA) database, which is -0.06,
+-0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other Core function: 
@@ -229,11 +245,15 @@ for more examples.</p></li>
 <span class="r-in"><span><span class="va">emi_emep</span> <span class="op">&lt;-</span> <span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span><span class="fu">emission_model</span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span></span>
 <span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
 <span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_europe</span></span></span>
-<span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO"</span>,<span class="st">"PM10"</span>,<span class="st">"CO2"</span>,<span class="st">"CH4"</span>,<span class="st">"NOx"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
-<span class="r-in"><span>                          </span></span>
-<span class="r-in"><span>                          </span></span>
+<span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PM10"</span>,<span class="st">"NOx"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">raster_cur</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/bra_cur-srtm.tif"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span>                           </span></span>
+<span class="r-in"><span><span class="va">emi_emep_slope</span> <span class="op">&lt;-</span> <span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span><span class="fu">emission_model</span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span></span>
+<span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
+<span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_europe</span></span></span>
+<span class="r-in"><span>                          , heightfile <span class="op">=</span> <span class="va">raster_cur</span></span></span>
+<span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PM10"</span>,<span class="st">"NOx"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>  </span></span>
+<span class="r-in"><span>                                                  </span></span>
 <span class="r-in"><span><span class="co"># Example using US EMFAC emission model and fleet</span></span></span>
 <span class="r-in"><span><span class="va">fleet_data_ef_moves</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>  veh_type <span class="op">=</span> <span class="st">"BUS_URBAN_D"</span></span></span>
 <span class="r-in"><span>                                  , model_year <span class="op">=</span> <span class="fl">2010</span><span class="op">:</span><span class="fl">2019</span></span></span>
