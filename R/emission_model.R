@@ -71,7 +71,6 @@
 #'         locally at `output_path`.
 #' @family Core function
 #' @examples
-#' library(gtfs2emis)
 #' library(gtfstools)
 #' 
 #' # read GTFS
