@@ -228,8 +228,10 @@ transport_model <- function(gtfs_data
   }
 
   ## This cleans up everything...
-  on.exit(unlink(gps_path, recursive = TRUE), add = TRUE)
-  on.exit(unlink(gps_adjust_path, recursive = TRUE), add = TRUE)
+  rm_path <- unlink(gps_path, recursive = TRUE)
+  rm_adj_path <- unlink(gps_adjust_path, recursive = TRUE)
+  on.exit(rm_path, add = TRUE)
+  on.exit(rm_adj_path, add = TRUE)
   #on.exit(unlink(gps_line_path, recursive = TRUE), add = TRUE)
   
   

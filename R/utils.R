@@ -25,4 +25,4 @@ utils::globalVariables(c('.N','from_height','from_timestamp',
                          'trip_id','trip_number','raster_cur'))
 # emission_model / transport_model
 utils::globalVariables(c("arrival_time", "cumdist", "cumtime", "departure_time",
-                         "dist", "files_gps_names","speed"))
+                         "dist", "files_gps_names","speed","rm_path","rm_adj_path"))

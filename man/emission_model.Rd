@@ -107,7 +107,6 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 -0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in
 }
 \examples{
-library(gtfs2emis)
 library(gtfstools)
 
 # read GTFS
