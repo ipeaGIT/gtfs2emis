@@ -1,11 +1,13 @@
 
-# gtfs2emis: Generating estimates of public transport emissions from GTFS data <img align="right" src="man/figures/logo.png" alt="logo" width="180">
+# gtfs2emis: Estimating public transport emissions from GTFS data <img align="right" src="man/figures/logo.png" alt="logo" width="180">
 
 [![R-CMD-check](https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipeaGIT/gtfs2emis/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
 coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master)
+[![Publication](https://img.shields.io/badge/DOI-10.31219/osf.io/8m2cy-blue)]([https://doi.org/10.31219/osf.io/8m2cy](https://doi.org/10.31219/osf.io/8m2cy))
+
 
 **gtfs2emis** is an R package to estimate the emission levels of public
 transport vehicles based on General Transit Feed Specification (GTFS)
@@ -17,9 +19,9 @@ at high spatial and temporal resolutions. Pollution levels can be
 calculated for specific transport routes, trips, time of the day, or for
 the transport system as a whole. The output with emission estimates can
 be extracted in different formats, supporting analysis of how emission
-levels vary across space, time, and by fleet characteristics.
+levels vary across space, time, and by fleet characteristics. A full description 
+of the methods used in the gtfs2emis model is presented in [Vieira, Pereira and Andrade (2022)](https://doi.org/10.31219/osf.io/8m2cy).
 
-<!-- The **gtfs2emis** package leverages on standard GTFS data format and develops a computational method that can be easily used to estimate the enviromental emissions of several public transport systems around the world. One of the core advantages of **gtfs2emis** is that it makes it extremely easy to simulate how the environmental performance of a public transport system would change under different policy scenarios. Simple modifications to the package input would allow one to estimate how emissions levels could be affected by different interventions such as electrifying the fleet, building new transport corridors, changing route itineraries or frequencies, and fleet renewal. -->
 
 ### Installation
 
@@ -222,5 +224,4 @@ Applied Economic Research (IPEA) in collaboration from the National
 Institute for Space Research (INPE), both from Brazil. You can cite this
 package as:
 
-Bazzo, J.P.; Pereira, R.H.M.; Andrade, P.R.; (2020) gtfs2emis:
-Generating estimates of public transport emissions from GTFS data
+- Vieira, J. P. B., Pereira, R. H. M., & Andrade, P. R. (2022). Estimating public transport emissions from GTFS data with gtfs2emis. OSF Preprints. https://doi.org/10.31219/osf.io/8m2cy
