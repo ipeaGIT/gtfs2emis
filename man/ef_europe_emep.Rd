@@ -49,7 +49,9 @@ List. emission factors in units 'g/km' (list or a data.table).
 }
 \description{
 Returns a list or data.table of emission factors for buses based on EMEP/EEA air pollutant
-emission inventory guidebooks. Estimates are expressed in units 'g/km'.
+emission inventory guidebooks. The function uses four emission factor databases
+published by EMEP/EEA, considering the editions of 2019, 2016, 2013 and 2007.
+Estimates are expressed in units 'g/km'. See more in @details.
 }
 \details{
 The new convention for vehicles names are translated from the EMEP/EEA report:\tabular{ll}{
@@ -68,7 +70,11 @@ User can either select an existing data for the combining variables
 (\code{euro}, \code{tech}, \code{veh_type} and \code{pollutant}), or accept the assumed change
 in vehicle technology.
 
-The R scripts used to download and pre-process all 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
+In order to cover more pollutants, vehicle technologies, and fuel consumption data,
+the function uses four emission factor databases published by EMEP/EEA,
+considering the editions of 2019, 2016, 2013 and 2007.
+
+The R scripts used to download and pre-process 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
 can be accessed in the gtfs2emis GitHub repository at
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>
 

@@ -3,7 +3,9 @@
 #' 
 #' @description 
 #' Returns a list or data.table of emission factors for buses based on EMEP/EEA air pollutant
-#'  emission inventory guidebooks. Estimates are expressed in units 'g/km'.
+#'  emission inventory guidebooks. The function uses four emission factor databases 
+#'  published by EMEP/EEA, considering the editions of 2019, 2016, 2013 and 2007. 
+#'  Estimates are expressed in units 'g/km'. See more in @details.  
 #' 
 #' @param speed units; Speed in 'km/h'.
 #' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
@@ -41,7 +43,11 @@
 #' (`euro`, `tech`, `veh_type` and `pollutant`), or accept the assumed change 
 #' in vehicle technology.
 #' 
-#' The R scripts used to download and pre-process all 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
+#' In order to cover more pollutants, vehicle technologies, and fuel consumption data, 
+#' the function uses four emission factor databases published by EMEP/EEA, 
+#' considering the editions of 2019, 2016, 2013 and 2007.  
+#'  
+#' The R scripts used to download and pre-process 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
 #' can be accessed in the gtfs2emis GitHub repository at
 #' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>  
 #' 
@@ -65,6 +71,19 @@
 #'}
 ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                            slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
+  
+  # speed = gpsLine$speed
+  # veh_type = "Ubus Std 15 - 18 t"
+  # euro = "V"
+  # pollutant = "PM10"
+  # fuel = "D"
+  # tech = "SCR"
+  # slope = gpsLineclass$slope
+  # load = 0.5
+  # fcorr = 1
+  # as_list = TRUE
+  
+  
   # euro data----
   utils::data('ef_europe_emep_db') 
   temp_ef <- ef_europe_emep_db
@@ -206,18 +225,18 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                        ,"`data(ef_europe_emep_db)` for available data."))
         tech[j] = "DPF+SCR"
       }
+      
       # fix load and slope
       
       if(length(unique(slope)) > 1 | length(unique(load)) > 1){
-        
-        slope_input <- slope 
-        temp_ef3 <- lapply(seq_along(slope),function(k){ # k = 2
+        #slope_input <- slope 
+        temp_ef3 <- lapply(seq_along(slope),function(k){ # k = 1
           as.data.frame(temp_ef)[ temp_ef$Pol %in% pollutant[i] &  
                                     temp_ef$Fuel %in% fuel[j] & 
                                     temp_ef$Segment %in% veh_type[j] & 
                                     temp_ef$Technology %in% tech[j] &
                                     temp_ef$Euro %in% euro[j] & 
-                                    temp_ef$Slope == slope_input[k] & 
+                                    temp_ef$Slope == slope[k] & 
                                     temp_ef$Load == load[k], ]
         }) 
         temp_ef3 <- data.table::rbindlist(temp_ef3)
@@ -263,7 +282,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                                                 temp_ef3$Load == load[k], ]
           
           # fix speed
-          tmpSpeedPol <- tmpSpeed
+          tmpSpeedPol <- speed[k]
           tmpSpeedPol[tmpSpeedPol < temp_ef4$Vmin] <- temp_ef4$Vmin
           tmpSpeedPol[tmpSpeedPol > temp_ef4$Vmax] <- temp_ef4$Vmax
           
@@ -275,19 +294,20 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                            , Zita = temp_ef4$Zita
                            , Hta = temp_ef4$Hta
                            , RF = temp_ef4$RF
-                           , Speed = tmpSpeedPol[k]
+                           , Speed = tmpSpeedPol
                            , Function_ID = temp_ef4$Function_ID
                            , k = temp_ef4$k
                            , fcorr = fcorr[j])
           
-          eq_output <- data.table::data.table("ef" = tmp_eq, "tmpSpeed" = tmpSpeed)
+          eq_output <- data.table::data.table("ef" = tmp_eq, "tmpSpeed" = tmpSpeedPol)
           
           return(eq_output)
           
         }) 
-        data_speed <- data.table::rbindlist(data_speed)
-        
-      }else{
+        eq_output <- data.table::rbindlist(data_speed)
+        eq_output <- eq_output$ef
+      
+        }else{
         
         # fix speed
         tmpSpeedPol <- tmpSpeed
@@ -309,12 +329,13 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
         
         data_speed <- data.table::data.table("ef" = tmp_eq, "tmpSpeed" = tmpSpeed)
         
+        # expands speed---
+        
+        data.table::setkey(data_speed,tmpSpeed)
+        eq_output <- data_speed[data.table::data.table(speed)]$ef
+        
       }
-      # expands speed---
-      
-      data.table::setkey(data_speed,tmpSpeed)
-      eq_output <- data_speed[data.table::data.table(speed)]$ef
-      
+
       return(eq_output)
     })
     

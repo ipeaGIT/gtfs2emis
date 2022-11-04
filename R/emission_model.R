@@ -21,6 +21,11 @@
 #'        emissions inventory. Defaults to `2020`. This 
 #'        argument is only required when the `ef_model` 
 #'        argument is `ef_usa_moves` or `ef_usa_emfac`.
+#' @param heightfile character or raster data. The raster file with height data,
+#'        or its filepath, used to estimate emissions considering the effect of 
+#'        street slope. This argument is used only when `ef_brazil_scaled_euro` or 
+#'        `ef_europe_emep` are selected. Default is `NULL`. Details are provided in
+#'        \code{\link{slope_class_europe_emep}}.
 #' @param parallel logical. Decides whether the function should run in parallel. 
 #'        Defaults is `TRUE`. 
 #' @param ncores integer. Number of cores to be used in parallel execution. This 
@@ -55,6 +60,13 @@
 #'  [gtfs2emis fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
 #'   for more examples. 
 #'  
+#'  Based on the input height data, the function returns the slope class between two consecutive 
+#' bus stop positions of a LineString Simple Feature (transport model object).
+#'  The slope is given by the ratio between the height difference and 
+#'  network distance from two consecutive public transport stops.
+#'  The function classifies the slope into one of the seven categories
+#' available on the European Environmental Agency (EEA) database, which is -0.06,
+#'  -0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in
 #' @return A `list` with emissions estimates or `NULL` with output files saved 
 #'         locally at `output_path`.
 #' @family Core function
@@ -103,9 +115,15 @@
 #' emi_emep <- progressr::with_progress(emission_model(tp_model = tp_model
 #'                           , ef_model = "ef_europe_emep"
 #'                           , fleet_data = fleet_data_ef_europe
-#'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")))
-#'                           
-#'                           
+#'                           , pollutant = c("PM10","NOx")))
+#' 
+#' raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")                           
+#' emi_emep_slope <- progressr::with_progress(emission_model(tp_model = tp_model
+#'                           , ef_model = "ef_europe_emep"
+#'                           , fleet_data = fleet_data_ef_europe
+#'                           , heightfile = raster_cur
+#'                           , pollutant = c("PM10","NOx")))  
+#'                                                   
 #' # Example using US EMFAC emission model and fleet
 #' fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
 #'                                   , model_year = 2010:2019
@@ -137,6 +155,7 @@ emission_model <- function(  tp_model
                              , fleet_data
                              , pollutant
                              , reference_year = 2020
+                             , heightfile = NULL
                              , parallel = TRUE
                              , ncores = NULL
                              , output_path = NULL
@@ -161,7 +180,14 @@ emission_model <- function(  tp_model
   if(is.character(tp_model)) checkmate::assert_directory_exists(tp_model)
   checkmate::assert_string(output_path, null.ok = TRUE)
   if(!is.null(output_path)) checkmate::assert_directory_exists(output_path)
- 
+
+  ## height file ----
+  checkmate::assert(
+    checkmate::check_class(heightfile, classes = c("RasterLayer","Raster"),null.ok = TRUE)
+    , checkmate::check_class(heightfile, classes = c("character"),null.ok = TRUE)
+    , combine = "or"
+  )
+  if(is.character(heightfile)) checkmate::assert_file_exists(heightfile)
   
   ## i) EF model ----
   checkmate::assert_choice(ef_model
@@ -254,42 +280,59 @@ emission_model <- function(  tp_model
     # ii) Get EF  ----
     if (ef_model == "ef_europe_emep") {
       
-      temp_ef <- ef_europe_emep(pollutant = pollutant,
-                                speed = temp_shape$speed,
-                                veh_type = fleet_data$veh_type,
-                                tech = fleet_data$tech,
-                                euro = fleet_data$euro,
-                                fcorr = 1)
+      if(!is.null(heightfile)){
+        temp_shape <- slope_class_europe_emep(tp_model = temp_shape
+                                              ,heightfile = heightfile)
+        slope_input <- temp_shape$slope_class
+      }else{
+        slope_input <- 0
+      }
+      
+      temp_ef <- ef_europe_emep(pollutant = pollutant
+                                , speed = temp_shape$speed
+                                , veh_type = fleet_data$veh_type
+                                , tech = fleet_data$tech
+                                , euro = fleet_data$euro
+                                , slope = slope_input
+                                )
       
     }
     if(ef_model == "ef_usa_emfac"){
       
       temp_ef <- ef_usa_emfac(pollutant = pollutant,
-                              reference_year = reference_year,
-                              model_year = fleet_data$model_year,
-                              speed = temp_shape$speed,
-                              fuel = fleet_data$fuel)
+                              , reference_year = reference_year
+                              , model_year = fleet_data$model_year
+                              , speed = temp_shape$speed
+                              , fuel = fleet_data$fuel)
     }
     if(ef_model == "ef_usa_moves"){
       
-      temp_ef <- ef_usa_moves(pollutant = pollutant,
-                              reference_year = reference_year,
-                              model_year = fleet_data$model_year,
-                              speed = temp_shape$speed,
-                              fuel = fleet_data$fuel)
+      temp_ef <- ef_usa_moves(pollutant = pollutant
+                              , reference_year = reference_year
+                              , model_year = fleet_data$model_year
+                              , speed = temp_shape$speed
+                              , fuel = fleet_data$fuel)
     }
     if(ef_model == "ef_brazil_scaled_euro"){
       
+      if(!is.null(heightfile)){
+        temp_shape <- slope_class_europe_emep(tp_model = temp_shape
+                                              ,heightfile = heightfile)
+        slope_input <- temp_shape$slope_class
+      }else{
+        slope_input <- 0
+      }
+      
       temp_ef <- ef_scaled_euro(ef_local = temp_local_ef$EF
-                                ,speed = temp_shape$speed
-                                ,veh_type = fleet_data$type_name_eu
-                                ,euro = fleet_data$euro
-                                ,pollutant = pollutant
-                                ,fuel = fleet_data$fuel
-                                ,SDC = 19
-                                ,slope = 0
-                                ,load = 0.5
-                                ,fcorr = 1
+                                , speed = temp_shape$speed
+                                , veh_type = fleet_data$type_name_eu
+                                , euro = fleet_data$euro
+                                , pollutant = pollutant
+                                , fuel = fleet_data$fuel
+                                , SDC = 19
+                                , slope = slope_input
+                                , load = 0.5
+                                , fcorr = 1
       )
       
     }

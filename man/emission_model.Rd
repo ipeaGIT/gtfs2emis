@@ -10,6 +10,7 @@ emission_model(
   fleet_data,
   pollutant,
   reference_year = 2020,
+  heightfile = NULL,
   parallel = TRUE,
   ncores = NULL,
   output_path = NULL,
@@ -40,6 +41,12 @@ pollutants are available for each emission factor model (\code{ef_usa_moves}, \c
 emissions inventory. Defaults to \code{2020}. This
 argument is only required when the \code{ef_model}
 argument is \code{ef_usa_moves} or \code{ef_usa_emfac}.}
+
+\item{heightfile}{character or raster data. The raster file with height data,
+or its filepath, used to estimate emissions considering the effect of
+street slope. This argument is used only when \code{ef_brazil_scaled_euro} or
+\code{ef_europe_emep} are selected. Default is \code{NULL}. Details are provided in
+\code{\link{slope_class_europe_emep}}.}
 
 \item{parallel}{logical. Decides whether the function should run in parallel.
 Defaults is \code{TRUE}.}
@@ -90,6 +97,14 @@ Users can check the
 \href{https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
 for more examples.
 }
+
+Based on the input height data, the function returns the slope class between two consecutive
+bus stop positions of a LineString Simple Feature (transport model object).
+The slope is given by the ratio between the height difference and
+network distance from two consecutive public transport stops.
+The function classifies the slope into one of the seven categories
+available on the European Environmental Agency (EEA) database, which is -0.06,
+-0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in
 }
 \examples{
 library(gtfs2emis)
@@ -136,9 +151,15 @@ fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t",
 emi_emep <- progressr::with_progress(emission_model(tp_model = tp_model
                           , ef_model = "ef_europe_emep"
                           , fleet_data = fleet_data_ef_europe
-                          , pollutant = c("CO","PM10","CO2","CH4","NOx")))
-                          
-                          
+                          , pollutant = c("PM10","NOx")))
+
+raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")                           
+emi_emep_slope <- progressr::with_progress(emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
+                          , fleet_data = fleet_data_ef_europe
+                          , heightfile = raster_cur
+                          , pollutant = c("PM10","NOx")))  
+                                                  
 # Example using US EMFAC emission model and fleet
 fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
                                   , model_year = 2010:2019

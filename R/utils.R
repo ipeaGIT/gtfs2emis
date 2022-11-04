@@ -19,6 +19,10 @@ utils::globalVariables(c('year','i.den','i.s','i.pah','i.cn','i.t95','den_base',
                          'from_stop_id', 'geometry', 'i.geometry',
                          'shape_id', 'stop_sequence', 'to_stop_id'))
 utils::globalVariables(c("road_segment","timestamp"))
+# slope_class_europe_emep
+utils::globalVariables(c('.N','from_height','from_timestamp',
+                         'route_type','to_height','to_timestamp',
+                         'trip_id','trip_number','raster_cur'))
 # emission_model / transport_model
 utils::globalVariables(c("arrival_time", "cumdist", "cumtime", "departure_time",
                          "dist", "files_gps_names","speed"))
