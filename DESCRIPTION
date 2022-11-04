@@ -35,6 +35,8 @@ Imports:
     gtfs2gps,
     methods,
     sf (>= 0.9-0),
+    sfheaders,
+    terra,
     units
 Suggests: 
     gtfstools,
