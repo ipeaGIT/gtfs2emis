@@ -121,10 +121,10 @@ transport_model <- function(gtfs_data
   # gtfs2gps ------------
   
   
-  gps_path <-  paste0(tempdir(),"/gps/")
+  gps_path <-  paste0(tempdir(),"\\gps\\")
   suppressWarnings(dir.create(tempdir()))
   suppressWarnings(dir.create(gps_path))
-  
+
   gtfs2gps::gtfs2gps(gtfs_data = city_gtfs
                      , spatial_resolution = spatial_resolution
                      , parallel = parallel
@@ -139,9 +139,10 @@ transport_model <- function(gtfs_data
   
   
   # create new dirs
-  gps_adjust_path <-  paste0(tempdir(), "/gps_adjust/")
+  gps_adjust_path <-  paste0(tempdir(), "\\gps_adjust\\")
   suppressWarnings(dir.create(tempdir())) 
   suppressWarnings(dir.create(gps_adjust_path)) 
+
   
   # find gps files
   files_gps <- list.files(gps_path, full.names = TRUE)
@@ -181,7 +182,7 @@ transport_model <- function(gtfs_data
   
   # create new dirs
   if(is.null(output_path)){
-    gps_line_path <-  paste0(tempdir(), "/gps_line/")
+    gps_line_path <-  paste0(tempdir(), "\\gps_line\\")
     suppressWarnings(dir.create(gps_line_path)) 
   }else{
     gps_line_path <-  paste0(output_path,"/")
@@ -228,11 +229,8 @@ transport_model <- function(gtfs_data
   }
 
   ## This cleans up everything...
-  rm_path <- unlink(gps_path, recursive = TRUE)
-  rm_adj_path <- unlink(gps_adjust_path, recursive = TRUE)
-  on.exit(rm_path, add = TRUE)
-  on.exit(rm_adj_path, add = TRUE)
-  #on.exit(unlink(gps_line_path, recursive = TRUE), add = TRUE)
+  on.exit(unlink(list.files(gps_path,full.names = TRUE)), add = TRUE)
+  on.exit(unlink(list.files(gps_adjust_path,full.names = TRUE)), add = TRUE)
   
   
   # output
