@@ -21,7 +21,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
         id: install-r
 
-      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Install pak and query dependencies
         run: |
