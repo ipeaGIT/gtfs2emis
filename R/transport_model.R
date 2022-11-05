@@ -121,7 +121,7 @@ transport_model <- function(gtfs_data
   # gtfs2gps ------------
   
   
-  gps_path <-  paste0(tempdir(),"\\gps\\")
+  gps_path <-  paste0(tempdir(),"//gps//")
   suppressWarnings(dir.create(tempdir()))
   suppressWarnings(dir.create(gps_path))
 
@@ -139,7 +139,7 @@ transport_model <- function(gtfs_data
   
   
   # create new dirs
-  gps_adjust_path <-  paste0(tempdir(), "\\gps_adjust\\")
+  gps_adjust_path <-  paste0(tempdir(), "//gps_adjust//")
   suppressWarnings(dir.create(tempdir())) 
   suppressWarnings(dir.create(gps_adjust_path)) 
 
@@ -151,7 +151,7 @@ transport_model <- function(gtfs_data
   gps_speed_fix <- function(i){ # i =1 
     
     outputfile_path <- paste0(gps_adjust_path
-                              ,"/",files_gps_names[i])
+                              ,"//",files_gps_names[i])
     if(continue){
       if(file.exists(outputfile_path)) return(NULL)
     }
@@ -170,8 +170,7 @@ transport_model <- function(gtfs_data
     furrr::future_map(.x = seq_along(files_gps)
                       ,.f = gps_speed_fix
                       ,.options = furrr::furrr_options(
-                        seed = 123
-                        ,packages = requiredPackages)) 
+                        packages = requiredPackages)) 
     #lapply(seq_along(files_gps),gps_speed_fix)
   }else{
     lapply(seq_along(files_gps),gps_speed_fix)
@@ -181,11 +180,8 @@ transport_model <- function(gtfs_data
   # Converting a GPS-like data.table to a LineString Simple Feature (sf)
   
   # create new dirs
-  if(is.null(output_path)){
-    gps_line_path <-  paste0(tempdir(), "\\gps_line\\")
-    suppressWarnings(dir.create(gps_line_path)) 
-  }else{
-    gps_line_path <-  paste0(output_path,"/")
+  if(!is.null(output_path)){
+    gps_line_path <-  paste0(output_path,"//")
     suppressWarnings(dir.create(gps_line_path))
   }
   
@@ -195,8 +191,9 @@ transport_model <- function(gtfs_data
   # function gps_as_sflinestring
   f_gps_as_sflinestring <- function(i){ # i = 1
     
-    outputfile_path <- paste0(gps_line_path,files_gps_names[i])
+    
     if(continue){
+      outputfile_path <- paste0(gps_line_path,files_gps_names[i])
       if(file.exists(outputfile_path)) return(NULL)
     }
     
@@ -221,8 +218,7 @@ transport_model <- function(gtfs_data
     gpsLine <- furrr::future_map(seq_along(files_gps)
                                  ,f_gps_as_sflinestring
                                  ,.options = furrr::furrr_options(
-                                   seed = 123
-                                   ,packages = requiredPackages
+                                   packages = requiredPackages
                                    )) 
   }else{
     gpsLine <- lapply(seq_along(files_gps),f_gps_as_sflinestring) 

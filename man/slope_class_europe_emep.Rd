@@ -41,6 +41,7 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 }
 
 \examples{
+\dontshow{if (identical(tolower(Sys.getenv("NOT_CRAN")), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file) 
 
@@ -59,4 +60,5 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
 raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")
 
 tp_model_slope <- slope_class_europe_emep(tp_model,raster_cur)
+\dontshow{\}) # examplesIf}
 }

@@ -3,12 +3,24 @@ Package: gtfs2emis
 Title: Estimating Public Transport Emissions from GTFS Data
 Version: 0.1.0
 Authors@R: c(
-             person(given = "Joao", family = "Bazzo", email = "joao.bazzo@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4536-5006")),
-             person(given = "Rafael H. M.", family = "Pereira", email = "rafa.pereira.br@gmail.com", role=c("aut"), comment = c(ORCID = "0000-0003-2125-7465")),
-             person(given = "Pedro R.", family = "Andrade", email = "pedro.andrade@inpe.br", role=c("aut"), comment = c(ORCID = "0000-0001-8675-4046"))
+             person(given = "Joao",
+             family = "Bazzo",
+             email = "joao.bazzo@gmail.com",
+             role = c("aut", "cre"),
+             comment = c(ORCID = "0000-0003-4536-5006")),
+             person(given = "Rafael H. M.",
+             family = "Pereira",
+             email = "rafa.pereira.br@gmail.com",
+             role=c("aut"),
+             comment = c(ORCID = "0000-0003-2125-7465")),
+             person(given = "Pedro R.",
+             family = "Andrade",
+             email = "pedro.andrade@inpe.br",
+             role=c("aut"),
+             comment = c(ORCID = "0000-0001-8675-4046"))
              )
 Description: A bottom up model to estimate the emission levels of public 
-             transport systens based on  General Transit Feed Specification 
+             transport systems based on  General Transit Feed Specification 
              (GTFS) data. The package requires two main inputs: i) public 
              transport  data in the GTFS standard format; and ii) some basic 
              information on fleet characteristics such as fleet age, technology, 

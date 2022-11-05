@@ -36,7 +36,7 @@ format.}
 units ('g'); emissions per link.
 }
 \description{
-Calculate hot exhaust emissions by multipling emission factors by distances
+Calculate hot exhaust emissions by multiplying emission factors by distances
 weighted by fleet composition profile.
 }
 \keyword{internal}

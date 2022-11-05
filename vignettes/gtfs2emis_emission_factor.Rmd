@@ -19,7 +19,7 @@ Emission factor models tell us the mass of pollutants that are expected to be em
 
 ## Available emission factor models
 
-The `gtfs2emis` package currently includes emission factor data from four environmental agencies. Reports with detailed information and methos on how these emission factor data were originally calculated can be found on the agencies' websites in the links below
+The `gtfs2emis` package currently includes emission factor data from four environmental agencies. Reports with detailed information and methods on how these emission factor data were originally calculated can be found on the agencies' websites in the links below
 
 - Brazil, Environment Company of São Paulo --- [CETESB](https://cetesb.sp.gov.br/veicular/)
 - United States, Environmental Protection Agency --- [MOVES3 Model](https://www.epa.gov/moves)
@@ -76,7 +76,7 @@ ggplot(ef_europe_dt) +
   theme(legend.position = "bottom")
 ```
 <!--  666 Achei esse paragrafo confuso -->
-In a few situations in `ef_europe_emep()`, when the information on vehicle technology does not match the existing database, the package displays a message indicating the technology considered. Users can either select existing data for the combining variables (`euro`, `tech`, `veh_type`, and `pollutant`), or accept the assumed change in vehicle technology.
+The emission factors are often produced considering data from on-board measurements, or chassis testing. There are situations where the emission factor are not available for a given input parameter. In the case of `ef_europe_emep()` function, when the information on vehicle technology does not match the existing database, the package displays a message indicating the technology considered. Users can either select existing data for the combining variables (`euro`, `tech`, `veh_type`, and `pollutant`), or accept the assumed change in vehicle technology.
 
 <!--  666 nao ficou indicado no texto o q esse codigo abaixo faz -->
 
@@ -106,7 +106,7 @@ The other EF functions, `ef_usa_emfac()`, `ef_usa_moves()` and `ef_brazil_cetesb
 <!--                                    ,model_year = 2018) -->
 <!-- ``` -->
 
-### Scaling Emission Factors: making emission facotrs speed-dependent
+### Scaling Emission Factors: making emission factors speed-dependent
 
 For most models (MOVES3, EMEP-EEA and EMFAC2017), emission factors depend on a vehicle's speed. However, the emission factors developed for Brazil by CETESB (`ef_brazil_cetesb()`) do not vary by vehicle speed. In such a case, users can "scale" or adjust the local emission factor values to make them speed-dependent using the function `ef_scaled_euro()`.
 
@@ -223,7 +223,7 @@ Users can have a closer look to the emission factor data that included the packa
 - `data(ef_europe_emep)` from European Environment Agency (EMEP/EEA)
 
 The data presented on the agencies website and software was downloaded and pre-processed
-in `gtfs2emis` to be easily read by the emission factor functions. Users can also access the scripts used to process raw data in the [gtfs2emis GitHub repository]("https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw"). 
+in `gtfs2emis` to be easily read by the emission factor functions. Users can also access the scripts used to process raw data in the [gtfs2emis GitHub repository](https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw). 
 
 ## Report a bug
 

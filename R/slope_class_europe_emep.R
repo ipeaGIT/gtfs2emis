@@ -27,7 +27,7 @@
 #' | slope > +0.030 & slope <= +0.050 |        +0.04     |
 #' | slope > +0.050 & slope <= +0.070 |        +0.06     |
 #' | slope > +0.070                   |        -0.06     |
-#' @examples
+#' @examplesIf identical(tolower(Sys.getenv("NOT_CRAN")), "true")
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 

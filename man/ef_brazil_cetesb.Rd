@@ -11,7 +11,7 @@ ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 }
 \arguments{
 \item{pollutant}{character. Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
-"NO2", "NO", "RCHO", "ETOH" "KML", "FC" (Fuel Consumption),
+"NO2", "NO", "RCHO", "ETOH" "KML" (Vehicle Kilometers Traveled), "FC" (Fuel Consumption),
 "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh),
 "CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon),
 "FS"(Fuel Sales) and "NH3".}

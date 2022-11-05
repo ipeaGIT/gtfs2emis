@@ -12,7 +12,7 @@
 #'        on `ef_scaled_euro()`).
 #' @param fleet_data data.frame. A `data.frame` with information the fleet 
 #'        characteristics. The required columns depend on the 
-#'        `ef_model` parameted selected. See @examples for input.
+#'        `ef_model` selection. See @examples for input.
 #' @param pollutant character. Vector with one or more pollutants to be estimated.
 #'        Example: `c("CO", "CO2", "PM10", "NOx")`. See the documentation to check which 
 #'        pollutants are available for each emission factor model (`ef_usa_moves`, `ef_usa_emfac`,
@@ -70,7 +70,7 @@
 #' @return A `list` with emissions estimates or `NULL` with output files saved 
 #'         locally at `output_path`.
 #' @family Core function
-#' @examples
+#' @examplesIf identical(tolower(Sys.getenv("NOT_CRAN")), "true")
 #' library(gtfstools)
 #' 
 #' # read GTFS
@@ -241,6 +241,7 @@ emission_model <- function(  tp_model
     
     oplan <- future::plan("multisession", workers = ncores)
     on.exit(future::plan(oplan), add = TRUE)
+   
     
   }
   # B) EF function ---------------- 
@@ -419,8 +420,7 @@ emission_model <- function(  tp_model
       emisLine <- furrr::future_map(.x = 1:length(tp_fname_files)
                                     ,.f = prepare_emis_output
                                     ,.options = furrr::furrr_options(
-                                      seed = 123
-                                      ,packages = requiredPackages))
+                                      packages = requiredPackages))
     }else{
       emisLine <- lapply(X = 1:length(tp_fname_files)
                          ,FUN = prepare_emis_output)

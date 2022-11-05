@@ -6,7 +6,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
 coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master)
-[![Publication](https://img.shields.io/badge/DOI-10.31219/osf.io/8m2cy-blue)]([https://doi.org/10.31219/osf.io/8m2cy](https://doi.org/10.31219/osf.io/8m2cy))
+[![DOI](https://img.shields.io/badge/DOI-10.31219/osf.io/8m2cy-blue)](https://doi.org/10.31219/osf.io/8m2cy)
 
 
 **gtfs2emis** is an R package to estimate the emission levels of public
@@ -168,7 +168,7 @@ emission factor models:
 |----------------|------------------------------------------------------------------------------------------------------------------------------------|
 | CETESB         | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
 | EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)                               |
-| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 \[#/kWh\], and VOC                                                                |
+| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (\#kWh), and VOC                                                                |
 | MOVES3/EPA     | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC                                       |
 
 #### Fleet characteristics required by each emission factor model
@@ -217,11 +217,31 @@ systems using GTFS data.
 
 ------------------------------------------------------------------------
 
+## Citation
+
+``` r
+citation("gtfs2emis")
+#> To cite gtfs2emis in publications use:
+#> 
+#>   Vieira, J. P. B., Pereira, R. H. M., & Andrade, P. R. (2022). Estimating public transport
+#>   emissions from GTFS data with gtfs2emis. OSF Preprints. https://doi.org/10.31219/osf.io/8m2cy
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Manual{,
+#>     title = {gtfs2emis: Estimating Public Transport Emissions from GTFS Data},
+#>     author = {João Pedro Bazzo and Rafael H. M. Pereira and Pedro R. Andrade},
+#>     month = {may},
+#>     year = {2022},
+#>     publisher = {OSF Preprints},
+#>     version = {v0.1.0},
+#>     doi = {10.31219/osf.io/8m2cy},
+#>     url = {https://doi.org/10.31219/osf.io/8m2cy},
+#>   }
+```
+
 ### Credits <img align="right" src="man/figures/ipea_logo.png" alt="ipea" width="300">
 
 The **gtfs2emis** package is developed by a team at the Institute for
 Applied Economic Research (IPEA) in collaboration from the National
-Institute for Space Research (INPE), both from Brazil. You can cite this
-package as:
-
-- Vieira, J. P. B., Pereira, R. H. M., & Andrade, P. R. (2022). Estimating public transport emissions from GTFS data with gtfs2emis. OSF Preprints. https://doi.org/10.31219/osf.io/8m2cy
+Institute for Space Research (INPE), both from Brazil. 

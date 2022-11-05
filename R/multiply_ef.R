@@ -2,7 +2,7 @@
 #' Multiply emission factors by distances 
 #'
 #' @description 
-#' Calculate hot exhaust emissions by multipling emission factors by distances 
+#' Calculate hot exhaust emissions by multiplying emission factors by distances 
 #' weighted by fleet composition profile.
 #'
 #' @param fleet_composition vector; Fleet composition, which is a distribution 
