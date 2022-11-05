@@ -19,7 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Estimating Public Transport Emissions from GTFS Data">
 <meta property="og:description" content="A bottom up model to estimate the emission levels of public 
-             transport systens based on  General Transit Feed Specification 
+             transport systems based on  General Transit Feed Specification 
              (GTFS) data. The package requires two main inputs: i) public 
              transport  data in the GTFS standard format; and ii) some basic 
              information on fleet characteristics such as fleet age, technology, 
@@ -79,6 +79,9 @@
       <a href="articles/gtfs2emis_intro_vignette.html">Getting started</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -244,7 +247,7 @@
 </tr>
 <tr class="odd">
 <td>EMEP/EEA</td>
-<td>CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 [#/kWh], and VOC</td>
+<td>CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC</td>
 </tr>
 <tr class="even">
 <td>MOVES3/EPA</td>
@@ -324,14 +327,33 @@
 </ul>
 <hr>
 </div>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"gtfs2emis"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; To cite gtfs2emis in publications use:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   Vieira, J. P. B., Pereira, R. H. M., &amp; Andrade, P. R. (2022). Estimating public transport</span></span>
+<span><span class="co">#&gt;   emissions from GTFS data with gtfs2emis. OSF Preprints. https://doi.org/10.31219/osf.io/8m2cy</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   @Manual{,</span></span>
+<span><span class="co">#&gt;     title = {gtfs2emis: Estimating Public Transport Emissions from GTFS Data},</span></span>
+<span><span class="co">#&gt;     author = {João Pedro Bazzo and Rafael H. M. Pereira and Pedro R. Andrade},</span></span>
+<span><span class="co">#&gt;     month = {may},</span></span>
+<span><span class="co">#&gt;     year = {2022},</span></span>
+<span><span class="co">#&gt;     publisher = {OSF Preprints},</span></span>
+<span><span class="co">#&gt;     version = {v0.1.0},</span></span>
+<span><span class="co">#&gt;     doi = {10.31219/osf.io/8m2cy},</span></span>
+<span><span class="co">#&gt;     url = {https://doi.org/10.31219/osf.io/8m2cy},</span></span>
+<span><span class="co">#&gt;   }</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="credits-">Credits <img align="right" src="reference/figures/ipea_logo.png" alt="ipea" width="300"><a class="anchor" aria-label="anchor" href="#credits-"></a>
 </h3>
-<p>The <strong>gtfs2emis</strong> package is developed by a team at the Institute for Applied Economic Research (IPEA) in collaboration from the National Institute for Space Research (INPE), both from Brazil. You can cite this package as:</p>
-<ul>
-<li>Vieira, J. P. B., Pereira, R. H. M., &amp; Andrade, P. R. (2022). Estimating public transport emissions from GTFS data with gtfs2emis. OSF Preprints. <a href="https://doi.org/10.31219/osf.io/8m2cy" class="external-link uri">https://doi.org/10.31219/osf.io/8m2cy</a>
-</li>
-</ul>
+<p>The <strong>gtfs2emis</strong> package is developed by a team at the Institute for Applied Economic Research (IPEA) in collaboration from the National Institute for Space Research (INPE), both from Brazil.</p>
 </div>
 </div>
 </div>
@@ -378,7 +400,7 @@
 <li><a href="https://github.com/ipeaGIT/gtfs2emis/actions" class="external-link"><img src="https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master" class="external-link"><img src="https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="%5Bhttps://doi.org/10.31219/osf.io/8m2cy%5D(https://doi.org/10.31219/osf.io/8m2cy)" class="external-link"><img src="https://img.shields.io/badge/DOI-10.31219/osf.io/8m2cy-blue" alt="Publication"></a></li>
+<li><a href="https://doi.org/10.31219/osf.io/8m2cy" class="external-link"><img src="https://img.shields.io/badge/DOI-10.31219/osf.io/8m2cy-blue" alt="DOI"></a></li>
 </ul>
 </div>
 

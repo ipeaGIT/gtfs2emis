@@ -67,6 +67,9 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -90,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Exploring Emission Factors</h1>
             
-            <h4 data-toc-skip class="date">2022-11-04</h4>
+            <h4 data-toc-skip class="date">2022-11-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/HEAD/vignettes/gtfs2emis_emission_factor.Rmd" class="external-link"><code>vignettes/gtfs2emis_emission_factor.Rmd</code></a></small>
       <div class="hidden name"><code>gtfs2emis_emission_factor.Rmd</code></div>
@@ -114,7 +117,7 @@ data available in the <code>gtfs2emis</code> package.</p>
 </h2>
 <p>The <code>gtfs2emis</code> package currently includes emission factor
 data from four environmental agencies. Reports with detailed information
-and methos on how these emission factor data were originally calculated
+and methods on how these emission factor data were originally calculated
 can be found on the agencies’ websites in the links below</p>
 <ul>
 <li>Brazil, Environment Company of São Paulo — <a href="https://cetesb.sp.gov.br/veicular/" class="external-link">CETESB</a>
@@ -193,8 +196,11 @@ type (<code>veh_type</code>) and euro standard (<code>euro</code>).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"Category / EURO"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pollutant</span>,scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gtfs2emis_emission_factor_files/figure-html/unnamed-chunk-4-1.png" width="672"><!--  666 Achei esse paragrafo confuso --> In a few situations in
-<code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code>, when the information on vehicle
+<p><img src="gtfs2emis_emission_factor_files/figure-html/unnamed-chunk-4-1.png" width="672"><!--  666 Achei esse paragrafo confuso --> The emission factors are
+often produced considering data from on-board measurements, or chassis
+testing. There are situations where the emission factor are not
+available for a given input parameter. In the case of
+<code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code> function, when the information on vehicle
 technology does not match the existing database, the package displays a
 message indicating the technology considered. Users can either select
 existing data for the combining variables (<code>euro</code>,
@@ -228,8 +234,8 @@ a similar way. See the functions documentation for more detail.</p>
 <!--                                    ,model_year = 2018) -->
 <!-- ``` -->
 <div class="section level3">
-<h3 id="scaling-emission-factors-making-emission-facotrs-speed-dependent">Scaling Emission Factors: making emission facotrs
-speed-dependent<a class="anchor" aria-label="anchor" href="#scaling-emission-factors-making-emission-facotrs-speed-dependent"></a>
+<h3 id="scaling-emission-factors-making-emission-factors-speed-dependent">Scaling Emission Factors: making emission factors
+speed-dependent<a class="anchor" aria-label="anchor" href="#scaling-emission-factors-making-emission-factors-speed-dependent"></a>
 </h3>
 <p>For most models (MOVES3, EMEP-EEA and EMFAC2017), emission factors
 depend on a vehicle’s speed. However, the emission factors developed for
@@ -380,7 +386,7 @@ Simulator (MOVES)</li>
 <p>The data presented on the agencies website and software was
 downloaded and pre-processed in <code>gtfs2emis</code> to be easily read
 by the emission factor functions. Users can also access the scripts used
-to process raw data in the <a href="%22https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw%22" class="external-link">gtfs2emis
+to process raw data in the <a href="https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw" class="external-link">gtfs2emis
 GitHub repository</a>.</p>
 </div>
 <div class="section level2">
