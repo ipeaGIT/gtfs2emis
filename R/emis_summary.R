@@ -19,6 +19,7 @@
 #' @family emission analysis
 #' 
 #' @examples
+#' \dontrun{
 #' 
 #' library(gtfs2emis)
 #' library(gtfstools)
@@ -67,7 +68,7 @@
 #' emis_summary(emi_list
 #'              , by = "time"
 #'              , segment_vars = "slope") 
-#' 
+#' }
 #' @export
 emis_summary <- function(emi_list, 
                          by = "pollutant", 

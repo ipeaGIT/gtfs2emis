@@ -23,6 +23,7 @@
 #' @family emission analysis
 #' 
 #' @examples
+#' \dontrun{
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 
@@ -66,6 +67,7 @@
 #' plot(grid)
 #' plot(emi_grid["PM10_2010"],add = TRUE)
 #' plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
+#' }
 #' @export
 emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggregate = FALSE){
   

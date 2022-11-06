@@ -107,7 +107,7 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 -0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in
 }
 \examples{
-\dontshow{if (identical(tolower(Sys.getenv("NOT_CRAN")), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontrun{
 library(gtfstools)
 
 # read GTFS
@@ -185,7 +185,7 @@ emi_emfac <- emission_model(tp_model = tp_model
                           , fleet_data = fleet_data_ef_emfac
                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
                           , reference_year = 2020)
-\dontshow{\}) # examplesIf}
+}
 }
 \seealso{
 Other Core function: 

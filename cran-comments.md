@@ -1,6 +1,6 @@
 ## Test environments
 
-- Local Ubuntu 20.04 installation (R 4.2.0)
+- Local Ubuntu 20.04 installation (R 4.2.2)
 - GitHub Actions:
   - Windows (release, oldrel)
   - MacOS (release, oldrel)

@@ -30,11 +30,10 @@ Description: A bottom up model to estimate the emission levels of public
              time of the day or for the transport system as a whole. The output 
              with emission estimates can be extracted in different formats, 
              supporting analysis  on how emission levels vary across space, 
-             time and by fleet characteristics. A full description of the 
-             gtfs2emis model is presented by Vieira, Pereira and Andrade (2022)
-             at <https://doi.org/10.31219/osf.io/8m2cy>.
+             time and by fleet characteristics. 
 URL: https://ipeagit.github.io/gtfs2emis/ ,
-     https://github.com/ipeaGIT/gtfs2emis
+     https://github.com/ipeaGIT/gtfs2emis ,
+     https://doi.org/10.31219/osf.io/8m2cy
 BugReports: https://github.com/ipeaGIT/gtfs2emis
 License: MIT + file LICENSE
 Depends:

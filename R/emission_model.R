@@ -70,7 +70,8 @@
 #' @return A `list` with emissions estimates or `NULL` with output files saved 
 #'         locally at `output_path`.
 #' @family Core function
-#' @examplesIf identical(tolower(Sys.getenv("NOT_CRAN")), "true")
+#' @examples
+#' \dontrun{
 #' library(gtfstools)
 #' 
 #' # read GTFS
@@ -148,6 +149,7 @@
 #'                           , fleet_data = fleet_data_ef_emfac
 #'                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
 #'                           , reference_year = 2020)
+#' }
 #' @export
 emission_model <- function(  tp_model
                              , ef_model

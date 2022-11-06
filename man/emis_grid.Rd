@@ -38,6 +38,7 @@ the input grid cells. User can also aggregate the emissions in the grid
 by time of the day.
 }
 \examples{
+\dontrun{
 library(gtfs2emis)
 library(gtfstools)
 
@@ -81,6 +82,7 @@ emi_grid <- emis_grid( emi_list,grid,'day')
 plot(grid)
 plot(emi_grid["PM10_2010"],add = TRUE)
 plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
+}
 }
 \seealso{
 Other emission analysis: 

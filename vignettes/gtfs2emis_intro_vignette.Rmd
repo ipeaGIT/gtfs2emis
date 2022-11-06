@@ -87,7 +87,7 @@ To help users analyze the output from `emission_model()`, the `gtfs2emis` packag
 
 # 5. Demonstration of sample data
 
-In this introductory vignette, we show a very simple case study using default parameters of the `gtfs2emis` package and where we assume that fleet characteristics are homogeneously distributed across the public transport routes. [For advanced users, we have written another vignette](add_link) that demonstrates how `gtfs2emis` allows one to allocate specific vehicles into predefined routes, fix speeds, and boarding times in the transport model, and adjust emissions factors. We have also written a separate vignette to help users build the `data.frame` with information on [fleet characteristics](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html).
+In this introductory vignette, we show a very simple case study using default parameters of the `gtfs2emis` package and where we assume that fleet characteristics are homogeneously distributed across the public transport routes. [For advanced users, we have written another vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html) that specifies the usage of different emissions factors. We have also written a separate vignette to help users build the `data.frame` with information on [fleet characteristics](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html).
 
 To demonstrate how the `gtfs2emis` package works, we will be using a small sample of data for the city of Dublin, Ireland. In this example, we'll be estimating `NOx` and `PM10` emissions of bus services on business days.
 

@@ -1,17 +1,21 @@
 
 rm(list = ls())
+
+# load ----
 devtools::load_all(".")
-#devtools::document(roclets = c('rd', 'collate', 'namespace', 'vignette'))
 devtools::document()
 devtools::load_all(".")
 
 # examples ----
+devtools::run_examples(pkg = ".",start = "emis_summary")
 devtools::run_examples(pkg = ".",start = "transport_model")
 devtools::run_examples(pkg = ".",start = "emission_model")
 
 covr::package_coverage(type = c("examples"))
 list.files(tempdir(),recursive = TRUE)
 # test vigntte----------
+
+covr::package_coverage(type = c("vignettes"))
 covr::package_coverage(path = "."
                        ,type = c("vignettes")
                        ,combine_types = TRUE # Default
@@ -48,6 +52,8 @@ devtools::test(pkg = ".",filter = "ef_usa")
 
 
 # check---------
+
+
 tictoc::tic()
 Sys.setenv(NOT_CRAN = "false" )
 devtools::check(pkg = "."
@@ -80,6 +86,7 @@ tictoc::toc()
 # release-----------
 devtools::spell_check(pkg = ".",vignettes = TRUE)
 urlchecker::url_check()
+Sys.setenv(NOT_CRAN = "false" )
 devtools::check(remote = TRUE, manual = TRUE)
 devtools::release(pkg = ".",check = TRUE)
 
@@ -90,3 +97,6 @@ devtools::check_mac_release()
 devtools::check_rhub(pkg = "."
                      ,email = "joao.bazzo@gmail.com")
 rhub::check_for_cran(show_status = TRUE)
+
+devtools::submit_cran()
+

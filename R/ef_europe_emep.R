@@ -61,14 +61,13 @@
 #' 
 #' @export
 #' 
-#' @examples if (interactive()) {
+#' @examplesIf identical(tolower(Sys.getenv("NOT_CRAN")), "true")
 #' ef_europe_emep( speed = units::set_units(1:100,"km/h"),
 #'                 veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
 #'                 euro = c("IV","V"),
 #'                 fuel = "D",
 #'                 pollutant = c("CO","PM10","CH4","NOx"),
 #'                 as_list = FALSE) 
-#'}
 ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                            slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
   
