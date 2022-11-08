@@ -76,7 +76,7 @@ output and to adjust the speed of public transport vehicles given a
 \code{min_speed} and \code{max_speed} range.
 }
 \examples{
-\dontrun{
+\donttest{
 library(gtfs2emis)
 library(gtfstools)
 

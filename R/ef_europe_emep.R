@@ -61,7 +61,7 @@
 #' 
 #' @export
 #' 
-#' @examplesIf identical(tolower(Sys.getenv("NOT_CRAN")), "true")
+#' @examples
 #' ef_europe_emep( speed = units::set_units(1:100,"km/h"),
 #'                 veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
 #'                 euro = c("IV","V"),

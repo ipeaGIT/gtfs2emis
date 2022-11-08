@@ -21,7 +21,7 @@ Emission factor models tell us the mass of pollutants that are expected to be em
 
 The `gtfs2emis` package currently includes emission factor data from four environmental agencies. Reports with detailed information and methods on how these emission factor data were originally calculated can be found on the agencies' websites in the links below
 
-- Brazil, Environment Company of São Paulo --- [CETESB](https://cetesb.sp.gov.br/veicular/)
+- Brazil, Environment Company of Sao Paulo --- [CETESB](https://cetesb.sp.gov.br/veicular/)
 - United States, Environmental Protection Agency --- [MOVES3 Model](https://www.epa.gov/moves)
 - United States, California Air Resources Board --- [EMFAC2017 model](https://arb.ca.gov/emfac/emissions-inventory)
 - Europe, European Environment Agency --- [EMEP-EEA](https://www.eea.europa.eu//publications/emep-eea-guidebook-2019)

@@ -23,7 +23,7 @@
 #' @family emission analysis
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 

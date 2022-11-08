@@ -71,7 +71,7 @@ To check which columns and sets of vehicle characteristics are required by each 
 Now here are a few examples of `data.frames` with the fleet characteristics required by different emission factor models. Note that these examples are built as a simple fleet table that includes the `fleet_composition`, indicating what proportion of the fleet is represented by vehicles with each characteristic.
 
 
-## 4.1 Brazil: Environmental Company of São Paulo (CETESB):
+## 4.1 Brazil: Environmental Company of Sao Paulo (CETESB):
 
 Based on the [2019 data](https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/) from the emission factor model of CETESB.
 

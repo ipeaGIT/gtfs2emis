@@ -32,7 +32,7 @@ Summarize emissions estimates, aggregating emissions by pollutant, time of
 the day, vehicle.
 }
 \examples{
-\dontrun{
+\donttest{
 
 library(gtfs2emis)
 library(gtfstools)

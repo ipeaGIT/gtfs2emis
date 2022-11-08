@@ -71,7 +71,7 @@
 #'         locally at `output_path`.
 #' @family Core function
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(gtfstools)
 #' 
 #' # read GTFS

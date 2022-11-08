@@ -38,7 +38,7 @@ the input grid cells. User can also aggregate the emissions in the grid
 by time of the day.
 }
 \examples{
-\dontrun{
+\donttest{
 library(gtfs2emis)
 library(gtfstools)
 

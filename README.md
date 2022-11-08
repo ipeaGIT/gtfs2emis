@@ -149,7 +149,7 @@ emission factor models:
 
 -   Brazil
     -   [CETESB](https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/):
-        2019 model from the Environmental Company of São Paulo (CETESB)
+        2019 model from the Environmental Company of Sao Paulo (CETESB)
 -   Europe
     -   [EMEP/EEA](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep):
         European Monitoring and Evaluation Programme, developed by the

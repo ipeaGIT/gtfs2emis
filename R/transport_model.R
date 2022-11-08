@@ -52,7 +52,7 @@
 #' @family Core function
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 
