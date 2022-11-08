@@ -77,7 +77,7 @@ jobs:
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
-          install.packages("rcmdcheck", type = "binary")
+          pak::pkg_install("rcmdcheck")
           pak::pkg_install("ipeaGIT/gtfs2gps")
         shell: Rscript {0}
 

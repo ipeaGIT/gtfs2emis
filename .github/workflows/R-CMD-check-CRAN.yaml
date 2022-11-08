@@ -71,7 +71,7 @@ jobs:
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
-           install.packages("rcmdcheck", type = "binary")
+          pak::pkg_install("rcmdcheck")
         shell: Rscript {0}
 
       - name: Install binary dependencies
