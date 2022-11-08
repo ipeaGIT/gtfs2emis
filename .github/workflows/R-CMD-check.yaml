@@ -81,12 +81,6 @@ jobs:
           pak::pkg_install("ipeaGIT/gtfs2gps")
         shell: Rscript {0}
 
-   - name: Install binary dependencies
-        if: runner.os != 'Linux'
-        run: |
-          remotes::install_deps(dependencies = TRUE, type="binary")
-        shell: Rscript {0}
-        
       - name: Session info
         run: |
           options(width = 100)
