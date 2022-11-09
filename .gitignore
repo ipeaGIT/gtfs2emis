@@ -11,3 +11,5 @@ sysdata.rds
 vignettes/*.html
 vignettes/*.R
 vignettes/*.pdf
+exemplo_erro/*
+test_joao/*
