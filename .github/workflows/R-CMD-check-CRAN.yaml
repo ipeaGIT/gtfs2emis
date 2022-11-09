@@ -71,7 +71,7 @@ jobs:
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows'
         run: |
-          install.packages("sf",type = "binary")
+          install.packages("sf", type = "win.binary")
           
       - name: Install dependencies
         run: |
