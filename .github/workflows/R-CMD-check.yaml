@@ -69,6 +69,11 @@ jobs:
           brew install pkg-config gdal proj geos
           #  Install libgit2
           brew install libgit2
+
+      - name: Install system dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          install.packages("sf",type = "binary")
           
       - name: "[Stage] [macOS] Install system libs for pkgdown"
         if: runner.os == 'macOS' && matrix.config.pkgdown != ''

@@ -68,6 +68,11 @@ jobs:
         if: runner.os == 'macOS' && matrix.config.pkgdown != ''
         run: brew install harfbuzz fribidi
 
+      - name: Install system dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          install.packages("sf",type = "binary")
+          
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
