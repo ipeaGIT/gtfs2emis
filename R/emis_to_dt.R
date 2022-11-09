@@ -21,6 +21,7 @@
 #' @family emission analysis
 
 #' @examples
+#' \dontest{
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 
@@ -55,7 +56,7 @@
 #' 
 #' # convert emission list to data.table
 #' dt <- emis_to_dt(emi_list)
-#' 
+#' }
 #' @export
 emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
                        , pol_vars = "pollutant", segment_vars = NULL){

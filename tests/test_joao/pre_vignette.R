@@ -84,19 +84,21 @@ devtools::install(pkg = "."
 tictoc::toc()
 
 # release-----------
+devtools::build_readme()
+
 devtools::spell_check(pkg = ".",vignettes = TRUE)
 urlchecker::url_check()
-Sys.setenv(NOT_CRAN = "false" )
+Sys.setenv(NOT_CRAN = "false")
 devtools::check(remote = TRUE, manual = TRUE)
-devtools::release(pkg = ".",check = TRUE)
+
 
 devtools::check_win_oldrelease()
 devtools::check_win_release()
 devtools::check_win_devel()
 devtools::check_mac_release()
-devtools::check_rhub(pkg = "."
-                     ,email = "joao.bazzo@gmail.com")
+devtools::check_rhub(pkg = ".",email = "joao.bazzo@gmail.com")
 rhub::check_for_cran(show_status = TRUE)
 
+devtools::release(pkg = ".",check = TRUE)
 devtools::submit_cran()
 
