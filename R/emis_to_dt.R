@@ -21,7 +21,7 @@
 #' @family emission analysis
 
 #' @examples
-#' \dontest{
+#' \donttest{
 #' library(gtfs2emis)
 #' library(gtfstools)
 #' 

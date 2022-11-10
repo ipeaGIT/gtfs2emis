@@ -4,7 +4,7 @@ First submission to CRAN
 
 - Local Ubuntu 20.04 installation (R 4.2.2)
 - GitHub Actions:
-  - Windows (release, oldrel)
+  - Windows (oldrel)
   - MacOS (release, oldrel)
   - Ubuntu 20.04 (devel, release, oldrel)
 - r-hub:
