@@ -75,7 +75,7 @@ the function uses four emission factor databases published by EMEP/EEA,
 considering the editions of 2019, 2016, 2013 and 2007.
 
 The R scripts used to download and pre-process 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
-can be accessed in the gtfs2emis GitHub repository at
+can be accessed in the 'gtfs2emis' GitHub repository at
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>
 
 EMEP/EEA data and reports can be accessed in the following links:

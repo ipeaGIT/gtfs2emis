@@ -20,31 +20,14 @@ First submission to CRAN
 ## Corrections after CRAN manual inspection
 
 1) Issue: 
-"As it stands, the the package estimates several..."
-Please omit one "the".
+"Please always write package names, software names and API (application
+programming interface) names in single quotes in title and description.
+e.g: --> 'gtfs2emis'."
 
 - Fixed.
 
 2) Issue:
-"Add references in the description field of your DESCRIPTION file in the form
-authors (year) <doi:...>"
+"It still seems like you have too many spaces in your description field.
+Please remove them."
 
 - Fixed
-
-3) Issue:
-"Unwrap the examples if they are executable in < 5 sec, or replace
-dontrun{} with \donttest{}"
-
-- Fixed.
-
-4) Issue:
-"Preferably, an ‘Authors@R’ would be used with ‘ctb’ roles for the
-authors of such code"
-
-- Fixed. The 'ctb' roles were added in the DESCRIPTION file.
-
-5) Issue:
-" In your LICENSE-file you claim "Ipea" to be the copyrightholder
-but dont mention any copyrightholders in your Authors@R-field"
-
-- Fixed.
