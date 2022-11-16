@@ -25,12 +25,17 @@ levels vary across space, time, and by fleet characteristics. A full description
 of the methods used in the gtfs2emis model is presented in [Vieira, Pereira and Andrade (2022)](https://doi.org/10.31219/osf.io/8m2cy).
 
 
-### Installation
+## Installation
 
-`gtfs2emis` will soon be on CRAN. In the meantime, you can install the
-dev version from Github:
+You can install `gtfs2emis`:
 
-``` r
+```R
+# From CRAN
+install.packages("gtfs2emis")
+library(gtfs2emis)
+
+# or use the development version with latest features
+utils::remove.packages('gtfs2emis')
 devtools::install_github("ipeaGIT/gtfs2emis")
 library(gtfs2emis)
 ```
