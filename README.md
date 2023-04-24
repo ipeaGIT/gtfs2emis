@@ -1,6 +1,8 @@
 
 # gtfs2emis: Estimating public transport emissions from GTFS data <img align="right" src="man/figures/logo.png" alt="logo" width="180">
 
+[![CRAN/METACRAN Version](https://www.r-pkg.org/badges/version/gtfs2emis)](https://CRAN.R-project.org/package=gtfs2emis)
+[![CRAN/METACRAN Total downloads](http://cranlogs.r-pkg.org/badges/grand-total/gtfs2emis?color=blue)](https://CRAN.R-project.org/package=gtfs2emis)
 [![R-CMD-check](https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipeaGIT/gtfs2emis/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
@@ -23,12 +25,17 @@ levels vary across space, time, and by fleet characteristics. A full description
 of the methods used in the gtfs2emis model is presented in [Vieira, Pereira and Andrade (2022)](https://doi.org/10.31219/osf.io/8m2cy).
 
 
-### Installation
+## Installation
 
-`gtfs2emis` will soon be on CRAN. In the meantime, you can install the
-dev version from Github:
+You can install `gtfs2emis`:
 
-``` r
+```R
+# From CRAN
+install.packages("gtfs2emis")
+library(gtfs2emis)
+
+# or use the development version with latest features
+utils::remove.packages('gtfs2emis')
 devtools::install_github("ipeaGIT/gtfs2emis")
 library(gtfs2emis)
 ```
