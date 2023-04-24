@@ -124,7 +124,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
     tmp_emi <- emis_summary(emi_list
                  ,segment_vars = "road_segment")
     tmp_emi <- data.table::dcast(tmp_emi
-                                 ,formula = road_segment ~ pollutant
+                                 ,formula = road_segment ~ pollutant + process 
                                  ,value.var = "emi"
                                  ,fun.aggregate = sum)
     tmp_emi[,road_segment := NULL]

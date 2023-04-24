@@ -356,15 +356,25 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   
   if(as_list){
     # local test
-    ef_final <- list("pollutant" = rep(pollutant,each = length(veh_type)),
-                     "veh_type" = rep(veh_type,length(pollutant)),
-                     "euro" = rep(euro,length(pollutant)),
-                     "fuel" = rep(fuel,length(pollutant)),
-                     "tech" = rep(tech,length(pollutant)),
+    ef_final <- list("pollutant" = pollutant,
+                     "veh_type" = veh_type,
+                     "euro" = euro,
+                     "fuel" = fuel,
+                     "tech" = tech,
+                     "process" = "hot_exhaust",
                      "slope" = slope,
                      "load" = load,
                      "speed" = units::set_units(speed,"km/h"),
                      "EF" = ef_final)
+   #ef_final <- list("pollutant" = rep(pollutant,each = length(veh_type)),
+   #                 "veh_type" = rep(veh_type,length(pollutant)),
+   #                 "euro" = rep(euro,length(pollutant)),
+   #                 "fuel" = rep(fuel,length(pollutant)),
+   #                 "tech" = rep(tech,length(pollutant)),
+   #                 "slope" = slope,
+   #                 "load" = load,
+   #                 "speed" = units::set_units(speed,"km/h"),
+   #                 "EF" = ef_final)
   }
   
   return(ef_final)

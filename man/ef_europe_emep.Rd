@@ -99,6 +99,7 @@ Other Emission factor model:
 \code{\link{ef_brazil_cetesb}()},
 \code{\link{ef_scaled_euro}()},
 \code{\link{ef_usa_emfac}()},
-\code{\link{ef_usa_moves}()}
+\code{\link{ef_usa_moves}()},
+\code{\link{emi_europe_emep_wear}()}
 }
 \concept{Emission factor model}

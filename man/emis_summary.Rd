@@ -8,7 +8,8 @@ emis_summary(
   emi_list,
   by = "pollutant",
   veh_vars = "veh_type",
-  segment_vars = NULL
+  segment_vars = NULL,
+  process_vars = "process"
 )
 }
 \arguments{
@@ -22,6 +23,9 @@ vehicle characteristics. Default is 'veh_type'.}
 
 \item{segment_vars}{character. data.frame names of 'emi_list' object
 attributed to the road segments. Default is NULL.}
+
+\item{process_vars}{character. data.frame names of 'emi_list' object
+attributed to the emission processes. Default is 'process'.}
 }
 \value{
 \code{data.table} with pollutants units ('g') aggregated by pollutant,

@@ -144,10 +144,11 @@ ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
   # as.list
   if(as_list == TRUE){
     ef_final <- list(
-      "pollutant" = rep(pollutant,each = length(tmp_model_year)),
-      "model_year" = rep(model_year,length(pollutant)),
-      "fuel" = rep(tmp_fuel,length(pollutant)),
-      "EF" = ef_final
+      "pollutant" = pollutant,
+      "model_year" = model_year,
+      "fuel" = tmp_fuel,
+      "EF" = ef_final,
+      "process" = "hot_exhaust"
     )
   }
   return(ef_final)

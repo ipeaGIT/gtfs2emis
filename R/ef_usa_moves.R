@@ -148,10 +148,11 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   
   # as.list
   if(as_list == TRUE){
-    ef_final <- list("pollutant" = rep(pollutant,each = length(tmp_model_year)),
-                     "model_year" = rep(model_year,length(pollutant)),
-                     "fuel" = rep(tmp_fuel,length(pollutant)),
-                     "EF" = ef_final)
+    ef_final <- list("pollutant" = pollutant,
+                     "model_year" = model_year,
+                     "fuel" = tmp_fuel,
+                     "EF" = ef_final,
+                     "process" = "hot_exhaust")
   }
   return(ef_final)
 }

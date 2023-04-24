@@ -10,6 +10,7 @@ emission_model(
   fleet_data,
   pollutant,
   reference_year = 2020,
+  process = "hot_exhaust",
   heightfile = NULL,
   parallel = TRUE,
   ncores = NULL,
@@ -40,7 +41,13 @@ pollutants are available for each emission factor model (\code{ef_usa_moves}, \c
 \item{reference_year}{numeric. Year of reference considered to calculate the
 emissions inventory. Defaults to \code{2020}. This
 argument is only required when the \code{ef_model}
-argument is \code{ef_usa_moves} or \code{ef_usa_emfac}.}
+parameter is \code{ef_usa_moves} or \code{ef_usa_emfac}.}
+
+\item{process}{character; Emission process, classified in "hot_exhaust" (Default),
+and wear processes (identified as "tyre","brake" and/or "road" wear).
+Note that wear processes are only available when the \code{ef_europe_emep} is
+selected in the @param ef_model. Details on wear emissions are presented in
+\code{\link{emi_europe_emep_wear}}.}
 
 \item{heightfile}{character or raster data. The raster file with height data,
 or its filepath, used to estimate emissions considering the effect of
@@ -79,8 +86,16 @@ The \code{fleet_data} must be a \code{data.frame} organized according to the des
 \code{ef_model}. The required columns is organized as follows (see @examples for real
 data usage).
 \itemize{
+\item \code{veh_type}: character; Bus type, classified according to the @param ef_model .
+For \code{ef_emep_europe}, use "Ubus Midi <=15 t","Ubus Std 15 - 18 t",
+"Ubus Artic >18 t", "Coaches Std <=18 t" or "Coaches Artic >18 t"; For
+\code{ef_usa_moves} or \code{ef_usa_emfac}, use "BUS_URBAN_D"; For \code{ef_brazil_cetesb},
+use "BUS_URBAN_D", "BUS_MICRO_D", "BUS_COACH_D" or "BUS_ARTIC_D".
+\item \code{type_name_eu}: character; Bus type, used only for @param ef_model \code{ef_scaled_euro}
+are selected. The classes can be "Ubus Midi <=15 t","Ubus Std 15 - 18 t",
+"Ubus Artic >18 t", "Coaches Std <=18 t" or "Coaches Artic >18 t".
 \item \code{reference_year}: character; Base year of the emission factor model input.
-Required only when  \code{ef_usa_moves} or \verb{_efusa_emfac} are selected.
+Required only when  \code{ef_usa_moves} or \code{ef_usa_emfac} are selected.
 \item \code{tech}: character; After treatment technology. This is required only
 when \code{emep_europe} is selected. Check \code{?ef_emep_europe} for details.
 \item \code{euro}: character; Euro period of vehicle, classified in
@@ -93,18 +108,17 @@ cases, the user might not know which vehicles run on each specific routes.
 The composition is used to attribute a probability of a specific vehicle to
 circulate in the line. The probability sums one. Required for all emission
 factors selection.
-Users can check the
-\href{https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
+Users can check the \href{https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
 for more examples.
 }
 
-Based on the input height data, the function returns the slope class between two consecutive
-bus stop positions of a LineString Simple Feature (transport model object).
-The slope is given by the ratio between the height difference and
-network distance from two consecutive public transport stops.
+Based on the input height data, the function returns the slope class between
+two consecutive bus stop positions of a LineString Simple Feature
+(transport model object). The slope is given by the ratio between the height
+difference and network distance from two consecutive public transport stops.
 The function classifies the slope into one of the seven categories
 available on the European Environmental Agency (EEA) database, which is -0.06,
--0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in
+-0.04,-0.02, 0.00, 0.02, 0.04, and 0.06.
 }
 \examples{
 \donttest{
@@ -152,7 +166,11 @@ emi_emep <- progressr::with_progress(emission_model(tp_model = tp_model
                           , ef_model = "ef_europe_emep"
                           , fleet_data = fleet_data_ef_europe
                           , pollutant = c("PM10","NOx")))
-
+emi_emep_wear <- progressr::with_progress(emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
+                          , fleet_data = fleet_data_ef_europe
+                          , pollutant = "PM10"
+                          , process = c("tyre","road","brake")))
 raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")                           
 emi_emep_slope <- progressr::with_progress(emission_model(tp_model = tp_model
                           , ef_model = "ef_europe_emep"
