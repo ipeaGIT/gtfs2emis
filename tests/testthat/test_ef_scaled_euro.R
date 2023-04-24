@@ -9,7 +9,7 @@ test_that("ef_scaled_euro", {
     pollutant = "CO")
   
   expect_equal(names(result)
-               ,c("pollutant", "veh_type", "euro", "fuel", "tech", "slope", "load", "speed","EF"))
+               ,c("pollutant", "veh_type", "euro", "fuel", "tech", "process","slope", "load", "speed","EF"))
   #expect_equal(as.numeric(result$EF),0.3370477,tolerance = 0.001)
 
   

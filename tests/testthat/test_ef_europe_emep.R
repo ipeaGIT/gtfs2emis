@@ -9,10 +9,10 @@ test_that("ef_europe_emep", {
                               euro = fleet_data_europe$euro)
   
   # Expect equal -----
-  expect_equal(length(EF_europe), 9)
-  expect_equal(length(EF_europe$pollutant), 6)
-  expect_equal(length(EF_europe$veh_type), 6)
-  expect_equal(length(EF_europe$euro), 6)
+  expect_equal(length(EF_europe), 10)
+  expect_equal(length(EF_europe$pollutant), 2)
+  expect_equal(length(EF_europe$veh_type), 3)
+  expect_equal(length(EF_europe$euro), 3)
   expect_equal(units::deparse_unit(EF_europe$EF$CO_Euro_II), "g km-1")
  # expect_equal(sum(EF_europe$EF,na.rm = TRUE), 1188.842,0.1)
   
