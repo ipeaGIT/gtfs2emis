@@ -20,7 +20,12 @@
 #' @param reference_year numeric. Year of reference considered to calculate the
 #'        emissions inventory. Defaults to `2020`. This 
 #'        argument is only required when the `ef_model` 
-#'        argument is `ef_usa_moves` or `ef_usa_emfac`.
+#'        parameter is `ef_usa_moves` or `ef_usa_emfac`.
+#' @param process character; Emission process, classified in "hot_exhaust" (Default),
+#'        and wear processes (identified as "tyre","brake" and/or "road" wear). 
+#'        Note that wear processes are only available when the `ef_europe_emep` is 
+#'        selected in the @param ef_model. Details on wear emissions are presented in
+#'        \code{\link{emi_europe_emep_wear}}.
 #' @param heightfile character or raster data. The raster file with height data,
 #'        or its filepath, used to estimate emissions considering the effect of 
 #'        street slope. This argument is used only when `ef_brazil_scaled_euro` or 
@@ -42,31 +47,38 @@
 #' @details The `fleet_data` must be a `data.frame` organized according to the desired
 #' `ef_model`. The required columns is organized as follows (see @examples for real 
 #' data usage). 
+#' - `veh_type`: character; Bus type, classified according to the @param ef_model .
+#'             For `ef_emep_europe`, use "Ubus Midi <=15 t","Ubus Std 15 - 18 t",
+#'             "Ubus Artic >18 t", "Coaches Std <=18 t" or "Coaches Artic >18 t"; For 
+#'             `ef_usa_moves` or `ef_usa_emfac`, use "BUS_URBAN_D"; For `ef_brazil_cetesb`,
+#'             use "BUS_URBAN_D", "BUS_MICRO_D", "BUS_COACH_D" or "BUS_ARTIC_D". 
+#' - `type_name_eu`: character; Bus type, used only for @param ef_model `ef_scaled_euro`
+#'            are selected. The classes can be "Ubus Midi <=15 t","Ubus Std 15 - 18 t",
+#'             "Ubus Artic >18 t", "Coaches Std <=18 t" or "Coaches Artic >18 t".
 #' - `reference_year`: character; Base year of the emission factor model input. 
-#' Required only when  `ef_usa_moves` or `_efusa_emfac` are selected.
+#'            Required only when  `ef_usa_moves` or `ef_usa_emfac` are selected.
 #' - `tech`: character; After treatment technology. This is required only 
-#' when `emep_europe` is selected. Check `?ef_emep_europe` for details.
+#'            when `emep_europe` is selected. Check `?ef_emep_europe` for details.
 #' - `euro`: character; Euro period of vehicle, classified in 
-#' "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required only 
-#' when `ef_emep_europe` is selected. Check `ef_europe_emep` for details.
+#'            "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is required only 
+#'            when `ef_emep_europe` is selected. Check `ef_europe_emep` for details.
 #' - `fuel`: character; Required when `ef_usa_moves`, `ef_usa_emfac` and
-#'  `ef_europe_emep` are selected. 
-#'  - `fleet_composition`: Numeric. Scaled composition of fleet. In most 
-#'  cases, the user might not know which vehicles run on each specific routes.
-#'  The composition is used to attribute a probability of a specific vehicle to 
-#'  circulate in the line. The probability sums one. Required for all emission 
-#'  factors selection. 
-#'  Users can check the 
-#'  [gtfs2emis fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
+#'            `ef_europe_emep` are selected. 
+#' - `fleet_composition`: Numeric. Scaled composition of fleet. In most 
+#'            cases, the user might not know which vehicles run on each specific routes.
+#'            The composition is used to attribute a probability of a specific vehicle to 
+#'            circulate in the line. The probability sums one. Required for all emission 
+#'            factors selection. 
+#'  Users can check the [gtfs2emis fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
 #'   for more examples. 
 #'  
-#'  Based on the input height data, the function returns the slope class between two consecutive 
-#' bus stop positions of a LineString Simple Feature (transport model object).
-#'  The slope is given by the ratio between the height difference and 
-#'  network distance from two consecutive public transport stops.
+#'  Based on the input height data, the function returns the slope class between 
+#'  two consecutive bus stop positions of a LineString Simple Feature 
+#'  (transport model object). The slope is given by the ratio between the height 
+#'  difference and network distance from two consecutive public transport stops.
 #'  The function classifies the slope into one of the seven categories
 #' available on the European Environmental Agency (EEA) database, which is -0.06,
-#'  -0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in
+#'  -0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. 
 #' @return A `list` with emissions estimates or `NULL` with output files saved 
 #'         locally at `output_path`.
 #' @family Core function
@@ -116,7 +128,11 @@
 #'                           , ef_model = "ef_europe_emep"
 #'                           , fleet_data = fleet_data_ef_europe
 #'                           , pollutant = c("PM10","NOx")))
-#' 
+#' emi_emep_wear <- progressr::with_progress(emission_model(tp_model = tp_model
+#'                           , ef_model = "ef_europe_emep"
+#'                           , fleet_data = fleet_data_ef_europe
+#'                           , pollutant = "PM10"
+#'                           , process = c("tyre","road","brake")))
 #' raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")                           
 #' emi_emep_slope <- progressr::with_progress(emission_model(tp_model = tp_model
 #'                           , ef_model = "ef_europe_emep"
@@ -156,12 +172,25 @@ emission_model <- function(  tp_model
                              , fleet_data
                              , pollutant
                              , reference_year = 2020
+                             , process = "hot_exhaust"
                              , heightfile = NULL
                              , parallel = TRUE
                              , ncores = NULL
                              , output_path = NULL
                              , continue = FALSE
                              , quiet = TRUE){
+  #tp_model = tp_model
+  #ef_model = "ef_europe_emep"
+  #fleet_data = my_fleet
+  #pollutant = "PM10"
+  #reference_year = 2020
+  #process = c("tyre","brake","road")
+  #heightfile = NULL
+  #parallel = TRUE
+  #ncores = NULL
+  #output_path = NULL
+  #continue = FALSE
+  #quiet = TRUE
   # A) Checking inputs -----
   
   checkmate::assert_data_frame(fleet_data, null.ok = FALSE)
@@ -181,7 +210,7 @@ emission_model <- function(  tp_model
   if(is.character(tp_model)) checkmate::assert_directory_exists(tp_model)
   checkmate::assert_string(output_path, null.ok = TRUE)
   if(!is.null(output_path)) checkmate::assert_directory_exists(output_path)
-
+  
   ## height file ----
   checkmate::assert(
     checkmate::check_class(heightfile, classes = c("RasterLayer","Raster"),null.ok = TRUE)
@@ -205,14 +234,37 @@ emission_model <- function(  tp_model
       , combine = "and"
     )
   }
-  if (ef_model == "ef_europe_emep" | ef_model == "ef_brazil_scaled_euro"){
+  if (ef_model == "ef_brazil_scaled_euro"){
     checkmate::assert(
       checkmate::check_choice('euro', names(fleet_data))
+      , checkmate::check_choice('type_name_eu', names(fleet_data))
       , checkmate::check_choice('fuel', names(fleet_data))
       , checkmate::check_choice('tech', names(fleet_data))
-      , checkmate::check_choice('fleet_composition', names(fleet_data))
       , combine = "and"
     )
+  }
+  if (ef_model == "ef_europe_emep"){
+    if("hot_exhaust" %in% process){
+      checkmate::assert(
+        checkmate::check_choice('euro', names(fleet_data))
+        , checkmate::check_choice('fuel', names(fleet_data))
+        , checkmate::check_choice('tech', names(fleet_data))
+        , checkmate::check_choice('fleet_composition', names(fleet_data))
+        , combine = "and"
+      )
+    }else{
+      # process
+      checkmate::assert_vector(process,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+      checkmate::assert_class(process,"character")
+      name_process <- c('tyre','brake','road')
+      for(i in process) checkmate::assert_choice(i,name_process)
+      # names fleet_data
+      checkmate::assert(
+        checkmate::check_choice('veh_type', names(fleet_data))
+        , checkmate::check_choice('fleet_composition', names(fleet_data))
+        , combine = "and"
+      )
+    }
   }
   
   ## iii) Transport model ----
@@ -243,7 +295,7 @@ emission_model <- function(  tp_model
     
     oplan <- future::plan("multisession", workers = ncores)
     on.exit(future::plan(oplan), add = TRUE)
-   
+    
     
   }
   # B) EF function ---------------- 
@@ -280,7 +332,7 @@ emission_model <- function(  tp_model
     if (is.character(temp_shape))  temp_shape <- readRDS(temp_shape)
     
     # ii) Get EF  ----
-    if (ef_model == "ef_europe_emep") {
+    if (ef_model == "ef_europe_emep" & "hot_exhaust" %in% process) {
       
       if(!is.null(heightfile)){
         temp_shape <- slope_class_europe_emep(tp_model = temp_shape
@@ -294,9 +346,10 @@ emission_model <- function(  tp_model
                                 , speed = temp_shape$speed
                                 , veh_type = fleet_data$veh_type
                                 , tech = fleet_data$tech
+                                , fuel = fleet_data$fuel
                                 , euro = fleet_data$euro
                                 , slope = slope_input
-                                )
+      )
       
     }
     if(ef_model == "ef_usa_emfac"){
@@ -338,43 +391,47 @@ emission_model <- function(  tp_model
       )
       
     }
-    
-    
     # iii) Emissions -----
-    temp_emis <- multiply_ef(fleet_composition = fleet_data$fleet_composition
-                             , dist = units::set_units(temp_shape$dist, "km") 
-                             , ef = temp_ef
-                             , aggregate = FALSE
-                             , as_list = TRUE)
-    
+    if("hot_exhaust" %in% process){
+      temp_emis <- multiply_ef(fleet_composition = fleet_data$fleet_composition
+                               , dist = units::set_units(temp_shape$dist, "km") 
+                               , ef = temp_ef
+                               , aggregate = FALSE
+                               , as_list = TRUE)
+    }
+    if(ef_model == "ef_europe_emep" & !("hot_exhaust" %in% process)){
+      temp_emis <- emi_europe_emep_wear(dist = units::set_units(temp_shape$dist, "km") 
+                                        ,speed = units::set_units(temp_shape$speed, "km/h")
+                                        ,pollutant = pollutant
+                                        ,veh_type = fleet_data$veh_type
+                                        ,fleet_composition = fleet_data$fleet_composition
+                                        ,load = 0.5
+                                        ,process = process
+                                        ,as_list = TRUE)
+      # remove to add tp_model
+      temp_emis$dist <- NULL
+      temp_emis$speed <- NULL
+      temp_emis$tp_model <- temp_shape
+      return(temp_emis)
+    }
     # iv) Add data -----
-    # Add fleet info
-    if(ef_model == "ef_brazil_scaled_euro"){
-      
-      temp_emis$model_year = rep(  fleet_data$model_year
-                                   , data.table::uniqueN(temp_emis$pollutant))
-      temp_emis$euro = rep(  fleet_data$euro
-                             , data.table::uniqueN(temp_emis$pollutant))
-      
-    }
-    if (ef_model != "ef_europe_emep") {
-      temp_emis$model_year = rep(  fleet_data$model_year
-                                   , data.table::uniqueN(temp_emis$pollutant))
-    } else {
-      temp_emis$euro = rep(  fleet_data$euro
-                             , data.table::uniqueN(temp_emis$pollutant))
-    }
-    
-    temp_emis$fleet_composition <- rep(fleet_data$fleet_composition
-                                       ,data.table::uniqueN(temp_emis$pollutant))
-    
-    
-    # Add EF to list
-    temp_emis$EF = temp_ef$EF
-    
     # Add gps data into emissions
     temp_emis$tp_model <- temp_shape
     
+    # Add EF to list
+    temp_emis$EF = temp_ef$EF
+    # Add fleet info
+    temp_emis$fleet_composition <- fleet_data$fleet_composition
+    temp_emis$process <- process
+    if(ef_model == "ef_brazil_scaled_euro"){
+      temp_emis$model_year = fleet_data$model_year
+      temp_emis$euro = fleet_data$euro
+    }
+    if (ef_model != "ef_europe_emep") {
+      temp_emis$model_year = fleet_data$model_year
+    } else {
+      temp_emis$euro = fleet_data$euro
+    }
     # v) Save emissions -----
     
     return(temp_emis)
@@ -418,7 +475,7 @@ emission_model <- function(  tp_model
     # Check parallel condition
     if(parallel){
       
-      requiredPackages = c('data.table', 'sf', 'units')
+      requiredPackages = c("data.table", "sf", "units")
       emisLine <- furrr::future_map(.x = 1:length(tp_fname_files)
                                     ,.f = prepare_emis_output
                                     ,.options = furrr::furrr_options(

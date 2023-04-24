@@ -18,6 +18,7 @@ utils::globalVariables(c('year','i.den','i.s','i.pah','i.cn','i.t95','den_base',
                          'cn_imp','t95_imp','s_imp',
                          'from_stop_id', 'geometry', 'i.geometry',
                          'shape_id', 'stop_sequence', 'to_stop_id'))
+utils::globalVariables(c('mf_bw' ,'mf_rs', 'mf_tw', 'pol', 'veh'))
 utils::globalVariables(c("road_segment","timestamp"))
 # slope_class_europe_emep
 utils::globalVariables(c('.N','from_height','from_timestamp',
