@@ -172,6 +172,7 @@ transport_model <- function(gtfs_data
     furrr::future_map(.x = seq_along(files_gps)
                       ,.f = gps_speed_fix
                       ,.options = furrr::furrr_options(
+                        seed = TRUE,
                         packages = requiredPackages)) 
     #lapply(seq_along(files_gps),gps_speed_fix)
   }else{
@@ -193,9 +194,8 @@ transport_model <- function(gtfs_data
   # function gps_as_sflinestring
   f_gps_as_sflinestring <- function(i){ # i = 1
     
-    
+    outputfile_path <- paste0(gps_line_path,files_gps_names[i])
     if(continue){
-      outputfile_path <- paste0(gps_line_path,files_gps_names[i])
       if(file.exists(outputfile_path)) return(NULL)
     }
     
@@ -220,6 +220,7 @@ transport_model <- function(gtfs_data
     gpsLine <- furrr::future_map(seq_along(files_gps)
                                  ,f_gps_as_sflinestring
                                  ,.options = furrr::furrr_options(
+                                   seed = TRUE,
                                    packages = requiredPackages
                                    )) 
   }else{
