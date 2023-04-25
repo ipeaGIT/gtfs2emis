@@ -60,11 +60,11 @@ TE(i) = dist x EF_tsp(j) x mf_s(i) x sc(speed)
 
 where:
 \itemize{
-\item TE(i)      = total emissions of pollutant i \link{g},
-\item dist       = distance driven by each vehicle \link{km},
-\item EF_tsp(j)  = TSP mass emission factor for vehicles of category j \link{g/km},
+\item TE(i)      = total emissions of pollutant i (g),
+\item dist       = distance driven by each vehicle (km),
+\item EF_tsp(j)  = TSP mass emission factor for vehicles of category j (g/km),
 \item mf_s(i)    = mass fraction of TSP that can be attributed to particle size class i,
-\item sc(speed)  = correction factor for a mean vehicle travelling at a given speed \link{-}.
+\item sc(speed)  = correction factor for a mean vehicle travelling at a given speed (-)
 }
 
 \emph{Tyre}
@@ -78,11 +78,11 @@ EF_tsp_tyre_hdv = 0.5 x N_axle x LCF_tyre x EF_tsp_tyre_pc
 where
 \itemize{
 \item EF_tsp_tyre_hdv  = TSP emission factor for tyre wear from heavy-duty
-vehicles \link{g/km},
-\item N_axle           = number of vehicle axles \link{-},
-\item LCF_t            = a load correction factor for tyre wear \link{-},
+vehicles (g/km),
+\item N_axle           = number of vehicle axles (-),
+\item LCF_t            = a load correction factor for tyre wear (-),
 \item EF_tsp_tyre_pc   = TSP emission factor for tyre wear from passenger car
-vehicles \link{g/km}.
+vehicles (g/km).
 }
 
 and
@@ -90,7 +90,7 @@ LCF_tyre = 1.41 + (1.38 x LF),
 
 where:
 \itemize{
-\item LF = load factor \link{-}, ranging from 0 for an empty bus to 1 for a fully laden one.
+\item LF = load factor (-), ranging from 0 for an empty bus to 1 for a fully laden one.
 }
 
 The function considers the following look-up table for number of vehicle axes:\tabular{ll}{
@@ -139,7 +139,7 @@ LCF_brake = 1 + (0.79 x LF),
 
 where:
 \itemize{
-\item LF = load factor \link{-}, ranging from 0 for an empty bus to 1 for a fully laden one.
+\item LF = load factor (-), ranging from 0 for an empty bus to 1 for a fully laden one.
 }
 
 The size distribution of brake wear particles are given by:\tabular{ll}{

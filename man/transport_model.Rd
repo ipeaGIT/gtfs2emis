@@ -77,7 +77,6 @@ output and to adjust the speed of public transport vehicles given a
 }
 \examples{
 \donttest{
-library(gtfs2emis)
 library(gtfstools)
 
 # read GTFS

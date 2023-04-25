@@ -24,7 +24,6 @@
 
 #' @examples
 #' \donttest{
-#' library(gtfs2emis)
 #' library(gtfstools)
 #' 
 #' # read GTFS
@@ -64,7 +63,12 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
                        , pol_vars = "pollutant", process_vars = "process", segment_vars = NULL){
   
   
-  
+  # emi_list = cur_local_ef
+  # emi_vars = "EF"
+  # veh_vars = "veh_type"
+  # pol_vars = "pollutant"
+  # process_vars = "process"
+  # segment_vars = NULL
   # checkings -----
   checkmate::assert_list(emi_list, null.ok = FALSE)
   # emi_vars
@@ -117,9 +121,14 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
       rep(emi_list[[i]],each = length(emi_list[[veh_vars[1]]]) * length(emi_list[[pol_vars[1]]]))
     })
   }
-  
+  for(i in emi_vars){ # i = "EF"
+    if("units" %in% class(emi_list[[i]])){
+      emi_list[[i]] <- data.table::as.data.table(emi_list[[i]])
+    }
+  }
   # merge------
   tmp_dt <- lapply(seq_along(emi_list[[emi_vars]]),function(i){ # i = 1
+    
     # variables (emi)
     tmp_dt <- emi_list[[emi_vars]][,.SD,.SDcols = i]
     names(tmp_dt) <- emi_vars

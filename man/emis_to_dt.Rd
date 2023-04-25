@@ -41,7 +41,6 @@ them into a \code{data.table} format.
 }
 \examples{
 \donttest{
-library(gtfs2emis)
 library(gtfstools)
 
 # read GTFS

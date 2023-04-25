@@ -53,7 +53,6 @@
 #' 
 #' @examples
 #' \donttest{
-#' library(gtfs2emis)
 #' library(gtfstools)
 #' 
 #' # read GTFS
@@ -183,8 +182,8 @@ transport_model <- function(gtfs_data
   # Converting a GPS-like data.table to a LineString Simple Feature (sf)
   
   # create new dirs
+  gps_line_path <-  paste0(output_path,"//")
   if(!is.null(output_path)){
-    gps_line_path <-  paste0(output_path,"//")
     suppressWarnings(dir.create(gps_line_path))
   }
   

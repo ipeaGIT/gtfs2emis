@@ -29,6 +29,7 @@
 #' | slope > +0.070                   |        -0.06     |
 #' @examples
 #' \dontrun{
+#' library(gtfstools)
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 
