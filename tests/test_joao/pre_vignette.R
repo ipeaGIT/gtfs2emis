@@ -7,29 +7,22 @@ devtools::document()
 devtools::load_all(".")
 
 # examples ----
-devtools::run_examples(pkg = ".",start = "emis_summary")
-devtools::run_examples(pkg = ".",start = "transport_model")
-devtools::run_examples(pkg = ".",start = "emission_model")
-
+devtools::run_examples(pkg = ".",run_donttest = TRUE
+                       ,document = TRUE,start = "emi_europe_emep_wear")
 covr::package_coverage(type = c("examples"))
 list.files(tempdir(),recursive = TRUE)
-# test vigntte----------
 
+# test vigntte----------
 covr::package_coverage(type = c("vignettes"))
 covr::package_coverage(path = "."
                        ,type = c("vignettes")
                        ,combine_types = TRUE # Default
-                       ,quiet = FALSE
-)
+                       ,quiet = FALSE)
 covr::package_coverage(path = "."
                        ,type = c("tests")
                        ,combine_types = TRUE # Default
                        ,quiet = FALSE
 )
-
-devtools::test(pkg = ".",filter = "emission_model")
-
-
 
 covr::package_coverage(
    path = "."
@@ -44,7 +37,7 @@ covr::package_coverage(path = "."
                        ,quiet = FALSE
 )
 
-# test---------
+# test functions ---------
 devtools::test_coverage(pkg = ".",show_report = TRUE)
 devtools::test(pkg = ".")
 devtools::test(pkg = ".",filter = "ef_scaled_euro")
@@ -60,6 +53,7 @@ devtools::check(pkg = "."
                 ,  cran = TRUE
                 , env_vars = c(NOT_CRAN = "false")
                 , vignettes = TRUE
+                ,run_dont_test = TRUE
 )
 tictoc::toc()
 
@@ -68,6 +62,7 @@ devtools::check(pkg = "."
                 ,  cran = TRUE
                 , env_vars = c(NOT_CRAN = "FALSE")
                 , vignettes = FALSE
+                ,run_dont_test = TRUE
 )
 tictoc::toc()
 
@@ -99,6 +94,7 @@ devtools::check_mac_release()
 devtools::check_rhub(pkg = ".",email = "joao.bazzo@gmail.com")
 rhub::check_for_cran(show_status = TRUE)
 
+Sys.setenv(NOT_CRAN = "false")
 devtools::release(pkg = ".",check = TRUE)
 devtools::submit_cran()
 
