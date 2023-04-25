@@ -42,6 +42,7 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 
 \examples{
 \dontrun{
+library(gtfstools)
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file) 
 

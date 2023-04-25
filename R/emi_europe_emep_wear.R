@@ -36,11 +36,11 @@
 #' TE(i) = dist x EF_tsp(j) x mf_s(i) x sc(speed)
 #' 
 #' where:
-#' - TE(i)      = total emissions of pollutant i [g],
-#' - dist       = distance driven by each vehicle [km],
-#' - EF_tsp(j)  = TSP mass emission factor for vehicles of category j [g/km],
+#' - TE(i)      = total emissions of pollutant i (g),
+#' - dist       = distance driven by each vehicle (km),
+#' - EF_tsp(j)  = TSP mass emission factor for vehicles of category j (g/km),
 #' - mf_s(i)    = mass fraction of TSP that can be attributed to particle size class i,
-#' - sc(speed)  = correction factor for a mean vehicle travelling at a given speed [-].
+#' - sc(speed)  = correction factor for a mean vehicle travelling at a given speed (-)
 #' 
 #' *Tyre*
 #' 
@@ -52,17 +52,17 @@
 #'  
 #'  where
 #'  - EF_tsp_tyre_hdv  = TSP emission factor for tyre wear from heavy-duty 
-#'  vehicles [g/km],
-#'  - N_axle           = number of vehicle axles [-],
-#'  - LCF_t            = a load correction factor for tyre wear [-],
+#'  vehicles (g/km),
+#'  - N_axle           = number of vehicle axles (-),
+#'  - LCF_t            = a load correction factor for tyre wear (-),
 #'  - EF_tsp_tyre_pc   = TSP emission factor for tyre wear from passenger car 
-#'  vehicles [g/km].
+#'  vehicles (g/km).
 #' 
 #' and
 #'  LCF_tyre = 1.41 + (1.38 x LF),
 #'  
 #'  where:
-#'  - LF = load factor [-], ranging from 0 for an empty bus to 1 for a fully laden one.
+#'  - LF = load factor (-), ranging from 0 for an empty bus to 1 for a fully laden one.
 #'  
 #'  The function considers the following look-up table for number of vehicle axes:
 #'  
@@ -107,7 +107,7 @@
 #'  LCF_brake = 1 + (0.79 x LF),
 #'  
 #'  where:
-#'  - LF = load factor [-], ranging from 0 for an empty bus to 1 for a fully laden one.
+#'  - LF = load factor (-), ranging from 0 for an empty bus to 1 for a fully laden one.
 #' 
 #' The size distribution of brake wear particles are given by:
 #'  
