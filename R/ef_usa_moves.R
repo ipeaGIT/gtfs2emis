@@ -64,7 +64,7 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   # fuel
   checkmate::assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   checkmate::assert_character(fuel,any.missing = FALSE,min.len = 1)
-  for(i in fuel) checkmate::assert_choice(i,unique(ef_usa_moves_db$fuel_type),null.ok = FALSE)
+  for(i in unique(fuel)) checkmate::assert_choice(i,c("CNG","D","G"),null.ok = FALSE)
 
   # model_year
   checkmate::assert_vector(model_year,any.missing = FALSE,min.len = 1,null.ok = FALSE)
@@ -76,10 +76,10 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   checkmate::assert_class(speed,"units")
   
   # pre-filter in usa data----
-  temp_moves <- temp_ef[reference_year %in% tmp_reference_year &
-                          fuel  %in% unique(tmp_fuel) &
-                      pollutant %in% unique(tmp_pollutant) & 
-                      model_year %in% unique(tmp_model_year), ]
+  temp_moves <- temp_ef[reference_year %in% as.character(unique(tmp_reference_year)) &
+                          fuel_type  %in% unique(tmp_fuel) &
+                          pollutant %in% unique(tmp_pollutant) & 
+                          model_year %in% unique(tmp_model_year), ]
   
   tmp_speed <- as.numeric(speed)
   
