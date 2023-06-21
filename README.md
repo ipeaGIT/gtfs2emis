@@ -8,7 +8,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
 coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master)
-[![DOI](https://img.shields.io/badge/DOI-10.31219/osf.io/8m2cy-blue)](https://doi.org/10.31219/osf.io/8m2cy)
+[![DOI](https://img.shields.io/badge/DOI-10.1016/j.trd.2023.103757-blue)](https://doi.org/10.1016/j.trd.2023.103757)
 
 
 **gtfs2emis** is an R package to estimate the emission levels of public
@@ -230,20 +230,26 @@ systems using GTFS data.
 citation("gtfs2emis")
 #> To cite gtfs2emis in publications use:
 #> 
-#>   Vieira, J. P. B., Pereira, R. H. M., & Andrade, P. R. (2022). Estimating public transport
-#>   emissions from GTFS data with gtfs2emis. OSF Preprints. https://doi.org/10.31219/osf.io/8m2cy
+#>   Vieira, J. P. B., Pereira, R. H. M., & Andrade, P. R. (2023). Estimating 
+#>      Public Transport Emissions from General Transit Feed Specification Data. 
+#>      Transportation Research Part D: Transport and Environment. Volume 119, 
+#>      103757. https://doi.org/10.1016/j.trd.2023.103757
 #> 
 #> A BibTeX entry for LaTeX users is
-#> 
-#>   @Manual{,
-#>     title = {gtfs2emis: Estimating Public Transport Emissions from GTFS Data},
-#>     author = {João Pedro Bazzo and Rafael H. M. Pereira and Pedro R. Andrade},
-#>     month = {may},
-#>     year = {2022},
-#>     publisher = {OSF Preprints},
-#>     version = {v0.1.0},
-#>     doi = {10.31219/osf.io/8m2cy},
-#>     url = {https://doi.org/10.31219/osf.io/8m2cy},
+#>   
+#>   @article{vieira2023estimating,
+#>     title = {Estimating Public Transport Emissions from {{General Transit Feed Specification}} Data},
+#>     author = {Vieira, Jo{\~a}o Pedro Bazzo and Pereira, Rafael H. M. and Andrade, Pedro R.},
+#>     year = {2023},
+#>     month = jun,
+#>     journal = {Transportation Research Part D: Transport and Environment},
+#>     volume = {119},
+#>     pages = {103757},
+#>     issn = {1361-9209},
+#>     doi = {10.1016/j.trd.2023.103757},
+#>     urldate = {2023-05-06},
+#>     langid = {english},
+#>     keywords = {Emission factors,Emission models,GTFS,Gtfs2emis,Public transport emissions,Urban bus}
 #>   }
 ```
 
