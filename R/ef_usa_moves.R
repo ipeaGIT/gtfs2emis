@@ -150,6 +150,7 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   if(as_list == TRUE){
     ef_final <- list("pollutant" = pollutant,
                      "model_year" = model_year,
+                     "veh_type" = rep("BUS_URBAN_D",length(model_year)),
                      "fuel" = tmp_fuel,
                      "EF" = ef_final,
                      "process" = "hot_exhaust")

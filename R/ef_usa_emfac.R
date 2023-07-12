@@ -146,6 +146,7 @@ ef_usa_emfac <- function(pollutant, reference_year = 2020, fuel = 'D'
     ef_final <- list(
       "pollutant" = pollutant,
       "model_year" = model_year,
+      "veh_type" = rep("BUS_URBAN_D",length(model_year)),
       "fuel" = tmp_fuel,
       "EF" = ef_final,
       "process" = "hot_exhaust"

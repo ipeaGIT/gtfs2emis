@@ -8,7 +8,7 @@ test_that("ef_usa_moves", {
                          fuel = "D")
   
   # Expect equal----
-  expect_equal(names(EF_usa),c("pollutant" ,"model_year","fuel","EF","process"))
+  expect_equal(names(EF_usa),c("pollutant" ,"model_year","veh_type","fuel","EF","process"))
   #expect_equal(as.numeric(sum(EF_usa$EF,na.rm = TRUE)), 43671.76, 0.1)
   
   # Expect error----
