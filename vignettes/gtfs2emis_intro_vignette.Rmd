@@ -26,6 +26,7 @@ knitr::opts_chunk$set(
 One can install the development version `gtfs2emis` from Github:
 
 ```{r, eval = FALSE, message = FALSE}
+library(devtools)
 # From CRAN
 install.packages("gtfs2emis")
 
@@ -57,9 +58,15 @@ To estimate the emission levels from a given public transport system, users need
 # 4. Package Overview
 
 Before we start, let's load a few packages we'll be using in this vignette:
-
-```{r, message = FALSE}
+```{r, message = FALSE, echo = FALSE}
+library(devtools)
+devtools::load_all()
+```
+```{r, eval = FALSE}
 library(gtfs2emis)
+```
+```{r, message = FALSE}
+library(devtools)
 library(gtfstools)
 library(progressr)
 library(data.table)
@@ -181,6 +188,7 @@ names(emi_list)
 # 6 Analyzing emission estimates
 
 Sometimes, working with data stored in a long list can be tricky. For convenience, `gtfs2emis` package has a few functions to help users analyze the results of emission estimates. For example, you can use the `emis_to_dt()` function to convert the output of `emission_model()` from a `list` to a `data.table` format:
+
 
 ```{r,eval = TRUE}
 emi_dt <- emis_to_dt(emi_list = emi_list,
