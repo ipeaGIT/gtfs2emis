@@ -20,7 +20,6 @@ test_that("emi_europe_emep_wear", {
   
   expect_equivalent(dim(emi_dt), c(2,18))
   
-  tp_model_slope_true <- slope_class_europe_emep(tp_model,raster_cur,keep = TRUE)
   expect_equivalent(length(emi_list), 7)
   expect_equivalent(length(emi_list$pollutant), 3)
   expect_equivalent(length(emi_list$veh_type), 2)
