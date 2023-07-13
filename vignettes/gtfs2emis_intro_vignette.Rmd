@@ -58,14 +58,8 @@ To estimate the emission levels from a given public transport system, users need
 # 4. Package Overview
 
 Before we start, let's load a few packages we'll be using in this vignette:
-```{r, message = FALSE, echo = FALSE}
-library(devtools)
-devtools::load_all()
-```
-```{r, eval = FALSE}
-library(gtfs2emis)
-```
 ```{r, message = FALSE}
+library(gtfs2emis)
 library(devtools)
 library(gtfstools)
 library(progressr)
