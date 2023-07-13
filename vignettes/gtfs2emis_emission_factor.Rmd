@@ -67,13 +67,14 @@ and pollutant.
 
 ```{r, message = FALSE, echo = FALSE}
 #library(devtools)
-#load_all()
+#devtools::load_all()
 ```
-```{r, eval = FALSE}
-library(gtfs2emis)
+```{r, eval = FALSE,message = FALSE,}
+#library(gtfs2emis)
 ```
 ```{r, message = FALSE}
 library(units)
+library(gtfs2emis)
 library(ggplot2)
 
 
