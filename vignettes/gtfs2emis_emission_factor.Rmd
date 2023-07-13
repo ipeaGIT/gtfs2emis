@@ -65,8 +65,14 @@ three types of urban buses (Midi, Standard and Articulated) to
 illustrate how emissions vary according to vehicle type, average speed,
 and pollutant.
 
-```{r}
+```{r, message = FALSE, echo = FALSE}
+#library(devtools)
+#load_all()
+```
+```{r, eval = FALSE}
 library(gtfs2emis)
+```
+```{r, message = FALSE}
 library(units)
 library(ggplot2)
 
