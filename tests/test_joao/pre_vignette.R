@@ -13,7 +13,9 @@ covr::package_coverage(type = c("examples"))
 list.files(tempdir(),recursive = TRUE)
 
 # test vigntte----------
-covr::package_coverage(type = c("vignettes"))
+covr::package_coverage(type = c("vignettes")
+                       ,quiet = FALSE
+                       )
 covr::package_coverage(path = "."
                        ,type = c("vignettes")
                        ,combine_types = TRUE # Default
@@ -53,7 +55,7 @@ devtools::check(pkg = "."
                 ,  cran = TRUE
                 , env_vars = c(NOT_CRAN = "false")
                 , vignettes = TRUE
-                ,run_dont_test = TRUE
+                ,run_dont_test = FALSE
 )
 tictoc::toc()
 
@@ -86,7 +88,7 @@ urlchecker::url_check()
 Sys.setenv(NOT_CRAN = "false")
 devtools::check(remote = TRUE, manual = TRUE)
 
-
+# check versions
 devtools::check_win_oldrelease()
 devtools::check_win_release()
 devtools::check_win_devel()
