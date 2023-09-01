@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # gtfs2emis: Estimating public transport emissions from GTFS data <img src="man/figures/logo.png" alt="logo" align="right" width="180"/>
 
 [![CRAN/METACRAN
@@ -58,22 +52,10 @@ The `gtfs2emis` package has two core functions.
 2.  `emission_model()` estimates hot-exhaust emissions based on four
     inputs:
 
--   
-
-    1)  the result from the `transport_model()`;
-
--   
-
-    2)  a `data.frame` with info on fleet characteristics;
-
--   
-
-    3)  a `string` indicating which emission factor model should be
-        considered;
-
--   
-
-    4)  a `string` indicating which pollutants should be estimated.
+-   1)  the result from the `transport_model()`;
+-   2)  a `data.frame` with info on fleet characteristics;
+-   3)  a `string` indicating which emission factor model should be considered;
+-   4)  a `string` indicating which pollutants should be estimated.
 
 To help users analyze the output from `emission_model()`, the
 `gtfs2emis` package has few functions:
