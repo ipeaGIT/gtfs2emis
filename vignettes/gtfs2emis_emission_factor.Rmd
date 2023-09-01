@@ -50,7 +50,7 @@ model](https://arb.ca.gov/emfac/emissions-inventory)
 \- Europe, European Environment Agency ---
 [EMEP-EEA](https://www.eea.europa.eu//publications/emep-eea-guidebook-2019)
 
-***Wear emissions (tyre, brake and road wear)***
+***Wear emissions (tire, brake and road wear)***
 
 \- Europe, European Environment Agency ---
 [EMEP-EEA](https://www.eea.europa.eu//publications/emep-eea-guidebook-2019)
@@ -69,9 +69,11 @@ and pollutant.
 #library(devtools)
 #devtools::load_all()
 ```
+
 ```{r, eval = FALSE,message = FALSE,}
 #library(gtfs2emis)
 ```
+
 ```{r, message = FALSE}
 library(units)
 library(gtfs2emis)
@@ -274,6 +276,12 @@ and pre-processed in `gtfs2emis` to be easily read by the emission
 factor functions. Users can also access the scripts used to process raw
 data in the [gtfs2emis GitHub
 repository](https://github.com/ipeaGIT/gtfs2emis/tree/master/data-raw).
+
+## Learn more
+
+Check out our extra guides:
+
+ - [Exploring Non-Exhaust Emission Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
 
 ## Report a bug
 

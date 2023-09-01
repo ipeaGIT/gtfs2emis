@@ -54,9 +54,9 @@ resuspension of previously deposited material. See more in @details.
 }
 \details{
 The following equation is employed to evaluate emissions originating from tyre
-and brake wear, respectively.
+and brake wear
 
-TE(i) = dist x EF_tsp(j) x mf_s(i) x sc(speed)
+TE(i) = dist x EF_tsp(j) x mf_s(i) x sc(speed),
 
 where:
 \itemize{

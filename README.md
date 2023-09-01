@@ -1,15 +1,21 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
 
-# gtfs2emis: Estimating public transport emissions from GTFS data <img align="right" src="man/figures/logo.png" alt="logo" width="180">
+# gtfs2emis: Estimating public transport emissions from GTFS data <img src="man/figures/logo.png" alt="logo" align="right" width="180"/>
 
-[![CRAN/METACRAN Version](https://www.r-pkg.org/badges/version/gtfs2emis)](https://CRAN.R-project.org/package=gtfs2emis)
-[![CRAN/METACRAN Total downloads](http://cranlogs.r-pkg.org/badges/grand-total/gtfs2emis?color=blue)](https://CRAN.R-project.org/package=gtfs2emis)
+[![CRAN/METACRAN
+Version](https://www.r-pkg.org/badges/version/gtfs2emis)](https://CRAN.R-project.org/package=gtfs2emis)
+[![CRAN/METACRAN Total
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/gtfs2emis?color=blue)](https://CRAN.R-project.org/package=gtfs2emis)
 [![R-CMD-check](https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipeaGIT/gtfs2emis/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
 coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master)
 [![DOI](https://img.shields.io/badge/DOI-10.1016/j.trd.2023.103757-blue)](https://doi.org/10.1016/j.trd.2023.103757)
-
 
 **gtfs2emis** is an R package to estimate the emission levels of public
 transport vehicles based on General Transit Feed Specification (GTFS)
@@ -21,15 +27,16 @@ at high spatial and temporal resolutions. Pollution levels can be
 calculated for specific transport routes, trips, time of the day, or for
 the transport system as a whole. The output with emission estimates can
 be extracted in different formats, supporting analysis of how emission
-levels vary across space, time, and by fleet characteristics. A full description 
-of the methods used in the gtfs2emis model is presented in [Vieira, Pereira and Andrade (2022)](https://doi.org/10.31219/osf.io/8m2cy).
-
+levels vary across space, time, and by fleet characteristics. A full
+description of the methods used in the gtfs2emis model is presented in
+[Vieira, Pereira and Andrade
+(2022)](https://doi.org/10.31219/osf.io/8m2cy).
 
 ## Installation
 
 You can install `gtfs2emis`:
 
-```R
+``` r
 # From CRAN
 install.packages("gtfs2emis")
 library(gtfs2emis)
@@ -51,14 +58,22 @@ The `gtfs2emis` package has two core functions.
 2.  `emission_model()` estimates hot-exhaust emissions based on four
     inputs:
 
--   1)  the result from the `transport_model()`;
+-   
 
--   2)  a `data.frame` with info on fleet characteristics;
+    1)  the result from the `transport_model()`;
 
--   3)  a `string` indicating which emission factor model should be
+-   
+
+    2)  a `data.frame` with info on fleet characteristics;
+
+-   
+
+    3)  a `string` indicating which emission factor model should be
         considered;
 
--   4)  a `string` indicating which pollutants should be estimated.
+-   
+
+    4)  a `string` indicating which pollutants should be estimated.
 
 To help users analyze the output from `emission_model()`, the
 `gtfs2emis` package has few functions:
@@ -172,20 +187,31 @@ emission factor models:
 #### List of pollutants available by emission factor models
 
 | Source         | Pollutants                                                                                                                         |
-|----------------|------------------------------------------------------------------------------------------------------------------------------------|
+|--------------|----------------------------------------------------------|
 | CETESB         | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
 | EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)                               |
-| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (\#kWh), and VOC                                                                |
+| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC                                                                   |
 | MOVES3/EPA     | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC                                       |
 
 #### Fleet characteristics required by each emission factor model
 
 | Source         | Buses                        | Characteristics                              |
-|----------------|------------------------------|----------------------------------------------|
+|-----------------|----------------------|----------------------------------|
 | CETESB         | Micro, Standard, Articulated | Age, Fuel, EURO standard                     |
 | EMEP/EAA       | Micro, Standard, Articulated | Fuel, EURO standard, technology, load, slope |
 | EMFAC2017/CARB | Urban Buses                  | Age, Fuel                                    |
 | MOVES3/EPA     | Urban Buses                  | Age, Fuel                                    |
+
+### Emissions from road vehicle tire, brake, and surface wear
+
+`gtfs2emis` also provides emissions estimates from tire, brake and
+surface wear using the [EMEP/EEA
+model](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep).
+The function estimates emissions of particulate matter (PM),
+encompassing black carbon (BC), which arises from distinct sources
+(tire, brake, and road surface wear). The focus is on primary particles,
+which refer to those that are directly emitted, rather than those
+generated from the re-suspension of previously deposited material.
 
 ## Learn more
 
@@ -198,6 +224,8 @@ the different features:
     data](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
 -   [Exploring Emission
     Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
+-   [Exploring Non Exhaust Emission
+    Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
 
 ### **Related packages**
 
@@ -253,8 +281,8 @@ citation("gtfs2emis")
 #>   }
 ```
 
-### Credits <img align="right" src="man/figures/ipea_logo.png" alt="ipea" width="300">
+### Credits <img src="man/figures/ipea_logo.png" alt="ipea" align="right" width="300"/>
 
 The **gtfs2emis** package is developed by a team at the Institute for
 Applied Economic Research (IPEA) in collaboration from the National
-Institute for Space Research (INPE), both from Brazil. 
+Institute for Space Research (INPE), both from Brazil.

@@ -1,0 +1,215 @@
+---
+title: "Exploring Non-Exhaust Emission Factors"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+urlcolor: blue
+vignette: >
+  %\VignetteIndexEntry{Exploring Non-Exhaust Emission Factors} 
+  \usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown} 
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>")
+```
+
+When assessing vehicle emissions inventories for particles, one relevant step is taking into account the non-exhaust processes, such as tire, brake and road wear. The `gtfs2emis` incorporates the non-exhaust emissions methods from [EMEP-EEA](https://www.eea.europa.eu//publications/emep-eea-guidebook-2019).
+ 
+The following equation is employed to evaluate emissions originating
+from tire and brake wear
+
+$$
+ TE_i = dist \times EF_{tsp}(j) \times mf_s(i) \times SC(speed)
+$$ where:
+
+-   $TE(i)$ = total emissions of pollutant i (g),
+-   $dist$ = distance driven by each vehicle (km),
+-   $EF_{tsp}(j)$ = TSP mass emission factor for vehicles of category j
+    (g/km),
+-   $mf_s(i)$ = mass fraction of TSP that can be attributed to particle
+    size class i,
+-   $SC(speed)$ = correction factor for a mean vehicle travelling at a
+    given speed (-).
+
+## Tire
+
+In the case of heavy-duty vehicles, the emission factor needs the
+incorporation of vehicle size, as determined by the number of axles, and
+load. These parameters are introduced into the equation as follows:
+
+$$EFTSP^{hdv}_{tire} = 0.5 \times N_{axle} \times LCF_{tire} \times EFTSP^{pc}_{tire}$$
+
+where:
+
+-   $EFTSP^{hdv}_{tire}$ = TSP emission factor for tire wear from
+heavy-duty vehicles (g/km),
+-   $N_{axle}$ = number of vehicle axles (-),
+-   $LCF_{tire}$ = a load correction factor for tire wear (-),
+-   $EFTSP^{pc}_{tire}$ = TSP emission factor for tire wear from passenger
+car vehicles (g/km).
+
+and $$LCF_{tire} = 1.41 + (1.38 \times LF)$$
+
+where:
+
+-   $LF$ = load factor (-), ranging from 0 for an empty bus to 1 for a fully laden one.
+
+The function considers the following look-up table for number of vehicle
+axes:
+
+| vehicle class (j)    | number of axes |
+|----------------------|----------------|
+| Ubus Midi \<=15 t    | 2              |
+| Ubus Std 15 - 18 t   | 2              |
+| Ubus Artic \>18 t    | 3              |
+| Coaches Std \<=18 t  | 2              |
+| Coaches Artic \>18 t | 3              |
+
+The size distribution of tire wear particles are given by:
+
+| particle size class (i) | mass fraction of TSP |
+|-------------------------|----------------------|
+| TSP                     | 1.000                |
+| PM10                    | 0.600                |
+| PM2.5                   | 0.420                |
+| PM1.0                   | 0.060                |
+| PM0.1                   | 0.048                |
+
+Finally, the speed correction is:
+
+-   $SC_{tire}(speed) = 1.39$, when $speed < 40 km/h$;
+-   $SC_{tire}(speed) = -0.00974 \times speed + 1.78$, when $40 <= speed <= 90 km/h$;
+-   $SC_{tire}(speed) = 0.902$, when $speed > 90 km/h$.
+
+```{r}
+library(gtfs2emis)
+emi_europe_emep_wear(dist = units::set_units(1,"km"),
+                              speed =  units::set_units(30,"km/h"),
+                              pollutant = c("PM10","TSP","PM2.5"),
+                              veh_type = "Ubus Std 15 - 18 t",
+                              fleet_composition = 1,
+                              load = 0.5,
+                              process = c("tyre"),
+                              as_list = TRUE)
+```
+
+## Brake
+
+The heavy-duty vehicle emission factor is derived by modifying the
+passenger car emission factor to conform to experimental data obtained
+from heavy-duty vehicles.
+
+$$EFTSP^{hdv}_{brake} = 1.956 \times LCF_{brake} \times EFTSP^{pc}_{brake}$$
+
+where:
+
+-   $EFTSP^{hdv}_{brake}$ = heavy-duty vehicle emission factor for TSP,
+-   $LCF_{brake}$ = load correction factor for brake wear,
+-   $EFTSP^{pc}_{brake}$ = passenger car emission factor for TSP.
+
+
+$$LCF_{brake} = 1 + (0.79 \times LF),$$
+
+where:
+
+-  $LF$ = load factor (-), ranging from 0 for an empty bus to 1 for a fully laden one.
+
+The size distribution of brake wear particles are given by:
+
+| particle size class (i) | mass fraction of TSP |
+|-------------------------|----------------------|
+| TSP                     | 1.000                |
+| PM10                    | 0.980                |
+| PM2.5                   | 0.390                |
+| PM1.0                   | 0.100                |
+| PM0.1                   | 0.080                |
+
+Finally, the speed correction is:
+
+-   $SC_{brake}(speed) = 1.67$, when $speed < 40 km/h$;
+-   $SC_{brake}(speed) = -0.0270 \times speed + 2.75$, when $40 <= speed <= 95 km/h$;
+-   $SC_{brake}(speed) = 0.185$, when $speed > 95 km/h$.
+
+```{r, message = FALSE}
+emi_europe_emep_wear(dist = units::set_units(1,"km"),
+                              speed =  units::set_units(30,"km/h"),
+                              pollutant = c("PM10","TSP","PM2.5"),
+                              veh_type = "Ubus Std 15 - 18 t",
+                              fleet_composition = 1,
+                              load = 0.5,
+                              process = c("brake"),
+                              as_list = TRUE)
+```
+
+## Road Wear
+
+Emissions are calculated according to the equation:
+
+$$TE(i) = dist \times EF^{road}_{tsp}(j) \times mf_{road}$$
+
+where:
+
+-   $TE(i)$ = total emissions of pollutant i (g),
+-   $dist$ = total distance driven by vehicles in category j (km),
+-   $EF^{road}_{tsp}$ = TSP mass emission factor from road wear for vehicles j (0.0760 g/km),
+-   $mf_{road}$ = mass fraction of TSP that can be attributed to particle size class i (-).
+
+The following table shows the size distribution of road surface wear
+particles
+
+| particle size class (i) | mass fraction of TSP |
+|-------------------------|----------------------|
+| TSP                     | 1.00                 |
+| PM10                    | 0.50                 |
+| PM2.5                   | 0.27                 |
+
+```{r, message = FALSE}
+emi_europe_emep_wear(dist = units::set_units(1,"km"),
+                              speed =  units::set_units(30,"km/h"),
+                              pollutant = c("PM10","TSP","PM2.5"),
+                              veh_type = "Ubus Std 15 - 18 t",
+                              fleet_composition = 1,
+                              load = 0.5,
+                              process = c("road"),
+                              as_list = TRUE)
+```
+
+## Viewing Emissions
+
+Users can also use one single function to apply for more than one process (e.g. tire, brake and road), as shown below.
+
+```{r, message = FALSE,fig.height=3, fig.width=8}
+library(units)
+library(ggplot2)
+
+emis_list <- emi_europe_emep_wear(dist = units::set_units(rep(1,100),"km"),
+                     speed =  units::set_units(1:100,"km/h"),
+                     pollutant = c("PM10","TSP","PM2.5"),
+                     veh_type = c("Ubus Std 15 - 18 t"),
+                     fleet_composition = c(1),
+                     load = 0.5,
+                     process = c("brake","tyre","road"),
+                     as_list = TRUE)
+ef_dt <- gtfs2emis::emis_to_dt(emis_list,emi_vars = "emi"
+                               ,segment_vars = "speed")
+ggplot(ef_dt)+
+  geom_line(aes(x = as.numeric(speed),y = as.numeric(emi),color = pollutant))+
+  facet_wrap(facets = vars(process))+
+  labs(x = "Speed (km/h)",y = "Emissions (g)")+
+  theme_minimal()
+```
+### References
+
+EMEP/EEA data and reports can be accessed in the following links:
+- 2019 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-vi/view}.
+
+
+## Report a bug
+
+If you have any suggestions or want to report an error, please visit
+[the package GitHub page](https://github.com/ipeaGIT/gtfs2emis/issues).

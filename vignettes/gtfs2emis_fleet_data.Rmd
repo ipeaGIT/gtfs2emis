@@ -133,7 +133,8 @@ fleet_data_ef_moves
 Check out our extra guide:
 
  - [Exploring Emission Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
-
+ - [Exploring Non-Exhaust Emission Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
+ 
 ## Report a bug
 
 If you have any suggestions or want to report an error, please visit [the package GitHub page](https://github.com/ipeaGIT/gtfs2emis/issues).
