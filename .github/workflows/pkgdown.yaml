@@ -41,7 +41,7 @@ jobs:
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
-          pak::pkg_sysreqs(upgrade = TRUE)
+          #pak::pkg_sysreqs(upgrade = TRUE)
           pak::pkg_sysreqs("pkgdown", upgrade = TRUE)
         shell: Rscript {0}
           
