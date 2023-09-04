@@ -18,13 +18,13 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - {os: windows-latest, r: 'release'}
-        - {os: windows-latest, r: 'oldrel'}
+        - {os: windows-, r: 'release'}
+        - {os: windows-, r: 'oldrel'}
         - {os: macOS-latest, r: 'release'}
         - {os: macOS-latest, r: 'oldrel'}
-        - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
-        - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
-        - {os: ubuntu-20.04, r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+        - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/"}
+        - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/"}
+        - {os: ubuntu-20.04, r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/"}
 
     env:
       RSPM: ${{ matrix.config.rspm }}
@@ -59,7 +59,8 @@ jobs:
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          pak::pkg_sysreqs("rcmdcheck", upgrade = TRUE)
+          pak::local_system_requirements(execute = TRUE)
+          pak::pkg_system_requirements("rcmdcheck", execute = TRUE)
         shell: Rscript {0}
 
       - name: Install system dependencies (MacOS)
