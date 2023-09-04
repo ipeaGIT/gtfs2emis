@@ -40,6 +40,7 @@ by time of the day.
 \examples{
 \donttest{
 library(gtfstools)
+library(sf)
 
 # read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
