@@ -44,6 +44,9 @@ factor estimates are expressed in units 'g/km'."><meta property="og:image" conte
     <li>
       <a href="../articles/gtfs2emis_intro_vignette.html">Getting started</a>
     </li>
+    <li>
+      <a href="../articles/gtfs2emis_non_exhaust_ef.html">Exploring Non-Exhaust Emission Factors</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -184,7 +187,8 @@ other input arguments. See more in the examples.</p>
 <code><a href="ef_brazil_cetesb.html">ef_brazil_cetesb</a>()</code>,
 <code><a href="ef_europe_emep.html">ef_europe_emep</a>()</code>,
 <code><a href="ef_usa_emfac.html">ef_usa_emfac</a>()</code>,
-<code><a href="ef_usa_moves.html">ef_usa_moves</a>()</code></p></div>
+<code><a href="ef_usa_moves.html">ef_usa_moves</a>()</code>,
+<code><a href="emi_europe_emep_wear.html">emi_europe_emep_wear</a>()</code></p></div>
     </div>
 
     <div id="ref-examples">
@@ -198,7 +202,7 @@ other input arguments. See more in the examples.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">temp_ef_scaled</span> <span class="op">&lt;-</span> <span class="fu">ef_scaled_euro</span><span class="op">(</span></span></span>
 <span class="r-in"><span>                    ef_local <span class="op">=</span> <span class="va">temp_ef_br</span>,</span></span>
-<span class="r-in"><span>                    speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,<span class="st">"km/h"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                    speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,<span class="st">"km/h"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                    veh_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ubus Std 15 - 18 t"</span>,<span class="st">"Ubus Midi &lt;=15 t"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                    euro <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"IV"</span>,<span class="st">"IV"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                    fuel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"D"</span>,<span class="st">"D"</span><span class="op">)</span>,</span></span>
@@ -227,7 +231,7 @@ other input arguments. See more in the examples.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

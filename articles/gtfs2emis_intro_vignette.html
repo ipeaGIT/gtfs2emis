@@ -65,6 +65,9 @@
     <li>
       <a href="../articles/gtfs2emis_intro_vignette.html">Getting started</a>
     </li>
+    <li>
+      <a href="../articles/gtfs2emis_non_exhaust_ef.html">Exploring Non-Exhaust Emission Factors</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -93,7 +96,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Getting started</h1>
             
-            <h4 data-toc-skip class="date">2022-11-16</h4>
+            <h4 data-toc-skip class="date">2023-09-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/HEAD/vignettes/gtfs2emis_intro_vignette.Rmd" class="external-link"><code>vignettes/gtfs2emis_intro_vignette.Rmd</code></a></small>
       <div class="hidden name"><code>gtfs2emis_intro_vignette.Rmd</code></div>
@@ -131,7 +134,8 @@ example of how to use the package.</p>
 <p>One can install the development version <code>gtfs2emis</code> from
 Github:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># From CRAN</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<span><span class="co"># From CRAN</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Dev. version with latest features</span></span>
@@ -184,7 +188,7 @@ vignette:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-quantities/units/" class="external-link">units</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-quantities.github.io/units/" class="external-link">units</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span></code></pre></div>
 <p>The <code>gtfs2emis</code> package has two core functions:</p>
 <ol style="list-style-type: decimal">
@@ -282,7 +286,7 @@ calling the <code><a href="../reference/transport_model.html">transport_model()<
 <span><span class="co">#&gt; Geometry type: LINESTRING</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
 <span><span class="co">#&gt; Bounding box:  xmin: -6.265914 ymin: 53.34591 xmax: -6.25602 ymax: 53.36229</span></span>
-<span><span class="co">#&gt; CRS:           EPSG:4326</span></span>
+<span><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
 <span><span class="co">#&gt;         shape_id               trip_id route_type timestamp stop_sequence</span></span>
 <span><span class="co">#&gt; 1 60-1-b12-1.1.O 6264.2.60-1-b12-1.1.O          3  13:00:56            18</span></span>
 <span><span class="co">#&gt; 2 60-1-b12-1.1.O 6264.2.60-1-b12-1.1.O          3  13:02:33            19</span></span>
@@ -382,9 +386,10 @@ estimates and related information such as vehicle variables
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">emi_list</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "pollutant"         "veh_type"          "euro"             </span></span>
-<span><span class="co">#&gt;  [4] "fuel"              "tech"              "slope"            </span></span>
-<span><span class="co">#&gt;  [7] "load"              "speed"             "EF"               </span></span>
-<span><span class="co">#&gt; [10] "emi"               "fleet_composition" "tp_model"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [4] "fuel"              "tech"              "process"          </span></span>
+<span><span class="co">#&gt;  [7] "slope"             "load"              "speed"            </span></span>
+<span><span class="co">#&gt; [10] "EF"                "emi"               "tp_model"         </span></span>
+<span><span class="co">#&gt; [13] "fleet_composition"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -403,13 +408,13 @@ use the <code><a href="../reference/emis_to_dt.html">emis_to_dt()</a></code> fun
 <span>                     <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">emi_dt</span><span class="op">)</span> </span>
-<span><span class="co">#&gt;              veh_type euro fuel pollutant          emi segment_id</span></span>
-<span><span class="co">#&gt; 1: Ubus Std 15 - 18 t  III    D       CO2 4.465969 [g]          1</span></span>
-<span><span class="co">#&gt; 2: Ubus Std 15 - 18 t  III    D       CO2 4.350602 [g]          2</span></span>
-<span><span class="co">#&gt; 3: Ubus Std 15 - 18 t  III    D       CO2 2.349907 [g]          3</span></span>
-<span><span class="co">#&gt; 4: Ubus Std 15 - 18 t  III    D       CO2 8.523031 [g]          4</span></span>
-<span><span class="co">#&gt; 5: Ubus Std 15 - 18 t  III    D       CO2 7.769610 [g]          5</span></span>
-<span><span class="co">#&gt; 6: Ubus Std 15 - 18 t  III    D       CO2 6.659245 [g]          6</span></span></code></pre></div>
+<span><span class="co">#&gt;              veh_type euro fuel pollutant          emi     process</span></span>
+<span><span class="co">#&gt; 1: Ubus Std 15 - 18 t  III    D       CO2 4.465969 [g] hot_exhaust</span></span>
+<span><span class="co">#&gt; 2: Ubus Std 15 - 18 t  III    D       CO2 4.350602 [g] hot_exhaust</span></span>
+<span><span class="co">#&gt; 3: Ubus Std 15 - 18 t  III    D       CO2 2.349907 [g] hot_exhaust</span></span>
+<span><span class="co">#&gt; 4: Ubus Std 15 - 18 t  III    D       CO2 8.523031 [g] hot_exhaust</span></span>
+<span><span class="co">#&gt; 5: Ubus Std 15 - 18 t  III    D       CO2 7.769610 [g] hot_exhaust</span></span>
+<span><span class="co">#&gt; 6: Ubus Std 15 - 18 t  III    D       CO2 6.659245 [g] hot_exhaust</span></span></code></pre></div>
 <p>Alternatively, the <code><a href="../reference/emis_summary.html">emis_summary()</a></code> function helps users
 summarize emission estimates, aggregating emissions by pollutant, time
 of the day, vehicle or road segment (spatial).</p>
@@ -420,9 +425,9 @@ of the day, vehicle or road segment (spatial).</p>
 <code class="sourceCode R"><span><span class="va">emi_by_pol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                                 by <span class="op">=</span> <span class="st">"pollutant"</span><span class="op">)</span> </span>
 <span><span class="va">emi_by_pol</span></span>
-<span><span class="co">#&gt;    pollutant              emi</span></span>
-<span><span class="co">#&gt; 1:       CO2 2.685654e+06 [g]</span></span>
-<span><span class="co">#&gt; 2:      PM10 8.732673e+01 [g]</span></span></code></pre></div>
+<span><span class="co">#&gt;    pollutant     process              emi</span></span>
+<span><span class="co">#&gt; 1:       CO2 hot_exhaust 2.685654e+06 [g]</span></span>
+<span><span class="co">#&gt; 2:      PM10 hot_exhaust 8.732673e+01 [g]</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="total-emissions-by-vehicle-type">6.2 Total emissions by vehicle type<a class="anchor" aria-label="anchor" href="#total-emissions-by-vehicle-type"></a>
@@ -435,9 +440,9 @@ can easily:</p>
 <code class="sourceCode R"><span><span class="va">emi_by_veh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                          by <span class="op">=</span> <span class="st">"vehicle"</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">emi_by_veh</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              veh_type pollutant              emi</span></span>
-<span><span class="co">#&gt; 1: Ubus Std 15 - 18 t       CO2 2.685654e+06 [g]</span></span>
-<span><span class="co">#&gt; 2: Ubus Std 15 - 18 t      PM10 8.732673e+01 [g]</span></span></code></pre></div>
+<span><span class="co">#&gt;              veh_type pollutant     process              emi</span></span>
+<span><span class="co">#&gt; 1: Ubus Std 15 - 18 t       CO2 hot_exhaust 2.685654e+06 [g]</span></span>
+<span><span class="co">#&gt; 2: Ubus Std 15 - 18 t      PM10 hot_exhaust 8.732673e+01 [g]</span></span></code></pre></div>
 <p>It is also possible to summarize emission estimates by other vehicle
 characteristics AND pollutants.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -445,13 +450,13 @@ characteristics AND pollutants.</p>
 <span>                          by <span class="op">=</span> <span class="st">"vehicle"</span>,</span>
 <span>                          veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>,<span class="st">"euro"</span><span class="op">)</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">emi_by_veh</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              veh_type euro pollutant              emi</span></span>
-<span><span class="co">#&gt; 1: Ubus Std 15 - 18 t  III       CO2 3.124742e+04 [g]</span></span>
-<span><span class="co">#&gt; 2: Ubus Std 15 - 18 t   IV       CO2 8.889753e+05 [g]</span></span>
-<span><span class="co">#&gt; 3: Ubus Std 15 - 18 t    V       CO2 3.637575e+05 [g]</span></span>
-<span><span class="co">#&gt; 4: Ubus Std 15 - 18 t   VI       CO2 1.401674e+06 [g]</span></span>
-<span><span class="co">#&gt; 5: Ubus Std 15 - 18 t  III      PM10 6.369830e+00 [g]</span></span>
-<span><span class="co">#&gt; 6: Ubus Std 15 - 18 t   IV      PM10 4.237565e+01 [g]</span></span>
+<span><span class="co">#&gt;              veh_type euro pollutant     process              emi</span></span>
+<span><span class="co">#&gt; 1: Ubus Std 15 - 18 t  III       CO2 hot_exhaust 3.124742e+04 [g]</span></span>
+<span><span class="co">#&gt; 2: Ubus Std 15 - 18 t   IV       CO2 hot_exhaust 8.889753e+05 [g]</span></span>
+<span><span class="co">#&gt; 3: Ubus Std 15 - 18 t    V       CO2 hot_exhaust 3.637575e+05 [g]</span></span>
+<span><span class="co">#&gt; 4: Ubus Std 15 - 18 t   VI       CO2 hot_exhaust 1.401674e+06 [g]</span></span>
+<span><span class="co">#&gt; 5: Ubus Std 15 - 18 t  III      PM10 hot_exhaust 6.369830e+00 [g]</span></span>
+<span><span class="co">#&gt; 6: Ubus Std 15 - 18 t   IV      PM10 hot_exhaust 4.237565e+01 [g]</span></span>
 <span></span>
 <span><span class="co"># plot</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">emi_by_veh</span><span class="op">)</span> <span class="op">+</span></span>
@@ -469,13 +474,13 @@ characteristics AND pollutants.</p>
 <code class="sourceCode R"><span><span class="va">emi_by_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                                by <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">emi_by_time</span><span class="op">)</span> </span>
-<span><span class="co">#&gt;    timestamp_hour pollutant          emi</span></span>
-<span><span class="co">#&gt; 1:             13       CO2 197791.4 [g]</span></span>
-<span><span class="co">#&gt; 2:             14       CO2 235187.9 [g]</span></span>
-<span><span class="co">#&gt; 3:             15       CO2 219913.4 [g]</span></span>
-<span><span class="co">#&gt; 4:             16       CO2 225923.6 [g]</span></span>
-<span><span class="co">#&gt; 5:             17       CO2 318723.4 [g]</span></span>
-<span><span class="co">#&gt; 6:             18       CO2 209437.0 [g]</span></span>
+<span><span class="co">#&gt;    timestamp_hour pollutant     process          emi</span></span>
+<span><span class="co">#&gt; 1:             13       CO2 hot_exhaust 197791.4 [g]</span></span>
+<span><span class="co">#&gt; 2:             14       CO2 hot_exhaust 235187.9 [g]</span></span>
+<span><span class="co">#&gt; 3:             15       CO2 hot_exhaust 219913.4 [g]</span></span>
+<span><span class="co">#&gt; 4:             16       CO2 hot_exhaust 225923.6 [g]</span></span>
+<span><span class="co">#&gt; 5:             17       CO2 hot_exhaust 318723.4 [g]</span></span>
+<span><span class="co">#&gt; 6:             18       CO2 hot_exhaust 209437.0 [g]</span></span>
 <span></span>
 <span><span class="co"># plot</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">emi_by_time</span><span class="op">)</span> <span class="op">+</span></span>
@@ -528,11 +533,10 @@ helps aggregate emission estimates over any custom spatial vector data
 Fleet data</a></li>
 <li><a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html" class="external-link">Exploring
 Emission Factors</a></li>
+<li>
+<a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html" class="external-link">Exploring
+Non-Exhaust Emission Factors</a> ## Report a bug</li>
 </ul>
-</div>
-<div class="section level3">
-<h3 id="report-a-bug">Report a bug<a class="anchor" aria-label="anchor" href="#report-a-bug"></a>
-</h3>
 <p>If you have any suggestions or want to report an error, please visit
 <a href="https://github.com/ipeaGIT/gtfs2emis/issues" class="external-link">the package GitHub
 page</a>.</p>
@@ -557,7 +561,7 @@ page</a>.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

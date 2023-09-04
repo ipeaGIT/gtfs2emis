@@ -41,6 +41,9 @@ function must be used together with transport_model."><meta property="og:image" 
     <li>
       <a href="../articles/gtfs2emis_intro_vignette.html">Getting started</a>
     </li>
+    <li>
+      <a href="../articles/gtfs2emis_non_exhaust_ef.html">Exploring Non-Exhaust Emission Factors</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -77,6 +80,7 @@ function must be used together with <code><a href="transport_model.html">transpo
 <span>  <span class="va">fleet_data</span>,</span>
 <span>  <span class="va">pollutant</span>,</span>
 <span>  reference_year <span class="op">=</span> <span class="fl">2020</span>,</span>
+<span>  process <span class="op">=</span> <span class="st">"hot_exhaust"</span>,</span>
 <span>  heightfile <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ncores <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -118,7 +122,15 @@ pollutants are available for each emission factor model (<code>ef_usa_moves</cod
 <dd><p>numeric. Year of reference considered to calculate the
 emissions inventory. Defaults to <code>2020</code>. This
 argument is only required when the <code>ef_model</code>
-argument is <code>ef_usa_moves</code> or <code>ef_usa_emfac</code>.</p></dd>
+parameter is <code>ef_usa_moves</code> or <code>ef_usa_emfac</code>.</p></dd>
+
+
+<dt>process</dt>
+<dd><p>character; Emission process, classified in "hot_exhaust" (Default),
+and wear processes (identified as "tyre","brake" and/or "road" wear).
+Note that wear processes are only available when the <code>ef_europe_emep</code> is
+selected in the @param ef_model. Details on wear emissions are presented in
+<code><a href="emi_europe_emep_wear.html">emi_europe_emep_wear</a></code>.</p></dd>
 
 
 <dt>heightfile</dt>
@@ -168,8 +180,16 @@ locally at <code>output_path</code>.</p>
     <h2>Details</h2>
     <p>The <code>fleet_data</code> must be a <code>data.frame</code> organized according to the desired
 <code>ef_model</code>. The required columns is organized as follows (see @examples for real
-data usage).</p><ul><li><p><code>reference_year</code>: character; Base year of the emission factor model input.
-Required only when  <code>ef_usa_moves</code> or <code>_efusa_emfac</code> are selected.</p></li>
+data usage).</p><ul><li><p><code>veh_type</code>: character; Bus type, classified according to the @param ef_model .
+For <code>ef_emep_europe</code>, use "Ubus Midi &lt;=15 t","Ubus Std 15 - 18 t",
+"Ubus Artic &gt;18 t", "Coaches Std &lt;=18 t" or "Coaches Artic &gt;18 t"; For
+<code>ef_usa_moves</code> or <code>ef_usa_emfac</code>, use "BUS_URBAN_D"; For <code>ef_brazil_cetesb</code>,
+use "BUS_URBAN_D", "BUS_MICRO_D", "BUS_COACH_D" or "BUS_ARTIC_D".</p></li>
+<li><p><code>type_name_eu</code>: character; Bus type, used only for @param ef_model <code>ef_scaled_euro</code>
+are selected. The classes can be "Ubus Midi &lt;=15 t","Ubus Std 15 - 18 t",
+"Ubus Artic &gt;18 t", "Coaches Std &lt;=18 t" or "Coaches Artic &gt;18 t".</p></li>
+<li><p><code>reference_year</code>: character; Base year of the emission factor model input.
+Required only when  <code>ef_usa_moves</code> or <code>ef_usa_emfac</code> are selected.</p></li>
 <li><p><code>tech</code>: character; After treatment technology. This is required only
 when <code>emep_europe</code> is selected. Check <code>?ef_emep_europe</code> for details.</p></li>
 <li><p><code>euro</code>: character; Euro period of vehicle, classified in
@@ -182,16 +202,15 @@ cases, the user might not know which vehicles run on each specific routes.
 The composition is used to attribute a probability of a specific vehicle to
 circulate in the line. The probability sums one. Required for all emission
 factors selection.
-Users can check the
-<a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">gtfs2emis fleet data vignette</a>,
+Users can check the <a href="https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html" class="external-link">gtfs2emis fleet data vignette</a>,
 for more examples.</p></li>
-</ul><p>Based on the input height data, the function returns the slope class between two consecutive
-bus stop positions of a LineString Simple Feature (transport model object).
-The slope is given by the ratio between the height difference and
-network distance from two consecutive public transport stops.
+</ul><p>Based on the input height data, the function returns the slope class between
+two consecutive bus stop positions of a LineString Simple Feature
+(transport model object). The slope is given by the ratio between the height
+difference and network distance from two consecutive public transport stops.
 The function classifies the slope into one of the seven categories
 available on the European Environmental Agency (EEA) database, which is -0.06,
--0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in</p>
+-0.04,-0.02, 0.00, 0.02, 0.04, and 0.06.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -249,7 +268,11 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 <span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
 <span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_europe</span></span></span>
 <span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PM10"</span>,<span class="st">"NOx"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">emi_emep_wear</span> <span class="op">&lt;-</span> <span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span><span class="fu">emission_model</span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span></span>
+<span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
+<span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_europe</span></span></span>
+<span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="st">"PM10"</span></span></span>
+<span class="r-in"><span>                          , process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tyre"</span>,<span class="st">"road"</span>,<span class="st">"brake"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">raster_cur</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/bra_cur-srtm.tif"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span>                           </span></span>
 <span class="r-in"><span><span class="va">emi_emep_slope</span> <span class="op">&lt;-</span> <span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span><span class="fu">emission_model</span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span></span>
 <span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
@@ -276,7 +299,6 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 <span class="r-in"><span>                          , fleet_data <span class="op">=</span> <span class="va">fleet_data_ef_moves</span></span></span>
 <span class="r-in"><span>                          , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO"</span>,<span class="st">"PM10"</span>,<span class="st">"CO2"</span>,<span class="st">"CH4"</span>,<span class="st">"NOx"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>                          , reference_year <span class="op">=</span> <span class="fl">2020</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>longer object length is not a multiple of shorter object length</span>
 <span class="r-in"><span>                          </span></span>
 <span class="r-in"><span><span class="va">emi_emfac</span> <span class="op">&lt;-</span> <span class="fu">emission_model</span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span></span>
 <span class="r-in"><span>                          , ef_model <span class="op">=</span> <span class="st">"ef_usa_emfac"</span></span></span>
@@ -298,7 +320,7 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
