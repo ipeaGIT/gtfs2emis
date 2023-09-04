@@ -59,8 +59,8 @@ jobs:
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          pak::pkg_sysreqs(execute = TRUE)
-          pak::pkg_sysreqs("rcmdcheck", execute = TRUE)
+          pak::pkg_sysreqs(upgrade = TRUE)
+          pak::pkg_sysreqs("rcmdcheck", upgrade = TRUE)
         shell: Rscript {0}
 
       - name: Install system dependencies (MacOS)
