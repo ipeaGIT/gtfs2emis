@@ -2,9 +2,9 @@ First submission to CRAN
 
 ## Test environments
 
-- Local Ubuntu 20.04 installation (R 4.2.2)
+- Local Ubuntu 20.04 installation (R 4.4.1)
 - GitHub Actions:
-  - Windows (oldrel)
+  - Windows (release, oldrel, devel)
   - MacOS (release, oldrel)
   - Ubuntu 20.04 (devel, release, oldrel)
 - r-hub:

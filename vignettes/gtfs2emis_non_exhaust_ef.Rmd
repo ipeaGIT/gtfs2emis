@@ -27,12 +27,10 @@ $$
  TE_i = dist \times EF_{tsp}(j) \times mf_s(i) \times SC(speed)
 $$ where:
 
--   $TE(i)$ = total emissions of pollutant i (g),
+-   $TE(i)$ = total emissions of pollutant $i$ (g),
 -   $dist$ = distance driven by each vehicle (km),
--   $EF_{tsp}(j)$ = TSP mass emission factor for vehicles of category j
-    (g/km),
--   $mf_s(i)$ = mass fraction of TSP that can be attributed to particle
-    size class i,
+-   $EF_{tsp}(j)$ = TSP (Total Suspended Particle) mass emission factor for vehicles of category $j$ (g/km),
+-   $mf_s(i)$ = mass fraction of TSP that can be attributed to pollutant $i$,
 -   $SC(speed)$ = correction factor for a mean vehicle travelling at a
     given speed (-).
 
