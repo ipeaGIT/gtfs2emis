@@ -24,7 +24,7 @@
 
 #' @examples
 #' \donttest{
-#' library(gtfstools)
+#'  if (requireNamespace("gtfstools", quietly=TRUE)) {
 #' 
 #' # read GTFS
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -57,6 +57,7 @@
 #' 
 #' # convert emission list to data.table
 #' dt <- emis_to_dt(emi_list)
+#' }
 #' }
 #' @export
 emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"

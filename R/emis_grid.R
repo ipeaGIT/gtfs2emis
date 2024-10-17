@@ -24,7 +24,7 @@
 #' 
 #' @examples
 #' \donttest{
-#' library(gtfstools)
+#' if (requireNamespace("gtfstools", quietly=TRUE)) {
 #' library(sf)
 #' 
 #' # read GTFS
@@ -67,6 +67,7 @@
 #' plot(grid)
 #' plot(emi_grid["PM10_2010"],add = TRUE)
 #' plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
+#' }
 #' }
 #' @export
 emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggregate = FALSE){

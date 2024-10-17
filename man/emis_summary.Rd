@@ -37,7 +37,7 @@ the day, vehicle.
 }
 \examples{
 \donttest{
-library(gtfstools)
+if (requireNamespace("gtfstools", quietly=TRUE)) {
 
 # read GTFS
 gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
@@ -83,6 +83,7 @@ emis_summary(emi_list
 emis_summary(emi_list
              , by = "time"
              , segment_vars = "slope") 
+}
 }
 }
 \seealso{

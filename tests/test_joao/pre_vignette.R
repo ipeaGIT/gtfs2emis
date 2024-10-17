@@ -81,6 +81,7 @@ devtools::install(pkg = "."
 tictoc::toc()
 
 # release-----------
+pak::local_install_dev_deps(upgrade = TRUE)
 devtools::build_readme()
 
 devtools::spell_check(pkg = ".",vignettes = TRUE)
@@ -91,10 +92,11 @@ devtools::check(remote = TRUE, manual = TRUE)
 # check versions
 devtools::check_win_oldrelease()
 devtools::check_win_release()
+devtools::check()
 devtools::check_win_devel()
 devtools::check_mac_release()
 devtools::check_rhub(pkg = ".",email = "joao.bazzo@gmail.com")
-rhub::check_for_cran(show_status = TRUE)
+rhub::check()
 
 Sys.setenv(NOT_CRAN = "false")
 devtools::release(pkg = ".",check = TRUE)

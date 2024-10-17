@@ -53,7 +53,7 @@
 #' 
 #' @examples
 #' \donttest{
-#' library(gtfstools)
+#' if (requireNamespace("gtfstools", quietly=TRUE)) {
 #' 
 #' # read GTFS
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -69,6 +69,7 @@
 #'                             new_speed = 20,
 #'                             spatial_resolution = 100,
 #'                             parallel = FALSE)
+#'   }
 #'}
 #' @export
 transport_model <- function(gtfs_data
@@ -93,7 +94,7 @@ transport_model <- function(gtfs_data
   
   if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = future::availableCores()
                                              ,null.ok = TRUE)
-
+  
   checkmate::assert_logical(continue, null.ok = FALSE, any.missing = FALSE) 
   # Read GTFS ------------
   
@@ -125,7 +126,7 @@ transport_model <- function(gtfs_data
   gps_path <-  paste0(tempdir(),"//gps//")
   suppressWarnings(dir.create(tempdir()))
   suppressWarnings(dir.create(gps_path))
-
+  
   gtfs2gps::gtfs2gps(gtfs_data = city_gtfs
                      , spatial_resolution = spatial_resolution
                      , parallel = parallel
@@ -136,14 +137,14 @@ transport_model <- function(gtfs_data
   
   
   
-   #  Adjusting the speeds of a gps-like table ---------
+  #  Adjusting the speeds of a gps-like table ---------
   
   
   # create new dirs
   gps_adjust_path <-  paste0(tempdir(), "//gps_adjust//")
   suppressWarnings(dir.create(tempdir())) 
   suppressWarnings(dir.create(gps_adjust_path)) 
-
+  
   
   # find gps files
   files_gps <- list.files(gps_path, full.names = TRUE)
@@ -201,7 +202,7 @@ transport_model <- function(gtfs_data
     tmp_gps <- readRDS(files_gps[i])
     tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
     tmp_gps_fix$dist <- units::set_units(tmp_gps_fix$dist,"km")
-
+    
     
     if(is.null(output_path)){
       return(tmp_gps_fix)
@@ -221,11 +222,11 @@ transport_model <- function(gtfs_data
                                  ,.options = furrr::furrr_options(
                                    seed = TRUE,
                                    packages = requiredPackages
-                                   )) 
+                                 )) 
   }else{
     gpsLine <- lapply(seq_along(files_gps),f_gps_as_sflinestring) 
   }
-
+  
   ## This cleans up everything...
   on.exit(unlink(list.files(gps_path,full.names = TRUE)), add = TRUE)
   on.exit(unlink(list.files(gps_adjust_path,full.names = TRUE)), add = TRUE)

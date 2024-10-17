@@ -77,7 +77,7 @@ output and to adjust the speed of public transport vehicles given a
 }
 \examples{
 \donttest{
-library(gtfstools)
+if (requireNamespace("gtfstools", quietly=TRUE)) {
 
 # read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -93,6 +93,7 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             new_speed = 20,
                             spatial_resolution = 100,
                             parallel = FALSE)
+  }
 }
 }
 \seealso{

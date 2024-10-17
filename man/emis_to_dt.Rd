@@ -41,7 +41,7 @@ them into a \code{data.table} format.
 }
 \examples{
 \donttest{
-library(gtfstools)
+ if (requireNamespace("gtfstools", quietly=TRUE)) {
 
 # read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -74,6 +74,7 @@ emi_list <- emission_model(
 
 # convert emission list to data.table
 dt <- emis_to_dt(emi_list)
+}
 }
 }
 \seealso{

@@ -28,8 +28,8 @@
 #' | slope > +0.050 & slope <= +0.070 |        +0.06     |
 #' | slope > +0.070                   |        -0.06     |
 #' @examples
-#' \dontrun{
-#' library(gtfstools)
+#' \donttest{
+#'  if (requireNamespace("gtfstools", quietly=TRUE)) {
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
 #' gtfs <- gtfstools::read_gtfs(gtfs_file) 
 #' 
@@ -48,6 +48,7 @@
 #' raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")
 #' 
 #' tp_model_slope <- slope_class_europe_emep(tp_model,raster_cur)
+#' }
 #' }
 #' @export
 slope_class_europe_emep <- function(tp_model,heightfile,keep = FALSE){

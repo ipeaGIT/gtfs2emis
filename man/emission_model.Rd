@@ -122,7 +122,7 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 }
 \examples{
 \donttest{
-library(gtfstools)
+ if (requireNamespace("gtfstools", quietly=TRUE)) {
 
 # read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -203,6 +203,7 @@ emi_emfac <- emission_model(tp_model = tp_model
                           , fleet_data = fleet_data_ef_emfac
                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
                           , reference_year = 2020)
+}
 }
 }
 \seealso{
