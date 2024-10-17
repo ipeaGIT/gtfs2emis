@@ -126,7 +126,7 @@ time, or vehicle type.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gtfstools"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># read GTFS</span></span></span>
 <span class="r-in"><span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span></span>
@@ -140,8 +140,6 @@ time, or vehicle type.</p>
 <span class="r-in"><span><span class="va">tp_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="transport_model.html">transport_model</a></span><span class="op">(</span>gtfs_data <span class="op">=</span> <span class="va">gtfs</span>,</span></span>
 <span class="r-in"><span>                            spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>                            parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Converting shapes to sf objects</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing the data</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fleet data</span></span></span>
 <span class="r-in"><span><span class="va">fleet_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_fleet.txt"</span></span></span>
@@ -151,76 +149,37 @@ time, or vehicle type.</p>
 <span class="r-in"><span>                           , ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span></span>
 <span class="r-in"><span>                           , fleet_data <span class="op">=</span> <span class="va">fleet_df</span></span></span>
 <span class="r-in"><span>                           , pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO2"</span>,<span class="st">"PM10"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'DPF+SCR' Technology and Euro 'VI'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumed 'SCR' Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Aggregate total emissions by 'pollutant'</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span><span class="op">)</span> </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: testthat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    pollutant     process              emi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;char&gt;      &lt;char&gt;          &lt;units&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       CO2 hot_exhaust 1.085255e+04 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      PM10 hot_exhaust 3.539287e-01 [g]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># by vehicle type</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span>, by <span class="op">=</span> <span class="st">"vehicle"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              veh_type pollutant     process              emi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;char&gt;    &lt;char&gt;      &lt;char&gt;          &lt;units&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Ubus Std 15 - 18 t       CO2 hot_exhaust 1.085255e+04 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Ubus Std 15 - 18 t      PM10 hot_exhaust 3.539287e-01 [g]</span>
 <span class="r-in"><span>             </span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"euro"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      euro pollutant     process              emi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;char&gt;    &lt;char&gt;      &lt;char&gt;          &lt;units&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    III       CO2 hot_exhaust 1.279127e+02 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     IV       CO2 hot_exhaust 3.641845e+03 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      V       CO2 hot_exhaust 1.459425e+03 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     VI       CO2 hot_exhaust 5.623366e+03 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:    III      PM10 hot_exhaust 2.561448e-02 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     IV      PM10 hot_exhaust 1.700779e-01 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:      V      PM10 hot_exhaust 1.145693e-01 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8:     VI      PM10 hot_exhaust 4.366704e-02 [g]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      fuel pollutant     process              emi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;char&gt;    &lt;char&gt;      &lt;char&gt;          &lt;units&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      D       CO2 hot_exhaust 1.085255e+04 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      D      PM10 hot_exhaust 3.539287e-01 [g]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"vehicle"</span></span></span>
 <span class="r-in"><span>             , veh_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"veh_type"</span>,<span class="st">"euro"</span>,<span class="st">"tech"</span>,<span class="st">"fuel"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              veh_type   euro    tech   fuel pollutant     process</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;char&gt; &lt;char&gt;  &lt;char&gt; &lt;char&gt;    &lt;char&gt;      &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Ubus Std 15 - 18 t    III       -      D       CO2 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Ubus Std 15 - 18 t     IV     SCR      D       CO2 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Ubus Std 15 - 18 t      V     SCR      D       CO2 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Ubus Std 15 - 18 t     VI DPF+SCR      D       CO2 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: Ubus Std 15 - 18 t    III       -      D      PM10 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Ubus Std 15 - 18 t     IV     SCR      D      PM10 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7: Ubus Std 15 - 18 t      V     SCR      D      PM10 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8: Ubus Std 15 - 18 t     VI DPF+SCR      D      PM10 hot_exhaust</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 emi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;units&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 1.279127e+02 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.641845e+03 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 1.459425e+03 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 5.623366e+03 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 2.561448e-02 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: 1.700779e-01 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7: 1.145693e-01 [g]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8: 4.366704e-02 [g]</span>
 <span class="r-in"><span>             </span></span>
 <span class="r-in"><span><span class="co"># by time of the day</span></span></span>
 <span class="r-in"><span><span class="fu">emis_summary</span><span class="op">(</span><span class="va">emi_list</span></span></span>
 <span class="r-in"><span>             , by <span class="op">=</span> <span class="st">"time"</span></span></span>
 <span class="r-in"><span>             , segment_vars <span class="op">=</span> <span class="st">"slope"</span><span class="op">)</span> </span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Converting shapes to sf objects</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing the data</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 'CO2' Emission factor not found for 'DPF+SCR' Technology and Euro 'VI'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  The package assumed 'SCR' Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: testthat</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestamp_hour pollutant     process              emi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;int&gt;    &lt;char&gt;      &lt;char&gt;          &lt;units&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:              8       CO2 hot_exhaust 1.076303e+04 [g]</span>
