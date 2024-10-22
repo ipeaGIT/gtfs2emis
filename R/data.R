@@ -117,7 +117,7 @@
 #' Emission factors from Environment Company of Sao Paulo, Brazil (CETESB)
 #' 
 #' units 'g/km'; Emission factors for buses based on estimates from the 
-#' [Environment Company of Sao Paulo, Brazil (CETESB) 2017](https://cetesb.sp.gov.br/veicular/),
+#' Environment Company of Sao Paulo, Brazil (CETESB) 2017,
 #' and obtained from [vein package](https://github.com/atmoschem/vein).
 #' The R script used to organize the CETESB database can be found in the repository
 #' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_brazil_cetesb_db.R>>.
@@ -136,6 +136,5 @@
 #' \item{as_list}{logical; Returns emission factors as a list, instead of data.table
 #'  format.}
 #' }
-#'@source \url{https://cetesb.sp.gov.br/veicular/}
 #' @family emission factor data
 "ef_brazil_cetesb_db" # data(ef_brazil_cetesb_db)

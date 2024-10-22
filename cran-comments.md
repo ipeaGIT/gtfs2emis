@@ -23,3 +23,6 @@ Fixed.
 - Please wrap examples that need packages in ‘Suggests’ in
 if(requireNamespace("pkgname")){} instead.
 Fixed.
+
+- Found the following (possibly) invalid URLs: https://cetesb.sp.gov.br/veicular/
+Fixed.
