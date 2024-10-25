@@ -38,8 +38,7 @@
 #' air pollutant emission inventory guidebook.
 #' 2) Also, the emission factors were extended till 50 years of use, repeating the oldest value.
 #' @md
-#' @source \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
-#' 
+#'
 #' @family Emission factor model
 #' 
 #' @examples

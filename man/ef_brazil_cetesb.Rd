@@ -3,9 +3,6 @@
 \name{ef_brazil_cetesb}
 \alias{ef_brazil_cetesb}
 \title{Running exhaust emissions factors for buses from Brazil (CETESB)}
-\source{
-\url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
-}
 \usage{
 ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 }
