@@ -39,7 +39,7 @@ can be found on the agencies' websites in the links below
 ***Hot-exhaust emissions***
 
 \- Brazil, Environment Company of Sao Paulo ---
-[CETESB](https://cetesb.sp.gov.br/veicular/)
+[CETESB]
 
 \- United States, Environmental Protection Agency --- [MOVES3
 Model](https://www.epa.gov/moves)
