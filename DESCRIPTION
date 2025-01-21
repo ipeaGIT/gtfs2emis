@@ -1,7 +1,7 @@
 Type: Package
 Package: gtfs2emis
 Title: Estimating Public Transport Emissions from General Transit Feed Specification (GTFS) Data
-Version: 0.1.1.9000
+Version: 0.1.1
 Authors@R: c(
              person(given = "Joao",
                 family = "Bazzo",
