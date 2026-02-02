@@ -92,7 +92,7 @@ transport_model <- function(gtfs_data
   checkmate::assert_true(min_speed < max_speed)
   checkmate::assert_logical(parallel, any.missing = FALSE) 
   
-  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = future::availableCores()
+  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = ncores <- parallelly::availableCores(omit = 1)
                                              ,null.ok = TRUE)
   
   checkmate::assert_logical(continue, null.ok = FALSE, any.missing = FALSE) 
@@ -110,7 +110,7 @@ transport_model <- function(gtfs_data
   if(parallel){
     # number of cores
     if(is.null(ncores)){
-      ncores <- max(1, future::availableCores() - 1)
+      ncores <- parallelly::availableCores(omit = 1)
       
       message(paste('Using', ncores, 'CPU cores'))
     }
