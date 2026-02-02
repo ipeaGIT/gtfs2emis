@@ -1,0 +1,262 @@
+# Emission model
+
+Estimate hot-exhaust emissions of public transport systems. This
+function must be used together with
+[`transport_model`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md).
+
+## Usage
+
+``` r
+emission_model(
+  tp_model,
+  ef_model,
+  fleet_data,
+  pollutant,
+  reference_year = 2020,
+  process = "hot_exhaust",
+  heightfile = NULL,
+  parallel = TRUE,
+  ncores = NULL,
+  output_path = NULL,
+  continue = FALSE,
+  quiet = TRUE
+)
+```
+
+## Arguments
+
+- tp_model:
+
+  sf_linestring object or a character path the to sf_linestring objects.
+  The `tp_model` is the output from
+  [`transport_model`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md),
+  or the path in which the output files from the
+  [`transport_model`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md)
+  are saved.
+
+- ef_model:
+
+  character. A string indicating the emission factor model to be used.
+  Options include `ef_usa_moves`, `ef_usa_emfac`,`ef_europe_emep`,
+  ,`ef_brazil_cetesb`, and `ef_brazil_scaled_euro` (scale
+  [`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md)
+  based on
+  [`ef_scaled_euro()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md)).
+
+- fleet_data:
+
+  data.frame. A `data.frame` with information the fleet characteristics.
+  The required columns depend on the `ef_model` selection. See @examples
+  for input.
+
+- pollutant:
+
+  character. Vector with one or more pollutants to be estimated.
+  Example: `c("CO", "CO2", "PM10", "NOx")`. See the documentation to
+  check which pollutants are available for each emission factor model
+  (`ef_usa_moves`, `ef_usa_emfac`, `ef_europe_emep`, or
+  `ef_brazil_cetesb`).
+
+- reference_year:
+
+  numeric. Year of reference considered to calculate the emissions
+  inventory. Defaults to `2020`. This argument is only required when the
+  `ef_model` parameter is `ef_usa_moves` or `ef_usa_emfac`.
+
+- process:
+
+  character; Emission process, classified in "hot_exhaust" (Default),
+  and wear processes (identified as "tyre","brake" and/or "road" wear).
+  Note that wear processes are only available when the `ef_europe_emep`
+  is selected in the @param ef_model. Details on wear emissions are
+  presented in
+  [`emi_europe_emep_wear`](https://ipeagit.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md).
+
+- heightfile:
+
+  character or raster data. The raster file with height data, or its
+  filepath, used to estimate emissions considering the effect of street
+  slope. This argument is used only when `ef_brazil_scaled_euro` or
+  `ef_europe_emep` are selected. Default is `NULL`. Details are provided
+  in
+  [`slope_class_europe_emep`](https://ipeagit.github.io/gtfs2emis/dev/reference/slope_class_europe_emep.md).
+
+- parallel:
+
+  logical. Decides whether the function should run in parallel. Defaults
+  is `TRUE`.
+
+- ncores:
+
+  integer. Number of cores to be used in parallel execution. This
+  argument is ignored if parallel is `FALSE`. Default (`NULL`) selects
+  the total number of available cores minus one.
+
+- output_path:
+
+  character. File path where the function output is exported. If `NULL`
+  (Default), the function returns the output to user.
+
+- continue:
+
+  logical. Argument that can be used only with output_path When TRUE, it
+  skips processing the shape identifiers that were already saved into
+  files. It is useful to continue processing a GTFS file that was
+  stopped for some reason. Default value is FALSE.
+
+- quiet:
+
+  Logical; Display messages from the emissions or emission factor
+  functions. Default is 'TRUE'.
+
+## Value
+
+A `list` with emissions estimates or `NULL` with output files saved
+locally at `output_path`.
+
+## Details
+
+The `fleet_data` must be a `data.frame` organized according to the
+desired `ef_model`. The required columns is organized as follows (see
+@examples for real data usage).
+
+- `veh_type`: character; Bus type, classified according to the @param
+  ef_model . For `ef_emep_europe`, use "Ubus Midi \<=15 t","Ubus Std
+  15 - 18 t", "Ubus Artic \>18 t", "Coaches Std \<=18 t" or "Coaches
+  Artic \>18 t"; For `ef_usa_moves` or `ef_usa_emfac`, use
+  "BUS_URBAN_D"; For `ef_brazil_cetesb`, use "BUS_URBAN_D",
+  "BUS_MICRO_D", "BUS_COACH_D" or "BUS_ARTIC_D".
+
+- `type_name_eu`: character; Bus type, used only for @param ef_model
+  `ef_scaled_euro` are selected. The classes can be "Ubus Midi \<=15
+  t","Ubus Std 15 - 18 t", "Ubus Artic \>18 t", "Coaches Std \<=18 t" or
+  "Coaches Artic \>18 t".
+
+- `reference_year`: character; Base year of the emission factor model
+  input. Required only when `ef_usa_moves` or `ef_usa_emfac` are
+  selected.
+
+- `tech`: character; After treatment technology. This is required only
+  when `emep_europe` is selected. Check `?ef_emep_europe` for details.
+
+- `euro`: character; Euro period of vehicle, classified in
+  "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". This is
+  required only when `ef_emep_europe` is selected. Check
+  `ef_europe_emep` for details.
+
+- `fuel`: character; Required when `ef_usa_moves`, `ef_usa_emfac` and
+  `ef_europe_emep` are selected.
+
+- `fleet_composition`: Numeric. Scaled composition of fleet. In most
+  cases, the user might not know which vehicles run on each specific
+  routes. The composition is used to attribute a probability of a
+  specific vehicle to circulate in the line. The probability sums one.
+  Required for all emission factors selection. Users can check the
+  [gtfs2emis fleet data
+  vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
+  for more examples.
+
+Based on the input height data, the function returns the slope class
+between two consecutive bus stop positions of a LineString Simple
+Feature (transport model object). The slope is given by the ratio
+between the height difference and network distance from two consecutive
+public transport stops. The function classifies the slope into one of
+the seven categories available on the European Environmental Agency
+(EEA) database, which is -0.06, -0.04,-0.02, 0.00, 0.02, 0.04, and 0.06.
+
+## See also
+
+Other Core function:
+[`transport_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md)
+
+## Examples
+
+``` r
+# \donttest{
+ if (requireNamespace("gtfstools", quietly=TRUE)) {
+
+# read GTFS
+gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
+gtfs <- gtfstools::read_gtfs(gtfs_file) 
+
+# keep a single trip_id to speed up this example
+gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
+  
+# run transport model
+tp_model <- transport_model(gtfs_data = gtfs_small,
+                            min_speed = 2,
+                            max_speed = 80,
+                            new_speed = 20,
+                            spatial_resolution = 100,
+                            parallel = FALSE)
+
+# Example using Brazilian emission model and fleet
+fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
+                                   model_year = 2010:2019,
+                                   fuel = "D",
+                                   fleet_composition = rep(0.1,10)
+                                   )
+                                   
+emi_cetesb <- progressr::with_progress(emission_model(
+                tp_model = tp_model,
+                ef_model = "ef_brazil_cetesb",
+                fleet_data = fleet_data_ef_cetesb,
+                pollutant = c("CO","PM10","CO2","CH4","NOx")
+                ))
+                            
+# Example using European emission model and fleet
+fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t",
+                                                  "Ubus Std 15 - 18 t",
+                                                  "Ubus Artic >18 t")
+                                   , euro = c("III","IV","V")
+                                   , fuel = rep("D",3)
+                                   , tech = c("-","SCR","SCR")
+                                   , fleet_composition = c(0.4,0.5,0.1))
+                                   
+emi_emep <- progressr::with_progress(emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
+                          , fleet_data = fleet_data_ef_europe
+                          , pollutant = c("PM10","NOx")))
+emi_emep_wear <- progressr::with_progress(emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
+                          , fleet_data = fleet_data_ef_europe
+                          , pollutant = "PM10"
+                          , process = c("tyre","road","brake")))
+raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")                           
+emi_emep_slope <- progressr::with_progress(emission_model(tp_model = tp_model
+                          , ef_model = "ef_europe_emep"
+                          , fleet_data = fleet_data_ef_europe
+                          , heightfile = raster_cur
+                          , pollutant = c("PM10","NOx")))  
+                                                  
+# Example using US EMFAC emission model and fleet
+fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
+                                  , model_year = 2010:2019
+                                  , fuel = "D"
+                                  , reference_year = 2020
+                                  , fleet_composition = rep(0.1,10))
+                                  
+fleet_data_ef_emfac <- data.frame(  veh_type =  "BUS_URBAN_D"
+                                  , model_year = 2010:2019
+                                  , fuel = "D"
+                                  , reference_year = 2020
+                                  , fleet_composition = rep(0.1,10))
+                                  
+# Example using US MOVES emission model and fleet
+emi_moves <- emission_model(tp_model = tp_model
+                          , ef_model = "ef_usa_moves"
+                          , fleet_data = fleet_data_ef_moves
+                          , pollutant = c("CO","PM10","CO2","CH4","NOx")
+                          , reference_year = 2020)
+                          
+emi_emfac <- emission_model(tp_model = tp_model
+                          , ef_model = "ef_usa_emfac"
+                          , fleet_data = fleet_data_ef_emfac
+                          , pollutant = c("CO","PM10","CO2","CH4","NOx")
+                          , reference_year = 2020)
+}
+#> Converting shapes to sf objects
+#> Processing the data
+#> Constant emission factor along the route
+# }
+```
