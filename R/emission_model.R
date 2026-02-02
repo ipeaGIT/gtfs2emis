@@ -198,7 +198,7 @@ emission_model <- function(  tp_model
   checkmate::assert_vector(pollutant, null.ok = FALSE)
   checkmate::assert_logical(parallel, null.ok = FALSE)
   
-  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = future::availableCores(),null.ok = TRUE)
+  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = parallelly::availableCores(omit = 1),null.ok = TRUE)
   
   checkmate::assert_logical(continue, null.ok = FALSE)
   checkmate::assert_logical(quiet, null.ok = FALSE)
@@ -289,8 +289,8 @@ emission_model <- function(  tp_model
   if(parallel){
     # number of cores
     if(is.null(ncores)){
-      ncores <- max(1, future::availableCores() - 1)
-      
+      ncores <- parallelly::availableCores(omit = 1)
+
       if(!quiet) message(paste('Using', ncores, 'CPU cores'))
     }
     

@@ -1,7 +1,7 @@
 Type: Package
 Package: gtfs2emis
 Title: Estimating Public Transport Emissions from General Transit Feed Specification (GTFS) Data
-Version: 0.1.1.9000
+Version: 0.1.1.9001
 Authors@R: c(
              person(given = "Joao",
                 family = "Bazzo",
@@ -40,7 +40,8 @@ Imports:
     sf (>= 0.9-0),
     sfheaders,
     terra,
-    units
+    units,
+    parallelly
 Suggests: 
     gtfstools,
     ggplot2,
@@ -53,5 +54,5 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 LazyData: true
