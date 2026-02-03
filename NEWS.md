@@ -1,3 +1,8 @@
+# gtfs2emis 0.1.2
+
+- Minor improvements and internal fixes to emission estimation workflows.
+- Small documentation updates and performance adjustments.
+
 # gtfs2emis 0.1.1
 
 - New function `emi_europe_emep_wear()`, to estimate non-exhaust sources of 
