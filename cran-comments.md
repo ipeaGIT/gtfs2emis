@@ -1,3 +1,11 @@
+## Resubmission
+
+This is version 0.1.2 of gtfs2emis.
+
+### Changes
+- Minor improvements and internal fixes.
+- Small documentation updates.
+
 ## Test environments
 
 - Local Ubuntu 20.04 installation (R 4.4.1)
@@ -14,15 +22,3 @@
 
 0 errors | 0 warnings | 0 notes
 
-## Adjustments
-
-- Please unwrap the examples if they are executable in < 5 sec, or replace
-dontrun{} with `\donttest{}.`
-Fixed.
-
-- Please wrap examples that need packages in ‘Suggests’ in
-if(requireNamespace("pkgname")){} instead.
-Fixed.
-
-- Found the following (possibly) invalid URLs: https://cetesb.sp.gov.br/veicular/
-Fixed.
