@@ -168,7 +168,7 @@ emission factor models:
   - CETESB: 2019 model from the Environmental Company of Sao Paulo
     (CETESB)
 - Europe
-  - [EMEP/EEA](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep):
+  - [EMEP/EEA](https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019):
     European Monitoring and Evaluation Programme, developed by the
     European Environment Agency (EEA).
 - United States
@@ -200,7 +200,7 @@ emission factor models:
 
 `gtfs2emis` also provides emissions estimates from tire, brake and
 surface wear using the [EMEP/EEA
-model](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep).
+model](https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019).
 The function estimates emissions of particulate matter (PM),
 encompassing black carbon (BC), which arises from distinct sources
 (tire, brake, and road surface wear). The focus is on primary particles,

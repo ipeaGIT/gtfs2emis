@@ -114,7 +114,7 @@ fleet_data_ef_cetesb
 ### 4.2 Europe: EMEP - European Environment Agency (EEA)
 
 Based on the European Monitoring and Evaluation Programme
-([EMEP](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep)),
+([EMEP](https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/)),
 developed by EEA.
 
 ``` r

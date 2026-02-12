@@ -117,7 +117,7 @@ repository at
 EMEP/EEA data and reports can be accessed in the following links:
 
 - 2019 edition
-  <https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook>,
+  <https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/>,
 
 - 2016 edition
   <https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/>,
