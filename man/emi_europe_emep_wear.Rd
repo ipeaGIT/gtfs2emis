@@ -185,7 +185,7 @@ The following table shows the size distribution of road surface wear particles\t
 
 #' EMEP/EEA data and reports can be accessed in the following links:
 \itemize{
-\item 2019 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-vi/view}.
+\item 2019 edition \url{https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/}.
 }
 }
 \examples{

@@ -80,7 +80,7 @@ can be accessed in the 'gtfs2emis' GitHub repository at
 
 EMEP/EEA data and reports can be accessed in the following links:
 \itemize{
-\item 2019 edition \url{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook},
+\item 2019 edition \url{https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/},
 \item 2016 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/},
 \item 2013 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2013/}, and
 \item 2007 edition \url{https://www.eea.europa.eu/publications/EMEPCORINAIR5/}.

@@ -4,6 +4,7 @@ This is version 0.1.2 of gtfs2emis.
 
 ### Changes
 - Minor improvements and internal fixes.
+- Fix broken URLs.
 - Small documentation updates.
 
 ## Test environments

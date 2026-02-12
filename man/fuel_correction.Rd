@@ -28,7 +28,7 @@ numeric. A fuel correction factor.
 }
 \description{
 Relations between emissions and fuel properties for diesel heavy-duty
-vehicles based on EMEP/EEA. Function based on values from the \href{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook}{EMEP/EEA air pollutant emission inventory guidebook 2019}.
+vehicles based on EMEP/EEA. Function based on values from the \href{https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019}{EMEP/EEA air pollutant emission inventory guidebook 2019}.
 Estimates are given by the ratio between correction factor of improved fuel
 by the correction factor of base fuel.
 }

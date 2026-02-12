@@ -87,7 +87,7 @@ fleet_data_ef_cetesb
 
 ## 4.2 Europe: EMEP - European Environment Agency (EEA) 
 
-Based on the European Monitoring and Evaluation Programme ([EMEP](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep)), developed by EEA.
+Based on the European Monitoring and Evaluation Programme ([EMEP](https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/)), developed by EEA.
 
 ```{r, message = FALSE}
 fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t"

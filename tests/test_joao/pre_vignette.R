@@ -1,104 +1,73 @@
-
 rm(list = ls())
 
-# load ----
-devtools::load_all(".")
+
+easypackages::packages('devtools','rhubv2'
+                       ,'tictoc','pak'
+                       ,'urlchecker','purrr'
+                       ,'checkmate')
+# 1. Document package  ------------
+
 devtools::document()
+
+
+# 2. Load package  ------------
+
 devtools::load_all(".")
 
-# examples ----
-devtools::run_examples(pkg = ".",run_donttest = TRUE
-                       ,document = TRUE,start = "emi_europe_emep_wear")
-covr::package_coverage(type = c("examples"))
-list.files(tempdir(),recursive = TRUE)
 
-# test vigntte----------
-covr::package_coverage(type = c("vignettes")
-                       ,quiet = FALSE
-                       )
-covr::package_coverage(path = "."
-                       ,type = c("vignettes")
-                       ,combine_types = TRUE # Default
-                       ,quiet = FALSE)
-covr::package_coverage(path = "."
-                       ,type = c("tests")
-                       ,combine_types = TRUE # Default
-                       ,quiet = FALSE
-)
+# 3. Run tests  ------------
 
-covr::package_coverage(
-   path = "."
-  ,type = c("examples")
-  ,combine_types = TRUE # Default
-  ,quiet = FALSE
-)
+devtools::test()
 
-covr::package_coverage(path = "."
-                       ,type = c("all")
-                       ,combine_types = TRUE # Default
-                       ,quiet = FALSE
-)
-
-# test functions ---------
-devtools::test_coverage(pkg = ".",show_report = TRUE)
-devtools::test(pkg = ".")
-devtools::test(pkg = ".",filter = "ef_scaled_euro")
-devtools::test(pkg = ".",filter = "ef_usa")
+# Optional: test coverage
+devtools::test_coverage(pkg = ".", show_report = TRUE)
 
 
-# check---------
+# 4. Coverage checks  ------------
 
+covr::package_coverage(type = "all", show_report = TRUE)
+
+
+# 5. Local package check  ------------
+
+devtools::check()
+
+
+# 6. Remote CRAN-like check  ------------
+
+rhub::rhub_platforms()
+devtools::build()
+rhub::rhub_check(platforms = 'linux')
+
+
+# 7. Install locally ------------
 
 tictoc::tic()
-Sys.setenv(NOT_CRAN = "false" )
-devtools::check(pkg = "."
-                ,  cran = TRUE
-                , env_vars = c(NOT_CRAN = "false")
-                , vignettes = TRUE
-                ,run_dont_test = FALSE
+devtools::install(
+  pkg = ".",
+  reload = TRUE,
+  quick = TRUE,
+  build = FALSE,
+  build_vignettes = FALSE
 )
 tictoc::toc()
 
-tictoc::toc()
-devtools::check(pkg = "."
-                ,  cran = TRUE
-                , env_vars = c(NOT_CRAN = "FALSE")
-                , vignettes = FALSE
-                ,run_dont_test = TRUE
-)
-tictoc::toc()
 
-# install----------
-tictoc::toc()
-devtools::install(pkg = "."
-                  ,reload = TRUE
-                  ,quick = TRUE
-                  ,build = FALSE
-                  ,args = "devtools.install.args"
-                  ,quiet = FALSE
-                  ,build_vignettes = FALSE
-                  )
-tictoc::toc()
+# 8. Pre-release checks  ------------
 
-# release-----------
 pak::local_install_dev_deps(upgrade = TRUE)
+
 devtools::build_readme()
 
-devtools::spell_check(pkg = ".",vignettes = TRUE)
+devtools::spell_check(vignettes = TRUE)
+
 urlchecker::url_check()
+
+# Final CRAN-like check  ------------
 Sys.setenv(NOT_CRAN = "false")
 devtools::check(remote = TRUE, manual = TRUE)
 
-# check versions
-devtools::check_win_oldrelease()
-devtools::check_win_release()
-devtools::check()
-devtools::check_win_devel()
-devtools::check_mac_release()
-devtools::check_rhub(pkg = ".",email = "joao.bazzo@gmail.com")
-rhub::check()
 
-Sys.setenv(NOT_CRAN = "false")
-devtools::release(pkg = ".",check = TRUE)
-devtools::submit_cran()
+# 9. Release  ------------
 
+devtools::release(pkg = ".", check = TRUE)

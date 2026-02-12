@@ -52,7 +52,7 @@
 #' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>  
 #' 
 #' EMEP/EEA data and reports can be accessed in the following links:
-#'  - 2019 edition \url{https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook},
+#'  - 2019 edition \url{https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/},
 #'  - 2016 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2016/},
 #'  - 2013 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2013/}, and
 #'  - 2007 edition \url{https://www.eea.europa.eu/publications/EMEPCORINAIR5/}.

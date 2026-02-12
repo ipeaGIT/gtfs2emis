@@ -149,7 +149,7 @@
 #' *References*
 #' 
 #' #' EMEP/EEA data and reports can be accessed in the following links:
-#'  - 2019 edition \url{https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion/1-a-3-b-vi/view}.
+#'  - 2019 edition \url{https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/}.
 #'  
 #' @family Emission factor model
 #' 
